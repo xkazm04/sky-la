@@ -212,7 +212,7 @@ Every v1 screen reachable with fixture data in A's three-pane chrome: overview, 
 
 | WP | Scope | Size |
 |---|---|---|
-| WP-30 | Backup scheduling, recovery-key UX, restore drill | M |
+| WP-30 | Backup scheduling, recovery-key UX, restore drill; **OS keychain `KeyStore` adapter** (keyring 4.x: macOS Keychain, Windows Credential Manager, Secret Service), moved from WP-03 | M |
 | WP-31 | Import from Pohoda and Fakturoid exports; full export of journal JSON + CSV and the document archive | L |
 | WP-32 | Security review: threat-model tests, CSP and capability audit, supply-chain gates | M |
 | WP-33 | Packaging: macOS notarisation, Windows signing, Linux AppImage/deb; opt-in update channel | M |
