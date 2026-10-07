@@ -111,6 +111,10 @@ END;
         name: "ledger_journal",
         sql: JOURNAL_SQL,
     },
+    SchemaStep {
+        name: "ledger_close_reversal_chain",
+        sql: CLOSE_SQL,
+    },
 ];
 
 /// Step 2: the journal. Invariants I1–I4 and I7 are re-checked here on every
@@ -251,6 +255,102 @@ CREATE TRIGGER account_with_postings_stays_leaf BEFORE INSERT ON account
 WHEN NEW.parent_id IS NOT NULL AND EXISTS (SELECT 1 FROM posting WHERE account_id = NEW.parent_id)
 BEGIN
     SELECT RAISE(ABORT, 'ledger: an account with postings can''t gain sub-accounts');
+END;
+"#;
+
+/// Step 3: the period state machine, reversal links and the hash chain (WP-06).
+const CLOSE_SQL: &str = r#"
+ALTER TABLE period ADD COLUMN closed_at TEXT;
+ALTER TABLE period ADD COLUMN closed_by TEXT;
+ALTER TABLE period ADD COLUMN chain_seq_at_close INTEGER;
+ALTER TABLE period ADD COLUMN chain_head_at_close TEXT;
+
+CREATE TRIGGER period_starts_open BEFORE INSERT ON period
+WHEN NEW.state <> 'open' OR NEW.closed_at IS NOT NULL OR NEW.closed_by IS NOT NULL
+  OR NEW.chain_seq_at_close IS NOT NULL OR NEW.chain_head_at_close IS NOT NULL
+BEGIN
+    SELECT RAISE(ABORT, 'ledger: a new period starts open');
+END;
+
+CREATE TRIGGER period_closed_is_final BEFORE UPDATE ON period
+WHEN OLD.state = 'closed'
+BEGIN
+    SELECT RAISE(ABORT, 'ledger: a closed period is final; book corrections in an open period');
+END;
+
+-- open → closing → closed; closing may step back to open.
+CREATE TRIGGER period_state_machine BEFORE UPDATE ON period
+WHEN OLD.state <> 'closed'
+BEGIN
+    SELECT RAISE(ABORT, 'ledger: a period closes through closing: open → closing → closed')
+    WHERE OLD.state = 'open' AND NEW.state = 'closed';
+    SELECT RAISE(ABORT, 'ledger: close earlier periods first')
+    WHERE NEW.state = 'closed'
+      AND EXISTS (SELECT 1 FROM period p WHERE p.ends_on < OLD.starts_on AND p.state <> 'closed');
+    SELECT RAISE(ABORT, 'ledger: a period with draft entries can''t close')
+    WHERE NEW.state = 'closed'
+      AND EXISTS (SELECT 1 FROM journal_entry WHERE status = 'draft' AND entry_date BETWEEN OLD.starts_on AND OLD.ends_on);
+    SELECT RAISE(ABORT, 'ledger: closing records who closed the period, when, and the current chain head')
+    WHERE NEW.state = 'closed'
+      AND (NEW.closed_by IS NULL OR length(trim(NEW.closed_by)) = 0 OR NEW.closed_at IS NULL
+           OR NEW.chain_seq_at_close IS NOT (SELECT max(posted_seq) FROM journal_entry)
+           OR NEW.chain_head_at_close IS NOT (SELECT chain_hash FROM journal_entry WHERE posted_seq = NEW.chain_seq_at_close));
+    SELECT RAISE(ABORT, 'ledger: close details are recorded only when a period closes')
+    WHERE NEW.state <> 'closed'
+      AND (NEW.closed_at IS NOT NULL OR NEW.closed_by IS NOT NULL
+           OR NEW.chain_seq_at_close IS NOT NULL OR NEW.chain_head_at_close IS NOT NULL);
+END;
+
+CREATE TRIGGER period_kept_once_used BEFORE DELETE ON period
+WHEN OLD.state = 'closed' OR EXISTS (SELECT 1 FROM journal_entry WHERE period_id = OLD.id)
+BEGIN
+    SELECT RAISE(ABORT, 'ledger: a period that holds postings or has closed is never deleted');
+END;
+
+-- Reversals: only a reversal references a reversed entry, and it must be posted.
+CREATE TRIGGER journal_entry_reversal_link BEFORE INSERT ON journal_entry
+BEGIN
+    SELECT RAISE(ABORT, 'ledger: a reversal references the entry it reverses, and only a reversal does')
+    WHERE (NEW.source_kind = 'reversal') <> (NEW.reverses_id IS NOT NULL);
+    SELECT RAISE(ABORT, 'ledger: only a posted entry can be reversed')
+    WHERE NEW.reverses_id IS NOT NULL
+      AND (SELECT status FROM journal_entry WHERE id = NEW.reverses_id) IS NOT 'posted';
+    SELECT RAISE(ABORT, 'ledger: a chain hash is set only when an entry is posted')
+    WHERE NEW.chain_hash IS NOT NULL;
+END;
+
+CREATE TRIGGER journal_entry_origin_fixed BEFORE UPDATE OF source_kind, reverses_id ON journal_entry
+WHEN OLD.source_kind IS NOT NEW.source_kind OR OLD.reverses_id IS NOT NEW.reverses_id
+BEGIN
+    SELECT RAISE(ABORT, 'ledger: an entry''s origin can''t change');
+END;
+
+CREATE TRIGGER journal_entry_reversal_mirrors BEFORE UPDATE OF status ON journal_entry
+WHEN OLD.status = 'draft' AND NEW.status = 'posted' AND NEW.reverses_id IS NOT NULL
+BEGIN
+    SELECT RAISE(ABORT, 'ledger: a reversal mirrors every line of the reversed entry with the opposite sign')
+    WHERE (SELECT count(*) FROM posting WHERE entry_id = NEW.id)
+            <> (SELECT count(*) FROM posting WHERE entry_id = NEW.reverses_id)
+       OR EXISTS (SELECT 1 FROM posting o WHERE o.entry_id = NEW.reverses_id AND NOT EXISTS (
+              SELECT 1 FROM posting r
+              WHERE r.entry_id = NEW.id AND r.line_no = o.line_no AND r.account_id = o.account_id
+                AND r.currency = o.currency AND r.amount_minor = -o.amount_minor
+                AND r.amount_func_minor = -o.amount_func_minor));
+    SELECT RAISE(ABORT, 'ledger: a reversal can''t be dated before the entry it reverses')
+    WHERE NEW.entry_date < (SELECT entry_date FROM journal_entry WHERE id = NEW.reverses_id);
+END;
+
+-- D-007: every posted entry carries its link in the hash chain, computed in
+-- the posting transaction. SQLite can't hash, so the trigger checks the shape
+-- and the verifier checks the value.
+CREATE TRIGGER journal_entry_chain_on_post BEFORE UPDATE OF status, chain_hash ON journal_entry
+WHEN OLD.status = 'draft'
+BEGIN
+    SELECT RAISE(ABORT, 'ledger: a posted entry carries its chain hash (64 lowercase hex digits)')
+    WHERE NEW.status = 'posted'
+      AND (NEW.chain_hash IS NULL OR length(NEW.chain_hash) <> 64 OR NEW.chain_hash GLOB '*[^0-9a-f]*');
+    SELECT RAISE(ABORT, 'ledger: a chain hash is set only when an entry is posted')
+    WHERE NEW.status = 'draft' AND NEW.chain_hash IS NOT NULL;
 END;
 "#;
 

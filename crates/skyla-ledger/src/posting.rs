@@ -1,4 +1,4 @@
-//! Journal entries: drafts, validation and posting (invariants I1–I4, I7).
+//! Journal entries: drafts, validation, posting (invariants I1–I4, I7) and reversals.
 //!
 //! Every check here is repeated by triggers in the database, so the Rust
 //! errors are for clarity and the triggers are the guarantee.
@@ -8,6 +8,7 @@ use serde::Serialize;
 use skyla_money::{Currency, Money, Rate};
 
 use crate::accounts::treatment_from;
+use crate::chain::hash_for_post;
 use crate::{LedgerError, TaxTreatment};
 
 /// Where an entry came from. Rule and advisor entries need approval (I7).
@@ -173,6 +174,12 @@ pub struct Entry {
     pub approved_by: Option<String>,
     /// Gapless position among posted entries.
     pub posted_seq: Option<i64>,
+    /// When it was posted (UTC, RFC 3339).
+    pub posted_at: Option<String>,
+    /// For a reversal: the entry it reverses.
+    pub reverses_id: Option<i64>,
+    /// Its link in the journal hash chain (hex), once posted.
+    pub chain_hash: Option<String>,
     /// The lines, in order.
     pub lines: Vec<Line>,
 }
@@ -309,14 +316,27 @@ fn validate_line(index: usize, line: &NewLine, functional: Currency) -> Result<M
 /// Stores a new draft entry and returns its id. Drafts may be unbalanced while
 /// they're being edited; posting enforces balance.
 pub fn create_draft(conn: &Connection, entry: &NewEntry) -> Result<i64, LedgerError> {
+    if entry.source_kind == SourceKind::Reversal {
+        return Err(LedgerError::InvalidEntry(
+            "reversals are created with reverse_entry".into(),
+        ));
+    }
+    insert_draft(conn, entry, None)
+}
+
+fn insert_draft(
+    conn: &Connection,
+    entry: &NewEntry,
+    reverses_id: Option<i64>,
+) -> Result<i64, LedgerError> {
     if !is_iso_date(&entry.date) {
         return Err(LedgerError::InvalidDate(entry.date.clone()));
     }
     let functional = functional_currency(conn)?;
     atomically(conn, |tx| {
         tx.execute(
-        "INSERT INTO journal_entry (uid, entry_date, source_kind, source_ref, memo, created_by) VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
-        params![uuid::Uuid::now_v7().to_string(), entry.date, entry.source_kind.as_str(), entry.source_ref, entry.memo, entry.created_by],
+        "INSERT INTO journal_entry (uid, entry_date, source_kind, source_ref, memo, created_by, reverses_id) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
+        params![uuid::Uuid::now_v7().to_string(), entry.date, entry.source_kind.as_str(), entry.source_ref, entry.memo, entry.created_by, reverses_id],
     )?;
         let id = tx.last_insert_rowid();
         for (index, line) in entry.lines.iter().enumerate() {
@@ -357,8 +377,9 @@ pub fn delete_draft(conn: &Connection, id: i64) -> Result<(), LedgerError> {
 ///
 /// Checks, in order: still a draft, at least two lines, balanced in the
 /// functional currency (I1), an open period covers the date (I3), approval
-/// for rule- and advisor-sourced entries (I7). Accounts were checked when the
-/// lines were written (I4); the database re-checks all of it.
+/// for rule- and advisor-sourced entries (I7), active leaf accounts (I4, again).
+/// The same transaction links the entry into the hash chain (D-007). The
+/// database re-checks all of it.
 pub fn post_entry(
     conn: &Connection,
     id: i64,
@@ -404,14 +425,107 @@ pub fn post_entry(
             [],
             |r| r.get(0),
         )?;
+        let posted_at: String =
+            tx.query_row("SELECT strftime('%Y-%m-%dT%H:%M:%fZ', 'now')", [], |r| {
+                r.get(0)
+            })?;
+        let chain_hash = hash_for_post(tx, id, seq, &posted_at, approver)?;
         tx.execute(
             "UPDATE journal_entry
-         SET status = 'posted', period_id = ?2, posted_seq = ?3, approved_by = ?4,
-             posted_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
-         WHERE id = ?1",
-            params![id, period_id, seq, approver],
+             SET status = 'posted', period_id = ?2, posted_seq = ?3, approved_by = ?4,
+                 posted_at = ?5, chain_hash = ?6
+             WHERE id = ?1",
+            params![id, period_id, seq, approver, posted_at, chain_hash],
         )?;
         Ok(seq)
+    })
+}
+
+/// A posted reversal.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+pub struct Reversal {
+    /// The new entry.
+    pub entry_id: i64,
+    /// Its posting sequence number.
+    pub posted_seq: i64,
+}
+
+/// Reverses a posted entry: posts a new entry dated `date` whose lines mirror
+/// the original's with the opposite sign, linked through `reverses_id`. This
+/// is the only way to correct a posted entry (I2). The date must fall in an
+/// open period and not before the original; an entry is reversed at most once.
+pub fn reverse_entry(
+    conn: &Connection,
+    id: i64,
+    date: &str,
+    created_by: &str,
+    memo: Option<&str>,
+) -> Result<Reversal, LedgerError> {
+    let original = get_entry(conn, id)?;
+    let Some(seq) = original.posted_seq else {
+        return Err(LedgerError::NotPosted(id));
+    };
+    if !is_iso_date(date) {
+        return Err(LedgerError::InvalidDate(date.to_owned()));
+    }
+    if date < original.date.as_str() {
+        return Err(LedgerError::InvalidEntry(format!(
+            "a reversal can't be dated {date}, before the entry it reverses ({})",
+            original.date
+        )));
+    }
+    let already: Option<i64> = conn
+        .query_row(
+            "SELECT id FROM journal_entry WHERE reverses_id = ?1",
+            [id],
+            |r| r.get(0),
+        )
+        .optional()?;
+    if already.is_some() {
+        return Err(LedgerError::AlreadyReversed(id));
+    }
+    let lines = original
+        .lines
+        .iter()
+        .map(|line| {
+            let conversion = match &line.fx_rate {
+                None => None,
+                Some(rate) => Some((
+                    line.functional.checked_neg()?,
+                    rate.parse::<Rate>().map_err(|_| LedgerError::InvalidLine {
+                        line: usize::try_from(line.line_no).unwrap_or(0),
+                        reason: format!("stored FX rate {rate:?} is unreadable"),
+                    })?,
+                )),
+            };
+            Ok(NewLine {
+                account: line.account.clone(),
+                amount: line.amount.checked_neg()?,
+                conversion,
+                vat_code: line.vat_code.clone(),
+                tax_treatment: line.tax_treatment,
+                memo: line.memo.clone(),
+            })
+        })
+        .collect::<Result<Vec<_>, LedgerError>>()?;
+    let reversal = NewEntry {
+        date: date.to_owned(),
+        source_kind: SourceKind::Reversal,
+        source_ref: Some(original.uid.clone()),
+        memo: memo.map_or_else(
+            || format!("Reversal of entry {seq}: {}", original.memo),
+            str::to_owned,
+        ),
+        created_by: created_by.to_owned(),
+        lines,
+    };
+    atomically(conn, |tx| {
+        let entry_id = insert_draft(tx, &reversal, Some(id))?;
+        let posted_seq = post_entry(tx, entry_id, None)?;
+        Ok(Reversal {
+            entry_id,
+            posted_seq,
+        })
     })
 }
 
@@ -419,7 +533,8 @@ pub fn post_entry(
 pub fn get_entry(conn: &Connection, id: i64) -> Result<Entry, LedgerError> {
     let header = conn
         .query_row(
-            "SELECT id, uid, entry_date, status, source_kind, source_ref, memo, created_by, approved_by, posted_seq
+            "SELECT id, uid, entry_date, status, source_kind, source_ref, memo, created_by, approved_by, posted_seq,
+                    posted_at, reverses_id, chain_hash
              FROM journal_entry WHERE id = ?1",
             [id],
             |r| {
@@ -434,6 +549,11 @@ pub fn get_entry(conn: &Connection, id: i64) -> Result<Entry, LedgerError> {
                     r.get::<_, String>(7)?,
                     r.get::<_, Option<String>>(8)?,
                     r.get::<_, Option<i64>>(9)?,
+                    (
+                        r.get::<_, Option<String>>(10)?,
+                        r.get::<_, Option<i64>>(11)?,
+                        r.get::<_, Option<String>>(12)?,
+                    ),
                 ))
             },
         )
@@ -471,8 +591,19 @@ pub fn get_entry(conn: &Connection, id: i64) -> Result<Entry, LedgerError> {
             })
         })?
         .collect::<Result<Vec<_>, _>>()?;
-    let (id, uid, date, status, source_kind, source_ref, memo, created_by, approved_by, posted_seq) =
-        header;
+    let (
+        id,
+        uid,
+        date,
+        status,
+        source_kind,
+        source_ref,
+        memo,
+        created_by,
+        approved_by,
+        posted_seq,
+        (posted_at, reverses_id, chain_hash),
+    ) = header;
     Ok(Entry {
         id,
         uid,
@@ -488,6 +619,9 @@ pub fn get_entry(conn: &Connection, id: i64) -> Result<Entry, LedgerError> {
         created_by,
         approved_by,
         posted_seq,
+        posted_at,
+        reverses_id,
+        chain_hash,
         lines,
     })
 }

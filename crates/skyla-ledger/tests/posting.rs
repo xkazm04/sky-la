@@ -21,8 +21,12 @@ fn ledger() -> Connection {
     set_functional_currency(&conn, Currency::CZK).expect("currency");
     open_period(&conn, "2025-01-01", "2025-12-31").expect("2025");
     open_period(&conn, "2026-01-01", "2026-12-31").expect("2026");
-    conn.execute_batch("UPDATE period SET state = 'closed' WHERE starts_on = '2025-01-01'")
-        .expect("close 2025");
+    conn.execute_batch(
+        "UPDATE period SET state = 'closing' WHERE starts_on = '2025-01-01';
+         UPDATE period SET state = 'closed', closed_by = 'test', closed_at = '2026-01-10T00:00:00Z'
+         WHERE starts_on = '2025-01-01';",
+    )
+    .expect("close 2025");
     conn
 }
 
@@ -344,8 +348,8 @@ fn the_database_rejects_invalid_posts_that_bypass_rust() {
     };
     let post_raw = |id: i64, seq: i64, approver: Option<&str>| -> rusqlite::Result<usize> {
         conn.execute(
-            "UPDATE journal_entry SET status = 'posted', period_id = ?2, posted_seq = ?3, posted_at = 'now', approved_by = ?4 WHERE id = ?1",
-            params![id, period, seq, approver],
+            "UPDATE journal_entry SET status = 'posted', period_id = ?2, posted_seq = ?3, posted_at = 'now', approved_by = ?4, chain_hash = ?5 WHERE id = ?1",
+            params![id, period, seq, approver, "0".repeat(64)],
         )
     };
     let reason =
@@ -541,8 +545,8 @@ fn an_account_deactivated_after_drafting_blocks_the_post() {
         )
         .unwrap();
     let sql = conn.execute(
-        "UPDATE journal_entry SET status = 'posted', period_id = ?2, posted_seq = 1, posted_at = 'x' WHERE id = ?1",
-        params![id, period],
+        "UPDATE journal_entry SET status = 'posted', period_id = ?2, posted_seq = 1, posted_at = 'x', chain_hash = ?3 WHERE id = ?1",
+        params![id, period, "0".repeat(64)],
     );
     assert!(
         rule(LedgerError::from(sql.unwrap_err())).contains("active account without sub-accounts")

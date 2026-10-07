@@ -175,7 +175,9 @@ posting(entry_id, line_no, account_id, amount_minor i64 (debit +, credit −), c
 
 **Projections** are pure functions of the journal: trial balance, P&L, balance sheet, VAT ledger by form row, and **cash basis (*daňová evidence*)**. The cash basis recognises income and expense at *settlement*, using the `tax_treatment` and `settles_document_id` dimensions. Every report stamps an **input snapshot hash** (hash of the posted entries it read), so any statement can be reproduced exactly.
 
-**Tamper evidence (on by default, D-007):** `chain_hash = H(prev_chain_hash ‖ canonical(entry))` is computed in the posting transaction. A verifier runs on open and on export, and a break is a hard error with the first bad entry named.
+**Tamper evidence (on by default, D-007):** `chain_hash = SHA-256(domain ‖ prev_chain_hash ‖ canonical(entry))` is computed in the posting transaction. The canonical form is length-prefixed and covers the sequence number, uid, date, origin, memo, creator, approver, posting time, the reversed entry's uid and every line (account code, both amounts, currency, rate, VAT code, tax treatment, memo). A trigger requires a well-formed hash on every post; `verify_chain` recomputes the chain and names the first entry that is missing, altered or inconsistent with a seal. Closing a period seals the current chain head into the period row, so cutting entries off the end is caught too. The verifier runs on open and on export, and as a close check; a break is a hard error.
+
+**Periods and corrections (WP-06):** a period moves open → closing → closed. A closing period still takes adjustments; closed is final, even for raw SQL, and periods close in date order. `close_period` runs pluggable `CloseCheck`s and refuses while any fails. The kernel ships earlier-periods-closed, no-drafts, entries-balanced and chain-intact; the bank tie-out (WP-19) and the VAT ledger against account 343 (WP-21) plug in from their modules. A posted entry is corrected only by `reverse_entry`, which posts a mirror entry (every line negated, foreign amounts included) linked through `reverses_id`, at most once, never dated before the original.
 
 **FX:** functional currency CZK. Rates come from the ČNB daily fixing via the opt-in reference-data fetch (§3.9) or manual import. The rate source is stored on every posting.
 
@@ -299,7 +301,7 @@ The model de-duplicates, ranks, explains and proposes actions. Every finding cit
 | Prompt injection via memos | Propose-only tools; kernel validation; human approval; fencing |
 | Exfiltration via LLM | Scoped gate on prompts *and* tool results; pseudonymisation; register |
 | Compromised webview | Holds no key; core re-validates; no fs or shell |
-| Silent corruption | Invariant triggers; projection checksums; optional hash chain |
+| Silent corruption | Invariant triggers; projection checksums; hash chain with sealed heads at period close |
 | Lost passphrase | Recovery key; backups |
 
 ### 3.9 Frontend

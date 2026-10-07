@@ -56,6 +56,34 @@ pub enum LedgerError {
     /// The functional currency hasn't been set for this ledger.
     #[error("the functional currency isn't set")]
     FunctionalCurrencyNotSet,
+    /// The entry can't be created or changed this way.
+    #[error("{0}")]
+    InvalidEntry(String),
+    /// Only posted entries can be reversed.
+    #[error("entry {0} is a draft; edit or delete it instead of reversing it")]
+    NotPosted(i64),
+    /// An entry is reversed at most once.
+    #[error("entry {0} has already been reversed")]
+    AlreadyReversed(i64),
+    /// No period with this id.
+    #[error("no period {0}")]
+    PeriodNotFound(i64),
+    /// The period isn't in the state this step needs.
+    #[error("period {id} is {}; this needs it {}", is.as_str(), needs.as_str())]
+    WrongPeriodState {
+        /// The period.
+        id: i64,
+        /// Its current state.
+        is: crate::PeriodState,
+        /// The state the step needs.
+        needs: crate::PeriodState,
+    },
+    /// At least one close check failed; the report lists them all.
+    #[error("the close is blocked: {}", .0.failures().map(|f| f.title).collect::<Vec<_>>().join(", "))]
+    CloseBlocked(Box<crate::CloseReport>),
+    /// The hash chain is unreadable where posting needs it.
+    #[error("journal hash chain is corrupt: {0}")]
+    ChainCorrupt(String),
     /// Money arithmetic failed (overflow or mixed currencies).
     #[error(transparent)]
     Money(#[from] skyla_money::MoneyError),
