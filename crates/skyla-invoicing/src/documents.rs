@@ -4,7 +4,7 @@
 use std::collections::BTreeMap;
 
 use rusqlite::{Connection, OptionalExtension, params};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use skyla_ledger::{
     NewEntry, NewLine, Replay, SourceKind, create_draft_as as create_entry_as, functional_currency,
     get_entry, link_settlement, post_entry_at, settlements_of,
@@ -18,7 +18,7 @@ use crate::{
 };
 
 /// What a document is.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum DocKind {
     /// A tax invoice (daňový doklad).
@@ -88,7 +88,7 @@ impl Accounts {
 }
 
 /// Who the document is for.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Default)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Default)]
 pub struct Customer {
     /// Legal name.
     pub name: String,
@@ -102,7 +102,7 @@ pub struct Customer {
 
 /// One line as entered. For an advance tax document the unit price is the
 /// amount received, VAT included.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct LineInput {
     /// What was supplied.
     pub description: String,
@@ -119,7 +119,7 @@ pub struct LineInput {
 }
 
 /// A draft as entered.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct DraftInput {
     /// What it is.
     pub kind: DocKind,
@@ -261,7 +261,7 @@ fn invalid(problems: Vec<String>) -> InvoicingError {
 }
 
 /// Starts a savepoint; the returned guard rolls back unless committed.
-fn atomically<T>(
+pub(crate) fn atomically<T>(
     conn: &Connection,
     f: impl FnOnce(&Connection) -> Result<T, InvoicingError>,
 ) -> Result<T, InvoicingError> {
@@ -1075,6 +1075,23 @@ pub fn state(conn: &Connection, pack: &Pack, id: i64) -> Result<DocState, Invoic
         settlement,
         settled_on: if open.is_zero() { last } else { None },
     })
+}
+
+/// What reduced an issued document's debt, by date: payments and credit
+/// notes, each settling part of it (a reversed payment counts negative).
+pub fn reductions(
+    conn: &Connection,
+    pack: &Pack,
+    id: i64,
+) -> Result<Vec<(String, Money)>, InvoicingError> {
+    let doc = get(conn, pack, id)?;
+    let Some(entry_id) = doc.entry_id.filter(|_| doc.issued) else {
+        return Ok(Vec::new());
+    };
+    Ok(settlements_of(conn, entry_id)?
+        .into_iter()
+        .map(|l| (l.date, l.amount))
+        .collect())
 }
 
 /// Numbers missing from a series' issued sequence, per year. Issued numbers

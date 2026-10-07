@@ -51,6 +51,8 @@ pub fn canonical_requests() -> Vec<(&'static str, Value)> {
         ("invoice_xml", json!({ "id": 6, "format": "isdoc" })),
         ("invoice_xml", json!({ "id": 6, "format": "ubl" })),
         ("invoice_xml", json!({ "id": 6, "format": "cii" })),
+        ("dunning_queue", json!({ "asOf": "2026-10-07" })),
+        ("recurring_templates", json!({})),
     ];
     for (from, to) in [
         ("2026-07-01", "2026-07-31"),
@@ -105,6 +107,8 @@ pub fn dispatch(core: &Core, command: &str, args: &Value) -> Result<Value, IpcFa
         "proposals" => to_value(core.proposals()),
         "egress_register" => to_value(Ok(core.egress_register())),
         "rule_pack" => to_value(Ok(core.rule_pack())),
+        "recurring_templates" => to_value(core.recurring_templates()),
+        "dunning_queue" => to_value(core.dunning_queue(arg(args, "asOf")?)),
         "invoice_pdf" => {
             let id = args
                 .get("id")

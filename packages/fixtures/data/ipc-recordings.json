@@ -1325,6 +1325,16 @@
           "value": "8"
         },
         {
+          "citation": "Nařízení vlády č. 351/2013 Sb., kterým se určuje výše úroků z prodlení a nákladů spojených s uplatněním každé pohledávky, § 3",
+          "effectiveFrom": "2014-01-01",
+          "effectiveTo": null,
+          "key": "late_interest.recovery_cost",
+          "kind": "amount",
+          "note": "Minimum cost of recovering each receivable that a creditor may claim from a business debtor.",
+          "url": "https://www.zakonyprolidi.cz/cs/2013-351",
+          "value": "1200"
+        },
+        {
           "citation": "Zákon č. 235/2004 Sb., o dani z přidané hodnoty, § 101e odst. 1",
           "effectiveFrom": "2016-01-01",
           "effectiveTo": null,
@@ -1473,6 +1483,58 @@
       "mediaType": "application/xml",
       "xml": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<rsm:CrossIndustryInvoice xmlns:rsm=\"urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100\" xmlns:ram=\"urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100\" xmlns:udt=\"urn:un:unece:uncefact:data:standard:UnqualifiedDataType:100\" xmlns:qdt=\"urn:un:unece:uncefact:data:standard:QualifiedDataType:100\">\n  <rsm:ExchangedDocumentContext>\n    <ram:GuidelineSpecifiedDocumentContextParameter>\n      <ram:ID>urn:cen.eu:en16931:2017</ram:ID>\n    </ram:GuidelineSpecifiedDocumentContextParameter>\n  </rsm:ExchangedDocumentContext>\n  <rsm:ExchangedDocument>\n    <ram:ID>2026-102</ram:ID>\n    <ram:TypeCode>380</ram:TypeCode>\n    <ram:IssueDateTime>\n      <udt:DateTimeString format=\"102\">20260825</udt:DateTimeString>\n    </ram:IssueDateTime>\n  </rsm:ExchangedDocument>\n  <rsm:SupplyChainTradeTransaction>\n    <ram:IncludedSupplyChainTradeLineItem>\n      <ram:AssociatedDocumentLineDocument>\n        <ram:LineID>1</ram:LineID>\n      </ram:AssociatedDocumentLineDocument>\n      <ram:SpecifiedTradeProduct>\n        <ram:Name>Website design</ram:Name>\n      </ram:SpecifiedTradeProduct>\n      <ram:SpecifiedLineTradeAgreement>\n        <ram:NetPriceProductTradePrice>\n          <ram:ChargeAmount>1200.00</ram:ChargeAmount>\n        </ram:NetPriceProductTradePrice>\n      </ram:SpecifiedLineTradeAgreement>\n      <ram:SpecifiedLineTradeDelivery>\n        <ram:BilledQuantity unitCode=\"HUR\">71</ram:BilledQuantity>\n      </ram:SpecifiedLineTradeDelivery>\n      <ram:SpecifiedLineTradeSettlement>\n        <ram:ApplicableTradeTax>\n          <ram:TypeCode>VAT</ram:TypeCode>\n          <ram:CategoryCode>S</ram:CategoryCode>\n          <ram:RateApplicablePercent>21</ram:RateApplicablePercent>\n        </ram:ApplicableTradeTax>\n        <ram:SpecifiedTradeSettlementLineMonetarySummation>\n          <ram:LineTotalAmount>85200.00</ram:LineTotalAmount>\n        </ram:SpecifiedTradeSettlementLineMonetarySummation>\n      </ram:SpecifiedLineTradeSettlement>\n    </ram:IncludedSupplyChainTradeLineItem>\n    <ram:ApplicableHeaderTradeAgreement>\n      <ram:SellerTradeParty>\n        <ram:Name>Jan Novák</ram:Name>\n        <ram:SpecifiedLegalOrganization>\n          <ram:ID>12345679</ram:ID>\n        </ram:SpecifiedLegalOrganization>\n        <ram:PostalTradeAddress>\n          <ram:PostcodeCode>10100</ram:PostcodeCode>\n          <ram:LineOne>Korunní 2569/108</ram:LineOne>\n          <ram:CityName>Praha 10</ram:CityName>\n          <ram:CountryID>CZ</ram:CountryID>\n        </ram:PostalTradeAddress>\n        <ram:URIUniversalCommunication>\n          <ram:URIID schemeID=\"EM\">jan@novak.example</ram:URIID>\n        </ram:URIUniversalCommunication>\n        <ram:SpecifiedTaxRegistration>\n          <ram:ID schemeID=\"VA\">CZ8001011234</ram:ID>\n        </ram:SpecifiedTaxRegistration>\n      </ram:SellerTradeParty>\n      <ram:BuyerTradeParty>\n        <ram:Name>Studio Brno s.r.o.</ram:Name>\n        <ram:SpecifiedLegalOrganization>\n          <ram:ID>94722188</ram:ID>\n        </ram:SpecifiedLegalOrganization>\n        <ram:PostalTradeAddress>\n          <ram:PostcodeCode>60200</ram:PostcodeCode>\n          <ram:LineOne>Masarykova 12</ram:LineOne>\n          <ram:CityName>Brno</ram:CityName>\n          <ram:CountryID>CZ</ram:CountryID>\n        </ram:PostalTradeAddress>\n        <ram:SpecifiedTaxRegistration>\n          <ram:ID schemeID=\"VA\">CZ94722188</ram:ID>\n        </ram:SpecifiedTaxRegistration>\n      </ram:BuyerTradeParty>\n    </ram:ApplicableHeaderTradeAgreement>\n    <ram:ApplicableHeaderTradeDelivery>\n      <ram:ActualDeliverySupplyChainEvent>\n        <ram:OccurrenceDateTime>\n          <udt:DateTimeString format=\"102\">20260825</udt:DateTimeString>\n        </ram:OccurrenceDateTime>\n      </ram:ActualDeliverySupplyChainEvent>\n    </ram:ApplicableHeaderTradeDelivery>\n    <ram:ApplicableHeaderTradeSettlement>\n      <ram:PaymentReference>2026102</ram:PaymentReference>\n      <ram:InvoiceCurrencyCode>CZK</ram:InvoiceCurrencyCode>\n      <ram:SpecifiedTradeSettlementPaymentMeans>\n        <ram:TypeCode>30</ram:TypeCode>\n        <ram:PayeePartyCreditorFinancialAccount>\n          <ram:IBANID>CZ2703000000000123454412</ram:IBANID>\n        </ram:PayeePartyCreditorFinancialAccount>\n        <ram:PayeeSpecifiedCreditorFinancialInstitution>\n          <ram:BICID>CEKOCZPP</ram:BICID>\n        </ram:PayeeSpecifiedCreditorFinancialInstitution>\n      </ram:SpecifiedTradeSettlementPaymentMeans>\n      <ram:ApplicableTradeTax>\n        <ram:CalculatedAmount>17892.00</ram:CalculatedAmount>\n        <ram:TypeCode>VAT</ram:TypeCode>\n        <ram:BasisAmount>85200.00</ram:BasisAmount>\n        <ram:CategoryCode>S</ram:CategoryCode>\n        <ram:RateApplicablePercent>21</ram:RateApplicablePercent>\n      </ram:ApplicableTradeTax>\n      <ram:SpecifiedTradePaymentTerms>\n        <ram:DueDateDateTime>\n          <udt:DateTimeString format=\"102\">20260924</udt:DateTimeString>\n        </ram:DueDateDateTime>\n      </ram:SpecifiedTradePaymentTerms>\n      <ram:SpecifiedTradeSettlementHeaderMonetarySummation>\n        <ram:LineTotalAmount>85200.00</ram:LineTotalAmount>\n        <ram:TaxBasisTotalAmount>85200.00</ram:TaxBasisTotalAmount>\n        <ram:TaxTotalAmount currencyID=\"CZK\">17892.00</ram:TaxTotalAmount>\n        <ram:GrandTotalAmount>103092.00</ram:GrandTotalAmount>\n        <ram:DuePayableAmount>103092.00</ram:DuePayableAmount>\n      </ram:SpecifiedTradeSettlementHeaderMonetarySummation>\n    </ram:ApplicableHeaderTradeSettlement>\n  </rsm:SupplyChainTradeTransaction>\n</rsm:CrossIndustryInvoice>\n"
     },
+    "isError": false
+  },
+  {
+    "command": "dunning_queue",
+    "args": {
+      "asOf": "2026-10-07"
+    },
+    "result": [
+      {
+        "bodyCs": "Dobrý den,\n\nrádi bychom připomněli fakturu 2026-102 se splatností 24. 9. 2026, kterou u nás zatím nevidíme uhrazenou v plné výši. Zbývá uhradit 53 092,00 Kč na účet CZ2703000000000123454412, variabilní symbol 2026102.\n\nPokud jste již platili, považujte prosím tuto zprávu za bezpředmětnou.\n\nS pozdravem\nJan Novák",
+        "bodyEn": "Hello,\n\nthis is a friendly reminder that invoice 2026-102, due on 24 September 2026, hasn't been paid in full yet. CZK 53,092.00 remains to be paid to account CZ2703000000000123454412, variable symbol 2026102.\n\nIf you have already paid, please disregard this message.\n\nKind regards\nJan Novák",
+        "customer": "Studio Brno s.r.o.",
+        "daysOverdue": 13,
+        "documentId": 6,
+        "dueOn": "2026-09-24",
+        "interest": null,
+        "interestProblem": null,
+        "number": "2026-102",
+        "open": {
+          "currency": "CZK",
+          "minor": 5309200
+        },
+        "scheduledOn": "2026-09-29",
+        "step": 1,
+        "subjectCs": "Připomínka: faktura 2026-102 je po splatnosti",
+        "subjectEn": "Reminder: invoice 2026-102 is overdue",
+        "tone": "friendly"
+      }
+    ],
+    "isError": false
+  },
+  {
+    "command": "recurring_templates",
+    "args": {},
+    "result": [
+      {
+        "active": true,
+        "autoIssue": false,
+        "client": "Acme Analytics a.s.",
+        "dueDays": 14,
+        "frequency": "monthly",
+        "gross": {
+          "currency": "CZK",
+          "minor": 544500
+        },
+        "id": 1,
+        "interval": 1,
+        "name": "Hosting a údržba",
+        "next": "2026-10-31",
+        "start": "2026-10-31"
+      }
+    ],
     "isError": false
   },
   {

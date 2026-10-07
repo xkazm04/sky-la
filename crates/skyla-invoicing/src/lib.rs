@@ -12,16 +12,20 @@
 //! and the SPAYD descriptor behind the QR Platba code.
 //!
 //! WP-13 adds the ISDOC 6.0.2 writer; WP-14 the EN 16931 writers: UBL 2.1
-//! (Peppol BIS Billing 3.0) and CII D16B.
+//! (Peppol BIS Billing 3.0) and CII D16B; WP-15 recurring templates, dunning
+//! and statutory late interest.
 
 #![deny(clippy::float_arithmetic)]
 
 pub mod address;
 pub mod cii;
 mod documents;
+pub mod dunning;
 mod error;
 mod exchange;
 pub mod isdoc;
+pub mod late_interest;
+pub mod recurring;
 mod schema;
 pub mod spayd;
 mod supplier;
@@ -33,11 +37,12 @@ pub use documents::{
     Accounts, Customer, DocKind, DocState, Document, DraftInput, IssueReplay, Issued, Line,
     LineInput, Settlement, Totals, VatRecap, compute_totals, create_draft, create_draft_as,
     define_series, delete_draft, draft_credit_note, format_number, get, import_issued, issue,
-    series_gaps, state, update_draft,
+    reductions, series_gaps, state, update_draft,
 };
 pub use error::InvoicingError;
 pub use exchange::ExportInput;
 pub use isdoc::to_isdoc;
+pub use late_interest::{InterestPeriod, LateInterest, RepoRate, late_interest};
 pub use schema::{SCHEMA, apply_schema};
 pub use supplier::{Supplier, set_supplier, supplier, valid_ico};
 pub use ubl::to_ubl;

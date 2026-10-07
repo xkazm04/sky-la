@@ -4,8 +4,9 @@
 
 use skyla_app::dto::{
     AppInfo, BalanceSheetDto, BankStatementDto, CashBasisDto, DocumentPdfDto, DocumentXmlDto,
-    EgressRunDto, EntityDto, IntegrityDto, InvoiceDto, JournalEntryDto, PeriodDto,
-    ProfitAndLossDto, ProposalDto, RulePackDto, TrialBalanceDto, VatReturnDto,
+    DunningNoticeDto, EgressRunDto, EntityDto, IntegrityDto, InvoiceDto, JournalEntryDto,
+    PeriodDto, ProfitAndLossDto, ProposalDto, RecurringTemplateDto, RulePackDto, TrialBalanceDto,
+    VatReturnDto,
 };
 use skyla_app::{Core, IpcFailure};
 use tauri::{Runtime, State};
@@ -136,6 +137,20 @@ fn invoice_xml(core: State<'_, Core>, id: i64, format: String) -> Answer<Documen
     Ok(core.invoice_xml(id, &format)?)
 }
 
+/// Reminders due on a date, drafted for the user to send.
+#[tauri::command]
+#[specta::specta]
+fn dunning_queue(core: State<'_, Core>, as_of: String) -> Answer<Vec<DunningNoticeDto>> {
+    Ok(core.dunning_queue(&as_of)?)
+}
+
+/// Recurring invoice templates and their next runs.
+#[tauri::command]
+#[specta::specta]
+fn recurring_templates(core: State<'_, Core>) -> Answer<Vec<RecurringTemplateDto>> {
+    Ok(core.recurring_templates()?)
+}
+
 /// Every command, for the invoke handler and the TypeScript export.
 pub fn specta_builder<R: Runtime>() -> Builder<R> {
     Builder::<R>::new()
@@ -157,6 +172,8 @@ pub fn specta_builder<R: Runtime>() -> Builder<R> {
             rule_pack,
             invoice_pdf,
             invoice_xml,
+            dunning_queue,
+            recurring_templates,
         ])
         // Money crosses as integer minor units; `MoneyDto` refuses anything
         // beyond 2^53 - 1, so a JavaScript number holds every value exactly.

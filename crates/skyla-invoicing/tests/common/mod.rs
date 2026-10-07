@@ -180,3 +180,32 @@ impl Books {
         (advance, tax, fin)
     }
 }
+
+impl Books {
+    /// A bank receipt of `minor` on `date` that settles the invoice posted as `invoice_entry`.
+    pub fn pay(&self, invoice_entry: i64, date: &str, minor: i64) {
+        let id = skyla_ledger::create_draft(
+            &self.conn,
+            &NewEntry {
+                date: date.into(),
+                source_kind: SourceKind::Bank,
+                source_ref: None,
+                memo: "Platba".into(),
+                created_by: "user".into(),
+                lines: vec![
+                    NewLine::debit("221", Money::new(minor, Currency::CZK)),
+                    NewLine::credit("311", Money::new(minor, Currency::CZK)).expect("credit"),
+                ],
+            },
+        )
+        .expect("payment draft");
+        skyla_ledger::link_settlement(
+            &self.conn,
+            id,
+            invoice_entry,
+            Money::new(minor, Currency::CZK),
+        )
+        .expect("settle");
+        post_entry(&self.conn, id, None).expect("post payment");
+    }
+}

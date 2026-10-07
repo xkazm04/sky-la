@@ -40,6 +40,10 @@ export const commands = {
 	invoicePdf: (id: number, lang: string) => typedError<DocumentPdfDto, IpcFailure>(__TAURI_INVOKE("invoice_pdf", { id, lang })),
 	/**  An issued document as XML: `isdoc`, `ubl` (Peppol BIS 3.0) or `cii`. */
 	invoiceXml: (id: number, format: string) => typedError<DocumentXmlDto, IpcFailure>(__TAURI_INVOKE("invoice_xml", { id, format })),
+	/**  Reminders due on a date, drafted for the user to send. */
+	dunningQueue: (asOf: string) => typedError<DunningNoticeDto[], IpcFailure>(__TAURI_INVOKE("dunning_queue", { asOf })),
+	/**  Recurring invoice templates and their next runs. */
+	recurringTemplates: () => typedError<RecurringTemplateDto[], IpcFailure>(__TAURI_INVOKE("recurring_templates")),
 };
 
 /* Types */
@@ -195,6 +199,40 @@ export type DocumentXmlDto = {
 	xml: string,
 };
 
+/**  A reminder that is due, drafted for the user to send. */
+export type DunningNoticeDto = {
+	/**  The invoice. */
+	documentId: number,
+	/**  Its number. */
+	number: string,
+	/**  Who owes. */
+	customer: string,
+	/**  The step, from 1. */
+	step: number,
+	/**  `friendly`, `firm` or `final`. */
+	tone: string,
+	/**  When the invoice was due. */
+	dueOn: string,
+	/**  When this step became due. */
+	scheduledOn: string,
+	/**  Days past due. */
+	daysOverdue: number,
+	/**  Still owed. */
+	open: MoneyDto,
+	/**  The late interest stated on the final step. */
+	interest: LateInterestDto | null,
+	/**  Why the interest is missing (no ČNB rate history imported). */
+	interestProblem: string | null,
+	/**  Draft subject, Czech. */
+	subjectCs: string,
+	/**  Draft body, Czech. */
+	bodyCs: string,
+	/**  Draft subject, English. */
+	subjectEn: string,
+	/**  Draft body, English. */
+	bodyEn: string,
+};
+
 /**  One run in the egress register. */
 export type EgressRunDto = {
 	/**  Stable id. */
@@ -257,6 +295,20 @@ export type IntegrityDto = {
 	firstBreak: string | null,
 	/**  Debits equal credits across the journal. */
 	balanced: boolean,
+};
+
+/**  A stretch of delay at a constant principal. */
+export type InterestPeriodDto = {
+	/**  First day. */
+	from: string,
+	/**  Last day, inclusive. */
+	to: string,
+	/**  Days. */
+	days: number,
+	/**  What was owed. */
+	principal: MoneyDto,
+	/**  Interest. */
+	interest: MoneyDto,
 };
 
 /**  An issued (or drafted) invoice. */
@@ -370,6 +422,22 @@ export type JournalLineDto = {
 	vatCode: string | null,
 	/**  Free text. */
 	memo: string,
+};
+
+/**  Statutory late interest on one receivable. */
+export type LateInterestDto = {
+	/**  The first day of delay. */
+	delayFrom: string,
+	/**  The half-year start whose ČNB repo rate applies. */
+	rateDate: string,
+	/**  Annual percent, e.g. `11.5`. */
+	annualRate: string,
+	/**  One period per stretch at a constant principal. */
+	periods: InterestPeriodDto[],
+	/**  Sum of the periods. */
+	total: MoneyDto,
+	/**  The statutory minimum recovery cost. */
+	recoveryCost: MoneyDto,
 };
 
 /**  A candidate document for a bank line. */
@@ -504,6 +572,32 @@ export type ProposedLineDto = {
 	credit: MoneyDto | null,
 	/**  VAT code. */
 	vatCode: string | null,
+};
+
+/**  A recurring invoice template. */
+export type RecurringTemplateDto = {
+	/**  Row id. */
+	id: number,
+	/**  For people. */
+	name: string,
+	/**  The customer. */
+	client: string,
+	/**  `weekly`, `monthly`, `quarterly` or `yearly`. */
+	frequency: string,
+	/**  Units between runs. */
+	interval: number,
+	/**  The first occurrence. */
+	start: string,
+	/**  The next occurrence, if the schedule hasn't ended. */
+	next: string | null,
+	/**  Days to the due date. */
+	dueDays: number,
+	/**  Issued automatically, or left as a draft. */
+	autoIssue: boolean,
+	/**  Paused templates don't run. */
+	active: boolean,
+	/**  Each invoice's total, with VAT, at today's pack rates. */
+	gross: MoneyDto,
 };
 
 /**  The rule pack in force. */

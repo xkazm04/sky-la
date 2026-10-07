@@ -133,6 +133,53 @@ CREATE TABLE supplier_profile (
 ALTER TABLE document ADD COLUMN supplier TEXT CHECK (supplier IS NULL OR json_valid(supplier));
 "#,
     },
+    SchemaStep {
+        name: "invoicing_recurring_dunning",
+        sql: r#"
+-- A template produces one document per occurrence; the run row makes that
+-- idempotent.
+CREATE TABLE recurring_template (
+    id         INTEGER PRIMARY KEY,
+    name       TEXT    NOT NULL CHECK (length(trim(name)) > 0),
+    draft      TEXT    NOT NULL CHECK (json_valid(draft)),
+    frequency  TEXT    NOT NULL CHECK (frequency IN ('weekly', 'monthly', 'quarterly', 'yearly')),
+    interval   INTEGER NOT NULL CHECK (interval >= 1),
+    start_date TEXT    NOT NULL CHECK (date(start_date) IS start_date),
+    end_date   TEXT CHECK (end_date IS NULL OR (date(end_date) IS end_date AND end_date >= start_date)),
+    due_days   INTEGER NOT NULL CHECK (due_days BETWEEN 0 AND 365),
+    auto_issue INTEGER NOT NULL DEFAULT 0 CHECK (auto_issue IN (0, 1)),
+    active     INTEGER NOT NULL DEFAULT 1 CHECK (active IN (0, 1))
+) STRICT;
+
+CREATE TABLE recurring_run (
+    template_id INTEGER NOT NULL REFERENCES recurring_template (id),
+    occurrence  TEXT    NOT NULL CHECK (date(occurrence) IS occurrence),
+    document_id INTEGER NOT NULL UNIQUE REFERENCES document (id),
+    PRIMARY KEY (template_id, occurrence)
+) STRICT;
+
+-- The user's reminder sequence (one row), as JSON; the default applies when absent.
+CREATE TABLE dunning_policy (
+    id     INTEGER PRIMARY KEY CHECK (id = 1),
+    policy TEXT NOT NULL CHECK (json_valid(policy))
+) STRICT;
+
+-- Each reminder step goes out at most once per document.
+CREATE TABLE dunning_event (
+    document_id INTEGER NOT NULL REFERENCES document (id),
+    step        INTEGER NOT NULL CHECK (step >= 1),
+    sent_on     TEXT    NOT NULL CHECK (date(sent_on) IS sent_on),
+    PRIMARY KEY (document_id, step)
+) STRICT;
+
+-- Reminders paused for a document (a dispute, an agreed delay).
+CREATE TABLE dunning_hold (
+    document_id INTEGER PRIMARY KEY REFERENCES document (id),
+    reason      TEXT NOT NULL,
+    since       TEXT NOT NULL CHECK (date(since) IS since)
+) STRICT;
+"#,
+    },
 ];
 
 /// Applies [`SCHEMA`] directly (tests and tools); the app migrates it.

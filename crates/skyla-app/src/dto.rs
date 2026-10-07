@@ -615,6 +615,104 @@ pub struct DocumentXmlDto {
     pub xml: String,
 }
 
+/// Statutory late interest on one receivable.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct LateInterestDto {
+    /// The first day of delay.
+    pub delay_from: String,
+    /// The half-year start whose ČNB repo rate applies.
+    pub rate_date: String,
+    /// Annual percent, e.g. `11.5`.
+    pub annual_rate: String,
+    /// One period per stretch at a constant principal.
+    pub periods: Vec<InterestPeriodDto>,
+    /// Sum of the periods.
+    pub total: MoneyDto,
+    /// The statutory minimum recovery cost.
+    pub recovery_cost: MoneyDto,
+}
+
+/// A stretch of delay at a constant principal.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct InterestPeriodDto {
+    /// First day.
+    pub from: String,
+    /// Last day, inclusive.
+    pub to: String,
+    /// Days.
+    pub days: i64,
+    /// What was owed.
+    pub principal: MoneyDto,
+    /// Interest.
+    pub interest: MoneyDto,
+}
+
+/// A reminder that is due, drafted for the user to send.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct DunningNoticeDto {
+    /// The invoice.
+    pub document_id: i64,
+    /// Its number.
+    pub number: String,
+    /// Who owes.
+    pub customer: String,
+    /// The step, from 1.
+    pub step: u8,
+    /// `friendly`, `firm` or `final`.
+    pub tone: String,
+    /// When the invoice was due.
+    pub due_on: String,
+    /// When this step became due.
+    pub scheduled_on: String,
+    /// Days past due.
+    pub days_overdue: i64,
+    /// Still owed.
+    pub open: MoneyDto,
+    /// The late interest stated on the final step.
+    pub interest: Option<LateInterestDto>,
+    /// Why the interest is missing (no ČNB rate history imported).
+    pub interest_problem: Option<String>,
+    /// Draft subject, Czech.
+    pub subject_cs: String,
+    /// Draft body, Czech.
+    pub body_cs: String,
+    /// Draft subject, English.
+    pub subject_en: String,
+    /// Draft body, English.
+    pub body_en: String,
+}
+
+/// A recurring invoice template.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct RecurringTemplateDto {
+    /// Row id.
+    pub id: i64,
+    /// For people.
+    pub name: String,
+    /// The customer.
+    pub client: String,
+    /// `weekly`, `monthly`, `quarterly` or `yearly`.
+    pub frequency: String,
+    /// Units between runs.
+    pub interval: u32,
+    /// The first occurrence.
+    pub start: String,
+    /// The next occurrence, if the schedule hasn't ended.
+    pub next: Option<String>,
+    /// Days to the due date.
+    pub due_days: u16,
+    /// Issued automatically, or left as a draft.
+    pub auto_issue: bool,
+    /// Paused templates don't run.
+    pub active: bool,
+    /// Each invoice's total, with VAT, at today's pack rates.
+    pub gross: MoneyDto,
+}
+
 /// The rule pack in force.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]

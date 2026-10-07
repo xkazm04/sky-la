@@ -203,6 +203,14 @@ effective_from = "2014-01-01"
 cite = { act = "nv351", section = "§ 2" }
 note = "Annual rate = ČNB repo rate valid on the first day of the calendar half-year in which the delay began, plus this margin."
 
+[[value]]
+key = "late_interest.recovery_cost"
+kind = "amount"
+value = "1200"
+effective_from = "2014-01-01"
+cite = { act = "nv351", section = "§ 3" }
+note = "Minimum cost of recovering each receivable that a creditor may claim from a business debtor."
+
 # ── Deadlines ──────────────────────────────────────────────────────────────
 
 [[value]]

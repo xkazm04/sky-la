@@ -178,7 +178,7 @@ pub(crate) fn seed_invoicing(
     pack: &skyla_rules::Pack,
     domain: &Domain,
 ) -> Result<HashMap<i64, String>, CoreError> {
-    use skyla_invoicing::{Accounts, Customer, DocKind, DraftInput, LineInput, define_series};
+    use skyla_invoicing::{Accounts, DocKind, DraftInput, define_series};
     skyla_invoicing::apply_schema(conn)?;
     define_series(conn, "FV", DocKind::Invoice, "{YYYY}-{NNN}", "Faktury")?;
     define_series(
@@ -220,46 +220,14 @@ pub(crate) fn seed_invoicing(
     let accounts = Accounts::cz();
     let mut scheduled = HashMap::new();
     for (i, doc) in domain.invoices.iter().enumerate() {
-        let client = domain
-            .clients
-            .iter()
-            .find(|c| c.name == doc.client)
-            .ok_or_else(|| {
-                CoreError::Demo(format!(
-                    "invoice {}: unknown client {}",
-                    doc.number, doc.client
-                ))
-            })?;
-        if !skyla_invoicing::valid_ico(&client.ico) {
-            return Err(CoreError::Demo(format!(
-                "client {}: invalid IČO {}",
-                client.name, client.ico
-            )));
-        }
         let input = DraftInput {
             kind: DocKind::Invoice,
             series: "FV".into(),
-            customer: Customer {
-                name: client.legal_name.clone(),
-                ico: Some(client.ico.clone()),
-                dic: client.dic.clone(),
-                address: Some(client.address.clone()),
-            },
+            customer: customer(domain, &doc.client)?,
             due_date: doc.due_on.clone(),
             tax_point_date: None,
             note: String::new(),
-            lines: doc
-                .lines
-                .iter()
-                .map(|l| LineInput {
-                    description: l.description.clone(),
-                    quantity: l.quantity.clone(),
-                    unit: l.unit.clone(),
-                    unit_price_minor: l.unit_price_minor,
-                    vat_code: l.vat_code.clone(),
-                    account: None,
-                })
-                .collect(),
+            lines: line_inputs(&doc.lines),
             related_id: None,
             advances: Vec::new(),
         };
@@ -291,7 +259,69 @@ pub(crate) fn seed_invoicing(
             }
         }
     }
+    for t in &domain.recurring {
+        skyla_invoicing::recurring::create_template(
+            conn,
+            &skyla_invoicing::recurring::TemplateInput {
+                name: t.name.clone(),
+                draft: DraftInput {
+                    kind: DocKind::Invoice,
+                    series: "FV".into(),
+                    customer: customer(domain, &t.client)?,
+                    due_date: None,
+                    tax_point_date: None,
+                    note: String::new(),
+                    lines: line_inputs(&t.lines),
+                    related_id: None,
+                    advances: Vec::new(),
+                },
+                schedule: skyla_invoicing::recurring::Schedule {
+                    frequency: t.frequency,
+                    interval: t.interval,
+                    start: t.start.clone(),
+                    end: None,
+                },
+                due_days: t.due_days,
+                auto_issue: t.auto_issue,
+            },
+        )?;
+    }
     Ok(scheduled)
+}
+
+/// The customer an invoice names, with its IČO checked.
+fn customer(domain: &Domain, name: &str) -> Result<skyla_invoicing::Customer, CoreError> {
+    let client = domain
+        .clients
+        .iter()
+        .find(|c| c.name == name)
+        .ok_or_else(|| CoreError::Demo(format!("unknown client {name}")))?;
+    if !skyla_invoicing::valid_ico(&client.ico) {
+        return Err(CoreError::Demo(format!(
+            "client {}: invalid IČO {}",
+            client.name, client.ico
+        )));
+    }
+    Ok(skyla_invoicing::Customer {
+        name: client.legal_name.clone(),
+        ico: Some(client.ico.clone()),
+        dic: client.dic.clone(),
+        address: Some(client.address.clone()),
+    })
+}
+
+fn line_inputs(lines: &[DomainInvoiceLine]) -> Vec<skyla_invoicing::LineInput> {
+    lines
+        .iter()
+        .map(|l| skyla_invoicing::LineInput {
+            description: l.description.clone(),
+            quantity: l.quantity.clone(),
+            unit: l.unit.clone(),
+            unit_price_minor: l.unit_price_minor,
+            vat_code: l.vat_code.clone(),
+            account: None,
+        })
+        .collect()
 }
 
 /// `demo-domain.json`.
@@ -304,6 +334,8 @@ pub(crate) struct Domain {
     pub(crate) supplier: DomainSupplier,
     /// Customers, by the name invoices use.
     pub(crate) clients: Vec<DomainClient>,
+    /// Recurring invoice templates.
+    pub(crate) recurring: Vec<DomainRecurring>,
     /// Invoice documents (issued ones link to the ledger by number).
     pub(crate) invoices: Vec<DomainInvoice>,
     /// The latest bank import.
@@ -312,6 +344,20 @@ pub(crate) struct Domain {
     pub(crate) proposals: Vec<DomainProposal>,
     /// The egress register.
     pub(crate) egress_runs: Vec<crate::dto::EgressRunDto>,
+}
+
+/// A recurring invoice template.
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub(crate) struct DomainRecurring {
+    pub(crate) name: String,
+    pub(crate) client: String,
+    pub(crate) frequency: skyla_invoicing::recurring::Frequency,
+    pub(crate) interval: u32,
+    pub(crate) start: String,
+    pub(crate) due_days: u16,
+    pub(crate) auto_issue: bool,
+    pub(crate) lines: Vec<DomainInvoiceLine>,
 }
 
 /// A customer.

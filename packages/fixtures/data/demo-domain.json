@@ -180,6 +180,26 @@
       ]
     }
   ],
+  "recurring": [
+    {
+      "name": "Hosting a údržba",
+      "client": "Acme Analytics",
+      "frequency": "monthly",
+      "interval": 1,
+      "start": "2026-10-31",
+      "dueDays": 14,
+      "autoIssue": false,
+      "lines": [
+        {
+          "description": "Hosting a údržba · {month}",
+          "quantity": "1",
+          "unit": "měs",
+          "unitPriceMinor": 450000,
+          "vatCode": "OUT21"
+        }
+      ]
+    }
+  ],
   "bankImport": {
     "file": "csob_2026-10-06.xml",
     "format": "CAMT.053",

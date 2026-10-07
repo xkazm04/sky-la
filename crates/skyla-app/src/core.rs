@@ -24,12 +24,38 @@ pub struct Core {
     accounts: HashMap<String, (String, AccountKind)>,
     currency: Currency,
     pack: Pack,
-    /// Scheduled drafts' issue dates (recurring invoices arrive in WP-15).
+    /// Scheduled drafts' issue dates.
     scheduled: HashMap<i64, String>,
+    /// The ČNB repo rate history for late interest. Reference data: imported
+    /// or fetched on opt-in (WP-20); the demo has none, so it says so.
+    repo_rates: Vec<skyla_invoicing::RepoRate>,
 }
 
 fn money(m: Money) -> Result<MoneyDto, CoreError> {
     MoneyDto::try_from(m)
+}
+
+fn interest_dto(i: skyla_invoicing::LateInterest) -> Result<LateInterestDto, CoreError> {
+    Ok(LateInterestDto {
+        delay_from: i.delay_from,
+        rate_date: i.rate_date,
+        annual_rate: i.annual_rate.normalize().to_string(),
+        periods: i
+            .periods
+            .into_iter()
+            .map(|p| {
+                Ok(InterestPeriodDto {
+                    from: p.from,
+                    to: p.to,
+                    days: p.days,
+                    principal: money(p.principal)?,
+                    interest: money(p.interest)?,
+                })
+            })
+            .collect::<Result<_, CoreError>>()?,
+        total: money(i.total)?,
+        recovery_cost: money(i.recovery_cost)?,
+    })
 }
 
 fn snapshot(s: skyla_ledger::Snapshot) -> SnapshotDto {
@@ -96,6 +122,7 @@ impl Core {
             currency,
             pack,
             scheduled,
+            repo_rates: Vec::new(),
         })
     }
 
@@ -473,6 +500,82 @@ impl Core {
             media_type: "application/xml".into(),
             xml,
         })
+    }
+
+    /// Reminders due on `as_of` under the user's sequence, drafted in Czech
+    /// and English for the user to send.
+    pub fn dunning_queue(&self, as_of: &str) -> Result<Vec<DunningNoticeDto>, CoreError> {
+        use skyla_invoicing::dunning::Tone;
+        let notices = skyla_invoicing::dunning::dunning_queue(
+            &self.db(),
+            &self.pack,
+            &self.repo_rates,
+            as_of,
+        )?;
+        notices
+            .into_iter()
+            .map(|n| {
+                Ok(DunningNoticeDto {
+                    document_id: n.document_id,
+                    number: n.number,
+                    customer: n.customer,
+                    step: n.step,
+                    tone: match n.tone {
+                        Tone::Friendly => "friendly",
+                        Tone::Firm => "firm",
+                        Tone::Final => "final",
+                    }
+                    .into(),
+                    due_on: n.due_date,
+                    scheduled_on: n.scheduled_on,
+                    days_overdue: n.days_overdue,
+                    open: money(n.open)?,
+                    interest: n.interest.map(interest_dto).transpose()?,
+                    interest_problem: n.interest_problem,
+                    subject_cs: n.subject_cs,
+                    body_cs: n.body_cs,
+                    subject_en: n.subject_en,
+                    body_en: n.body_en,
+                })
+            })
+            .collect()
+    }
+
+    /// The recurring invoice templates and when each runs next.
+    pub fn recurring_templates(&self) -> Result<Vec<RecurringTemplateDto>, CoreError> {
+        let db = self.db();
+        let mut out = Vec::new();
+        for t in skyla_invoicing::recurring::templates(&db)? {
+            let on = t
+                .next
+                .clone()
+                .unwrap_or_else(|| self.domain.entity.as_of.clone());
+            let (_, totals) = skyla_invoicing::compute_totals(
+                &self.pack,
+                t.input.draft.kind,
+                &on,
+                self.currency,
+                &t.input.draft.lines,
+            )?;
+            let s = &t.input.schedule;
+            out.push(RecurringTemplateDto {
+                id: t.id,
+                name: t.input.name.clone(),
+                client: t.input.draft.customer.name.clone(),
+                frequency: serde_json::to_value(s.frequency)
+                    .ok()
+                    .and_then(|v| v.as_str().map(str::to_owned))
+                    .unwrap_or_default(),
+                interval: s.interval,
+                start: s.start.clone(),
+                next: t.next.clone(),
+                due_days: t.input.due_days,
+                auto_issue: t.input.auto_issue,
+                active: t.active,
+                gross: money(totals.gross)?,
+            });
+        }
+        Ok(out)
     }
 
     /// The latest bank import, tied out against the ledger.
