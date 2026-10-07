@@ -29,11 +29,13 @@ export interface TableSection<T> {
   rows: ReadonlyArray<T>;
 }
 
-export interface DataTableProps<T extends { id: string }> {
+export interface DataTableProps<T extends object> {
   /** Accessible name. */
   label: string;
   columns: ReadonlyArray<TableColumn<T>>;
   sections: ReadonlyArray<TableSection<T>>;
+  /** A row's stable key; `row.id` when absent. */
+  rowKey?: (row: T) => string;
   selectedId?: string | null;
   onSelect?: (id: string) => void;
   /** Double-click or Enter. */
@@ -49,10 +51,11 @@ const SECTION = "section:";
  * The content pane's list: 40 px rows, hairline separators, in-list section
  * headers. Arrow keys move, the selection follows focus.
  */
-export function DataTable<T extends { id: string }>({
+export function DataTable<T extends object>({
   label,
   columns,
   sections,
+  rowKey = (row: T) => (row as unknown as { id: string }).id,
   selectedId,
   onSelect,
   onAction,
@@ -62,7 +65,7 @@ export function DataTable<T extends { id: string }>({
   const sectionKeys = sections.map((s) => SECTION + s.id);
   const items = sections.flatMap((section) => [
     { kind: "section" as const, key: SECTION + section.id, section },
-    ...section.rows.map((row) => ({ kind: "row" as const, key: row.id, row })),
+    ...section.rows.map((row) => ({ kind: "row" as const, key: rowKey(row), row })),
   ]);
   return (
     <AriaTable

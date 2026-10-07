@@ -3390,6 +3390,7 @@ dependencies = [
  "rusqlite",
  "serde",
  "serde_json",
+ "skyla-invoicing",
  "skyla-ledger",
  "skyla-money",
  "skyla-rules",
@@ -3422,6 +3423,16 @@ version = "0.1.0"
 [[package]]
 name = "skyla-invoicing"
 version = "0.1.0"
+dependencies = [
+ "proptest",
+ "rusqlite",
+ "serde",
+ "skyla-ledger",
+ "skyla-money",
+ "skyla-rules",
+ "thiserror 2.0.21",
+ "uuid",
+]
 
 [[package]]
 name = "skyla-ledger"

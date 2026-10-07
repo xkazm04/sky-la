@@ -169,6 +169,96 @@ pub fn demo_ledger() -> Result<Connection, CoreError> {
     Ok(conn)
 }
 
+/// Records the demo's invoices in the invoicing module: issued ones are
+/// imported against their golden-journal entries (which checks every line
+/// total against the ledger), drafts stay drafts. Returns the scheduled
+/// drafts' issue dates by document id.
+pub(crate) fn seed_invoicing(
+    conn: &Connection,
+    pack: &skyla_rules::Pack,
+    domain: &Domain,
+) -> Result<HashMap<i64, String>, CoreError> {
+    use skyla_invoicing::{Accounts, Customer, DocKind, DraftInput, LineInput, define_series};
+    skyla_invoicing::apply_schema(conn)?;
+    define_series(conn, "FV", DocKind::Invoice, "{YYYY}-{NNN}", "Faktury")?;
+    define_series(
+        conn,
+        "OD",
+        DocKind::CreditNote,
+        "OD{YYYY}-{NNN}",
+        "Opravné daňové doklady",
+    )?;
+    define_series(
+        conn,
+        "ZF",
+        DocKind::Advance,
+        "ZF{YYYY}-{NN}",
+        "Zálohové faktury",
+    )?;
+    define_series(
+        conn,
+        "DZ",
+        DocKind::AdvanceTax,
+        "DZ{YYYY}-{NN}",
+        "Daňové doklady k přijatým platbám",
+    )?;
+    let accounts = Accounts::cz();
+    let mut scheduled = HashMap::new();
+    for doc in &domain.invoices {
+        let input = DraftInput {
+            kind: DocKind::Invoice,
+            series: "FV".into(),
+            customer: Customer {
+                name: doc.client.clone(),
+                ..Customer::default()
+            },
+            due_date: doc.due_on.clone(),
+            tax_point_date: None,
+            note: String::new(),
+            lines: doc
+                .lines
+                .iter()
+                .map(|l| LineInput {
+                    description: l.description.clone(),
+                    quantity: l.quantity.clone(),
+                    unit: l.unit.clone(),
+                    unit_price_minor: l.unit_price_minor,
+                    vat_code: l.vat_code.clone(),
+                    account: None,
+                })
+                .collect(),
+            related_id: None,
+            advances: Vec::new(),
+        };
+        match &doc.state {
+            None => {
+                let entry_id =
+                    skyla_ledger::find_posted_by_ref(conn, SourceKind::Invoice, &doc.number)?
+                        .ok_or_else(|| {
+                            CoreError::Demo(format!("invoice {} has no posted entry", doc.number))
+                        })?;
+                let date = get_entry(conn, entry_id)?.date;
+                skyla_invoicing::import_issued(
+                    conn,
+                    pack,
+                    &accounts,
+                    &input,
+                    &doc.number,
+                    &date,
+                    entry_id,
+                )?;
+            }
+            Some(_) => {
+                let id = skyla_invoicing::create_draft(conn, &input)?;
+                if let Some(when) = &doc.scheduled_for {
+                    scheduled.insert(id, when.clone());
+                }
+            }
+        }
+    }
+    Ok(scheduled)
+}
+
 /// `demo-domain.json`.
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]

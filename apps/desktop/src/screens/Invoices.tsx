@@ -21,8 +21,10 @@ import { navigate } from "../router";
 import { InspectorPane } from "../shell/Shell";
 import { DemoNote, EmptyInspector, Loaded } from "./common";
 
-type Row = InvoiceDto & { id: string };
 type Filter = "all" | "open" | "paid";
+
+/** The route key: the number once issued, `draft-<id>` before. */
+export const invoiceKey = (i: InvoiceDto) => i.number ?? `draft-${i.id}`;
 
 export function invoiceStatus(i: InvoiceDto): { tone: Tone; label: string } {
   switch (i.status) {
@@ -32,6 +34,8 @@ export function invoiceStatus(i: InvoiceDto): { tone: Tone; label: string } {
       return { tone: "negative", label: `Overdue ${i.daysOverdue} days` };
     case "partPaid":
       return { tone: "warning", label: "Part paid" };
+    case "credited":
+      return { tone: "neutral", label: "Credited" };
     case "draft":
       return { tone: "neutral", label: "Draft" };
     case "scheduled":
@@ -41,8 +45,14 @@ export function invoiceStatus(i: InvoiceDto): { tone: Tone; label: string } {
   }
 }
 
-const columns: TableColumn<Row>[] = [
-  { id: "number", title: "Number", isRowHeader: true, width: "6.5rem", cell: (i) => i.number },
+const columns: TableColumn<InvoiceDto>[] = [
+  {
+    id: "number",
+    title: "Number",
+    isRowHeader: true,
+    width: "6.5rem",
+    cell: (i) => i.number ?? <span className="text-ink-secondary">Draft</span>,
+  },
   { id: "client", title: "Client", cell: (i) => i.client },
   { id: "issued", title: "Issued", width: "5.5rem", cell: (i) => day(i.issuedOn) },
   { id: "due", title: "Due", width: "5.5rem", cell: (i) => day(i.dueOn) },
@@ -62,7 +72,9 @@ function InvoicePaper({ invoice }: { invoice: InvoiceDto }) {
   return (
     <div className="rounded-inner bg-surface p-4 text-body shadow-group">
       <div className="flex items-baseline justify-between">
-        <p className="font-semibold">Faktura {invoice.number}</p>
+        <p className="font-semibold">
+          {invoice.number ? `Faktura ${invoice.number}` : "Návrh faktury"}
+        </p>
         <p className="text-footnote text-ink-secondary">daňový doklad</p>
       </div>
       <p className="mt-0.5 text-footnote text-ink-secondary">
@@ -109,8 +121,8 @@ function InvoiceInspector({ invoice }: { invoice: InvoiceDto }) {
   return (
     <InspectorPane>
       <Inspector
-        label={`Invoice ${invoice.number}`}
-        title={`Invoice ${invoice.number}`}
+        label={invoice.number ? `Invoice ${invoice.number}` : "Draft invoice"}
+        title={invoice.number ? `Invoice ${invoice.number}` : "Draft invoice"}
         subtitle={invoice.client}
         accessory={<Badge tone={s.tone}>{s.label}</Badge>}
         actions={
@@ -176,10 +188,11 @@ export function InvoicesScreen({ item }: { item: string | null }) {
   return (
     <Loaded query={invoices}>
       {(all) => {
-        const rows: Row[] = all.map((i) => ({ ...i, id: i.number }));
+        const rows = all;
         const keep = (i: InvoiceDto) =>
           filter === "all" || (filter === "open" ? needsAttention(i) : i.status === "paid");
-        const selected = rows.find((r) => r.id === item) ?? rows.find(needsAttention) ?? rows[0];
+        const selected =
+          rows.find((r) => invoiceKey(r) === item) ?? rows.find(needsAttention) ?? rows[0];
         const receivables =
           sheet.state === "ready"
             ? sheet.data.assets.find((l) => l.code === "311")?.amount
@@ -216,6 +229,7 @@ export function InvoicesScreen({ item }: { item: string | null }) {
               <DataTable
                 label="Invoices"
                 columns={columns}
+                rowKey={invoiceKey}
                 sections={[
                   {
                     id: "attention",
@@ -233,7 +247,7 @@ export function InvoicesScreen({ item }: { item: string | null }) {
                     rows: rows.filter((r) => r.status === "paid" && keep(r)),
                   },
                 ].filter((s) => s.rows.length > 0)}
-                selectedId={selected?.id ?? null}
+                selectedId={selected ? invoiceKey(selected) : null}
                 onSelect={(id) => navigate("invoices", id, true)}
               />
             </ContentGroup>

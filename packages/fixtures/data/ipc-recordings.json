@@ -71,6 +71,10 @@
           "minor": 14000000
         },
         "client": "Northwind Traders",
+        "credited": {
+          "currency": "CZK",
+          "minor": 0
+        },
         "daysOverdue": null,
         "dueOn": "2026-11-15",
         "entryId": null,
@@ -78,6 +82,7 @@
           "currency": "CZK",
           "minor": 16940000
         },
+        "id": 9,
         "issuedOn": null,
         "lines": [
           {
@@ -100,11 +105,12 @@
             "vatRatePercent": "21"
           }
         ],
-        "number": "2026-122",
+        "number": null,
         "open": {
           "currency": "CZK",
           "minor": 16940000
         },
+        "pack": null,
         "paid": {
           "currency": "CZK",
           "minor": 0
@@ -123,6 +129,10 @@
           "minor": 8000000
         },
         "client": "Acme Analytics",
+        "credited": {
+          "currency": "CZK",
+          "minor": 0
+        },
         "daysOverdue": null,
         "dueOn": null,
         "entryId": null,
@@ -130,6 +140,7 @@
           "currency": "CZK",
           "minor": 9680000
         },
+        "id": 8,
         "issuedOn": null,
         "lines": [
           {
@@ -152,11 +163,12 @@
             "vatRatePercent": "21"
           }
         ],
-        "number": "2026-121",
+        "number": null,
         "open": {
           "currency": "CZK",
           "minor": 9680000
         },
+        "pack": null,
         "paid": {
           "currency": "CZK",
           "minor": 0
@@ -175,6 +187,10 @@
           "minor": 7000000
         },
         "client": "Northwind Traders",
+        "credited": {
+          "currency": "CZK",
+          "minor": 0
+        },
         "daysOverdue": null,
         "dueOn": "2026-09-29",
         "entryId": 28,
@@ -182,6 +198,7 @@
           "currency": "CZK",
           "minor": 8470000
         },
+        "id": 7,
         "issuedOn": "2026-09-15",
         "lines": [
           {
@@ -209,6 +226,7 @@
           "currency": "CZK",
           "minor": 0
         },
+        "pack": "cz-2026@2026.1",
         "paid": {
           "currency": "CZK",
           "minor": 8470000
@@ -227,6 +245,10 @@
           "minor": 8520000
         },
         "client": "Studio Brno",
+        "credited": {
+          "currency": "CZK",
+          "minor": 0
+        },
         "daysOverdue": 13,
         "dueOn": "2026-09-24",
         "entryId": 27,
@@ -234,6 +256,7 @@
           "currency": "CZK",
           "minor": 10309200
         },
+        "id": 6,
         "issuedOn": "2026-08-25",
         "lines": [
           {
@@ -261,6 +284,7 @@
           "currency": "CZK",
           "minor": 5309200
         },
+        "pack": "cz-2026@2026.1",
         "paid": {
           "currency": "CZK",
           "minor": 5000000
@@ -279,6 +303,10 @@
           "minor": 16000000
         },
         "client": "Acme Analytics",
+        "credited": {
+          "currency": "CZK",
+          "minor": 0
+        },
         "daysOverdue": null,
         "dueOn": "2026-08-25",
         "entryId": 26,
@@ -286,6 +314,7 @@
           "currency": "CZK",
           "minor": 19360000
         },
+        "id": 5,
         "issuedOn": "2026-08-11",
         "lines": [
           {
@@ -313,6 +342,7 @@
           "currency": "CZK",
           "minor": 0
         },
+        "pack": "cz-2026@2026.1",
         "paid": {
           "currency": "CZK",
           "minor": 19360000
@@ -331,6 +361,10 @@
           "minor": 14000000
         },
         "client": "Northwind Traders",
+        "credited": {
+          "currency": "CZK",
+          "minor": 0
+        },
         "daysOverdue": null,
         "dueOn": "2026-07-28",
         "entryId": 25,
@@ -338,6 +372,7 @@
           "currency": "CZK",
           "minor": 16940000
         },
+        "id": 4,
         "issuedOn": "2026-07-14",
         "lines": [
           {
@@ -365,6 +400,7 @@
           "currency": "CZK",
           "minor": 0
         },
+        "pack": "cz-2026@2026.1",
         "paid": {
           "currency": "CZK",
           "minor": 16940000
@@ -383,6 +419,10 @@
           "minor": 12100000
         },
         "client": "Studio Brno",
+        "credited": {
+          "currency": "CZK",
+          "minor": 0
+        },
         "daysOverdue": null,
         "dueOn": "2026-06-29",
         "entryId": 4,
@@ -390,6 +430,7 @@
           "currency": "CZK",
           "minor": 14641000
         },
+        "id": 3,
         "issuedOn": "2026-06-15",
         "lines": [
           {
@@ -436,6 +477,7 @@
           "currency": "CZK",
           "minor": 0
         },
+        "pack": "cz-2026@2026.1",
         "paid": {
           "currency": "CZK",
           "minor": 14641000
@@ -454,6 +496,10 @@
           "minor": 15000000
         },
         "client": "Acme Analytics",
+        "credited": {
+          "currency": "CZK",
+          "minor": 0
+        },
         "daysOverdue": null,
         "dueOn": "2026-05-26",
         "entryId": 3,
@@ -461,6 +507,7 @@
           "currency": "CZK",
           "minor": 18150000
         },
+        "id": 2,
         "issuedOn": "2026-05-12",
         "lines": [
           {
@@ -488,6 +535,7 @@
           "currency": "CZK",
           "minor": 0
         },
+        "pack": "cz-2026@2026.1",
         "paid": {
           "currency": "CZK",
           "minor": 18150000
@@ -506,6 +554,10 @@
           "minor": 12000000
         },
         "client": "Northwind Traders",
+        "credited": {
+          "currency": "CZK",
+          "minor": 0
+        },
         "daysOverdue": null,
         "dueOn": "2026-04-24",
         "entryId": 2,
@@ -513,6 +565,7 @@
           "currency": "CZK",
           "minor": 14520000
         },
+        "id": 1,
         "issuedOn": "2026-04-10",
         "lines": [
           {
@@ -540,6 +593,7 @@
           "currency": "CZK",
           "minor": 0
         },
+        "pack": "cz-2026@2026.1",
         "paid": {
           "currency": "CZK",
           "minor": 14520000

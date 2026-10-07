@@ -4,8 +4,8 @@ Update this file in the same commit series that completes a work packet.
 
 ## Current state
 
-- **Phase:** M1 Ledger kernel in progress. Done: WP-00 – WP-10 (M0, M1 and M2 complete).
-- **Next packet:** WP-11 (invoicing: document model, number series, issue → post through the kernel). WP-20 is half done: the pack data and loader landed first because invoicing needs VAT rates from the pack; the opt-in fetch and signed pack updates remain.
+- **Phase:** M1 Ledger kernel in progress. Done: WP-00 – WP-11 (M0, M1 and M2 complete; M3 in progress), and the data half of WP-20.
+- **Next packet:** WP-12 (SPAYD QR Platba and the PDF). WP-20 is half done: the pack data and loader landed first because invoicing needs VAT rates from the pack; the opt-in fetch and signed pack updates remain.
 - **Blocking decisions:** none open. Wave 4 recorded as D-017 (dark first-class from WP-08) and D-018 (spike run in the cloud).
 
 ## Packets
@@ -23,7 +23,8 @@ Update this file in the same commit series that completes a work packet.
 | WP-08 | Tokens + primitives (direction A) | done | this session | Gallery `#/gallery`; axe clean in light and dark; 41 ui unit tests |
 | WP-09 | Typed IPC + fixtures | done | this session | 13 typed commands; 30 recordings round-trip identically over Tauri IPC and the mock |
 | WP-10 | Navigable app on fixtures | done | this session | 9 screens; 27 Playwright tests; 18 committed baselines (light and dark) |
-| WP-11 – WP-19 | See the plan | todo | | |
+| WP-11 | Invoicing documents and lifecycle | done | this session | 8 tests incl. a 48-case lifecycle property test |
+| WP-12 – WP-19 | See the plan | todo | | |
 | WP-20 | Rule pack cz-2026 + loader | partly done | this session | Data, citations, effective dating, holidays and deadlines done; opt-in ČNB fetch and minisign-verified updates still to do |
 | WP-21 – WP-34 | See the plan | todo | | |
 
@@ -45,6 +46,7 @@ Update this file in the same commit series that completes a work packet.
 - 2026-10-07 — WP-09: `skyla-app` (AGPL) holds the application core behind 13 typed commands (entity, periods, P&L, balance sheet, trial balance, cash basis, journal, integrity, invoices, bank statement, inbox proposals, egress register). Statements, the journal, invoice totals and payments, the bank tie-out and proposed VAT lines all come from the engine; `demo-domain.json` adds typed data for the domains not built yet (invoice documents, the bank import, the inbox, the register) and is validated against the ledger. tauri-specta 2.0.0-rc.25 generates the bindings; the mock replays the core's recordings through Tauri's `mockIPC`. Acceptance: every recording round-trips identically over the real Tauri IPC (MockRuntime) and through the mock (Vitest). The round-trip test found that wall-clock posting times and random uids made the demo's hash chain differ on every run; the ledger gained `create_draft_as`, `post_entry_at` and `reverse_entry_at` for replays with known identities.
 - 2026-10-07 — WP-10: the app is navigable on the recorded core. Nine screens in A's chrome (overview, inbox, invoices, bank workbench, statements, taxes, advisors, egress register, settings) behind a typed hash router with deep links per selection (`#/invoices/2026-102`). The shell stays mounted, so the source list keeps focus while screens change; each screen portals its inspector into the right pane. The webview only filters, counts and formats: every amount is the core's (P&L Q3 456 500,00 / 176 150,00 / 280 350,00, the bank tie-out to 902 741,58, invoice 2026-102 overdue 13 days, cash-basis income 803 622,31 for Apr–Sep). Playwright walks every route in both appearances with axe (WCAG 2.2 AA) and pixel baselines (`apps/desktop/e2e/baseline`, max 50 differing pixels), plus keyboard navigation of the source list and main lists, deep links and statement drill-down. The walk found two more dark-mode contrast misses (an info pill and capsule text on a selected row); tokens and the token test now cover selected rows.
 - 2026-10-07 — WP-20 (pack data, ahead of WP-11): `rules/cz/2026/pack.toml` with every value effective-dated and cited to act and provision (VAT rates incl. the 2024 merger of 15 % and 10 % into 12 %, document rounding, registration threshold, return and control-statement deadlines, KH itemisation threshold, income-tax rate and taxpayer credit, flat-rate percentages and caps, the fixed-asset threshold, the late-interest margin, the weekend and holiday deadline shift, CZ public holidays incl. Easter, and the VAT-code → DPH-row mapping). Status `draft` until a second person verifies it; values I wasn't sure of are listed under `omitted` instead of guessed. `skyla-rules` validates the whole pack and lists every problem. The core now takes VAT rates and rounding from the pack and computes deadlines (September's DPH is due Monday 26 October, not Sunday 25th as the fixture had it). New commands `vat_return` (form rows, output and input tax, payable, due date) and `rule_pack` (values with citations); Taxes shows July–September returns, Settings lists the pack.
+- 2026-10-07 — WP-11: `skyla-invoicing` (AGPL) with invoices, credit notes, advance invoices and tax documents for received advances. Number series with patterns (`{YYYY}-{NNN}`, `OD{YY}{NNNN}`), gapless per series and year, assigned in the same transaction that posts the entry; gaps in imported books are kept and reported. Issuing fixes the VAT recapitulation with the pack's rate and rounding on the tax point and posts receivables, revenue and VAT; triggers freeze issued documents, their lines and totals. A credit note settles the invoice it corrects through the ledger's settlement links, so open amounts and the cash basis stay right and over-crediting is refused. The advance tax document posts VAT out of the received gross; the final invoice deducts it, and the VAT return shows each part in its own month. The demo core now records its invoices in the module (issued ones imported against their golden-journal entries, which re-checks every total), and drafts carry no number until issued.
 
 ## Backlog notes from sessions
 
@@ -70,3 +72,5 @@ Update this file in the same commit series that completes a work packet.
 - The statements' drill-down rows are native buttons in a plain table. Consider a React Aria grid for arrow-key movement there too.
 - Pack values marked `draft` need a line-by-line check against the official consolidated texts before release; the omitted list (36× average wage, 2026 insurance minimums, paušální daň bands) needs the 2026 regulations.
 - Citation links open the act's page. Route them through the OS browser (Tauri opener) and audit with the CSP in WP-32.
+- Credit notes against a paid invoice need a refund flow (the settlement cap blocks a credit beyond what's open). Design it with bank matching (WP-18).
+- Multi-currency invoices: documents are in the functional currency only for now.

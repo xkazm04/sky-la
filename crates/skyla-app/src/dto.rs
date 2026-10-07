@@ -329,11 +329,13 @@ pub struct InvoiceLineDto {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct InvoiceDto {
-    /// Invoice number.
-    pub number: String,
+    /// Document id.
+    pub id: i64,
+    /// Invoice number, once issued.
+    pub number: Option<String>,
     /// Client name.
     pub client: String,
-    /// `draft`, `scheduled`, `open`, `overdue`, `partPaid`, `paid`.
+    /// `draft`, `scheduled`, `open`, `overdue`, `partPaid`, `paid`, `credited`.
     pub status: String,
     /// Issue date (posted invoices).
     pub issued_on: Option<String>,
@@ -351,14 +353,18 @@ pub struct InvoiceDto {
     pub vat: MoneyDto,
     /// Total.
     pub gross: MoneyDto,
-    /// Settled so far.
+    /// Paid so far.
     pub paid: MoneyDto,
+    /// Credited by credit notes.
+    pub credited: MoneyDto,
     /// Still open.
     pub open: MoneyDto,
     /// The lines.
     pub lines: Vec<InvoiceLineDto>,
     /// The posted journal entry, if issued.
     pub entry_id: Option<i64>,
+    /// The rule pack its totals were fixed with, once issued.
+    pub pack: Option<String>,
 }
 
 /// One weighted reason in a match score.

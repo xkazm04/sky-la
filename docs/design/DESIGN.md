@@ -196,6 +196,8 @@ posting(entry_id, line_no, account_id, amount_minor i64 (debit +, credit −), c
 
 Lifecycle: `Draft → Issued (number assigned; immutable; posts AR + VAT) → Sent → Partially paid → Paid | Credited | Written off`. Corrections are always credit notes.
 
+**Implementation (WP-11):** `skyla-invoicing` owns its schema next to the ledger's. Issuing assigns the next number in the series and year, stores the VAT recapitulation computed with the pack (so a later pack can't change an issued document), and posts through the kernel, all in one savepoint; triggers freeze issued documents. Paid and credited amounts are derived from settlement links, never stored. A credit note settles the invoice it corrects. A received advance is taxed on its own tax document, and the final invoice deducts it line by line, so the VAT return's row 1 shows each part in its month.
+
 - **Outputs:** PDF via Typst with a SPAYD QR code · ISDOC 6 · UBL 2.1 (Peppol BIS Billing 3.0) · CII. Validated against XSD, and against the EN 16931 Schematron in CI (KoSIT validator container).
 - **Recurring:** template + schedule → drafts, or auto-issue if the user opts in.
 - **Dunning:** three-step sequence with tone templates. Statutory late interest is computed from the pack.

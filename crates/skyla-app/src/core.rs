@@ -3,11 +3,10 @@ use std::sync::{Mutex, MutexGuard};
 
 use rusqlite::Connection;
 use skyla_ledger::{
-    AccountKind, SourceKind, balance_sheet, cash_basis, find_posted_by_ref, functional_currency,
-    get_entry, list_accounts, list_periods, list_posted, profit_and_loss, settlements_of,
-    trial_balance, verify_chain,
+    AccountKind, balance_sheet, cash_basis, functional_currency, list_accounts, list_periods,
+    list_posted, profit_and_loss, trial_balance, verify_chain,
 };
-use skyla_money::{Currency, Money, Rate, vat};
+use skyla_money::{Currency, Money, vat};
 use skyla_rules::{Pack, RowPart};
 
 use crate::CoreError;
@@ -25,6 +24,8 @@ pub struct Core {
     accounts: HashMap<String, (String, AccountKind)>,
     currency: Currency,
     pack: Pack,
+    /// Scheduled drafts' issue dates (recurring invoices arrive in WP-15).
+    scheduled: HashMap<i64, String>,
 }
 
 fn money(m: Money) -> Result<MoneyDto, CoreError> {
@@ -85,12 +86,16 @@ impl Core {
             .into_iter()
             .map(|a| (a.code, (a.name_en, a.kind)))
             .collect();
+        let domain = demo_domain()?;
+        let pack = Pack::cz_2026()?;
+        let scheduled = crate::demo::seed_invoicing(&conn, &pack, &domain)?;
         Ok(Self {
             conn: Mutex::new(conn),
-            domain: demo_domain()?,
+            domain,
             accounts,
             currency,
-            pack: Pack::cz_2026()?,
+            pack,
+            scheduled,
         })
     }
 
@@ -314,136 +319,89 @@ impl Core {
         })
     }
 
-    /// Issued, drafted and scheduled invoices. Amounts of issued invoices
-    /// come from their journal entries; paid amounts from settlement links.
+    /// Invoices from the invoicing module, newest first, drafts on top.
+    /// Totals were fixed with the rule pack when issued; paid and credited
+    /// amounts come from the ledger's settlement links.
     pub fn invoices(&self) -> Result<Vec<InvoiceDto>, CoreError> {
+        use skyla_invoicing::Settlement;
         let db = self.db();
         let as_of = day_number(&self.domain.entity.as_of)?;
-        let zero = Money::zero(self.currency);
+        let ids: Vec<i64> = db
+            .prepare(
+                "SELECT id FROM document WHERE kind = 'invoice'
+                 ORDER BY status = 'issued', number DESC, id DESC",
+            )
+            .map_err(skyla_ledger::LedgerError::from)?
+            .query_map([], |r| r.get(0))
+            .map_err(skyla_ledger::LedgerError::from)?
+            .collect::<Result<_, _>>()
+            .map_err(skyla_ledger::LedgerError::from)?;
         let mut out = Vec::new();
-        for doc in &self.domain.invoices {
-            // Lines: quantity × unit price, VAT per line with the pack's rate.
-            let mut line_dtos = Vec::new();
-            let (mut base_sum, mut vat_sum) = (zero, zero);
-            // The document date picks the pack's rate and rounding.
-            let posted_on = find_posted_by_ref(&db, SourceKind::Invoice, &doc.number)?
-                .map(|id| get_entry(&db, id).map(|e| e.date))
-                .transpose()?;
-            let on = posted_on
-                .or_else(|| doc.scheduled_for.clone())
-                .unwrap_or_else(|| self.domain.entity.as_of.clone());
-            let rounding = self.pack.rounding("vat.rounding.document", &on)?;
-            for l in &doc.lines {
-                let quantity: Rate = l
-                    .quantity
-                    .parse()
-                    .map_err(|_| CoreError::Demo(format!("quantity {}", l.quantity)))?;
-                let rate = self.pack.vat_rate(&l.vat_code, &on)?;
-                let unit = Money::new(l.unit_price_minor, self.currency);
-                let base = unit.mul_rate(quantity, rounding)?;
-                let split = vat::from_base(base, rate, rounding)?;
-                base_sum = base_sum.checked_add(split.base)?;
-                vat_sum = vat_sum.checked_add(split.vat)?;
-                line_dtos.push(InvoiceLineDto {
-                    description: l.description.clone(),
-                    quantity: l.quantity.clone(),
-                    unit: l.unit.clone(),
-                    unit_price: money(unit)?,
-                    vat_code: l.vat_code.clone(),
-                    vat_rate_percent: rate.to_string(),
-                    base: money(split.base)?,
-                    vat: money(split.vat)?,
-                });
-            }
-            let gross_sum = base_sum.checked_add(vat_sum)?;
-
-            if let Some(state) = &doc.state {
-                out.push(InvoiceDto {
-                    number: doc.number.clone(),
-                    client: doc.client.clone(),
-                    status: state.clone(),
-                    issued_on: None,
-                    due_on: doc.due_on.clone(),
-                    scheduled_for: doc.scheduled_for.clone(),
-                    paid_on: None,
-                    days_overdue: None,
-                    base: money(base_sum)?,
-                    vat: money(vat_sum)?,
-                    gross: money(gross_sum)?,
-                    paid: money(zero)?,
-                    open: money(gross_sum)?,
-                    lines: line_dtos,
-                    entry_id: None,
-                });
-                continue;
-            }
-
-            let id =
-                find_posted_by_ref(&db, SourceKind::Invoice, &doc.number)?.ok_or_else(|| {
-                    CoreError::Demo(format!("invoice {} has no posted entry", doc.number))
-                })?;
-            let entry = get_entry(&db, id)?;
-            let mut gross = zero;
-            let mut revenue = zero;
-            for line in &entry.lines {
-                if !line.functional.is_negative() {
-                    gross = gross.checked_add(line.functional)?;
+        for id in ids {
+            let doc = skyla_invoicing::get(&db, &self.pack, id)?;
+            let st = skyla_invoicing::state(&db, &self.pack, id)?;
+            let overdue = match (&doc.due_date, doc.issued) {
+                (Some(due), true) if !st.open.is_zero() && !st.open.is_negative() => {
+                    Some(as_of - day_number(due)?).filter(|d| *d > 0)
                 }
-                if self
-                    .accounts
-                    .get(&line.account)
-                    .is_some_and(|(_, k)| *k == AccountKind::Revenue)
-                {
-                    revenue = revenue.checked_sub(line.functional)?;
-                }
-            }
-            let vat_amount = gross.checked_sub(revenue)?;
-            if revenue != base_sum || vat_amount != vat_sum {
-                return Err(CoreError::Demo(format!(
-                    "invoice {}: lines give {base_sum:?} + {vat_sum:?}, the ledger {revenue:?} + {vat_amount:?}",
-                    doc.number
-                )));
-            }
-            let links = settlements_of(&db, id)?;
-            let paid = Money::sum(self.currency, links.iter().map(|l| l.amount))?;
-            let open = gross.checked_sub(paid)?;
-            let overdue = match &doc.due_on {
-                Some(due) if !open.is_zero() => Some(as_of - day_number(due)?).filter(|d| *d > 0),
                 _ => None,
             };
-            let status = if open.is_zero() {
-                "paid"
-            } else if overdue.is_some() {
-                "overdue"
-            } else if !paid.is_zero() {
-                "partPaid"
-            } else {
-                "open"
+            let status = match st.settlement {
+                Settlement::Draft if self.scheduled.contains_key(&id) => "scheduled",
+                Settlement::Draft => "draft",
+                Settlement::Paid => "paid",
+                Settlement::Credited => "credited",
+                _ if overdue.is_some() => "overdue",
+                Settlement::PartlySettled => "partPaid",
+                Settlement::Open => "open",
             };
+            let lines = doc
+                .lines
+                .iter()
+                .map(|l| {
+                    let on = doc
+                        .tax_point_date
+                        .clone()
+                        .unwrap_or_else(|| self.domain.entity.as_of.clone());
+                    let rate = self.pack.vat_rate(&l.input.vat_code, &on)?;
+                    let rounding = self.pack.rounding("vat.rounding.document", &on)?;
+                    Ok(InvoiceLineDto {
+                        description: l.input.description.clone(),
+                        quantity: l.input.quantity.clone(),
+                        unit: l.input.unit.clone(),
+                        unit_price: self.amount(l.input.unit_price_minor)?,
+                        vat_code: l.input.vat_code.clone(),
+                        vat_rate_percent: rate.to_string(),
+                        base: money(l.amount)?,
+                        vat: money(vat::from_base(l.amount, rate, rounding)?.vat)?,
+                    })
+                })
+                .collect::<Result<_, CoreError>>()?;
             out.push(InvoiceDto {
+                id,
                 number: doc.number.clone(),
-                client: doc.client.clone(),
+                client: doc.customer.name.clone(),
                 status: status.into(),
-                issued_on: Some(entry.date.clone()),
-                due_on: doc.due_on.clone(),
-                scheduled_for: None,
-                paid_on: if open.is_zero() {
-                    links.last().map(|l| l.date.clone())
+                issued_on: doc.issue_date.clone(),
+                due_on: doc.due_date.clone(),
+                scheduled_for: self.scheduled.get(&id).cloned(),
+                paid_on: if st.settlement == Settlement::Paid {
+                    st.settled_on.clone()
                 } else {
                     None
                 },
                 days_overdue: overdue,
-                base: money(revenue)?,
-                vat: money(vat_amount)?,
-                gross: money(gross)?,
-                paid: money(paid)?,
-                open: money(open)?,
-                lines: line_dtos,
-                entry_id: Some(id),
+                base: money(doc.totals.base)?,
+                vat: money(doc.totals.vat)?,
+                gross: money(doc.totals.gross)?,
+                paid: money(st.paid)?,
+                credited: money(st.credited)?,
+                open: money(st.open)?,
+                lines,
+                entry_id: doc.entry_id,
+                pack: doc.pack.clone(),
             });
         }
-        // Newest first, unposted ones on top.
-        out.sort_by(|a, b| b.number.cmp(&a.number));
         Ok(out)
     }
 
@@ -594,7 +552,7 @@ impl Core {
         let open_invoices: HashMap<String, i64> = self
             .invoices()?
             .into_iter()
-            .map(|i| (i.number, i.open.minor))
+            .filter_map(|i| i.number.map(|n| (n, i.open.minor)))
             .collect();
         self.domain
             .proposals

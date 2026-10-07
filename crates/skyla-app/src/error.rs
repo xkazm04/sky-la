@@ -16,6 +16,9 @@ pub enum CoreError {
     /// A request was malformed.
     #[error("{0}")]
     BadRequest(String),
+    /// Invoicing refused the request.
+    #[error(transparent)]
+    Invoicing(#[from] skyla_invoicing::InvoicingError),
     /// The rule pack refused or lacks a value.
     #[error(transparent)]
     Rules(#[from] skyla_rules::RulesError),
@@ -41,6 +44,7 @@ impl From<CoreError> for IpcFailure {
             CoreError::Ledger(_) => "ledger",
             CoreError::Money(_) => "money",
             CoreError::Rules(_) => "rules",
+            CoreError::Invoicing(_) => "invoicing",
             CoreError::Demo(_) => "demo",
             CoreError::BadRequest(_) => "bad_request",
             CoreError::OutOfRange(_) => "out_of_range",

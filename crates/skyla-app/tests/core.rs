@@ -30,9 +30,14 @@ fn statements_come_from_the_ledger() {
 }
 
 #[test]
-fn invoices_take_amounts_from_entries_and_payments_from_settlements() {
+fn invoices_come_from_the_invoicing_module_and_payments_from_settlements() {
     let invoices = core().invoices().unwrap();
-    let get = |n: &str| invoices.iter().find(|i| i.number == n).unwrap();
+    let get = |n: &str| {
+        invoices
+            .iter()
+            .find(|i| i.number.as_deref() == Some(n))
+            .unwrap()
+    };
 
     let brno = get("2026-102");
     assert_eq!(brno.status, "overdue");
@@ -41,6 +46,7 @@ fn invoices_take_amounts_from_entries_and_payments_from_settlements() {
         (brno.gross.minor, brno.paid.minor, brno.open.minor),
         (10_309_200, 5_000_000, 5_309_200)
     );
+    assert_eq!(brno.pack.as_deref(), Some("cz-2026@2026.1"));
 
     let northwind = get("2026-114");
     assert_eq!(northwind.status, "paid");
@@ -50,14 +56,18 @@ fn invoices_take_amounts_from_entries_and_payments_from_settlements() {
         (7_000_000, 1_470_000)
     );
     assert_eq!(northwind.lines[0].base.minor, 7_000_000);
+    assert_eq!(northwind.lines[0].vat.minor, 1_470_000);
 
-    let draft = get("2026-121");
-    assert_eq!(draft.status, "draft");
+    // Drafts have no number until they're issued; they come first.
+    let drafts: Vec<_> = invoices.iter().take(2).collect();
+    assert!(drafts.iter().all(|i| i.number.is_none()));
+    let draft = drafts.iter().find(|i| i.status == "draft").unwrap();
     assert_eq!(
         (draft.base.minor, draft.vat.minor, draft.gross.minor),
         (8_000_000, 1_680_000, 9_680_000)
     );
-    assert_eq!(get("2026-122").scheduled_for.as_deref(), Some("2026-11-01"));
+    let scheduled = drafts.iter().find(|i| i.status == "scheduled").unwrap();
+    assert_eq!(scheduled.scheduled_for.as_deref(), Some("2026-11-01"));
     assert_eq!(invoices.len(), 9);
 }
 
@@ -161,7 +171,7 @@ fn rates_rounding_and_deadlines_come_from_the_rule_pack() {
     let invoices = core.invoices().unwrap();
     let line = &invoices
         .iter()
-        .find(|i| i.number == "2026-114")
+        .find(|i| i.number.as_deref() == Some("2026-114"))
         .unwrap()
         .lines[0];
     assert_eq!(

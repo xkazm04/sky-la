@@ -235,11 +235,13 @@ export type IntegrityDto = {
 
 /**  An issued (or drafted) invoice. */
 export type InvoiceDto = {
-	/**  Invoice number. */
-	number: string,
+	/**  Document id. */
+	id: number,
+	/**  Invoice number, once issued. */
+	number: string | null,
 	/**  Client name. */
 	client: string,
-	/**  `draft`, `scheduled`, `open`, `overdue`, `partPaid`, `paid`. */
+	/**  `draft`, `scheduled`, `open`, `overdue`, `partPaid`, `paid`, `credited`. */
 	status: string,
 	/**  Issue date (posted invoices). */
 	issuedOn: string | null,
@@ -257,14 +259,18 @@ export type InvoiceDto = {
 	vat: MoneyDto,
 	/**  Total. */
 	gross: MoneyDto,
-	/**  Settled so far. */
+	/**  Paid so far. */
 	paid: MoneyDto,
+	/**  Credited by credit notes. */
+	credited: MoneyDto,
 	/**  Still open. */
 	open: MoneyDto,
 	/**  The lines. */
 	lines: InvoiceLineDto[],
 	/**  The posted journal entry, if issued. */
 	entryId: number | null,
+	/**  The rule pack its totals were fixed with, once issued. */
+	pack: string | null,
 };
 
 /**  One invoice line. */
