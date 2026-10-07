@@ -65,6 +65,13 @@ effective_from = "2013-01-01"
 cite = { act = "zdph", section = "§ 47 odst. 1 písm. a)" }
 
 [[value]]
+key = "vat.rate.none"
+kind = "percent"
+value = "0"
+effective_from = "2004-05-01"
+cite = { act = "zdph", section = "§ 6 (osoba, která není plátcem, daň neuplatňuje)" }
+
+[[value]]
 key = "vat.rate.reduced"
 kind = "percent"
 value = "15"
@@ -229,6 +236,14 @@ rows = [
   { row = "2", part = "base", credit_positive = true },
   { row = "2", part = "tax", credit_positive = true },
 ]
+
+[[vat_code]]
+code = "NOVAT"
+name = "Supply by a person not registered for VAT"
+rate = "vat.rate.none"
+cite = { act = "zdph", section = "§ 6" }
+rows = []
+outside_vat = true
 
 [[vat_code]]
 code = "RC21S"

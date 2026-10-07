@@ -1,0 +1,26 @@
+---
+source: crates/skyla-render/tests/render.rs
+expression: "r.text.join(\"\\n--- page ---\\n\")"
+---
+Invoice  2026-001
+Supplier  Customer
+Jana Nováková  Northwind Traders s.r.o.
+Dlouhá 12  Vinohradská 1
+110 00 Praha 1  120 00 Praha 2
+Company ID 25596641  Company ID 27074358
+jana@example.cz  VAT ID CZ27074358
+Fyzická osoba zapsaná v živnostenském rejstříku
+Issue date  Due date
+15 Sep 2026  29 Sep 2026
+Description  Quantity  Unit price  Amount
+Illustration  3.5 h  900.00  3,150.00
+The supplier is not registered for VAT.
+Total  3,150.00 Kč
+Amount due  3,150.00 Kč
+Děkuji za spolupráci.
+Bank account
+CZ65 0800 0000 1920 0014 5399 · BIC GIBACZPX
+Payment reference
+2026001
+QR payment
+Issued with sky-la · computed with cz-2026@2026.1  Page 1

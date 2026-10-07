@@ -48,3 +48,11 @@ all = { level = "warn", priority = -1 }
 dbg_macro = "warn"
 todo = "warn"
 unwrap_used = "warn"
+
+# Dependencies (Typst and Tauri especially) carry heavy debug info; keep line
+# tables for our own crates only, so test binaries and the target dir stay small.
+[profile.dev]
+debug = "line-tables-only"
+
+[profile.dev.package."*"]
+debug = false

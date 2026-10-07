@@ -12,7 +12,10 @@ use skyla_ledger::{
 use skyla_money::{Currency, Money, Rate, vat};
 use skyla_rules::Pack;
 
-use crate::InvoicingError;
+use crate::{
+    InvoicingError,
+    supplier::{self, Supplier},
+};
 
 /// What a document is.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
@@ -214,6 +217,8 @@ pub struct Document {
     pub lines: Vec<Line>,
     /// Totals: stored at issue, computed live for drafts.
     pub totals: Totals,
+    /// The supplier: snapshotted at issue, the current profile for drafts.
+    pub supplier: Option<Supplier>,
 }
 
 /// Where an issued document stands.
@@ -599,7 +604,7 @@ pub fn get(conn: &Connection, pack: &Pack, id: i64) -> Result<Document, Invoicin
         .query_row(
             "SELECT uid, kind, series, status, number, issue_date, tax_point_date, due_date,
                     customer_name, customer_ico, customer_dic, customer_address, currency, note,
-                    related_id, entry_id, pack
+                    related_id, entry_id, pack, supplier
              FROM document WHERE id = ?1",
             [id],
             |r| {
@@ -619,8 +624,21 @@ pub fn get(conn: &Connection, pack: &Pack, id: i64) -> Result<Document, Invoicin
                     dic: r.get(10)?,
                     address: r.get(11)?,
                 };
-                let rest: (String, String, Option<i64>, Option<i64>, Option<String>) =
-                    (r.get(12)?, r.get(13)?, r.get(14)?, r.get(15)?, r.get(16)?);
+                let rest: (
+                    String,
+                    String,
+                    Option<i64>,
+                    Option<i64>,
+                    Option<String>,
+                    Option<String>,
+                ) = (
+                    r.get(12)?,
+                    r.get(13)?,
+                    r.get(14)?,
+                    r.get(15)?,
+                    r.get(16)?,
+                    r.get(17)?,
+                );
                 Ok((a, customer, rest))
             },
         )
@@ -629,7 +647,7 @@ pub fn get(conn: &Connection, pack: &Pack, id: i64) -> Result<Document, Invoicin
     let (
         (uid, kind, series, status, number, issue_date, tax_point_date, due_date),
         customer,
-        (currency, note, related_id, entry_id, pack_id),
+        (currency, note, related_id, entry_id, pack_id, supplier_json),
     ) = head;
     let kind = DocKind::from_db(&kind)?;
     let currency_code = Currency::from_code(&currency)?;
@@ -648,6 +666,11 @@ pub fn get(conn: &Connection, pack: &Pack, id: i64) -> Result<Document, Invoicin
         stored_totals(conn, id, currency_code)?
     } else {
         live
+    };
+    let supplier = match supplier_json {
+        Some(json) => Some(supplier::from_json(&json)?),
+        None if !issued => supplier::supplier(conn)?,
+        None => None,
     };
     Ok(Document {
         id,
@@ -668,6 +691,7 @@ pub fn get(conn: &Connection, pack: &Pack, id: i64) -> Result<Document, Invoicin
         pack: pack_id,
         lines,
         totals,
+        supplier,
     })
 }
 
@@ -828,6 +852,22 @@ pub fn issue(
         if doc.kind == DocKind::Invoice && doc.due_date.is_none() {
             problems.push("an invoice needs a due date".to_owned());
         }
+        if let Some(supplier) = &doc.supplier {
+            for l in &doc.lines {
+                let outside = pack.vat_code(&l.input.vat_code)?.outside_vat;
+                if supplier.vat_payer && outside {
+                    problems.push(format!(
+                        "line {}: {} is for suppliers not registered for VAT",
+                        l.line_no, l.input.vat_code
+                    ));
+                } else if !supplier.vat_payer && !outside {
+                    problems.push(format!(
+                        "line {}: the supplier isn't registered for VAT, so it can't charge {}",
+                        l.line_no, l.input.vat_code
+                    ));
+                }
+            }
+        }
         if !problems.is_empty() {
             return Err(invalid(problems));
         }
@@ -903,7 +943,8 @@ pub fn issue(
         }
         tx.execute(
             "UPDATE document SET status = 'issued', number = ?2, year = ?3, seq = ?4, tax_point_date = ?5,
-                 entry_id = ?6, pack = ?7
+                 entry_id = ?6, pack = ?7,
+                 supplier = (SELECT profile FROM supplier_profile WHERE id = 1)
              WHERE id = ?1",
             params![id, number, year, seq, on, entry_id, pack.provenance()],
         )?;
@@ -1107,7 +1148,8 @@ pub fn import_issued(
         }
         tx.execute(
             "UPDATE document SET status = 'issued', number = ?2, year = ?3, seq = ?4, issue_date = ?5,
-                 tax_point_date = ?6, entry_id = ?7, pack = ?8, imported = 1
+                 tax_point_date = ?6, entry_id = ?7, pack = ?8, imported = 1,
+                 supplier = (SELECT profile FROM supplier_profile WHERE id = 1)
              WHERE id = ?1",
             params![id, number, year, seq, issue_date, on, entry_id, pack.provenance()],
         )?;

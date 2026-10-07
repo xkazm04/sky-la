@@ -139,22 +139,22 @@ fn issuing_numbers_freezes_and_posts_the_invoice() {
         &b.conn,
         &invoice(vec![line("Product design · September", "56", 125_000)]),
     )
-    .unwrap();
-    let draft = get(&b.conn, &b.pack, id).unwrap();
+    .expect("ok");
+    let draft = get(&b.conn, &b.pack, id).expect("ok");
     assert!(!draft.issued);
     assert_eq!(
         (draft.totals.base, draft.totals.vat, draft.totals.gross),
         (czk(7_000_000), czk(1_470_000), czk(8_470_000))
     );
 
-    let issued = issue(&b.conn, &b.pack, &b.accounts, id, "2026-09-15", None).unwrap();
+    let issued = issue(&b.conn, &b.pack, &b.accounts, id, "2026-09-15", None).expect("ok");
     assert_eq!(issued.number, "2026-001");
-    let doc = get(&b.conn, &b.pack, id).unwrap();
+    let doc = get(&b.conn, &b.pack, id).expect("ok");
     assert!(doc.issued);
     assert_eq!(doc.pack.as_deref(), Some("cz-2026@2026.1"));
     assert_eq!(doc.tax_point_date.as_deref(), Some("2026-09-15"));
 
-    let entry = skyla_ledger::get_entry(&b.conn, issued.entry_id.unwrap()).unwrap();
+    let entry = skyla_ledger::get_entry(&b.conn, issued.entry_id.expect("ok")).expect("ok");
     let lines: Vec<(&str, i64, Option<&str>)> = entry
         .lines
         .iter()
@@ -177,35 +177,36 @@ fn issuing_numbers_freezes_and_posts_the_invoice() {
     assert_eq!(entry.source_ref.as_deref(), Some("2026-001"));
     assert_eq!(entry.memo, "Faktura 2026-001 Northwind Traders s.r.o.");
     assert_eq!(
-        state(&b.conn, &b.pack, id).unwrap().settlement,
+        state(&b.conn, &b.pack, id).expect("ok").settlement,
         Settlement::Open
     );
 
     // The next number follows; a new year starts again at 001.
-    let second = create_draft(&b.conn, &invoice(vec![line("Workshop", "1", 2_000_000)])).unwrap();
+    let second =
+        create_draft(&b.conn, &invoice(vec![line("Workshop", "1", 2_000_000)])).expect("ok");
     assert_eq!(
         issue(&b.conn, &b.pack, &b.accounts, second, "2026-09-20", None)
-            .unwrap()
+            .expect("ok")
             .number,
         "2026-002"
     );
     let mut next_year = invoice(vec![line("January", "10", 125_000)]);
     next_year.due_date = Some("2027-01-20".into());
-    let third = create_draft(&b.conn, &next_year).unwrap();
+    let third = create_draft(&b.conn, &next_year).expect("ok");
     assert_eq!(
         issue(&b.conn, &b.pack, &b.accounts, third, "2027-01-04", None)
-            .unwrap()
+            .expect("ok")
             .number,
         "2027-001"
     );
-    assert!(series_gaps(&b.conn, "FV").unwrap().is_empty());
+    assert!(series_gaps(&b.conn, "FV").expect("ok").is_empty());
 }
 
 #[test]
 fn issued_documents_never_change_even_through_raw_sql() {
     let b = books();
-    let id = create_draft(&b.conn, &invoice(vec![line("Design", "1", 100_000)])).unwrap();
-    issue(&b.conn, &b.pack, &b.accounts, id, "2026-09-15", None).unwrap();
+    let id = create_draft(&b.conn, &invoice(vec![line("Design", "1", 100_000)])).expect("ok");
+    issue(&b.conn, &b.pack, &b.accounts, id, "2026-09-15", None).expect("ok");
     assert!(matches!(
         update_draft(&b.conn, id, &invoice(vec![line("Edited", "1", 1)])),
         Err(InvoicingError::Issued(_))
@@ -232,7 +233,7 @@ fn issued_documents_never_change_even_through_raw_sql() {
             "{sql}"
         );
     }
-    let doc = get(&b.conn, &b.pack, id).unwrap();
+    let doc = get(&b.conn, &b.pack, id).expect("ok");
     assert_eq!(doc.customer.name, "Northwind Traders s.r.o.");
     assert_eq!(doc.totals.vat, czk(21_000));
 }
@@ -247,46 +248,47 @@ fn a_full_credit_note_restores_the_balance() {
             line("Illustration", "3", 99_999),
         ]),
     )
-    .unwrap();
-    let issued = issue(&b.conn, &b.pack, &b.accounts, id, "2026-09-15", None).unwrap();
-    let gross = get(&b.conn, &b.pack, id).unwrap().totals.gross.minor();
+    .expect("ok");
+    let issued = issue(&b.conn, &b.pack, &b.accounts, id, "2026-09-15", None).expect("ok");
+    let gross = get(&b.conn, &b.pack, id).expect("ok").totals.gross.minor();
     assert_eq!(balance(&b.conn, "311"), gross);
 
-    let credit = draft_credit_note(&b.conn, &b.pack, id, "OD", None, "Cancelled order").unwrap();
-    let note = issue(&b.conn, &b.pack, &b.accounts, credit, "2026-09-20", None).unwrap();
+    let credit =
+        draft_credit_note(&b.conn, &b.pack, id, "OD", None, "Cancelled order").expect("ok");
+    let note = issue(&b.conn, &b.pack, &b.accounts, credit, "2026-09-20", None).expect("ok");
     assert_eq!(note.number, "OD260001");
     for code in ["311", "602", "343"] {
         assert_eq!(balance(&b.conn, code), 0, "{code}");
     }
-    let s = state(&b.conn, &b.pack, id).unwrap();
+    let s = state(&b.conn, &b.pack, id).expect("ok");
     assert_eq!(s.settlement, Settlement::Credited);
     assert_eq!((s.credited.minor(), s.open.minor()), (gross, 0));
-    let entry = skyla_ledger::get_entry(&b.conn, note.entry_id.unwrap()).unwrap();
+    let entry = skyla_ledger::get_entry(&b.conn, note.entry_id.expect("ok")).expect("ok");
     assert!(entry.memo.starts_with(&format!(
         "Opravný daňový doklad OD260001 k faktuře {}",
         issued.number
     )));
 
     // Nothing is left to credit.
-    let again = draft_credit_note(&b.conn, &b.pack, id, "OD", None, "Twice").unwrap();
-    let err = issue(&b.conn, &b.pack, &b.accounts, again, "2026-09-21", None).unwrap_err();
+    let again = draft_credit_note(&b.conn, &b.pack, id, "OD", None, "Twice").expect("ok");
+    let err = issue(&b.conn, &b.pack, &b.accounts, again, "2026-09-21", None).expect_err("refused");
     assert!(
         matches!(err, InvoicingError::Ledger(skyla_ledger::LedgerError::Rule(ref m)) if m.contains("exceed")),
         "{err:?}"
     );
     // And the failed issue left no trace: the draft is still a draft, numbers unused.
-    assert!(!get(&b.conn, &b.pack, again).unwrap().issued);
-    assert!(series_gaps(&b.conn, "OD").unwrap().is_empty());
+    assert!(!get(&b.conn, &b.pack, again).expect("ok").issued);
+    assert!(series_gaps(&b.conn, "OD").expect("ok").is_empty());
 }
 
 #[test]
 fn payments_and_partial_credits_settle_the_invoice() {
     let b = books();
-    let id = create_draft(&b.conn, &invoice(vec![line("Design", "100", 100_000)])).unwrap();
+    let id = create_draft(&b.conn, &invoice(vec![line("Design", "100", 100_000)])).expect("ok");
     let entry = issue(&b.conn, &b.pack, &b.accounts, id, "2026-09-15", None)
-        .unwrap()
+        .expect("ok")
         .entry_id
-        .unwrap();
+        .expect("ok");
     // 121 000,00 gross. Credit 10 hours, pay 50 000, then the rest.
     let credit = draft_credit_note(
         &b.conn,
@@ -296,17 +298,17 @@ fn payments_and_partial_credits_settle_the_invoice() {
         Some(vec![line("Design (10 h not delivered)", "-10", 100_000)]),
         "",
     )
-    .unwrap();
-    issue(&b.conn, &b.pack, &b.accounts, credit, "2026-09-18", None).unwrap();
+    .expect("ok");
+    issue(&b.conn, &b.pack, &b.accounts, credit, "2026-09-18", None).expect("ok");
     pay(&b, entry, "2026-09-25", 5_000_000);
-    let s = state(&b.conn, &b.pack, id).unwrap();
+    let s = state(&b.conn, &b.pack, id).expect("ok");
     assert_eq!(s.settlement, Settlement::PartlySettled);
     assert_eq!(
         (s.credited.minor(), s.paid.minor(), s.open.minor()),
         (1_210_000, 5_000_000, 5_890_000)
     );
     pay(&b, entry, "2026-09-30", 5_890_000);
-    let s = state(&b.conn, &b.pack, id).unwrap();
+    let s = state(&b.conn, &b.pack, id).expect("ok");
     assert_eq!(s.settlement, Settlement::Paid);
     assert_eq!(s.settled_on.as_deref(), Some("2026-09-30"));
     assert_eq!(balance(&b.conn, "311"), 0);
@@ -319,8 +321,8 @@ fn an_advance_is_taxed_on_receipt_and_deducted_on_the_final_invoice() {
     let mut adv = invoice(vec![line("Advance for the website", "1", 12_100_000)]);
     adv.kind = DocKind::Advance;
     adv.series = "ZF".into();
-    let advance = create_draft(&b.conn, &adv).unwrap();
-    let a = issue(&b.conn, &b.pack, &b.accounts, advance, "2026-08-01", None).unwrap();
+    let advance = create_draft(&b.conn, &adv).expect("ok");
+    let a = issue(&b.conn, &b.pack, &b.accounts, advance, "2026-08-01", None).expect("ok");
     assert_eq!((a.number.as_str(), a.entry_id), ("ZF2026-01", None));
 
     // The bank receives 121 000,00 into advances received.
@@ -334,12 +336,12 @@ fn an_advance_is_taxed_on_receipt_and_deducted_on_the_final_invoice() {
             created_by: "user".into(),
             lines: vec![
                 NewLine::debit("221", czk(12_100_000)),
-                NewLine::credit("324", czk(12_100_000)).unwrap(),
+                NewLine::credit("324", czk(12_100_000)).expect("ok"),
             ],
         },
     )
-    .unwrap();
-    post_entry(&b.conn, receipt, None).unwrap();
+    .expect("ok");
+    post_entry(&b.conn, receipt, None).expect("ok");
 
     // Tax document on the received payment: VAT out of the gross.
     let mut tax = invoice(vec![LineInput {
@@ -351,9 +353,9 @@ fn an_advance_is_taxed_on_receipt_and_deducted_on_the_final_invoice() {
     tax.related_id = Some(advance);
     tax.due_date = None;
     tax.tax_point_date = Some("2026-08-05".into());
-    let tax_doc = create_draft(&b.conn, &tax).unwrap();
-    issue(&b.conn, &b.pack, &b.accounts, tax_doc, "2026-08-06", None).unwrap();
-    let t = get(&b.conn, &b.pack, tax_doc).unwrap();
+    let tax_doc = create_draft(&b.conn, &tax).expect("ok");
+    issue(&b.conn, &b.pack, &b.accounts, tax_doc, "2026-08-06", None).expect("ok");
+    let t = get(&b.conn, &b.pack, tax_doc).expect("ok");
     assert_eq!(
         (t.totals.base.minor(), t.totals.vat.minor()),
         (10_000_000, 2_100_000)
@@ -363,9 +365,9 @@ fn an_advance_is_taxed_on_receipt_and_deducted_on_the_final_invoice() {
     let mut fin = invoice(vec![line("Website", "1", 15_000_000)]);
     fin.advances = vec![tax_doc];
     fin.due_date = Some("2026-09-30".into());
-    let final_id = create_draft(&b.conn, &fin).unwrap();
-    issue(&b.conn, &b.pack, &b.accounts, final_id, "2026-09-15", None).unwrap();
-    let s = state(&b.conn, &b.pack, final_id).unwrap();
+    let final_id = create_draft(&b.conn, &fin).expect("ok");
+    issue(&b.conn, &b.pack, &b.accounts, final_id, "2026-09-15", None).expect("ok");
+    let s = state(&b.conn, &b.pack, final_id).expect("ok");
     assert_eq!(
         (s.gross.minor(), s.advances.minor(), s.open.minor()),
         (18_150_000, 12_100_000, 6_050_000)
@@ -380,7 +382,7 @@ fn an_advance_is_taxed_on_receipt_and_deducted_on_the_final_invoice() {
     let rules: Vec<skyla_ledger::VatRowRule> = b
         .pack
         .vat_code("OUT21")
-        .unwrap()
+        .expect("ok")
         .rows
         .iter()
         .map(|m| skyla_ledger::VatRowRule {
@@ -395,7 +397,7 @@ fn an_advance_is_taxed_on_receipt_and_deducted_on_the_final_invoice() {
         })
         .collect();
     let row1 = |from: &str, to: &str| {
-        let l = skyla_ledger::vat_ledger(&b.conn, from, to, &["343"], &rules).unwrap();
+        let l = skyla_ledger::vat_ledger(&b.conn, from, to, &["343"], &rules).expect("ok");
         (l.rows[0].base.minor(), l.rows[0].tax.minor())
     };
     assert_eq!(row1("2026-08-01", "2026-08-31"), (10_000_000, 2_100_000));
@@ -429,14 +431,14 @@ fn bad_documents_are_refused_with_every_problem_listed() {
 
     let mut late = invoice(vec![line("Design", "1", 100)]);
     late.due_date = Some("2026-09-01".into());
-    let id = create_draft(&b.conn, &late).unwrap();
+    let id = create_draft(&b.conn, &late).expect("ok");
     assert!(
         matches!(issue(&b.conn, &b.pack, &b.accounts, id, "2026-09-15", None), Err(InvoicingError::Invalid(p)) if p[0].contains("due date"))
     );
 
     let mut unknown = invoice(vec![line("Design", "1", 100)]);
     unknown.lines[0].vat_code = "NOPE".into();
-    let id = create_draft(&b.conn, &unknown).unwrap();
+    let id = create_draft(&b.conn, &unknown).expect("ok");
     assert!(matches!(
         issue(&b.conn, &b.pack, &b.accounts, id, "2026-09-15", None),
         Err(InvoicingError::Rules(_))
@@ -459,13 +461,13 @@ fn imported_numbers_with_gaps_are_kept_and_reported() {
                 created_by: "import".into(),
                 lines: vec![
                     NewLine::debit("311", czk(gross)),
-                    NewLine::credit("602", czk(base)).unwrap(),
-                    NewLine::credit("343", czk(gross - base)).unwrap(),
+                    NewLine::credit("602", czk(base)).expect("ok"),
+                    NewLine::credit("343", czk(gross - base)).expect("ok"),
                 ],
             },
         )
-        .unwrap();
-        post_entry(&b.conn, entry, None).unwrap();
+        .expect("ok");
+        post_entry(&b.conn, entry, None).expect("ok");
         let mut input = invoice(vec![line("Imported", "1", base)]);
         input.due_date = Some("2026-03-15".into());
         import_issued(
@@ -477,10 +479,10 @@ fn imported_numbers_with_gaps_are_kept_and_reported() {
             "2026-03-01",
             entry,
         )
-        .unwrap();
+        .expect("ok");
     }
     assert_eq!(
-        series_gaps(&b.conn, "FV").unwrap(),
+        series_gaps(&b.conn, "FV").expect("ok"),
         [
             "2026-001", "2026-002", "2026-003", "2026-004", "2026-005", "2026-006", "2026-008"
         ]
@@ -531,38 +533,120 @@ proptest! {
         let mut issued: Vec<(i64, String)> = Vec::new(); // id, debug snapshot
         for (step, o) in ops.into_iter().enumerate() {
             match o {
-                Op::Draft(q, p) => drafts.push(create_draft(&b.conn, &invoice(vec![line("Work", &q.to_string(), p)])).unwrap()),
+                Op::Draft(q, p) => drafts.push(create_draft(&b.conn, &invoice(vec![line("Work", &q.to_string(), p)])).expect("ok")),
                 Op::Edit => if let Some(&d) = drafts.last() {
-                    update_draft(&b.conn, d, &invoice(vec![line("Edited work", "3", 33_333)])).unwrap();
+                    update_draft(&b.conn, d, &invoice(vec![line("Edited work", "3", 33_333)])).expect("ok");
                 },
                 Op::Issue => if let Some(d) = drafts.pop() {
-                    issue(&b.conn, &b.pack, &b.accounts, d, "2026-09-15", None).unwrap();
-                    let doc = get(&b.conn, &b.pack, d).unwrap();
+                    issue(&b.conn, &b.pack, &b.accounts, d, "2026-09-15", None).expect("ok");
+                    let doc = get(&b.conn, &b.pack, d).expect("ok");
                     if doc.kind == DocKind::Invoice { issued.push((d, format!("{doc:?}"))); }
                 },
                 Op::Credit => if let Some((inv, _)) = issued.get(step % issued.len().max(1)) {
-                    let open = state(&b.conn, &b.pack, *inv).unwrap().open;
-                    let full = get(&b.conn, &b.pack, *inv).unwrap().totals.gross;
+                    let open = state(&b.conn, &b.pack, *inv).expect("ok").open;
+                    let full = get(&b.conn, &b.pack, *inv).expect("ok").totals.gross;
                     if open == full {
-                        let c = draft_credit_note(&b.conn, &b.pack, *inv, "OD", None, "").unwrap();
-                        issue(&b.conn, &b.pack, &b.accounts, c, "2026-09-20", None).unwrap();
+                        let c = draft_credit_note(&b.conn, &b.pack, *inv, "OD", None, "").expect("ok");
+                        issue(&b.conn, &b.pack, &b.accounts, c, "2026-09-20", None).expect("ok");
                     }
                 },
                 Op::Pay => if let Some((inv, _)) = issued.get(step % issued.len().max(1)) {
-                    let s = state(&b.conn, &b.pack, *inv).unwrap();
-                    let entry = get(&b.conn, &b.pack, *inv).unwrap().entry_id.unwrap();
+                    let s = state(&b.conn, &b.pack, *inv).expect("ok");
+                    let entry = get(&b.conn, &b.pack, *inv).expect("ok").entry_id.expect("ok");
                     if s.open.minor() > 0 { pay(&b, entry, "2026-09-25", s.open.minor()); }
                 },
             }
         }
-        prop_assert!(series_gaps(&b.conn, "FV").unwrap().is_empty());
-        prop_assert!(series_gaps(&b.conn, "OD").unwrap().is_empty());
+        prop_assert!(series_gaps(&b.conn, "FV").expect("ok").is_empty());
+        prop_assert!(series_gaps(&b.conn, "OD").expect("ok").is_empty());
         let mut open_total = 0;
         for (id, snapshot) in &issued {
-            prop_assert_eq!(&format!("{:?}", get(&b.conn, &b.pack, *id).unwrap()), snapshot);
-            open_total += state(&b.conn, &b.pack, *id).unwrap().open.minor();
+            prop_assert_eq!(&format!("{:?}", get(&b.conn, &b.pack, *id).expect("ok")), snapshot);
+            open_total += state(&b.conn, &b.pack, *id).expect("ok").open.minor();
         }
         prop_assert_eq!(balance(&b.conn, "311"), open_total);
-        prop_assert!(skyla_ledger::verify_chain(&b.conn).unwrap().is_intact());
+        prop_assert!(skyla_ledger::verify_chain(&b.conn).expect("ok").is_intact());
     }
+}
+
+#[test]
+fn issuing_snapshots_the_supplier_and_asks_for_payment() {
+    use skyla_invoicing::spayd::{document_payment, spayd};
+    let b = books();
+    let mut profile = skyla_invoicing::Supplier {
+        name: "Jana Nováková".into(),
+        ico: Some("25596641".into()),
+        dic: Some("CZ25596641".into()),
+        address: "Dlouhá 12\n110 00 Praha 1".into(),
+        iban: Some("CZ5855000000001265098001".into()),
+        bic: None,
+        email: None,
+        vat_payer: true,
+        registration: "Fyzická osoba zapsaná v živnostenském rejstříku".into(),
+    };
+    skyla_invoicing::set_supplier(&b.conn, &profile).expect("profile");
+    let id = create_draft(&b.conn, &invoice(vec![line("Design", "2", 125_000)])).expect("draft");
+    let draft = get(&b.conn, &b.pack, id).expect("get");
+    assert_eq!(
+        draft.supplier.as_ref().map(|s| s.name.as_str()),
+        Some("Jana Nováková")
+    );
+    assert_eq!(
+        document_payment(&draft, draft.totals.gross),
+        None,
+        "drafts aren't payable"
+    );
+
+    issue(&b.conn, &b.pack, &b.accounts, id, "2026-09-15", None).expect("issue");
+    profile.address = "Nová 1\n602 00 Brno".into();
+    skyla_invoicing::set_supplier(&b.conn, &profile).expect("move");
+
+    let doc = get(&b.conn, &b.pack, id).expect("get");
+    let snapshot = doc.supplier.as_ref().expect("snapshot");
+    assert_eq!(
+        snapshot.address, "Dlouhá 12\n110 00 Praha 1",
+        "issued documents keep the old address"
+    );
+    let open = state(&b.conn, &b.pack, id).expect("state").open;
+    let request = document_payment(&doc, open).expect("payable");
+    assert_eq!(
+        spayd(&request).expect("spayd"),
+        "SPD*1.0*ACC:CZ5855000000001265098001*AM:3025.00*CC:CZK*DT:20260929*RN:Jana Nováková*MSG:Faktura 2026-001*X-VS:2026001"
+    );
+}
+
+#[test]
+fn a_supplier_outside_vat_charges_none() {
+    let b = books();
+    let profile = skyla_invoicing::Supplier {
+        name: "Petr Malý".into(),
+        ico: Some("25596641".into()),
+        dic: None,
+        address: "Krátká 3\n370 01 České Budějovice".into(),
+        iban: None,
+        bic: None,
+        email: None,
+        vat_payer: false,
+        registration: String::new(),
+    };
+    skyla_invoicing::set_supplier(&b.conn, &profile).expect("profile");
+    let charged = create_draft(&b.conn, &invoice(vec![line("Lekce", "2", 50_000)])).expect("draft");
+    let err =
+        issue(&b.conn, &b.pack, &b.accounts, charged, "2026-09-15", None).expect_err("refused");
+    assert!(
+        err.to_string().contains("isn't registered for VAT"),
+        "{err}"
+    );
+
+    let plain = LineInput {
+        vat_code: "NOVAT".into(),
+        ..line("Lekce", "2", 50_000)
+    };
+    let id = create_draft(&b.conn, &invoice(vec![plain])).expect("draft");
+    issue(&b.conn, &b.pack, &b.accounts, id, "2026-09-15", None).expect("issue");
+    let doc = get(&b.conn, &b.pack, id).expect("get");
+    assert_eq!(doc.totals.gross, czk(100_000));
+    assert_eq!(doc.totals.vat, czk(0));
+    assert_eq!(balance(&b.conn, "343"), 0, "no VAT posted");
+    assert_eq!(balance(&b.conn, "602"), -100_000);
 }

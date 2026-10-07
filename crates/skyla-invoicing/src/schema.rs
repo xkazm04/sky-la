@@ -5,9 +5,10 @@ use crate::InvoicingError;
 
 /// The invoicing schema, applied after the ledger's. Issued documents are
 /// frozen by triggers, so even raw SQL can't edit or delete them.
-pub const SCHEMA: &[SchemaStep] = &[SchemaStep {
-    name: "invoicing_documents",
-    sql: r#"
+pub const SCHEMA: &[SchemaStep] = &[
+    SchemaStep {
+        name: "invoicing_documents",
+        sql: r#"
 CREATE TABLE doc_series (
     code        TEXT PRIMARY KEY,
     kind        TEXT NOT NULL CHECK (kind IN ('invoice', 'credit_note', 'advance', 'advance_tax')),
@@ -119,7 +120,20 @@ BEGIN
     WHERE (SELECT kind FROM doc_series WHERE code = NEW.series) IS NOT NEW.kind;
 END;
 "#,
-}];
+    },
+    SchemaStep {
+        name: "invoicing_supplier",
+        sql: r#"
+-- One supplier profile, stored as JSON; issuing snapshots it onto the document.
+CREATE TABLE supplier_profile (
+    id      INTEGER PRIMARY KEY CHECK (id = 1),
+    profile TEXT NOT NULL CHECK (json_valid(profile))
+) STRICT;
+
+ALTER TABLE document ADD COLUMN supplier TEXT CHECK (supplier IS NULL OR json_valid(supplier));
+"#,
+    },
+];
 
 /// Applies [`SCHEMA`] directly (tests and tools); the app migrates it.
 pub fn apply_schema(conn: &Connection) -> Result<(), InvoicingError> {

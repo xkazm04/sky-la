@@ -1,0 +1,27 @@
+---
+source: crates/skyla-render/tests/render.rs
+expression: "r.text.join(\"\\n--- page ---\\n\")"
+---
+Opravný daňový doklad  OD260001
+Opravuje doklad 2026-001
+Dodavatel  Odběratel
+Jana Nováková  Northwind Traders s.r.o.
+Dlouhá 12  Vinohradská 1
+110 00 Praha 1  120 00 Praha 2
+IČO 25596641  IČO 27074358
+DIČ CZ8051234567  DIČ CZ27074358
+jana@example.cz
+Fyzická osoba zapsaná v živnostenském rejstříku
+Datum vystavení  Datum zdanitelného plnění
+20. 9. 2026  20. 9. 2026
+Popis  Množství  Cena za j.  DPH  Základ
+Workshop  −1 ks  12 000,00  21 %  −12 000,00
+Rekapitulace DPH
+Základ  −12 000,00 Kč
+DPH  −2 520,00 Kč
+Sazba  Základ  DPH  Celkem
+Celkem  −14 520,00 Kč
+21 %  −12 000,00  −2 520,00  −14 520,00
+Výše opravy  −14 520,00 Kč
+Workshop zrušen
+Vystaveno v aplikaci sky-la · výpočet podle cz-2026@2026.1  Strana 1

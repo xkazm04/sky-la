@@ -405,6 +405,41 @@ impl Core {
         Ok(out)
     }
 
+    /// Renders a document to PDF in `lang` (`cs` or `en`). The amount due
+    /// (and the QR Platba code) is the total less deducted advances, as on
+    /// the document when it was issued.
+    pub fn invoice_pdf(&self, id: i64, lang: &str) -> Result<DocumentPdfDto, CoreError> {
+        use base64::Engine as _;
+        let lang = match lang {
+            "cs" => skyla_render::Lang::Cs,
+            "en" => skyla_render::Lang::En,
+            other => return Err(CoreError::BadRequest(format!("unknown language {other:?}"))),
+        };
+        let db = self.db();
+        let doc = skyla_invoicing::get(&db, &self.pack, id)?;
+        let st = skyla_invoicing::state(&db, &self.pack, id)?;
+        let related = match doc.related_id {
+            Some(r) => skyla_invoicing::get(&db, &self.pack, r)?.number,
+            None => None,
+        };
+        drop(db);
+        let due = doc.totals.gross.checked_sub(st.advances)?;
+        let rendered = skyla_render::invoice_pdf(&doc, due, related.as_deref(), lang)?;
+        let title = match (doc.kind, lang) {
+            (skyla_invoicing::DocKind::CreditNote, skyla_render::Lang::Cs) => "Opravný doklad",
+            (skyla_invoicing::DocKind::CreditNote, skyla_render::Lang::En) => "Credit note",
+            (_, skyla_render::Lang::Cs) => "Faktura",
+            (_, skyla_render::Lang::En) => "Invoice",
+        };
+        let number = doc.number.unwrap_or_else(|| format!("draft-{id}"));
+        Ok(DocumentPdfDto {
+            file_name: format!("{title} {number}.pdf"),
+            pdf_base64: base64::engine::general_purpose::STANDARD.encode(&rendered.pdf),
+            pages: u32::try_from(rendered.text.len()).unwrap_or(u32::MAX),
+            spayd: rendered.spayd,
+        })
+    }
+
     /// The latest bank import, tied out against the ledger.
     pub fn bank_statement(&self) -> Result<BankStatementDto, CoreError> {
         let import = &self.domain.bank_import;

@@ -7,12 +7,17 @@
 //! invoice they correct, so open amounts and the cash basis stay right.
 //! Advance invoices, the tax document on a received advance and the final
 //! invoice's deduction follow Czech practice.
+//!
+//! WP-12 adds the supplier profile (snapshotted onto each document at issue)
+//! and the SPAYD descriptor behind the QR Platba code.
 
 #![deny(clippy::float_arithmetic)]
 
 mod documents;
 mod error;
 mod schema;
+pub mod spayd;
+mod supplier;
 
 pub use documents::{
     Accounts, Customer, DocKind, DocState, Document, DraftInput, IssueReplay, Issued, Line,
@@ -22,3 +27,4 @@ pub use documents::{
 };
 pub use error::InvoicingError;
 pub use schema::{SCHEMA, apply_schema};
+pub use supplier::{Supplier, set_supplier, supplier, valid_ico};

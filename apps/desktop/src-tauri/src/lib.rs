@@ -3,8 +3,8 @@
 //! signatures and types to `packages/ipc/src/bindings.ts`.
 
 use skyla_app::dto::{
-    AppInfo, BalanceSheetDto, BankStatementDto, CashBasisDto, EgressRunDto, EntityDto,
-    IntegrityDto, InvoiceDto, JournalEntryDto, PeriodDto, ProfitAndLossDto, ProposalDto,
+    AppInfo, BalanceSheetDto, BankStatementDto, CashBasisDto, DocumentPdfDto, EgressRunDto,
+    EntityDto, IntegrityDto, InvoiceDto, JournalEntryDto, PeriodDto, ProfitAndLossDto, ProposalDto,
     RulePackDto, TrialBalanceDto, VatReturnDto,
 };
 use skyla_app::{Core, IpcFailure};
@@ -122,6 +122,13 @@ fn rule_pack(core: State<'_, Core>) -> RulePackDto {
     core.rule_pack()
 }
 
+/// A document rendered to PDF (`cs` or `en`), base64-encoded.
+#[tauri::command]
+#[specta::specta]
+fn invoice_pdf(core: State<'_, Core>, id: i64, lang: String) -> Answer<DocumentPdfDto> {
+    Ok(core.invoice_pdf(id, &lang)?)
+}
+
 /// Every command, for the invoke handler and the TypeScript export.
 pub fn specta_builder<R: Runtime>() -> Builder<R> {
     Builder::<R>::new()
@@ -141,6 +148,7 @@ pub fn specta_builder<R: Runtime>() -> Builder<R> {
             egress_register,
             vat_return,
             rule_pack,
+            invoice_pdf,
         ])
         // Money crosses as integer minor units; `MoneyDto` refuses anything
         // beyond 2^53 - 1, so a JavaScript number holds every value exactly.

@@ -164,3 +164,19 @@ test("the September DPH return comes from the ledger, mapped by the rule pack", 
   );
   await expect(pack).toContainText("Left out on purpose");
 });
+
+test("an invoice exports as a PDF the core rendered, with the QR Platba code", async ({ page }) => {
+  await page.goto("/#/invoices/2026-102");
+  const inspector = page.getByRole("complementary", { name: "Invoice 2026-102" });
+  await inspector.getByRole("button", { name: "PDF" }).click();
+  const downloaded = page.waitForEvent("download");
+  await page.getByRole("menuitem", { name: "Czech PDF" }).click();
+  const file = await downloaded;
+  expect(file.suggestedFilename()).toBe("Faktura 2026-102.pdf");
+  const path = await file.path();
+  const { readFileSync } = await import("node:fs");
+  expect(readFileSync(path).subarray(0, 5).toString()).toBe("%PDF-");
+  await expect(inspector.getByRole("status")).toContainText(
+    "Saved Faktura 2026-102.pdf with the QR Platba code.",
+  );
+});

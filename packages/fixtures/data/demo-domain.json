@@ -9,6 +9,17 @@
     "bankAccount": "221",
     "bankName": "ČSOB Business ··4412"
   },
+  "supplier": {
+    "name": "Jan Novák",
+    "ico": "12345679",
+    "dic": "CZ8001011234",
+    "address": "Korunní 2569/108\n101 00 Praha 10",
+    "iban": "CZ2703000000000123454412",
+    "bic": "CEKOCZPP",
+    "email": "jan@novak.example",
+    "vatPayer": true,
+    "registration": "Fyzická osoba zapsaná v živnostenském rejstříku"
+  },
   "invoices": [
     {
       "number": "2026-041",

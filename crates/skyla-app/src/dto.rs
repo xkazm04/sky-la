@@ -589,6 +589,20 @@ pub struct PackValueDto {
     pub note: Option<String>,
 }
 
+/// A rendered document, ready to save or open.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct DocumentPdfDto {
+    /// Suggested file name, e.g. `Faktura 2026-041.pdf`.
+    pub file_name: String,
+    /// The PDF, base64-encoded.
+    pub pdf_base64: String,
+    /// Pages in the PDF.
+    pub pages: u32,
+    /// The QR Platba payload, if the document asks for a payment.
+    pub spayd: Option<String>,
+}
+
 /// The rule pack in force.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]

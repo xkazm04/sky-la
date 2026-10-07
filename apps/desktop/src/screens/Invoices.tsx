@@ -7,15 +7,18 @@ import {
   FactList,
   Inspector,
   InspectorSection,
+  Menu,
+  MenuItem,
   Popup,
   SegmentedControl,
   type TableColumn,
   type Tone,
   Toolbar,
 } from "@skyla/ui";
-import { Plus } from "lucide-react";
+import { FileDown, Plus } from "lucide-react";
 import { useState } from "react";
 import { useQuery } from "../data";
+import { downloadBase64 } from "../download";
 import { day, money } from "../format";
 import { navigate } from "../router";
 import { InspectorPane } from "../shell/Shell";
@@ -115,9 +118,33 @@ function InvoicePaper({ invoice }: { invoice: InvoiceDto }) {
   );
 }
 
+type Export =
+  | { state: "busy" }
+  | { state: "done"; text: string }
+  | { state: "failed"; text: string };
+
 function InvoiceInspector({ invoice }: { invoice: InvoiceDto }) {
   const s = invoiceStatus(invoice);
   const posted = invoice.entryId !== null;
+  const [exported, setExported] = useState<{ id: number; result: Export } | null>(null);
+  const result = exported?.id === invoice.id ? exported.result : null;
+
+  const exportPdf = async (lang: string) => {
+    setExported({ id: invoice.id, result: { state: "busy" } });
+    try {
+      const pdf = await unwrap(commands.invoicePdf(invoice.id, lang));
+      downloadBase64(pdf.fileName, pdf.pdfBase64, "application/pdf");
+      const qr = pdf.spayd ? " with the QR Platba code" : "";
+      setExported({
+        id: invoice.id,
+        result: { state: "done", text: `Saved ${pdf.fileName}${qr}.` },
+      });
+    } catch (e) {
+      const text = e instanceof Error ? e.message : String(e);
+      setExported({ id: invoice.id, result: { state: "failed", text } });
+    }
+  };
+
   return (
     <InspectorPane>
       <Inspector
@@ -127,13 +154,19 @@ function InvoiceInspector({ invoice }: { invoice: InvoiceDto }) {
         accessory={<Badge tone={s.tone}>{s.label}</Badge>}
         actions={
           <>
-            <Popup
-              label="Download PDF"
-              placement="top end"
-              trigger={<Button variant="plain">PDF</Button>}
+            <Menu
+              label="Export PDF"
+              placement="bottom end"
+              onAction={(lang) => void exportPdf(lang)}
+              trigger={
+                <Button variant="plain" icon={FileDown} isDisabled={result?.state === "busy"}>
+                  PDF
+                </Button>
+              }
             >
-              <DemoNote>PDF with QR Platba and ISDOC export arrive with WP-13 and WP-14.</DemoNote>
-            </Popup>
+              <MenuItem id="cs">Czech PDF</MenuItem>
+              <MenuItem id="en">English PDF</MenuItem>
+            </Menu>
             {posted && invoice.status !== "paid" && (
               <Button variant="primary" onPress={() => navigate("bank")}>
                 Match a payment
@@ -167,6 +200,14 @@ function InvoiceInspector({ invoice }: { invoice: InvoiceDto }) {
             ]}
           />
         </InspectorSection>
+        {result && result.state !== "busy" && (
+          <p
+            role="status"
+            className={`mt-3 text-footnote ${result.state === "failed" ? "text-negative-ink" : "text-ink-secondary"}`}
+          >
+            {result.text}
+          </p>
+        )}
         {posted && (
           <p className="mt-3 text-footnote text-ink-secondary">
             Posted as journal entry #{invoice.entryId}. Amounts come from the ledger.

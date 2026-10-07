@@ -45,6 +45,9 @@ pub fn canonical_requests() -> Vec<(&'static str, Value)> {
         ("proposals", json!({})),
         ("egress_register", json!({})),
         ("rule_pack", json!({})),
+        // The overdue invoice, for the PDF export in both languages.
+        ("invoice_pdf", json!({ "id": 6, "lang": "cs" })),
+        ("invoice_pdf", json!({ "id": 6, "lang": "en" })),
     ];
     for (from, to) in [
         ("2026-07-01", "2026-07-31"),
@@ -99,6 +102,16 @@ pub fn dispatch(core: &Core, command: &str, args: &Value) -> Result<Value, IpcFa
         "proposals" => to_value(core.proposals()),
         "egress_register" => to_value(Ok(core.egress_register())),
         "rule_pack" => to_value(Ok(core.rule_pack())),
+        "invoice_pdf" => {
+            let id = args
+                .get("id")
+                .and_then(Value::as_i64)
+                .ok_or_else(|| IpcFailure {
+                    code: "bad_request".into(),
+                    message: "missing argument id".into(),
+                })?;
+            to_value(core.invoice_pdf(id, arg(args, "lang")?))
+        }
         "vat_return" => to_value(core.vat_return(arg(args, "from")?, arg(args, "to")?)),
         "profit_and_loss" => to_value(core.profit_and_loss(arg(args, "from")?, arg(args, "to")?)),
         "cash_basis" => to_value(core.cash_basis(arg(args, "from")?, arg(args, "to")?)),

@@ -13,3 +13,19 @@ publish = false
 workspace = true
 
 [dependencies]
+qrcode = { version = "0.14.1", default-features = false, features = ["svg"] }
+skyla-invoicing = { version = "0.1.0", path = "../skyla-invoicing" }
+skyla-money = { version = "0.1.0", path = "../skyla-money" }
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.151"
+thiserror = "2.0.21"
+typst = "=0.15.1"
+typst-layout = "=0.15.1"
+typst-pdf = "=0.15.1"
+
+[dev-dependencies]
+insta = "1.49.0"
+rqrr = "0.11.0"
+rusqlite = { version = "0.40.2", features = ["bundled"] }
+skyla-ledger = { version = "0.1.0", path = "../skyla-ledger" }
+skyla-rules = { version = "0.1.0", path = "../skyla-rules" }

@@ -202,6 +202,21 @@ pub(crate) fn seed_invoicing(
         "DZ{YYYY}-{NN}",
         "Daňové doklady k přijatým platbám",
     )?;
+    let s = &domain.supplier;
+    skyla_invoicing::set_supplier(
+        conn,
+        &skyla_invoicing::Supplier {
+            name: s.name.clone(),
+            ico: s.ico.clone(),
+            dic: s.dic.clone(),
+            address: s.address.clone(),
+            iban: s.iban.clone(),
+            bic: s.bic.clone(),
+            email: s.email.clone(),
+            vat_payer: s.vat_payer,
+            registration: s.registration.clone(),
+        },
+    )?;
     let accounts = Accounts::cz();
     let mut scheduled = HashMap::new();
     for doc in &domain.invoices {
@@ -265,6 +280,8 @@ pub(crate) fn seed_invoicing(
 pub(crate) struct Domain {
     /// The entity.
     pub(crate) entity: DomainEntity,
+    /// The supplier profile printed on documents.
+    pub(crate) supplier: DomainSupplier,
     /// Invoice documents (issued ones link to the ledger by number).
     pub(crate) invoices: Vec<DomainInvoice>,
     /// The latest bank import.
@@ -286,6 +303,21 @@ pub(crate) struct DomainEntity {
     pub(crate) as_of: String,
     pub(crate) bank_account: String,
     pub(crate) bank_name: String,
+}
+
+/// The supplier profile.
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub(crate) struct DomainSupplier {
+    pub(crate) name: String,
+    pub(crate) ico: Option<String>,
+    pub(crate) dic: Option<String>,
+    pub(crate) address: String,
+    pub(crate) iban: Option<String>,
+    pub(crate) bic: Option<String>,
+    pub(crate) email: Option<String>,
+    pub(crate) vat_payer: bool,
+    pub(crate) registration: String,
 }
 
 /// An invoice document.

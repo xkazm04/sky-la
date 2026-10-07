@@ -22,6 +22,9 @@ pub enum CoreError {
     /// The rule pack refused or lacks a value.
     #[error(transparent)]
     Rules(#[from] skyla_rules::RulesError),
+    /// Rendering a document failed.
+    #[error(transparent)]
+    Render(#[from] skyla_render::RenderError),
     /// An amount doesn't fit a JavaScript number exactly.
     #[error("amount {0} is beyond the range the webview can show exactly")]
     OutOfRange(i64),
@@ -45,6 +48,7 @@ impl From<CoreError> for IpcFailure {
             CoreError::Money(_) => "money",
             CoreError::Rules(_) => "rules",
             CoreError::Invoicing(_) => "invoicing",
+            CoreError::Render(_) => "render",
             CoreError::Demo(_) => "demo",
             CoreError::BadRequest(_) => "bad_request",
             CoreError::OutOfRange(_) => "out_of_range",

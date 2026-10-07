@@ -17,6 +17,19 @@ ignore = [
     # proc-macro reached only through specta (the IPC type exporter, WP-09).
     # Revisit when specta 2 leaves release candidates.
     { id = "RUSTSEC-2024-0436", reason = "build-time proc-macro of specta; no maintained replacement upstream yet" },
+    # The next six arrive with Typst 0.15 (skyla-render, WP-12). The renderer
+    # only ever compiles our own template, a JSON file we write and a QR SVG we
+    # generate; it never sees user-supplied XML, bibliographies or syntax dumps.
+    # Revisit on every Typst upgrade.
+    # quick-xml 0.38 (DoS on hostile XML) is reached only through hayagriva's
+    # CSL/bibliography parser, which our template never calls.
+    { id = "RUSTSEC-2026-0194", reason = "quick-xml via Typst's bibliography support; we never parse untrusted XML with it" },
+    { id = "RUSTSEC-2026-0195", reason = "quick-xml via Typst's bibliography support; we never parse untrusted XML with it" },
+    # "Unmaintained" notices, not vulnerabilities; no upgrade exists.
+    { id = "RUSTSEC-2025-0141", reason = "bincode 1.3.3 via syntect (Typst's syntax highlighting), declared complete by its authors" },
+    { id = "RUSTSEC-2026-0206", reason = "rustybuzz is Typst's text shaper; no replacement until Typst moves" },
+    { id = "RUSTSEC-2026-0192", reason = "ttf-parser is Typst's font parser; no replacement until Typst moves" },
+    { id = "RUSTSEC-2024-0320", reason = "yaml-rust via syntect (Typst's syntax highlighting); our template has no code blocks" },
 ]
 
 [licenses]

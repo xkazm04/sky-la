@@ -36,6 +36,8 @@ export const commands = {
 	vatReturn: (from: string, to: string) => typedError<VatReturnDto, IpcFailure>(__TAURI_INVOKE("vat_return", { from, to })),
 	/**  The rule pack in force, with citations. */
 	rulePack: () => __TAURI_INVOKE<RulePackDto>("rule_pack"),
+	/**  A document rendered to PDF (`cs` or `en`), base64-encoded. */
+	invoicePdf: (id: number, lang: string) => typedError<DocumentPdfDto, IpcFailure>(__TAURI_INVOKE("invoice_pdf", { id, lang })),
 };
 
 /* Types */
@@ -167,6 +169,18 @@ export type CashBasisTotalDto = {
 	taxTreatment: string,
 	/**  The total. */
 	amount: MoneyDto,
+};
+
+/**  A rendered document, ready to save or open. */
+export type DocumentPdfDto = {
+	/**  Suggested file name, e.g. `Faktura 2026-041.pdf`. */
+	fileName: string,
+	/**  The PDF, base64-encoded. */
+	pdfBase64: string,
+	/**  Pages in the PDF. */
+	pages: number,
+	/**  The QR Platba payload, if the document asks for a payment. */
+	spayd: string | null,
 };
 
 /**  One run in the egress register. */

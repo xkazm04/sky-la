@@ -202,6 +202,10 @@ pub struct VatCode {
     pub cite: Cite,
     /// The rows it feeds.
     pub rows: Vec<RowMapping>,
+    /// Outside VAT altogether (a supplier not registered for VAT): no tax,
+    /// no return rows.
+    #[serde(default)]
+    pub outside_vat: bool,
 }
 
 /// A public holiday: a fixed `MM-DD` date or an offset from Easter Sunday.
@@ -390,8 +394,12 @@ impl Pack {
                     code.rate
                 )),
             }
-            if code.rows.is_empty() {
-                problems.push(format!("{what}: maps to no rows"));
+            match (code.outside_vat, code.rows.is_empty()) {
+                (false, true) => problems.push(format!("{what}: maps to no rows")),
+                (true, false) => {
+                    problems.push(format!("{what}: is outside VAT but maps to return rows"));
+                }
+                _ => {}
             }
         }
 

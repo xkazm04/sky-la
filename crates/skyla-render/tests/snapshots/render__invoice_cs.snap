@@ -1,0 +1,34 @@
+---
+source: crates/skyla-render/tests/render.rs
+expression: "r.text.join(\"\\n--- page ---\\n\")"
+---
+Faktura – daňový doklad  2026-001
+Dodavatel  Odběratel
+Jana Nováková  Northwind Traders s.r.o.
+Dlouhá 12  Vinohradská 1
+110 00 Praha 1  120 00 Praha 2
+IČO 25596641  IČO 27074358
+DIČ CZ8051234567  DIČ CZ27074358
+jana@example.cz
+Fyzická osoba zapsaná v živnostenském rejstříku
+Datum vystavení  Datum zdanitelného plnění  Datum splatnosti
+15. 9. 2026  15. 9. 2026  29. 9. 2026
+Popis  Množství  Cena za j.  DPH  Základ
+Návrh produktu · září  56 h  1 250,00  21 %  70 000,00
+Workshop  1 ks  12 000,00  21 %  12 000,00
+Odborná publikace  2 ks  450,00  12 %  900,00
+Rekapitulace DPH
+Základ  82 900,00 Kč
+DPH  17 328,00 Kč
+Sazba  Základ  DPH  Celkem
+Celkem  100 228,00 Kč
+12 %  900,00  108,00  1 008,00
+21 %  82 000,00  17 220,00  99 220,00
+K úhradě  100 228,00 Kč
+Děkuji za spolupráci.
+Bankovní účet
+CZ65 0800 0000 1920 0014 5399 · BIC GIBACZPX
+Variabilní symbol
+2026001
+QR Platba
+Vystaveno v aplikaci sky-la · výpočet podle cz-2026@2026.1  Strana 1
