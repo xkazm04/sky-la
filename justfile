@@ -47,6 +47,10 @@ check-desktop:
     cargo clippy -p skyla-desktop --all-targets --locked -- -D warnings
     cargo test -p skyla-desktop --locked
 
+# Performance acceptance (release build): WP-07 trial balance over 100 000 entries < 200 ms.
+bench:
+    cargo test -p skyla-ledger --release --locked --test projections -- --ignored --nocapture
+
 # Supply-chain and licence policy for third-party crates.
 deny:
     cargo deny check

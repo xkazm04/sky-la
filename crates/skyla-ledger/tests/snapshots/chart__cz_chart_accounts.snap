@@ -9,10 +9,10 @@ expression: "accounts.join(\"\\n\")"
 082      asset     credit contra leaf Accumulated depreciation of tangible movable assets
 112      asset     debit  leaf Materials in stock
 132      asset     debit  leaf Goods in stock
-211      asset     debit  leaf Cash
-221      asset     debit  leaf Bank accounts
+211      asset     debit  cash leaf Cash
+221      asset     debit  cash leaf Bank accounts
 231      liability credit leaf Short-term bank loans
-261      asset     debit  leaf Cash in transit
+261      asset     debit  cash leaf Cash in transit
 311      asset     debit  leaf Trade receivables
 314      asset     debit  leaf Advances paid
 321      liability credit leaf Trade payables

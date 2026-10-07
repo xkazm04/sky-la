@@ -115,6 +115,10 @@ END;
         name: "ledger_close_reversal_chain",
         sql: CLOSE_SQL,
     },
+    SchemaStep {
+        name: "ledger_cash_settlement",
+        sql: SETTLEMENT_SQL,
+    },
 ];
 
 /// Step 2: the journal. Invariants I1–I4 and I7 are re-checked here on every
@@ -351,6 +355,72 @@ BEGIN
       AND (NEW.chain_hash IS NULL OR length(NEW.chain_hash) <> 64 OR NEW.chain_hash GLOB '*[^0-9a-f]*');
     SELECT RAISE(ABORT, 'ledger: a chain hash is set only when an entry is posted')
     WHERE NEW.status = 'draft' AND NEW.chain_hash IS NOT NULL;
+END;
+"#;
+
+/// Step 4: cash accounts and settlement links, for the cash basis (WP-07).
+const SETTLEMENT_SQL: &str = r#"
+ALTER TABLE account ADD COLUMN cash INTEGER NOT NULL DEFAULT 0 CHECK (cash IN (0, 1));
+
+CREATE TRIGGER account_cash_rules BEFORE INSERT ON account
+BEGIN
+    -- Sub-accounts inherit kind (checked above) and the cash flag (below).
+    SELECT RAISE(ABORT, 'ledger: only asset accounts can be cash accounts')
+    WHERE NEW.parent_id IS NULL AND NEW.cash = 1 AND (NEW.kind <> 'asset' OR NEW.contra = 1);
+    SELECT RAISE(ABORT, 'ledger: a sub-account has its parent''s cash flag')
+    WHERE NEW.parent_id IS NOT NULL AND (SELECT cash FROM account WHERE id = NEW.parent_id) IS NOT NEW.cash;
+END;
+
+CREATE TRIGGER account_cash_fixed BEFORE UPDATE OF cash ON account
+WHEN OLD.cash IS NOT NEW.cash
+BEGIN
+    SELECT RAISE(ABORT, 'ledger: an account''s cash flag can''t change');
+END;
+
+-- A payment (or offset) entry settles part or all of an earlier posted entry,
+-- such as an invoice. Links are written with the payment's draft and freeze
+-- when it posts. A reversal carries the negated links of the entry it reverses.
+CREATE TABLE settlement (
+    id                INTEGER PRIMARY KEY,
+    cash_entry_id     INTEGER NOT NULL REFERENCES journal_entry (id) ON DELETE CASCADE,
+    settled_entry_id  INTEGER NOT NULL REFERENCES journal_entry (id),
+    amount_func_minor INTEGER NOT NULL CHECK (amount_func_minor <> 0),
+    UNIQUE (cash_entry_id, settled_entry_id),
+    CHECK (cash_entry_id <> settled_entry_id)
+) STRICT;
+CREATE INDEX settlement_settled ON settlement (settled_entry_id);
+
+-- Covering indexes for the projections: a report reads the posted entries in
+-- a date range and their postings without touching the tables.
+CREATE INDEX journal_entry_posted_by_date ON journal_entry (status, entry_date, posted_seq, chain_hash);
+CREATE INDEX posting_entry_amounts ON posting (entry_id, account_id, amount_func_minor);
+
+CREATE TRIGGER settlement_rules BEFORE INSERT ON settlement
+BEGIN
+    SELECT RAISE(ABORT, 'ledger: settlement links are added while the paying entry is a draft')
+    WHERE (SELECT status FROM journal_entry WHERE id = NEW.cash_entry_id) IS NOT 'draft';
+    SELECT RAISE(ABORT, 'ledger: only a posted entry can be settled')
+    WHERE (SELECT status FROM journal_entry WHERE id = NEW.settled_entry_id) IS NOT 'posted';
+    SELECT RAISE(ABORT, 'ledger: a settlement is positive; only a reversal carries negative ones')
+    WHERE NEW.amount_func_minor < 0
+      AND (SELECT source_kind FROM journal_entry WHERE id = NEW.cash_entry_id) <> 'reversal';
+    SELECT RAISE(ABORT, 'ledger: settlements can''t exceed the settled entry''s gross amount')
+    WHERE (SELECT coalesce(sum(s.amount_func_minor), 0) FROM settlement s
+           JOIN journal_entry e ON e.id = s.cash_entry_id
+           WHERE s.settled_entry_id = NEW.settled_entry_id) + NEW.amount_func_minor
+        > (SELECT coalesce(sum(amount_func_minor), 0) FROM posting
+           WHERE entry_id = NEW.settled_entry_id AND amount_func_minor > 0);
+END;
+
+CREATE TRIGGER settlement_frozen BEFORE UPDATE ON settlement
+BEGIN
+    SELECT RAISE(ABORT, 'ledger: settlement links are immutable; delete them with the draft or reverse the payment');
+END;
+
+CREATE TRIGGER settlement_kept_once_posted BEFORE DELETE ON settlement
+WHEN (SELECT status FROM journal_entry WHERE id = OLD.cash_entry_id) = 'posted'
+BEGIN
+    SELECT RAISE(ABORT, 'ledger: a posted entry''s settlement links are immutable; reverse it instead');
 END;
 "#;
 

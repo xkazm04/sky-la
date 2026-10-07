@@ -369,8 +369,12 @@ pub fn delete_draft(conn: &Connection, id: i64) -> Result<(), LedgerError> {
     if entry.status == EntryStatus::Posted {
         return Err(LedgerError::AlreadyPosted(id));
     }
-    conn.execute("DELETE FROM journal_entry WHERE id = ?1", [id])?;
-    Ok(())
+    atomically(conn, |tx| {
+        tx.execute("DELETE FROM settlement WHERE cash_entry_id = ?1", [id])?;
+        tx.execute("DELETE FROM posting WHERE entry_id = ?1", [id])?;
+        tx.execute("DELETE FROM journal_entry WHERE id = ?1", [id])?;
+        Ok(())
+    })
 }
 
 /// Posts a draft, making it final. Returns its gapless posting sequence number.
@@ -439,6 +443,37 @@ pub fn post_entry(
         )?;
         Ok(seq)
     })
+}
+
+/// Records that the draft `cash_entry_id` (a payment, receipt or offset)
+/// settles `amount` of the posted entry `settled_entry_id` (an invoice, say).
+/// The cash basis recognises the settled entry's income and expense, pro
+/// rata, on the payment's date. Links freeze when the payment posts; together
+/// they can't exceed the settled entry's gross (its debit total).
+pub fn link_settlement(
+    conn: &Connection,
+    cash_entry_id: i64,
+    settled_entry_id: i64,
+    amount: Money,
+) -> Result<(), LedgerError> {
+    let cash = get_entry(conn, cash_entry_id)?;
+    if cash.status == EntryStatus::Posted {
+        return Err(LedgerError::AlreadyPosted(cash_entry_id));
+    }
+    let settled = get_entry(conn, settled_entry_id)?;
+    if settled.status != EntryStatus::Posted {
+        return Err(LedgerError::NotPosted(settled_entry_id));
+    }
+    if amount.currency() != functional_currency(conn)? || amount.is_zero() || amount.is_negative() {
+        return Err(LedgerError::InvalidEntry(
+            "a settlement is a positive amount in the functional currency".into(),
+        ));
+    }
+    conn.execute(
+        "INSERT INTO settlement (cash_entry_id, settled_entry_id, amount_func_minor) VALUES (?1, ?2, ?3)",
+        params![cash_entry_id, settled_entry_id, amount.minor()],
+    )?;
+    Ok(())
 }
 
 /// A posted reversal.
@@ -521,6 +556,12 @@ pub fn reverse_entry(
     };
     atomically(conn, |tx| {
         let entry_id = insert_draft(tx, &reversal, Some(id))?;
+        // A reversed payment un-settles what it settled.
+        tx.execute(
+            "INSERT INTO settlement (cash_entry_id, settled_entry_id, amount_func_minor)
+             SELECT ?1, settled_entry_id, -amount_func_minor FROM settlement WHERE cash_entry_id = ?2",
+            params![entry_id, id],
+        )?;
         let posted_seq = post_entry(tx, entry_id, None)?;
         Ok(Reversal {
             entry_id,

@@ -1,4 +1,4 @@
-//! Double-entry ledger kernel: accounts, journal entries, invariants, periods and projections.
+//! Double-entry ledger kernel: accounts, journal entries, invariants, periods, the hash chain and projections.
 //!
 //! Jurisdiction-neutral: a chart of accounts arrives as data ([`ChartSpec`],
 //! e.g. `rules/cz/chart.toml`) and the kernel validates and stores it. The
@@ -15,6 +15,7 @@ mod chart;
 mod close;
 mod error;
 mod posting;
+mod reports;
 mod schema;
 
 pub use accounts::{
@@ -33,7 +34,12 @@ pub use close::{
 pub use error::LedgerError;
 pub use posting::{
     Entry, EntryStatus, Line, NewEntry, NewLine, Reversal, SourceKind, create_draft, delete_draft,
-    functional_currency, get_entry, is_iso_date, post_entry, reverse_entry,
+    functional_currency, get_entry, is_iso_date, link_settlement, post_entry, reverse_entry,
     set_functional_currency,
+};
+pub use reports::{
+    BalanceSheet, CashBasis, CashBasisLine, CashBasisTotal, ProfitAndLoss, Snapshot, StatementLine,
+    TrialBalance, TrialBalanceRow, VatCodeTotals, VatFormRow, VatLedger, VatPart, VatRowRule,
+    balance_sheet, cash_basis, profit_and_loss, trial_balance, vat_ledger,
 };
 pub use schema::{SCHEMA, SchemaStep, apply_schema};

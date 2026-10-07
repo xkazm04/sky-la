@@ -31,6 +31,8 @@ pub(crate) struct ChainRecord {
     pub posted_at: String,
     pub reverses_uid: Option<String>,
     pub lines: Vec<ChainLine>,
+    /// Settlement links: (settled entry uid, functional amount), by uid.
+    pub settlements: Vec<(String, i64)>,
 }
 
 #[derive(Debug)]
@@ -95,6 +97,11 @@ pub(crate) fn link(previous: &[u8; 32], record: &ChainRecord) -> [u8; 32] {
         e.opt(line.tax_treatment.as_deref());
         e.text(&line.memo);
     }
+    e.int(record.settlements.len() as i64);
+    for (uid, amount) in &record.settlements {
+        e.text(uid);
+        e.int(*amount);
+    }
     e.0.finalize().into()
 }
 
@@ -135,13 +142,24 @@ fn for_each_record(
     let mut stmt = conn.prepare(&format!(
         "{RECORD_SQL} WHERE {filter} ORDER BY {order}, p.line_no"
     ))?;
+    let mut links = conn.prepare_cached(
+        "SELECT se.uid, s.amount_func_minor FROM settlement s
+         JOIN journal_entry se ON se.id = s.settled_entry_id
+         WHERE s.cash_entry_id = ?1 ORDER BY se.uid",
+    )?;
+    let mut emit = |id: i64, mut record: ChainRecord, hash: Option<String>| {
+        record.settlements = links
+            .query_map([id], |r| Ok((r.get(0)?, r.get(1)?)))?
+            .collect::<Result<_, _>>()?;
+        visit(record, hash)
+    };
     let mut rows = stmt.query(args)?;
     let mut current: Option<(i64, ChainRecord, Option<String>)> = None;
     while let Some(row) = rows.next()? {
         let id: i64 = row.get(0)?;
         if current.as_ref().is_none_or(|(cid, _, _)| *cid != id) {
-            if let Some((_, record, hash)) = current.take()
-                && !visit(record, hash)?
+            if let Some((done, record, hash)) = current.take()
+                && !emit(done, record, hash)?
             {
                 return Ok(());
             }
@@ -157,6 +175,7 @@ fn for_each_record(
                 posted_at: row.get::<_, Option<String>>(9)?.unwrap_or_default(),
                 reverses_uid: row.get(10)?,
                 lines: Vec::new(),
+                settlements: Vec::new(),
             };
             current = Some((id, record, row.get(11)?));
         }
@@ -176,8 +195,8 @@ fn for_each_record(
             });
         }
     }
-    if let Some((_, record, hash)) = current {
-        visit(record, hash)?;
+    if let Some((done, record, hash)) = current {
+        emit(done, record, hash)?;
     }
     Ok(())
 }

@@ -122,6 +122,10 @@ pub struct AccountSpec {
     /// A contra account runs against its kind's usual side (accumulated depreciation).
     #[serde(default)]
     pub contra: bool,
+    /// Cash or a bank account. Cash-basis projections (*daňová evidence*)
+    /// recognise income and expense when money moves through these.
+    #[serde(default)]
+    pub cash: bool,
 }
 
 /// A user-facing category mapped onto an account.
@@ -224,6 +228,12 @@ impl ChartSpec {
                 )),
                 _ => {}
             }
+            if account.cash && (account.kind != AccountKind::Asset || account.contra) {
+                problems.push(format!(
+                    "account {}: only asset accounts can be cash accounts",
+                    account.code
+                ));
+            }
         }
         let parents: HashSet<&str> = self
             .accounts
@@ -243,6 +253,10 @@ impl ChartSpec {
                             account.code
                         ));
                     }
+                    Some(p) if p.cash != account.cash => problems.push(format!(
+                        "account {}: the cash flag must match parent {parent}",
+                        account.code
+                    )),
                     Some(_) => {}
                 }
             }

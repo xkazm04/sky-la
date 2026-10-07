@@ -3367,6 +3367,7 @@ dependencies = [
  "proptest",
  "rusqlite",
  "serde",
+ "serde_json",
  "sha2 0.11.0",
  "skyla-money",
  "thiserror 2.0.21",

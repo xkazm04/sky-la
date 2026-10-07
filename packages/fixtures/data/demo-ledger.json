@@ -1,0 +1,1046 @@
+{
+  "$comment": "Golden journal for the design-canvas entity (Jan Novák, OSVČ). Amounts are signed minor units: debit positive, credit negative. Reproduces the Q2 and Q3 2026 profit and loss on the canvas (direction C). Generated once; edit by hand only with the tests that check it.",
+  "entity": "Jan Novák",
+  "functional_currency": "CZK",
+  "periods": [
+    ["2026-04-01", "2026-06-30"],
+    ["2026-07-01", "2026-09-30"],
+    ["2026-10-01", "2026-12-31"]
+  ],
+  "entries": [
+    {
+      "key": "opening",
+      "date": "2026-04-01",
+      "source": "opening",
+      "memo": "Počáteční stavy",
+      "lines": [
+        {
+          "account": "221",
+          "amount_minor": 25000000
+        },
+        {
+          "account": "211",
+          "amount_minor": 500000
+        },
+        {
+          "account": "491",
+          "amount_minor": -25500000
+        }
+      ]
+    },
+    {
+      "key": "inv-2026-041",
+      "date": "2026-04-10",
+      "source": "invoice",
+      "memo": "Faktura 2026-041 Northwind Traders",
+      "lines": [
+        {
+          "account": "311",
+          "amount_minor": 14520000
+        },
+        {
+          "account": "602",
+          "amount_minor": -12000000,
+          "vat_code": "OUT21"
+        },
+        {
+          "account": "343",
+          "amount_minor": -2520000,
+          "vat_code": "OUT21"
+        }
+      ],
+      "ref": "2026-041"
+    },
+    {
+      "key": "inv-2026-058",
+      "date": "2026-05-12",
+      "source": "invoice",
+      "memo": "Faktura 2026-058 Acme Analytics",
+      "lines": [
+        {
+          "account": "311",
+          "amount_minor": 18150000
+        },
+        {
+          "account": "602",
+          "amount_minor": -15000000,
+          "vat_code": "OUT21"
+        },
+        {
+          "account": "343",
+          "amount_minor": -3150000,
+          "vat_code": "OUT21"
+        }
+      ],
+      "ref": "2026-058"
+    },
+    {
+      "key": "inv-2026-073",
+      "date": "2026-06-15",
+      "source": "invoice",
+      "memo": "Faktura 2026-073 Studio Brno",
+      "lines": [
+        {
+          "account": "311",
+          "amount_minor": 14641000
+        },
+        {
+          "account": "602",
+          "amount_minor": -12100000,
+          "vat_code": "OUT21"
+        },
+        {
+          "account": "343",
+          "amount_minor": -2541000,
+          "vat_code": "OUT21"
+        }
+      ],
+      "ref": "2026-073"
+    },
+    {
+      "key": "rcpt-041",
+      "date": "2026-04-28",
+      "source": "bank",
+      "memo": "Platba Northwind Traders",
+      "lines": [
+        {
+          "account": "221",
+          "amount_minor": 14520000
+        },
+        {
+          "account": "311",
+          "amount_minor": -14520000
+        }
+      ],
+      "settles": [
+        {
+          "entry": "inv-2026-041",
+          "amount_minor": 14520000
+        }
+      ]
+    },
+    {
+      "key": "rcpt-058",
+      "date": "2026-06-02",
+      "source": "bank",
+      "memo": "Platba Acme Analytics",
+      "lines": [
+        {
+          "account": "221",
+          "amount_minor": 18150000
+        },
+        {
+          "account": "311",
+          "amount_minor": -18150000
+        }
+      ],
+      "settles": [
+        {
+          "entry": "inv-2026-058",
+          "amount_minor": 18150000
+        }
+      ]
+    },
+    {
+      "key": "rcpt-073",
+      "date": "2026-07-06",
+      "source": "bank",
+      "memo": "Platba Studio Brno",
+      "lines": [
+        {
+          "account": "221",
+          "amount_minor": 14641000
+        },
+        {
+          "account": "311",
+          "amount_minor": -14641000
+        }
+      ],
+      "settles": [
+        {
+          "entry": "inv-2026-073",
+          "amount_minor": 14641000
+        }
+      ]
+    },
+    {
+      "key": "sup-kv-q2",
+      "date": "2026-05-31",
+      "source": "invoice",
+      "memo": "Přijatá faktura KV-2026-05 Kvasnička Dev",
+      "lines": [
+        {
+          "account": "518",
+          "amount_minor": 2800000,
+          "vat_code": "IN21"
+        },
+        {
+          "account": "343",
+          "amount_minor": 588000,
+          "vat_code": "IN21"
+        },
+        {
+          "account": "321",
+          "amount_minor": -3388000
+        }
+      ],
+      "ref": "KV-2026-05"
+    },
+    {
+      "key": "sup-mh-q2",
+      "date": "2026-06-20",
+      "source": "invoice",
+      "memo": "Přijatá faktura MH-14 Marek Horák",
+      "lines": [
+        {
+          "account": "518",
+          "amount_minor": 3120000
+        },
+        {
+          "account": "321",
+          "amount_minor": -3120000
+        }
+      ],
+      "ref": "MH-14"
+    },
+    {
+      "key": "sup-pf-q2",
+      "date": "2026-06-25",
+      "source": "invoice",
+      "memo": "Přijatá faktura PF-2026-0612 Pixelfarm s.r.o.",
+      "lines": [
+        {
+          "account": "518",
+          "amount_minor": 1550000,
+          "vat_code": "IN21"
+        },
+        {
+          "account": "343",
+          "amount_minor": 325500,
+          "vat_code": "IN21"
+        },
+        {
+          "account": "321",
+          "amount_minor": -1875500
+        }
+      ],
+      "ref": "PF-2026-0612"
+    },
+    {
+      "key": "pay-kv-q2",
+      "date": "2026-06-10",
+      "source": "bank",
+      "memo": "Úhrada Kvasnička Dev",
+      "lines": [
+        {
+          "account": "321",
+          "amount_minor": 3388000
+        },
+        {
+          "account": "221",
+          "amount_minor": -3388000
+        }
+      ],
+      "settles": [
+        {
+          "entry": "sup-kv-q2",
+          "amount_minor": 3388000
+        }
+      ]
+    },
+    {
+      "key": "pay-mh-q2",
+      "date": "2026-06-30",
+      "source": "bank",
+      "memo": "Úhrada Marek Horák",
+      "lines": [
+        {
+          "account": "321",
+          "amount_minor": 3120000
+        },
+        {
+          "account": "221",
+          "amount_minor": -3120000
+        }
+      ],
+      "settles": [
+        {
+          "entry": "sup-mh-q2",
+          "amount_minor": 3120000
+        }
+      ]
+    },
+    {
+      "key": "pay-pf-q2",
+      "date": "2026-07-08",
+      "source": "bank",
+      "memo": "Úhrada Pixelfarm s.r.o.",
+      "lines": [
+        {
+          "account": "321",
+          "amount_minor": 1875500
+        },
+        {
+          "account": "221",
+          "amount_minor": -1875500
+        }
+      ],
+      "settles": [
+        {
+          "entry": "sup-pf-q2",
+          "amount_minor": 1875500
+        }
+      ]
+    },
+    {
+      "key": "aws-04",
+      "date": "2026-04-03",
+      "source": "bank",
+      "memo": "AWS duben",
+      "lines": [
+        {
+          "account": "518",
+          "amount_minor": 1100000
+        },
+        {
+          "account": "221",
+          "amount_minor": -1100000
+        }
+      ]
+    },
+    {
+      "key": "google-05",
+      "date": "2026-05-03",
+      "source": "bank",
+      "memo": "Google Workspace",
+      "lines": [
+        {
+          "account": "518",
+          "amount_minor": 170000
+        },
+        {
+          "account": "221",
+          "amount_minor": -170000
+        }
+      ]
+    },
+    {
+      "key": "figma-06",
+      "date": "2026-06-03",
+      "source": "bank",
+      "memo": "Figma",
+      "lines": [
+        {
+          "account": "518",
+          "amount_minor": 80000
+        },
+        {
+          "account": "221",
+          "amount_minor": -80000
+        }
+      ]
+    },
+    {
+      "key": "mat-04",
+      "date": "2026-04-18",
+      "source": "bank",
+      "memo": "Tiskárna a toner",
+      "lines": [
+        {
+          "account": "501",
+          "amount_minor": 620000,
+          "vat_code": "IN21"
+        },
+        {
+          "account": "343",
+          "amount_minor": 130200,
+          "vat_code": "IN21"
+        },
+        {
+          "account": "221",
+          "amount_minor": -750200
+        }
+      ]
+    },
+    {
+      "key": "mat-06",
+      "date": "2026-06-09",
+      "source": "bank",
+      "memo": "Klávesnice a myš",
+      "lines": [
+        {
+          "account": "501",
+          "amount_minor": 365000,
+          "vat_code": "IN21"
+        },
+        {
+          "account": "343",
+          "amount_minor": 76650,
+          "vat_code": "IN21"
+        },
+        {
+          "account": "221",
+          "amount_minor": -441650
+        }
+      ]
+    },
+    {
+      "key": "travel-05",
+      "date": "2026-05-20",
+      "source": "manual",
+      "memo": "Cesta Brno",
+      "lines": [
+        {
+          "account": "512",
+          "amount_minor": 430000
+        },
+        {
+          "account": "211",
+          "amount_minor": -430000
+        }
+      ]
+    },
+    {
+      "key": "travel-06",
+      "date": "2026-06-17",
+      "source": "manual",
+      "memo": "Cesta Ostrava",
+      "lines": [
+        {
+          "account": "512",
+          "amount_minor": 360000
+        },
+        {
+          "account": "211",
+          "amount_minor": -360000
+        }
+      ]
+    },
+    {
+      "key": "ent-06",
+      "date": "2026-06-12",
+      "source": "manual",
+      "memo": "Oběd s klientem",
+      "lines": [
+        {
+          "account": "513",
+          "amount_minor": 215000
+        },
+        {
+          "account": "211",
+          "amount_minor": -215000
+        }
+      ]
+    },
+    {
+      "key": "fee-05",
+      "date": "2026-05-05",
+      "source": "bank",
+      "memo": "Správní poplatek",
+      "lines": [
+        {
+          "account": "538",
+          "amount_minor": 100000
+        },
+        {
+          "account": "221",
+          "amount_minor": -100000
+        }
+      ]
+    },
+    {
+      "key": "bank-q2",
+      "date": "2026-06-30",
+      "source": "bank",
+      "memo": "Bankovní poplatky Q2",
+      "lines": [
+        {
+          "account": "568",
+          "amount_minor": 62000
+        },
+        {
+          "account": "221",
+          "amount_minor": -62000
+        }
+      ]
+    },
+    {
+      "key": "member-04",
+      "date": "2026-04-22",
+      "source": "bank",
+      "memo": "Členství v profesní komoře",
+      "lines": [
+        {
+          "account": "548",
+          "amount_minor": 250000
+        },
+        {
+          "account": "221",
+          "amount_minor": -250000
+        }
+      ]
+    },
+    {
+      "key": "inv-2026-089",
+      "date": "2026-07-14",
+      "source": "invoice",
+      "memo": "Faktura 2026-089 Northwind Traders",
+      "lines": [
+        {
+          "account": "311",
+          "amount_minor": 16940000
+        },
+        {
+          "account": "602",
+          "amount_minor": -14000000,
+          "vat_code": "OUT21"
+        },
+        {
+          "account": "343",
+          "amount_minor": -2940000,
+          "vat_code": "OUT21"
+        }
+      ],
+      "ref": "2026-089"
+    },
+    {
+      "key": "inv-2026-097",
+      "date": "2026-08-11",
+      "source": "invoice",
+      "memo": "Faktura 2026-097 Acme Analytics",
+      "lines": [
+        {
+          "account": "311",
+          "amount_minor": 19360000
+        },
+        {
+          "account": "602",
+          "amount_minor": -16000000,
+          "vat_code": "OUT21"
+        },
+        {
+          "account": "343",
+          "amount_minor": -3360000,
+          "vat_code": "OUT21"
+        }
+      ],
+      "ref": "2026-097"
+    },
+    {
+      "key": "inv-2026-102",
+      "date": "2026-08-25",
+      "source": "invoice",
+      "memo": "Faktura 2026-102 Studio Brno",
+      "lines": [
+        {
+          "account": "311",
+          "amount_minor": 10309200
+        },
+        {
+          "account": "602",
+          "amount_minor": -8520000,
+          "vat_code": "OUT21"
+        },
+        {
+          "account": "343",
+          "amount_minor": -1789200,
+          "vat_code": "OUT21"
+        }
+      ],
+      "ref": "2026-102"
+    },
+    {
+      "key": "inv-2026-114",
+      "date": "2026-09-15",
+      "source": "invoice",
+      "memo": "Faktura 2026-114 Northwind Traders",
+      "lines": [
+        {
+          "account": "311",
+          "amount_minor": 8470000
+        },
+        {
+          "account": "602",
+          "amount_minor": -7000000,
+          "vat_code": "OUT21"
+        },
+        {
+          "account": "343",
+          "amount_minor": -1470000,
+          "vat_code": "OUT21"
+        }
+      ],
+      "ref": "2026-114"
+    },
+    {
+      "key": "rcpt-089",
+      "date": "2026-08-04",
+      "source": "bank",
+      "memo": "Platba Northwind Traders",
+      "lines": [
+        {
+          "account": "221",
+          "amount_minor": 16940000
+        },
+        {
+          "account": "311",
+          "amount_minor": -16940000
+        }
+      ],
+      "settles": [
+        {
+          "entry": "inv-2026-089",
+          "amount_minor": 16940000
+        }
+      ]
+    },
+    {
+      "key": "rcpt-097",
+      "date": "2026-09-08",
+      "source": "bank",
+      "memo": "Platba Acme Analytics",
+      "lines": [
+        {
+          "account": "221",
+          "amount_minor": 19360000
+        },
+        {
+          "account": "311",
+          "amount_minor": -19360000
+        }
+      ],
+      "settles": [
+        {
+          "entry": "inv-2026-097",
+          "amount_minor": 19360000
+        }
+      ]
+    },
+    {
+      "key": "rcpt-102a",
+      "date": "2026-09-20",
+      "source": "bank",
+      "memo": "Platba Studio Brno (část)",
+      "lines": [
+        {
+          "account": "221",
+          "amount_minor": 5000000
+        },
+        {
+          "account": "311",
+          "amount_minor": -5000000
+        }
+      ],
+      "settles": [
+        {
+          "entry": "inv-2026-102",
+          "amount_minor": 5000000
+        }
+      ]
+    },
+    {
+      "key": "rcpt-114",
+      "date": "2026-09-29",
+      "source": "bank",
+      "memo": "Platba Northwind Traders",
+      "lines": [
+        {
+          "account": "221",
+          "amount_minor": 8470000
+        },
+        {
+          "account": "311",
+          "amount_minor": -8470000
+        }
+      ],
+      "settles": [
+        {
+          "entry": "inv-2026-114",
+          "amount_minor": 8470000
+        }
+      ]
+    },
+    {
+      "key": "other-income",
+      "date": "2026-09-10",
+      "source": "bank",
+      "memo": "Vratka pojistného",
+      "lines": [
+        {
+          "account": "221",
+          "amount_minor": 130000
+        },
+        {
+          "account": "648",
+          "amount_minor": -130000
+        }
+      ]
+    },
+    {
+      "key": "sup-kv-q3",
+      "date": "2026-08-31",
+      "source": "invoice",
+      "memo": "Přijatá faktura KV-2026-08 Kvasnička Dev",
+      "lines": [
+        {
+          "account": "518",
+          "amount_minor": 4600000,
+          "vat_code": "IN21"
+        },
+        {
+          "account": "343",
+          "amount_minor": 966000,
+          "vat_code": "IN21"
+        },
+        {
+          "account": "321",
+          "amount_minor": -5566000
+        }
+      ],
+      "ref": "KV-2026-08"
+    },
+    {
+      "key": "sup-mh-q3",
+      "date": "2026-09-18",
+      "source": "invoice",
+      "memo": "Přijatá faktura MH-19 Marek Horák",
+      "lines": [
+        {
+          "account": "518",
+          "amount_minor": 3850000
+        },
+        {
+          "account": "321",
+          "amount_minor": -3850000
+        }
+      ],
+      "ref": "MH-19"
+    },
+    {
+      "key": "sup-pf-q3",
+      "date": "2026-09-22",
+      "source": "invoice",
+      "memo": "Přijatá faktura PF-2026-0917 Pixelfarm s.r.o.",
+      "lines": [
+        {
+          "account": "518",
+          "amount_minor": 2160000,
+          "vat_code": "IN21"
+        },
+        {
+          "account": "343",
+          "amount_minor": 453600,
+          "vat_code": "IN21"
+        },
+        {
+          "account": "321",
+          "amount_minor": -2613600
+        }
+      ],
+      "ref": "PF-2026-0917"
+    },
+    {
+      "key": "pay-kv-q3",
+      "date": "2026-09-09",
+      "source": "bank",
+      "memo": "Úhrada Kvasnička Dev",
+      "lines": [
+        {
+          "account": "321",
+          "amount_minor": 5566000
+        },
+        {
+          "account": "221",
+          "amount_minor": -5566000
+        }
+      ],
+      "settles": [
+        {
+          "entry": "sup-kv-q3",
+          "amount_minor": 5566000
+        }
+      ]
+    },
+    {
+      "key": "pay-mh-q3",
+      "date": "2026-09-30",
+      "source": "bank",
+      "memo": "Úhrada Marek Horák",
+      "lines": [
+        {
+          "account": "321",
+          "amount_minor": 3850000
+        },
+        {
+          "account": "221",
+          "amount_minor": -3850000
+        }
+      ],
+      "settles": [
+        {
+          "entry": "sup-mh-q3",
+          "amount_minor": 3850000
+        }
+      ]
+    },
+    {
+      "key": "aws-09",
+      "date": "2026-09-03",
+      "source": "bank",
+      "memo": "AWS září (490 EUR, přenesená daňová povinnost)",
+      "lines": [
+        {
+          "account": "518",
+          "amount_minor": 49000,
+          "currency": "EUR",
+          "functional_minor": 1231860,
+          "fx_rate": "25.140",
+          "vat_code": "RC21S"
+        },
+        {
+          "account": "221",
+          "amount_minor": -1231860
+        },
+        {
+          "account": "343",
+          "amount_minor": 258691,
+          "vat_code": "RC21S",
+          "memo": "Nárok na odpočet"
+        },
+        {
+          "account": "343",
+          "amount_minor": -258691,
+          "vat_code": "RC21S",
+          "memo": "Daň na výstupu"
+        }
+      ]
+    },
+    {
+      "key": "google-08",
+      "date": "2026-08-03",
+      "source": "bank",
+      "memo": "Google Workspace",
+      "lines": [
+        {
+          "account": "518",
+          "amount_minor": 158140
+        },
+        {
+          "account": "221",
+          "amount_minor": -158140
+        }
+      ]
+    },
+    {
+      "key": "figma-09",
+      "date": "2026-09-03",
+      "source": "bank",
+      "memo": "Figma",
+      "lines": [
+        {
+          "account": "518",
+          "amount_minor": 80000
+        },
+        {
+          "account": "221",
+          "amount_minor": -80000
+        }
+      ]
+    },
+    {
+      "key": "figma-09-dup",
+      "date": "2026-09-04",
+      "source": "bank",
+      "memo": "Figma (duplicitně)",
+      "lines": [
+        {
+          "account": "518",
+          "amount_minor": 80000
+        },
+        {
+          "account": "221",
+          "amount_minor": -80000
+        }
+      ]
+    },
+    {
+      "key": "figma-09-rev",
+      "date": "2026-09-05",
+      "source": "reversal",
+      "memo": "Storno duplicitní platby Figma",
+      "lines": [
+        {
+          "account": "518",
+          "amount_minor": -80000
+        },
+        {
+          "account": "221",
+          "amount_minor": 80000
+        }
+      ],
+      "reverses": "figma-09-dup"
+    },
+    {
+      "key": "alza-07",
+      "date": "2026-07-14",
+      "source": "bank",
+      "memo": "Notebook Alza",
+      "lines": [
+        {
+          "account": "501",
+          "amount_minor": 2891700,
+          "vat_code": "IN21"
+        },
+        {
+          "account": "343",
+          "amount_minor": 607257,
+          "vat_code": "IN21"
+        },
+        {
+          "account": "221",
+          "amount_minor": -3498957
+        }
+      ]
+    },
+    {
+      "key": "monitor-08",
+      "date": "2026-08-19",
+      "source": "bank",
+      "memo": "Monitor",
+      "lines": [
+        {
+          "account": "501",
+          "amount_minor": 990000,
+          "vat_code": "IN21"
+        },
+        {
+          "account": "343",
+          "amount_minor": 207900,
+          "vat_code": "IN21"
+        },
+        {
+          "account": "221",
+          "amount_minor": -1197900
+        }
+      ]
+    },
+    {
+      "key": "cables-09",
+      "date": "2026-09-12",
+      "source": "bank",
+      "memo": "Kabely a redukce",
+      "lines": [
+        {
+          "account": "501",
+          "amount_minor": 248300,
+          "vat_code": "IN21"
+        },
+        {
+          "account": "343",
+          "amount_minor": 52143,
+          "vat_code": "IN21"
+        },
+        {
+          "account": "221",
+          "amount_minor": -300443
+        }
+      ]
+    },
+    {
+      "key": "travel-08",
+      "date": "2026-08-27",
+      "source": "manual",
+      "memo": "Cesta Praha–Brno",
+      "lines": [
+        {
+          "account": "512",
+          "amount_minor": 620000
+        },
+        {
+          "account": "211",
+          "amount_minor": -620000
+        }
+      ]
+    },
+    {
+      "key": "ent-09",
+      "date": "2026-09-16",
+      "source": "manual",
+      "memo": "Večeře s klientem",
+      "lines": [
+        {
+          "account": "513",
+          "amount_minor": 340000
+        },
+        {
+          "account": "211",
+          "amount_minor": -340000
+        }
+      ]
+    },
+    {
+      "key": "fee-08",
+      "date": "2026-08-05",
+      "source": "bank",
+      "memo": "Správní poplatek",
+      "lines": [
+        {
+          "account": "538",
+          "amount_minor": 120000
+        },
+        {
+          "account": "221",
+          "amount_minor": -120000
+        }
+      ]
+    },
+    {
+      "key": "bank-q3",
+      "date": "2026-09-30",
+      "source": "bank",
+      "memo": "Bankovní poplatky Q3",
+      "lines": [
+        {
+          "account": "568",
+          "amount_minor": 85000
+        },
+        {
+          "account": "221",
+          "amount_minor": -85000
+        }
+      ]
+    },
+    {
+      "key": "member-07",
+      "date": "2026-07-22",
+      "source": "bank",
+      "memo": "Konference",
+      "lines": [
+        {
+          "account": "548",
+          "amount_minor": 240000
+        },
+        {
+          "account": "221",
+          "amount_minor": -240000
+        }
+      ]
+    },
+    {
+      "key": "draw-08",
+      "date": "2026-08-01",
+      "source": "bank",
+      "memo": "Výběr podnikatele",
+      "lines": [
+        {
+          "account": "491",
+          "amount_minor": 6000000
+        },
+        {
+          "account": "221",
+          "amount_minor": -6000000
+        }
+      ]
+    }
+  ]
+}

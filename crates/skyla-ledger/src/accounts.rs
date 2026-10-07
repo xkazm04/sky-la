@@ -26,6 +26,8 @@ pub struct Account {
     pub is_leaf: bool,
     /// Inactive accounts keep their history but take no new postings.
     pub active: bool,
+    /// Cash or a bank account (drives the cash basis).
+    pub cash: bool,
 }
 
 /// A category as stored.
@@ -95,8 +97,7 @@ pub(crate) fn treatment_from(column: usize, s: &str) -> rusqlite::Result<TaxTrea
     })
 }
 
-const ACCOUNT_COLUMNS: &str =
-    "a.code, a.name_cs, a.name_en, a.kind, a.normal_side, a.contra, p.code, a.is_leaf, a.active";
+const ACCOUNT_COLUMNS: &str = "a.code, a.name_cs, a.name_en, a.kind, a.normal_side, a.contra, p.code, a.is_leaf, a.active, a.cash";
 
 fn account_from_row(row: &Row<'_>) -> rusqlite::Result<Account> {
     Ok(Account {
@@ -109,6 +110,7 @@ fn account_from_row(row: &Row<'_>) -> rusqlite::Result<Account> {
         parent_code: row.get(6)?,
         is_leaf: row.get(7)?,
         active: row.get(8)?,
+        cash: row.get(9)?,
     })
 }
 
@@ -133,8 +135,8 @@ pub fn seed_chart(conn: &Connection, spec: &ChartSpec) -> Result<(), LedgerError
             None => None,
         };
         tx.execute(
-            "INSERT INTO account (code, name_cs, name_en, kind, normal_side, contra, parent_id) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
-            params![account.code, account.name_cs, account.name_en, account.kind.as_str(), account.normal_side.as_str(), account.contra, parent_id],
+            "INSERT INTO account (code, name_cs, name_en, kind, normal_side, contra, parent_id, cash) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)",
+            params![account.code, account.name_cs, account.name_en, account.kind.as_str(), account.normal_side.as_str(), account.contra, parent_id, account.cash],
         )?;
     }
     for category in &spec.categories {
@@ -193,8 +195,8 @@ pub fn add_analytic_account(
     let parent_id = account_id(conn, parent)?;
     let code = format!("{parent}.{suffix}");
     conn.execute(
-        "INSERT INTO account (code, name_cs, name_en, kind, normal_side, contra, parent_id)
-         SELECT ?1, ?2, ?3, kind, normal_side, contra, id FROM account WHERE id = ?4",
+        "INSERT INTO account (code, name_cs, name_en, kind, normal_side, contra, parent_id, cash)
+         SELECT ?1, ?2, ?3, kind, normal_side, contra, id, cash FROM account WHERE id = ?4",
         params![code, name_cs, name_en, parent_id],
     )?;
     let account = conn.query_row(

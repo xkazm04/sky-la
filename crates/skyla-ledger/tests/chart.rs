@@ -62,11 +62,12 @@ fn the_seeded_chart_matches_its_snapshot() {
         .iter()
         .map(|a| {
             format!(
-                "{:<8} {:<9} {:<6} {}{} {}",
+                "{:<8} {:<9} {:<6} {}{}{} {}",
                 a.code,
                 format!("{:?}", a.kind).to_lowercase(),
                 format!("{:?}", a.normal_side).to_lowercase(),
                 if a.contra { "contra " } else { "" },
+                if a.cash { "cash " } else { "" },
                 if a.is_leaf { "leaf" } else { "group" },
                 a.name_en
             )
@@ -200,17 +201,33 @@ fn the_database_enforces_account_structure_even_for_raw_sql() {
     assert!(attempt("INSERT INTO account (code, name_cs, name_en, kind, normal_side) VALUES ('22', 'x', 'x', 'asset', 'debit')").contains("exactly three digits"));
     assert!(
         attempt(
-            "INSERT INTO account (code, name_cs, name_en, kind, normal_side, parent_id)
-         SELECT '221.001', 'x', 'x', 'liability', 'credit', id FROM account WHERE code = '221'"
+            "INSERT INTO account (code, name_cs, name_en, kind, normal_side, parent_id, cash)
+         SELECT '221.001', 'x', 'x', 'liability', 'credit', id, 1 FROM account WHERE code = '221'"
         )
         .contains("parent's kind and normal side")
     );
     assert!(
         attempt(
-            "INSERT INTO account (code, name_cs, name_en, kind, normal_side, parent_id)
-         SELECT '311.001', 'x', 'x', 'asset', 'debit', id FROM account WHERE code = '221'"
+            "INSERT INTO account (code, name_cs, name_en, kind, normal_side, parent_id, cash)
+         SELECT '311.001', 'x', 'x', 'asset', 'debit', id, 1 FROM account WHERE code = '221'"
         )
         .contains("parent's code, a dot and a suffix")
+    );
+    // WP-07: cash accounts are assets, sub-accounts share the flag, and it never changes.
+    assert!(
+        attempt(
+            "INSERT INTO account (code, name_cs, name_en, kind, normal_side, parent_id)
+         SELECT '221.001', 'x', 'x', 'asset', 'debit', id FROM account WHERE code = '221'"
+        )
+        .contains("parent's cash flag")
+    );
+    assert!(
+        attempt("INSERT INTO account (code, name_cs, name_en, kind, normal_side, cash) VALUES ('232', 'x', 'x', 'liability', 'credit', 1)")
+            .contains("only asset accounts can be cash")
+    );
+    assert!(
+        attempt("UPDATE account SET cash = 0 WHERE code = '221'")
+            .contains("cash flag can't change")
     );
     assert!(
         attempt("UPDATE account SET kind = 'expense' WHERE code = '221'").contains("can't change")

@@ -75,6 +75,7 @@ name_cs = "Pokladna"
 name_en = "Cash"
 kind = "asset"
 normal_side = "debit"
+cash = true
 
 [[account]]
 code = "221"
@@ -82,6 +83,7 @@ name_cs = "Peněžní prostředky na účtech"
 name_en = "Bank accounts"
 kind = "asset"
 normal_side = "debit"
+cash = true
 
 [[account]]
 code = "231"
@@ -96,6 +98,7 @@ name_cs = "Peníze na cestě"
 name_en = "Cash in transit"
 kind = "asset"
 normal_side = "debit"
+cash = true
 
 # ── Class 3: receivables and payables ──────────────────────────────────────
 [[account]]
