@@ -31,9 +31,9 @@ export function Inspector({
     >
       <header className="flex items-start gap-3 px-4 pt-4 pb-3">
         <div className="min-w-0 flex-1">
-          <h2 className="truncate font-semibold text-title">{title}</h2>
+          <h2 className="line-clamp-2 font-semibold text-title">{title}</h2>
           {subtitle && (
-            <p className="mt-0.5 truncate text-footnote text-ink-secondary">{subtitle}</p>
+            <p className="mt-0.5 line-clamp-2 text-footnote text-ink-secondary">{subtitle}</p>
           )}
         </div>
         {accessory}

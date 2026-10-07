@@ -8,6 +8,8 @@ const executablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE || undefined;
 export default defineConfig({
   testDir: "e2e",
   outputDir: "test-results",
+  // Committed screenshot baselines (WP-10), one set per appearance. Update with `just e2e-update`.
+  snapshotPathTemplate: "{testDir}/baseline/{arg}{ext}",
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,

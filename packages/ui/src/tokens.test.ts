@@ -106,12 +106,20 @@ describe("design tokens", () => {
       });
 
       it.each(["positive", "negative", "warning", "info", "neutral"])(
-        "%s pills are readable on their tint",
+        "%s pills are readable on their tint, on a plain and a selected row",
         (tone) => {
-          const tint = over(color(`--sk-${tone}-tint`), surface);
-          expect(contrast(color(`--sk-${tone}-ink`), tint)).toBeGreaterThanOrEqual(4.5);
+          for (const row of [surface, over(color("--sk-accent-tint"), surface)]) {
+            const tint = over(color(`--sk-${tone}-tint`), row);
+            expect(contrast(color(`--sk-${tone}-ink`), tint)).toBeGreaterThanOrEqual(4.5);
+          }
         },
       );
+
+      it("keeps capsule text readable inside a selected row", () => {
+        const row = over(color("--sk-accent-tint"), surface);
+        const capsule = over(color("--sk-capsule"), row);
+        expect(contrast(color("--sk-ink-secondary"), capsule)).toBeGreaterThanOrEqual(4.5);
+      });
     });
   }
 });

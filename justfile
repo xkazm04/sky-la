@@ -32,6 +32,10 @@ test:
 e2e:
     pnpm --filter @skyla/desktop e2e
 
+# Regenerate the committed screenshot baselines (apps/desktop/e2e/baseline) after an intended UI change.
+e2e-update:
+    pnpm --filter @skyla/desktop exec playwright test screens --update-snapshots=all
+
 # The UI in a plain browser on the fixture-backed mock transport.
 dev-web:
     pnpm --filter @skyla/desktop dev:web

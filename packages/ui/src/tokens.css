@@ -85,14 +85,14 @@
   --sk-hairline-strong: rgba(255, 255, 255, 0.14);
 
   --sk-ink: #f2f2f5;
-  --sk-ink-secondary: #adadb4;
+  --sk-ink-secondary: #b4b4bb;
   --sk-ink-tertiary: #8e8e95;
   --sk-ink-disabled: #5c5c62;
 
   --sk-accent: #1f72de;
   --sk-accent-hover: #2b7ee8;
   --sk-accent-ink: #7db3ff;
-  --sk-accent-tint: rgba(59, 142, 245, 0.24);
+  --sk-accent-tint: rgba(59, 142, 245, 0.2);
   --sk-on-accent: #ffffff;
   --sk-focus: rgba(106, 169, 255, 0.55);
 
@@ -103,7 +103,7 @@
   --sk-negative-fill: #d63b22;
   --sk-warning-ink: #ffc46b;
   --sk-warning-tint: rgba(255, 159, 10, 0.18);
-  --sk-info-ink: #86b9ff;
+  --sk-info-ink: #94c2ff;
   --sk-info-tint: rgba(10, 132, 255, 0.22);
   --sk-neutral-ink: #c7c7cc;
   --sk-neutral-tint: rgba(255, 255, 255, 0.08);

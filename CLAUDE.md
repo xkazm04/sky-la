@@ -39,6 +39,7 @@ just ci             # the gate: fmt check, clippy -D warnings, biome, typecheck,
 just test           # Rust + web unit tests
 just dev-web        # UI in a plain browser on the fixture-backed mock transport (http://localhost:1420)
 just e2e            # Playwright against dev-web; screenshots land in apps/desktop/test-results/
+just e2e-update     # regenerate the committed screenshot baselines after an intended UI change
 just bench          # release-build performance acceptance (WP-07: trial balance over 100k entries < 200 ms)
 just recordings     # re-record the core's IPC answers that the mock transport replays (after changing core output)
 just bindings       # regenerate packages/ipc/src/bindings.ts from the Tauri commands (needs WebKitGTK)
