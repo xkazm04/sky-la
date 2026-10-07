@@ -368,3 +368,5 @@ A macOS 26-era native three-pane language, applied on every platform with platfo
 - **Reconciliation** (from D): bank lines as the list, candidates with an explained score breakdown, and the posting and its effects in the inspector, with statement tie-out in the subtitle.
 
 **Dark appearance is first-class from WP-08** (D-017): re-stepped greys and elevation, not an inversion. Every colour is a token with a light and a dark value, and every screen's Playwright check runs in both appearances.
+
+**Implementation (WP-08):** tokens live in `packages/ui/src/tokens.css` (`--sk-*` custom properties, mapped into Tailwind's theme); primitives in `packages/ui` are built on React Aria Components. A unit test holds every text token to WCAG AA on the surfaces it sits on, in both appearances, which moved three values off the canvas: accent fill `#0A6AE0` (the canvas `#0A74F0` gives white text 4.4:1), accent ink `#0A5BC2`, and secondary ink `#66666B`, so footnotes on the window backdrop pass. Geist (OFL) ships as the off-Mac fallback. The gallery at `#/gallery` shows everything; Playwright runs axe on it in both appearances.

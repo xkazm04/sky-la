@@ -1,9 +1,62 @@
 /**
- * sky-la design system (direction A, "Tahoe"; spec in docs/design/DESIGN.md §6).
- * Tokens and primitives land in WP-08.
+ * sky-la design system: direction A, "Tahoe" (docs/design/DESIGN.md §6).
+ * Tokens live in `tokens.css` (import `@skyla/ui/tokens.css` after Tailwind);
+ * primitives are built on React Aria Components for keyboard and screen
+ * reader behaviour.
  */
 
-/** Joins class names, skipping falsy entries. */
-export function cx(...parts: Array<string | false | null | undefined>): string {
-  return parts.filter(Boolean).join(" ");
-}
+export {
+  type Appearance,
+  applyAppearance,
+  type ResolvedAppearance,
+  resolveAppearance,
+  storeAppearance,
+  storedAppearance,
+} from "./appearance";
+export { Badge, type BadgeProps, type Tone, toneClasses, toneIcon } from "./components/Badge";
+export { Button, type ButtonProps, type ButtonVariant, buttonClasses } from "./components/Button";
+export {
+  FactList,
+  type FactListProps,
+  Inspector,
+  type InspectorProps,
+  InspectorSection,
+  type InspectorSectionProps,
+} from "./components/Inspector";
+export { isMac, Kbd, type KbdProps } from "./components/Kbd";
+export {
+  Menu,
+  MenuItem,
+  type MenuItemProps,
+  type MenuProps,
+  MenuSeparator,
+} from "./components/Menu";
+export { PopoverSurface, Popup, type PopupProps } from "./components/Popup";
+export { SearchField, type SearchFieldProps } from "./components/SearchField";
+export {
+  type Segment,
+  SegmentedControl,
+  type SegmentedControlProps,
+} from "./components/SegmentedControl";
+export {
+  type SourceItem,
+  SourceList,
+  type SourceListProps,
+  type SourceSection,
+} from "./components/SourceList";
+export { StatusBar, type StatusBarProps, type StatusItem } from "./components/StatusBar";
+export {
+  DataTable,
+  type DataTableProps,
+  type TableColumn,
+  type TableSection,
+} from "./components/Table";
+export {
+  AppWindow,
+  type AppWindowProps,
+  ContentGroup,
+  Toolbar,
+  type ToolbarProps,
+} from "./components/Window";
+export { cx } from "./cx";
+export { formatMinor } from "./format";

@@ -1,0 +1,275 @@
+/* Geist ships with the app as the off-Mac fallback for SF Pro (OFL-1.1). */
+@import "@fontsource-variable/geist";
+
+/*
+ * sky-la design tokens: direction A, "Tahoe" (docs/design/DESIGN.md §6, D-011).
+ *
+ * Every colour is a token with a light and a dark value (D-017): light lives
+ * in :root, dark in :root[data-appearance="dark"]. The app sets
+ * data-appearance from the user's choice or the system setting
+ * (see appearance.ts). Dark is re-stepped greys and elevation, not an
+ * inversion: surfaces get lighter as they rise, shadows give way to hairlines.
+ * tokens.test.ts checks that both sets name the same tokens and that text
+ * tokens meet WCAG AA on the surfaces they sit on.
+ */
+
+:root {
+  color-scheme: light;
+
+  /* Surfaces, back to front */
+  --sk-backdrop: #e8e9ee;
+  --sk-panel: rgba(247, 247, 250, 0.8);
+  --sk-panel-solid: #f4f4f7;
+  --sk-surface: #ffffff;
+  --sk-surface-raised: #ffffff;
+  --sk-capsule: rgba(255, 255, 255, 0.72);
+  --sk-capsule-solid: #fbfbfc;
+  --sk-segment-selected: #ffffff;
+  --sk-fill: rgba(0, 0, 0, 0.045);
+  --sk-fill-hover: rgba(0, 0, 0, 0.07);
+  --sk-hairline: #ededf0;
+  --sk-hairline-strong: rgba(0, 0, 0, 0.12);
+
+  /* Ink */
+  --sk-ink: #1d1d1f;
+  --sk-ink-secondary: #66666b;
+  --sk-ink-tertiary: #727277;
+  --sk-ink-disabled: #aeaeb2;
+
+  /* Accent (system blue by default) */
+  --sk-accent: #0a6ae0;
+  --sk-accent-hover: #0a5fca;
+  --sk-accent-ink: #0a5bc2;
+  --sk-accent-tint: rgba(10, 116, 240, 0.13);
+  --sk-on-accent: #ffffff;
+  --sk-focus: rgba(10, 116, 240, 0.45);
+
+  /* Status: ink on a matched-lightness tint */
+  --sk-positive-ink: #1c6b34;
+  --sk-positive-tint: #e4f4e8;
+  --sk-negative-ink: #a1260f;
+  --sk-negative-tint: #fce7e2;
+  --sk-negative-fill: #c4321a;
+  --sk-warning-ink: #8a4f00;
+  --sk-warning-tint: #ffefd6;
+  --sk-info-ink: #0b57b8;
+  --sk-info-tint: #e3eefd;
+  --sk-neutral-ink: #48484a;
+  --sk-neutral-tint: #f0f0f3;
+
+  /* Elevation */
+  --sk-shadow-panel:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 0 0 0.5px rgba(0, 0, 0, 0.08),
+    0 12px 36px rgba(20, 24, 40, 0.08), 0 1px 3px rgba(20, 24, 40, 0.06);
+  --sk-shadow-group: 0 0 0 0.5px rgba(0, 0, 0, 0.07), 0 1px 3px rgba(20, 24, 40, 0.05);
+  --sk-shadow-capsule: inset 0 0 0 0.5px rgba(0, 0, 0, 0.09), 0 2px 8px rgba(20, 24, 40, 0.06);
+  --sk-shadow-raised: 0 0 0 0.5px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.12);
+  --sk-shadow-popover: 0 0 0 0.5px rgba(0, 0, 0, 0.08), 0 10px 30px rgba(20, 24, 40, 0.14);
+  --sk-shadow-accent: 0 2px 8px rgba(10, 116, 240, 0.28);
+}
+
+:root[data-appearance="dark"] {
+  color-scheme: dark;
+
+  --sk-backdrop: #121316;
+  --sk-panel: rgba(42, 43, 48, 0.78);
+  --sk-panel-solid: #26272b;
+  --sk-surface: #1e1f23;
+  --sk-surface-raised: #2a2b30;
+  --sk-capsule: rgba(255, 255, 255, 0.08);
+  --sk-capsule-solid: #2c2d32;
+  --sk-segment-selected: rgba(255, 255, 255, 0.16);
+  --sk-fill: rgba(255, 255, 255, 0.06);
+  --sk-fill-hover: rgba(255, 255, 255, 0.1);
+  --sk-hairline: rgba(255, 255, 255, 0.07);
+  --sk-hairline-strong: rgba(255, 255, 255, 0.14);
+
+  --sk-ink: #f2f2f5;
+  --sk-ink-secondary: #adadb4;
+  --sk-ink-tertiary: #8e8e95;
+  --sk-ink-disabled: #5c5c62;
+
+  --sk-accent: #1f72de;
+  --sk-accent-hover: #2b7ee8;
+  --sk-accent-ink: #7db3ff;
+  --sk-accent-tint: rgba(59, 142, 245, 0.24);
+  --sk-on-accent: #ffffff;
+  --sk-focus: rgba(106, 169, 255, 0.55);
+
+  --sk-positive-ink: #5fd385;
+  --sk-positive-tint: rgba(48, 209, 88, 0.16);
+  --sk-negative-ink: #ff8f80;
+  --sk-negative-tint: rgba(255, 69, 58, 0.18);
+  --sk-negative-fill: #d63b22;
+  --sk-warning-ink: #ffc46b;
+  --sk-warning-tint: rgba(255, 159, 10, 0.18);
+  --sk-info-ink: #86b9ff;
+  --sk-info-tint: rgba(10, 132, 255, 0.22);
+  --sk-neutral-ink: #c7c7cc;
+  --sk-neutral-tint: rgba(255, 255, 255, 0.08);
+
+  --sk-shadow-panel:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 0 0 0.5px rgba(255, 255, 255, 0.07),
+    0 12px 36px rgba(0, 0, 0, 0.45), 0 1px 3px rgba(0, 0, 0, 0.3);
+  --sk-shadow-group: 0 0 0 0.5px rgba(255, 255, 255, 0.07), 0 1px 3px rgba(0, 0, 0, 0.3);
+  --sk-shadow-capsule: inset 0 0 0 0.5px rgba(255, 255, 255, 0.1), 0 2px 8px rgba(0, 0, 0, 0.25);
+  --sk-shadow-raised: inset 0 0.5px 0 rgba(255, 255, 255, 0.12), 0 1px 2px rgba(0, 0, 0, 0.4);
+  --sk-shadow-popover: 0 0 0 0.5px rgba(255, 255, 255, 0.1), 0 12px 32px rgba(0, 0, 0, 0.55);
+  --sk-shadow-accent: 0 2px 8px rgba(31, 114, 222, 0.35);
+}
+
+/* Tailwind theme: utilities such as bg-surface, text-ink-secondary, rounded-panel, text-body. */
+@theme inline {
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "Geist Variable", system-ui, sans-serif;
+
+  --color-backdrop: var(--sk-backdrop);
+  --color-panel: var(--sk-panel);
+  --color-panel-solid: var(--sk-panel-solid);
+  --color-surface: var(--sk-surface);
+  --color-surface-raised: var(--sk-surface-raised);
+  --color-capsule: var(--sk-capsule);
+  --color-segment-selected: var(--sk-segment-selected);
+  --color-fill: var(--sk-fill);
+  --color-fill-hover: var(--sk-fill-hover);
+  --color-hairline: var(--sk-hairline);
+  --color-hairline-strong: var(--sk-hairline-strong);
+  --color-ink: var(--sk-ink);
+  --color-ink-secondary: var(--sk-ink-secondary);
+  --color-ink-tertiary: var(--sk-ink-tertiary);
+  --color-ink-disabled: var(--sk-ink-disabled);
+  --color-accent: var(--sk-accent);
+  --color-accent-hover: var(--sk-accent-hover);
+  --color-accent-ink: var(--sk-accent-ink);
+  --color-accent-tint: var(--sk-accent-tint);
+  --color-on-accent: var(--sk-on-accent);
+  --color-focus: var(--sk-focus);
+  --color-positive-ink: var(--sk-positive-ink);
+  --color-positive-tint: var(--sk-positive-tint);
+  --color-negative-ink: var(--sk-negative-ink);
+  --color-negative-tint: var(--sk-negative-tint);
+  --color-negative-fill: var(--sk-negative-fill);
+  --color-warning-ink: var(--sk-warning-ink);
+  --color-warning-tint: var(--sk-warning-tint);
+  --color-info-ink: var(--sk-info-ink);
+  --color-info-tint: var(--sk-info-tint);
+  --color-neutral-ink: var(--sk-neutral-ink);
+  --color-neutral-tint: var(--sk-neutral-tint);
+
+  --shadow-panel: var(--sk-shadow-panel);
+  --shadow-group: var(--sk-shadow-group);
+  --shadow-capsule: var(--sk-shadow-capsule);
+  --shadow-raised: var(--sk-shadow-raised);
+  --shadow-popover: var(--sk-shadow-popover);
+  --shadow-accent: var(--sk-shadow-accent);
+
+  /* Radii are concentric with the window: panel → group → inner → row. */
+  --radius-panel: 18px;
+  --radius-group: 14px;
+  --radius-inner: 12px;
+  --radius-row: 9px;
+  --radius-key: 5px;
+
+  /* Type scale: 11 / 11.5 / 12.5 / 13 / 15 / 17. Tracking tightens with size. */
+  --text-caption: 11px;
+  --text-caption--line-height: 14px;
+  --text-caption--letter-spacing: 0.002em;
+  --text-footnote: 11.5px;
+  --text-footnote--line-height: 15px;
+  --text-footnote--letter-spacing: 0;
+  --text-subhead: 12.5px;
+  --text-subhead--line-height: 16px;
+  --text-subhead--letter-spacing: -0.003em;
+  --text-body: 13px;
+  --text-body--line-height: 18px;
+  --text-body--letter-spacing: -0.006em;
+  --text-title: 15px;
+  --text-title--line-height: 20px;
+  --text-title--letter-spacing: -0.012em;
+  --text-headline: 17px;
+  --text-headline--line-height: 22px;
+  --text-headline--letter-spacing: -0.022em;
+}
+
+/*
+ * Glass materials: blur + saturation over the backdrop, with an opaque
+ * fallback where blur is unavailable or the user asks for less transparency.
+ */
+@utility glass-panel {
+  background-color: var(--sk-panel);
+  box-shadow: var(--sk-shadow-panel);
+  -webkit-backdrop-filter: blur(28px) saturate(170%);
+  backdrop-filter: blur(28px) saturate(170%);
+
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    background-color: var(--sk-panel-solid);
+  }
+  @media (prefers-reduced-transparency: reduce) {
+    background-color: var(--sk-panel-solid);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+@utility glass-capsule {
+  background-color: var(--sk-capsule);
+  box-shadow: var(--sk-shadow-capsule);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  backdrop-filter: blur(20px) saturate(160%);
+
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    background-color: var(--sk-capsule-solid);
+  }
+  @media (prefers-reduced-transparency: reduce) {
+    background-color: var(--sk-capsule-solid);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* Keyboard focus: a soft accent ring, shown only for keyboard focus (data-focus-visible). */
+@utility focus-ring {
+  outline: none;
+  &[data-focus-visible] {
+    outline: 3px solid var(--sk-focus);
+    outline-offset: 1px;
+  }
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    margin: 0;
+    background: var(--sk-backdrop);
+    color: var(--sk-ink);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+    letter-spacing: var(--text-body--letter-spacing);
+    font-variant-numeric: tabular-nums;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@keyframes sk-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(-2px) scale(0.98);
+  }
+}
+@keyframes sk-pop-out {
+  to {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-entering],
+  [data-exiting] {
+    animation: none;
+  }
+}

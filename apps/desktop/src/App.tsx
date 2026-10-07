@@ -1,15 +1,42 @@
 import { demoEntity } from "@skyla/fixtures";
 import type { AppInfo, Transport } from "@skyla/ipc";
+import { AppWindow, ContentGroup, SourceList, StatusBar, Toolbar } from "@skyla/ui";
+import {
+  ChartNoAxesColumn,
+  FileText,
+  Inbox,
+  Landmark,
+  LayoutGrid,
+  Percent,
+  PlugZap,
+  Sparkles,
+} from "lucide-react";
 import { useEffect, useState } from "react";
+import { Gallery } from "./gallery/Gallery";
+import { useRoute } from "./route";
 
-const sections = ["Overview", "Inbox", "Invoices", "Bank", "Statements", "Taxes", "Advisors"];
+const sections = [
+  {
+    id: "main",
+    items: [
+      { id: "overview", label: "Overview", icon: LayoutGrid },
+      { id: "inbox", label: "Inbox", icon: Inbox },
+      { id: "invoices", label: "Invoices", icon: FileText },
+      { id: "bank", label: "Bank", icon: Landmark },
+      { id: "statements", label: "Statements", icon: ChartNoAxesColumn },
+      { id: "taxes", label: "Taxes", icon: Percent },
+      { id: "advisors", label: "Advisors", icon: Sparkles },
+    ],
+  },
+];
 
 /**
- * WP-00 placeholder shell in direction A's three-pane structure. It proves
- * the build, the styling pipeline and an IPC round trip. Real screens arrive
- * in WP-10.
+ * The shell in direction A's chrome. Screens arrive in WP-10; `#/gallery`
+ * shows the design system (WP-08).
  */
 export function App({ transport }: { transport: Transport }) {
+  const route = useRoute();
+  const [section, setSection] = useState("overview");
   const [info, setInfo] = useState<AppInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -17,51 +44,45 @@ export function App({ transport }: { transport: Transport }) {
     transport.invoke("app_info").then(setInfo, (e: unknown) => setError(String(e)));
   }, [transport]);
 
-  return (
-    <div className="flex h-full gap-2 p-2">
-      <nav
-        aria-label="Sections"
-        className="flex w-56 shrink-0 flex-col rounded-[18px] border border-black/[0.08] bg-white/80 px-2.5 py-3.5 shadow-[0_12px_36px_rgba(20,24,40,0.08)] backdrop-blur-2xl"
-      >
-        <p className="px-2.5 pb-4 text-[15px] font-semibold tracking-tight">sky-la</p>
-        <ul className="flex flex-col gap-px">
-          {sections.map((label) => (
-            <li
-              key={label}
-              className="flex h-7 items-center rounded-[9px] px-2.5 text-[13px] text-ink-secondary"
-            >
-              {label}
-            </li>
-          ))}
-        </ul>
-        <p className="mt-auto px-2.5 text-[11.5px] text-ink-secondary">
-          {demoEntity.displayName} · {demoEntity.legalForm}
-        </p>
-      </nav>
+  if (route === "gallery") return <Gallery />;
 
-      <main className="flex min-w-0 flex-1 flex-col">
-        <div className="flex-1 rounded-[14px] bg-white p-6 shadow-[0_0_0_0.5px_rgba(0,0,0,0.07)]">
-          <h1 className="text-[15px] font-semibold tracking-tight">Nothing here yet</h1>
-          <p className="mt-1 max-w-prose text-[13px] text-ink-secondary">
-            This is the WP-00 scaffold. The ledger, invoicing and bank screens come in later work
-            packets, as listed in docs/plan/IMPLEMENTATION_PLAN.md.
+  const core = error
+    ? `IPC error: ${error}`
+    : info
+      ? `${info.name} ${info.version} · core via ${info.transport}`
+      : "Connecting to core…";
+
+  return (
+    <AppWindow
+      sidebar={
+        <nav aria-label="Sections" className="flex min-h-0 flex-1 flex-col">
+          <p className="px-2.5 pb-3 font-semibold text-title">sky-la</p>
+          <SourceList
+            label="Sections"
+            sections={sections}
+            selectedId={section}
+            onSelect={setSection}
+          />
+          <p className="mt-auto px-2.5 text-footnote text-ink-secondary">
+            {demoEntity.displayName} · {demoEntity.legalForm}
           </p>
-        </div>
-        <footer
+        </nav>
+      }
+      status={
+        <StatusBar
           data-testid="status-line"
-          className="flex h-[30px] items-center gap-3 px-1.5 text-[11.5px] text-ink-secondary"
-        >
-          {error ? (
-            <span role="alert">IPC error: {error}</span>
-          ) : info ? (
-            <span>
-              {info.name} {info.version} · core via {info.transport}
-            </span>
-          ) : (
-            <span>Connecting to core…</span>
-          )}
-        </footer>
-      </main>
-    </div>
+          items={[{ id: "core", icon: PlugZap, label: core, tone: error ? "negative" : "neutral" }]}
+          role={error ? "alert" : undefined}
+        />
+      }
+    >
+      <Toolbar title="Nothing here yet" subtitle="Screens arrive in WP-10" />
+      <ContentGroup className="p-6">
+        <p className="max-w-prose text-ink-secondary">
+          The ledger kernel is complete (M1). The design system is in the gallery at #/gallery; the
+          screens follow in WP-10, as listed in docs/plan/IMPLEMENTATION_PLAN.md.
+        </p>
+      </ContentGroup>
+    </AppWindow>
   );
 }

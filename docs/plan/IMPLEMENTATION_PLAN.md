@@ -159,7 +159,7 @@ M2 can run in parallel with M1: design direction A is locked (D-011). M3–M5 ne
 ## M2 — Shell and design system *(direction A locked; see `DESIGN.md` §6)*
 
 ### WP-08 · Tokens + primitives · **L**
-Tokens for **direction A (Tahoe)**: light, plus dark if Q-09 confirms it (colour, type scale, spacing, radii, elevation, glass materials with a non-blur fallback). React Aria-based primitives: Button, SegmentedControl, SearchField, Popup, Menu, Table/Grid, Inspector, SourceList, StatusBar, Badge, Kbd. **Acceptance:** Storybook-free gallery route in `dev:web`; Playwright screenshots in both appearances; axe accessibility check with no violations.
+Tokens for **direction A (Tahoe)**, light and dark (D-017) (colour, type scale, spacing, radii, elevation, glass materials with a non-blur fallback). React Aria-based primitives: Button, SegmentedControl, SearchField, Popup, Menu, Table/Grid, Inspector, SourceList, StatusBar, Badge, Kbd. **Acceptance:** Storybook-free gallery route in `dev:web`; Playwright screenshots in both appearances; axe accessibility check with no violations.
 
 ### WP-09 · Typed IPC + fixtures · **M**
 `tauri-specta`-generated bindings (version pinned) behind `packages/ipc`. The mock transport serves `packages/fixtures`: the canvas entity with its invoices, bank lines, entries and proposals. **Acceptance:** one command round-trips identically over the mock and the real transport (integration test).
