@@ -196,6 +196,35 @@ test("an invoice exports as ISDOC for accounting software", async ({ page }) => 
   await expect(inspector.getByRole("status")).toContainText("Saved 2026-102.isdoc (ISDOC 6.0.2).");
 });
 
+for (const [item, file, root, payable] of [
+  [
+    "UBL for Peppol",
+    "2026-102.ubl.xml",
+    "<cbc:CustomizationID>urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0</cbc:CustomizationID>",
+    '<cbc:PayableAmount currencyID="CZK">103092.00</cbc:PayableAmount>',
+  ],
+  [
+    "CII for Factur-X and ZUGFeRD",
+    "2026-102.cii.xml",
+    "<ram:ID>urn:cen.eu:en16931:2017</ram:ID>",
+    "<ram:DuePayableAmount>103092.00</ram:DuePayableAmount>",
+  ],
+] as const) {
+  test(`an invoice exports as ${file}`, async ({ page }) => {
+    await page.goto("/#/invoices/2026-102");
+    const inspector = page.getByRole("complementary", { name: "Invoice 2026-102" });
+    await inspector.getByRole("button", { name: "Export" }).click();
+    const downloaded = page.waitForEvent("download");
+    await page.getByRole("menuitem", { name: item }).click();
+    const download = await downloaded;
+    expect(download.suggestedFilename()).toBe(file);
+    const { readFileSync } = await import("node:fs");
+    const xml = readFileSync(await download.path(), "utf8");
+    expect(xml).toContain(root);
+    expect(xml).toContain(payable);
+  });
+}
+
 test("drafts offer no export until issued", async ({ page }) => {
   await page.goto("/#/invoices");
   await page

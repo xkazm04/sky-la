@@ -20,6 +20,29 @@
     "vatPayer": true,
     "registration": "Fyzická osoba zapsaná v živnostenském rejstříku"
   },
+  "clients": [
+    {
+      "name": "Northwind Traders",
+      "legalName": "Northwind Traders s.r.o.",
+      "ico": "91341272",
+      "dic": "CZ91341272",
+      "address": "Vinohradská 1\n120 00 Praha 2"
+    },
+    {
+      "name": "Acme Analytics",
+      "legalName": "Acme Analytics a.s.",
+      "ico": "93617453",
+      "dic": "CZ93617453",
+      "address": "Jungmannova 5\n110 00 Praha 1"
+    },
+    {
+      "name": "Studio Brno",
+      "legalName": "Studio Brno s.r.o.",
+      "ico": "94722188",
+      "dic": "CZ94722188",
+      "address": "Masarykova 12\n602 00 Brno"
+    }
+  ],
   "invoices": [
     {
       "number": "2026-041",

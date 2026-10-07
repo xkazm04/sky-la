@@ -1,0 +1,139 @@
+---
+source: crates/skyla-invoicing/tests/einvoice.rs
+expression: ubl
+---
+<?xml version="1.0" encoding="UTF-8"?>
+<Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">
+  <cbc:CustomizationID>urn:cen.eu:en16931:2017#compliant#urn:fdc:peppol.eu:2017:poacc:billing:3.0</cbc:CustomizationID>
+  <cbc:ProfileID>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</cbc:ProfileID>
+  <cbc:ID>2026-001</cbc:ID>
+  <cbc:IssueDate>2026-09-15</cbc:IssueDate>
+  <cbc:DueDate>2026-09-30</cbc:DueDate>
+  <cbc:InvoiceTypeCode>380</cbc:InvoiceTypeCode>
+  <cbc:Note>Děkuji za spolupráci &amp; těším se na další &lt;projekt&gt;.</cbc:Note>
+  <cbc:TaxPointDate>2026-09-15</cbc:TaxPointDate>
+  <cbc:DocumentCurrencyCode>CZK</cbc:DocumentCurrencyCode>
+  <cbc:BuyerReference>2026-001</cbc:BuyerReference>
+  <cac:AccountingSupplierParty>
+    <cac:Party>
+      <cbc:EndpointID schemeID="9929">CZ92588034</cbc:EndpointID>
+      <cac:PartyName>
+        <cbc:Name>Jana Nováková</cbc:Name>
+      </cac:PartyName>
+      <cac:PostalAddress>
+        <cbc:StreetName>Korunní 2569/108</cbc:StreetName>
+        <cbc:CityName>Praha 10</cbc:CityName>
+        <cbc:PostalZone>10100</cbc:PostalZone>
+        <cac:Country>
+          <cbc:IdentificationCode>CZ</cbc:IdentificationCode>
+        </cac:Country>
+      </cac:PostalAddress>
+      <cac:PartyTaxScheme>
+        <cbc:CompanyID>CZ92588034</cbc:CompanyID>
+        <cac:TaxScheme>
+          <cbc:ID>VAT</cbc:ID>
+        </cac:TaxScheme>
+      </cac:PartyTaxScheme>
+      <cac:PartyLegalEntity>
+        <cbc:RegistrationName>Jana Nováková</cbc:RegistrationName>
+        <cbc:CompanyID>92588034</cbc:CompanyID>
+      </cac:PartyLegalEntity>
+      <cac:Contact>
+        <cbc:ElectronicMail>jana@example.cz</cbc:ElectronicMail>
+      </cac:Contact>
+    </cac:Party>
+  </cac:AccountingSupplierParty>
+  <cac:AccountingCustomerParty>
+    <cac:Party>
+      <cbc:EndpointID schemeID="9929">CZ91341272</cbc:EndpointID>
+      <cac:PartyName>
+        <cbc:Name>Studio Brno s.r.o.</cbc:Name>
+      </cac:PartyName>
+      <cac:PostalAddress>
+        <cbc:StreetName>Masarykova 12</cbc:StreetName>
+        <cbc:CityName>Brno</cbc:CityName>
+        <cbc:PostalZone>60200</cbc:PostalZone>
+        <cac:Country>
+          <cbc:IdentificationCode>CZ</cbc:IdentificationCode>
+        </cac:Country>
+      </cac:PostalAddress>
+      <cac:PartyTaxScheme>
+        <cbc:CompanyID>CZ91341272</cbc:CompanyID>
+        <cac:TaxScheme>
+          <cbc:ID>VAT</cbc:ID>
+        </cac:TaxScheme>
+      </cac:PartyTaxScheme>
+      <cac:PartyLegalEntity>
+        <cbc:RegistrationName>Studio Brno s.r.o.</cbc:RegistrationName>
+        <cbc:CompanyID>91341272</cbc:CompanyID>
+      </cac:PartyLegalEntity>
+    </cac:Party>
+  </cac:AccountingCustomerParty>
+  <cac:PaymentMeans>
+    <cbc:PaymentMeansCode name="Credit transfer">30</cbc:PaymentMeansCode>
+    <cbc:PaymentID>2026001</cbc:PaymentID>
+    <cac:PayeeFinancialAccount>
+      <cbc:ID>CZ6508000000192000145399</cbc:ID>
+      <cbc:Name>Jana Nováková</cbc:Name>
+      <cac:FinancialInstitutionBranch>
+        <cbc:ID>GIBACZPX</cbc:ID>
+      </cac:FinancialInstitutionBranch>
+    </cac:PayeeFinancialAccount>
+  </cac:PaymentMeans>
+  <cac:TaxTotal>
+    <cbc:TaxAmount currencyID="CZK">10500.00</cbc:TaxAmount>
+    <cac:TaxSubtotal>
+      <cbc:TaxableAmount currencyID="CZK">50000.00</cbc:TaxableAmount>
+      <cbc:TaxAmount currencyID="CZK">10500.00</cbc:TaxAmount>
+      <cac:TaxCategory>
+        <cbc:ID>S</cbc:ID>
+        <cbc:Percent>21</cbc:Percent>
+        <cac:TaxScheme>
+          <cbc:ID>VAT</cbc:ID>
+        </cac:TaxScheme>
+      </cac:TaxCategory>
+    </cac:TaxSubtotal>
+  </cac:TaxTotal>
+  <cac:LegalMonetaryTotal>
+    <cbc:LineExtensionAmount currencyID="CZK">50000.00</cbc:LineExtensionAmount>
+    <cbc:TaxExclusiveAmount currencyID="CZK">50000.00</cbc:TaxExclusiveAmount>
+    <cbc:TaxInclusiveAmount currencyID="CZK">60500.00</cbc:TaxInclusiveAmount>
+    <cbc:PayableAmount currencyID="CZK">60500.00</cbc:PayableAmount>
+  </cac:LegalMonetaryTotal>
+  <cac:InvoiceLine>
+    <cbc:ID>1</cbc:ID>
+    <cbc:InvoicedQuantity unitCode="C62">1</cbc:InvoicedQuantity>
+    <cbc:LineExtensionAmount currencyID="CZK">150000.00</cbc:LineExtensionAmount>
+    <cac:Item>
+      <cbc:Name>Web</cbc:Name>
+      <cac:ClassifiedTaxCategory>
+        <cbc:ID>S</cbc:ID>
+        <cbc:Percent>21</cbc:Percent>
+        <cac:TaxScheme>
+          <cbc:ID>VAT</cbc:ID>
+        </cac:TaxScheme>
+      </cac:ClassifiedTaxCategory>
+    </cac:Item>
+    <cac:Price>
+      <cbc:PriceAmount currencyID="CZK">150000.00</cbc:PriceAmount>
+    </cac:Price>
+  </cac:InvoiceLine>
+  <cac:InvoiceLine>
+    <cbc:ID>2</cbc:ID>
+    <cbc:InvoicedQuantity unitCode="C62">-1</cbc:InvoicedQuantity>
+    <cbc:LineExtensionAmount currencyID="CZK">-100000.00</cbc:LineExtensionAmount>
+    <cac:Item>
+      <cbc:Name>Odpočet zálohy DZ2026-01</cbc:Name>
+      <cac:ClassifiedTaxCategory>
+        <cbc:ID>S</cbc:ID>
+        <cbc:Percent>21</cbc:Percent>
+        <cac:TaxScheme>
+          <cbc:ID>VAT</cbc:ID>
+        </cac:TaxScheme>
+      </cac:ClassifiedTaxCategory>
+    </cac:Item>
+    <cac:Price>
+      <cbc:PriceAmount currencyID="CZK">100000.00</cbc:PriceAmount>
+    </cac:Price>
+  </cac:InvoiceLine>
+</Invoice>

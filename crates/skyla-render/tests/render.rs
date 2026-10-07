@@ -40,7 +40,7 @@ fn books(vat_payer: bool) -> Books {
         &conn,
         &Supplier {
             name: "Jana Nováková".into(),
-            ico: Some("25596641".into()),
+            ico: Some("92588034".into()),
             dic: vat_payer.then(|| "CZ8051234567".into()),
             address: "Dlouhá 12\n110 00 Praha 1".into(),
             iban: Some("CZ65 0800 0000 1920 0014 5399".into()),
@@ -76,8 +76,8 @@ fn issued_invoice(b: &Books, lines: Vec<LineInput>) -> i64 {
             series: "FV".into(),
             customer: Customer {
                 name: "Northwind Traders s.r.o.".into(),
-                ico: Some("27074358".into()),
-                dic: Some("CZ27074358".into()),
+                ico: Some("93617453".into()),
+                dic: Some("CZ93617453".into()),
                 address: Some("Vinohradská 1, 120 00 Praha 2".into()),
             },
             due_date: Some("2026-09-29".into()),

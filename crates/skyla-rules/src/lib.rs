@@ -206,6 +206,22 @@ pub struct VatCode {
     /// no return rows.
     #[serde(default)]
     pub outside_vat: bool,
+    /// How sales under this code appear on an EN 16931 e-invoice; none for
+    /// codes that never go on a sales document (purchases).
+    #[serde(default)]
+    pub einvoice: Option<EinvoiceTax>,
+}
+
+/// The EN 16931 view of a VAT code.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EinvoiceTax {
+    /// VAT category (UNTDID 5305 subset of EN 16931): `S`, `Z`, `E`, `AE`,
+    /// `K`, `G`, `O`, `L` or `M`.
+    pub category: String,
+    /// Why no VAT is charged; required for every category except `S` and `Z`.
+    #[serde(default)]
+    pub exemption_reason: Option<String>,
 }
 
 /// A public holiday: a fixed `MM-DD` date or an offset from Easter Sunday.
@@ -393,6 +409,27 @@ impl Pack {
                     "{what}: rate {} isn't a percent value in the pack",
                     code.rate
                 )),
+            }
+            if let Some(e) = &code.einvoice {
+                const CATEGORIES: [&str; 9] = ["S", "Z", "E", "AE", "K", "G", "O", "L", "M"];
+                if !CATEGORIES.contains(&e.category.as_str()) {
+                    problems.push(format!(
+                        "{what}: e-invoice category {:?} isn't an EN 16931 VAT category",
+                        e.category
+                    ));
+                }
+                let exempt = !matches!(e.category.as_str(), "S" | "Z" | "L" | "M");
+                if exempt && e.exemption_reason.as_deref().is_none_or(str::is_empty) {
+                    problems.push(format!(
+                        "{what}: e-invoice category {} needs an exemption reason",
+                        e.category
+                    ));
+                }
+                if code.outside_vat != (e.category == "O") {
+                    problems.push(format!(
+                        "{what}: category O is for codes outside VAT, and only for them"
+                    ));
+                }
             }
             match (code.outside_vat, code.rows.is_empty()) {
                 (false, true) => problems.push(format!("{what}: maps to no rows")),

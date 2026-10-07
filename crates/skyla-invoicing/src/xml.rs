@@ -76,6 +76,20 @@ impl Xml {
         self.leaf_with(name, &[], text);
     }
 
+    /// A text-only element, left out when the text is empty (Peppol forbids
+    /// empty elements).
+    pub(crate) fn leaf_opt(&mut self, name: &str, text: &str) {
+        if !text.trim().is_empty() {
+            self.leaf_with(name, &[], text.trim());
+        }
+    }
+
+    /// An amount with its `currencyID`.
+    pub(crate) fn amount(&mut self, name: &str, amount: Money) {
+        let code = amount.currency().code().to_owned();
+        self.leaf_with(name, &[("currencyID", &code)], &decimal(amount));
+    }
+
     /// The document, every element closed.
     pub(crate) fn finish(mut self) -> String {
         while !self.open.is_empty() {

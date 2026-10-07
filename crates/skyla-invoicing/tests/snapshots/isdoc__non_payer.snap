@@ -19,7 +19,7 @@ expression: xml
   <AccountingSupplierParty>
     <Party>
       <PartyIdentification>
-        <ID>25596641</ID>
+        <ID>92588034</ID>
       </PartyIdentification>
       <PartyName>
         <Name>Jana Nováková</Name>
@@ -42,7 +42,7 @@ expression: xml
   <AccountingCustomerParty>
     <Party>
       <PartyIdentification>
-        <ID>27082440</ID>
+        <ID>91341272</ID>
       </PartyIdentification>
       <PartyName>
         <Name>Studio Brno s.r.o.</Name>
@@ -58,7 +58,7 @@ expression: xml
         </Country>
       </PostalAddress>
       <PartyTaxScheme>
-        <CompanyID>CZ27082440</CompanyID>
+        <CompanyID>CZ91341272</CompanyID>
         <TaxScheme>VAT</TaxScheme>
       </PartyTaxScheme>
     </Party>

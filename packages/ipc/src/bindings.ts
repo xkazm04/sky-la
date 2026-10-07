@@ -38,8 +38,8 @@ export const commands = {
 	rulePack: () => __TAURI_INVOKE<RulePackDto>("rule_pack"),
 	/**  A document rendered to PDF (`cs` or `en`), base64-encoded. */
 	invoicePdf: (id: number, lang: string) => typedError<DocumentPdfDto, IpcFailure>(__TAURI_INVOKE("invoice_pdf", { id, lang })),
-	/**  An issued document as ISDOC 6.0.2 XML. */
-	invoiceIsdoc: (id: number) => typedError<DocumentXmlDto, IpcFailure>(__TAURI_INVOKE("invoice_isdoc", { id })),
+	/**  An issued document as XML: `isdoc`, `ubl` (Peppol BIS 3.0) or `cii`. */
+	invoiceXml: (id: number, format: string) => typedError<DocumentXmlDto, IpcFailure>(__TAURI_INVOKE("invoice_xml", { id, format })),
 };
 
 /* Types */

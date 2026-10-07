@@ -9,6 +9,7 @@ import {
   InspectorSection,
   Menu,
   MenuItem,
+  MenuSeparator,
   Popup,
   SegmentedControl,
   type TableColumn,
@@ -123,6 +124,13 @@ type Export =
   | { state: "done"; text: string }
   | { state: "failed"; text: string };
 
+/** Exchange formats the core writes, with the standard each follows. */
+const XML_FORMATS: Record<string, string> = {
+  isdoc: "ISDOC 6.0.2",
+  ubl: "UBL 2.1, Peppol BIS Billing 3.0",
+  cii: "CII D16B, EN 16931",
+};
+
 function InvoiceInspector({ invoice }: { invoice: InvoiceDto }) {
   const s = invoiceStatus(invoice);
   const posted = invoice.entryId !== null;
@@ -133,10 +141,10 @@ function InvoiceInspector({ invoice }: { invoice: InvoiceDto }) {
     setExported({ id: invoice.id, result: { state: "busy" } });
     try {
       let text: string;
-      if (format === "isdoc") {
-        const file = await unwrap(commands.invoiceIsdoc(invoice.id));
+      if (format in XML_FORMATS) {
+        const file = await unwrap(commands.invoiceXml(invoice.id, format));
         downloadText(file.fileName, file.xml, file.mediaType);
-        text = `Saved ${file.fileName} (ISDOC 6.0.2).`;
+        text = `Saved ${file.fileName} (${XML_FORMATS[format]}).`;
       } else {
         const pdf = await unwrap(commands.invoicePdf(invoice.id, format));
         downloadBase64(pdf.fileName, pdf.pdfBase64, "application/pdf");
@@ -172,7 +180,10 @@ function InvoiceInspector({ invoice }: { invoice: InvoiceDto }) {
               >
                 <MenuItem id="cs">Czech PDF</MenuItem>
                 <MenuItem id="en">English PDF</MenuItem>
+                <MenuSeparator />
                 <MenuItem id="isdoc">ISDOC for accounting software</MenuItem>
+                <MenuItem id="ubl">UBL for Peppol</MenuItem>
+                <MenuItem id="cii">CII for Factur-X and ZUGFeRD</MenuItem>
               </Menu>
             )}
             {posted && invoice.status !== "paid" && (

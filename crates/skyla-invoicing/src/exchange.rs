@@ -155,3 +155,183 @@ pub(crate) fn czech_account(iban: &str) -> Option<(String, String)> {
     };
     Some((account, bank))
 }
+
+/// A document in EN 16931 terms: positive amounts on credit notes, taxed
+/// advances deducted as negative lines, the VAT breakdown per category and
+/// rate, and the document totals (BG-22).
+#[derive(Debug, Clone)]
+pub(crate) struct En16931 {
+    /// UNTDID 1001: 380 invoice, 381 credit note, 386 prepayment invoice.
+    pub(crate) type_code: &'static str,
+    pub(crate) lines: Vec<EnLine>,
+    pub(crate) taxes: Vec<EnTax>,
+    pub(crate) line_total: Money,
+    pub(crate) tax_total: Money,
+    pub(crate) tax_inclusive: Money,
+    pub(crate) prepaid: Money,
+    pub(crate) payable: Money,
+    pub(crate) vat_payer: bool,
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct EnLine {
+    pub(crate) id: String,
+    pub(crate) name: String,
+    pub(crate) quantity: String,
+    pub(crate) unit_code: &'static str,
+    pub(crate) net: Money,
+    pub(crate) price: Money,
+    pub(crate) category: String,
+    pub(crate) rate: Option<Rate>,
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct EnTax {
+    pub(crate) category: String,
+    pub(crate) rate: Option<Rate>,
+    pub(crate) taxable: Money,
+    pub(crate) tax: Money,
+    pub(crate) exemption_reason: Option<String>,
+}
+
+pub(crate) fn en16931(pack: &Pack, input: ExportInput<'_>) -> Result<En16931, InvoicingError> {
+    let p = prepare(pack, input)?;
+    let doc = input.doc;
+    let type_code = match doc.kind {
+        DocKind::Invoice => "380",
+        DocKind::CreditNote => "381",
+        DocKind::AdvanceTax => "386",
+        DocKind::Advance => {
+            return Err(InvoicingError::Invalid(vec![
+                "an advance invoice isn't a tax document; EN 16931 covers its tax document instead"
+                    .into(),
+            ]));
+        }
+    };
+    let currency = p.gross.currency();
+    let zero = Money::zero(currency);
+    // Credit notes state positive amounts; the type code carries the sign.
+    let neg = doc.kind == DocKind::CreditNote;
+    let signed = |m: Money| if neg { m.checked_neg() } else { Ok(m) };
+    let on = doc
+        .tax_point_date
+        .clone()
+        .or_else(|| doc.issue_date.clone())
+        .unwrap_or_default();
+    let category = |vat_code: &str| -> Result<skyla_rules::EinvoiceTax, InvoicingError> {
+        pack.vat_code(vat_code)?.einvoice.clone().ok_or_else(|| {
+            InvoicingError::Invalid(vec![format!(
+                "VAT code {vat_code} has no EN 16931 category in the rule pack"
+            )])
+        })
+    };
+    let rate_of = |cat: &str, rate: Rate| (cat != "O" && cat != "E").then_some(rate);
+
+    let mut lines = Vec::new();
+    for (l, src) in p.lines.iter().zip(&doc.lines) {
+        let cat = category(&src.input.vat_code)?;
+        let quantity = if neg {
+            src.input
+                .quantity
+                .strip_prefix('-')
+                .map_or_else(|| format!("-{}", src.input.quantity), str::to_owned)
+        } else {
+            src.input.quantity.clone()
+        };
+        lines.push(EnLine {
+            id: l.no.to_string(),
+            name: l.description.clone(),
+            quantity,
+            unit_code: un_ece_unit(&l.unit),
+            net: signed(l.base)?,
+            price: l.unit_price,
+            rate: rate_of(&cat.category, l.rate),
+            category: cat.category,
+        });
+    }
+    // Advances already taxed come off as negative lines, one per document and rate.
+    let mut next = lines.len() + 1;
+    for adv in input.advances {
+        let number = adv.number.as_deref().unwrap_or_default();
+        let adv_on = adv.tax_point_date.as_deref().unwrap_or(&on);
+        for r in &adv.totals.recap {
+            let cat = category(&r.vat_code)?;
+            let rate = pack.vat_rate(&r.vat_code, adv_on)?;
+            lines.push(EnLine {
+                id: next.to_string(),
+                name: format!("Odpočet zálohy {number}"),
+                quantity: "-1".into(),
+                unit_code: "C62",
+                net: r.base.checked_neg()?,
+                price: r.base,
+                rate: rate_of(&cat.category, rate),
+                category: cat.category,
+            });
+            next += 1;
+        }
+    }
+
+    let mut taxes = Vec::new();
+    for (r, src) in p.recap.iter().zip(&doc.totals.recap) {
+        let cat = category(&src.vat_code)?;
+        taxes.push(EnTax {
+            rate: rate_of(&cat.category, r.rate),
+            category: cat.category,
+            taxable: signed(r.base.checked_sub(r.claimed_base)?)?,
+            tax: signed(r.vat.checked_sub(r.claimed_vat)?)?,
+            exemption_reason: cat.exemption_reason,
+        });
+    }
+    let line_total = Money::sum(currency, lines.iter().map(|l| l.net))?;
+    let tax_total = Money::sum(currency, taxes.iter().map(|t| t.tax))?;
+    let tax_inclusive = line_total.checked_add(tax_total)?;
+    // A tax document on a received advance records a payment already made.
+    let prepaid = if doc.kind == DocKind::AdvanceTax {
+        tax_inclusive
+    } else {
+        zero
+    };
+    Ok(En16931 {
+        type_code,
+        lines,
+        taxes,
+        line_total,
+        tax_total,
+        tax_inclusive,
+        prepaid,
+        payable: tax_inclusive.checked_sub(prepaid)?,
+        vat_payer: p.vat_payer,
+    })
+}
+
+/// UN/ECE Recommendation 20 unit codes; `C62` (one) for anything else.
+pub(crate) fn un_ece_unit(unit: &str) -> &'static str {
+    match unit.trim() {
+        "h" | "hod" | "hodina" => "HUR",
+        "ks" | "pc" | "pcs" | "kus" => "H87",
+        "den" | "day" | "d" => "DAY",
+        "měs" | "month" => "MON",
+        "km" => "KMT",
+        "kg" => "KGM",
+        _ => "C62",
+    }
+}
+
+/// The Peppol electronic address scheme (EAS) for a VAT number, by its
+/// country prefix.
+pub(crate) fn vat_endpoint_scheme(vat_id: &str) -> Option<&'static str> {
+    match vat_id.get(..2)? {
+        "CZ" => Some("9929"),
+        "SK" => Some("9950"),
+        "DE" => Some("9930"),
+        "AT" => Some("9914"),
+        "PL" => Some("9945"),
+        "HU" => Some("9910"),
+        _ => None,
+    }
+}
+
+/// `20260825` for `2026-08-25`.
+pub(crate) fn compact_date(date: &str) -> String {
+    date.replace('-', "")
+}

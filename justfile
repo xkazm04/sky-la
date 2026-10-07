@@ -63,6 +63,14 @@ recordings:
 bindings:
     UPDATE_BINDINGS=1 cargo test -p skyla-desktop --test ipc the_generated_bindings_are_current
 
+# WP-14 acceptance: write the golden e-invoices, then check each against its
+# XSD and the official Schematron (CEN EN 16931, OpenPeppol BIS Billing 3.0).
+# Fetches pinned validator artefacts from Maven Central once (needs Java 17+).
+einvoice:
+    rm -rf target/einvoice-golden
+    SKYLA_EINVOICE_OUT="$PWD/target/einvoice-golden" cargo test -p skyla-invoicing --locked --test einvoice
+    scripts/einvoice/validate.sh target/einvoice-golden/*.xml
+
 # Supply-chain and licence policy for third-party crates.
 deny:
     cargo deny check

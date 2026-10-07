@@ -129,11 +129,11 @@ fn invoice_pdf(core: State<'_, Core>, id: i64, lang: String) -> Answer<DocumentP
     Ok(core.invoice_pdf(id, &lang)?)
 }
 
-/// An issued document as ISDOC 6.0.2 XML.
+/// An issued document as XML: `isdoc`, `ubl` (Peppol BIS 3.0) or `cii`.
 #[tauri::command]
 #[specta::specta]
-fn invoice_isdoc(core: State<'_, Core>, id: i64) -> Answer<DocumentXmlDto> {
-    Ok(core.invoice_isdoc(id)?)
+fn invoice_xml(core: State<'_, Core>, id: i64, format: String) -> Answer<DocumentXmlDto> {
+    Ok(core.invoice_xml(id, &format)?)
 }
 
 /// Every command, for the invoke handler and the TypeScript export.
@@ -156,7 +156,7 @@ pub fn specta_builder<R: Runtime>() -> Builder<R> {
             vat_return,
             rule_pack,
             invoice_pdf,
-            invoice_isdoc,
+            invoice_xml,
         ])
         // Money crosses as integer minor units; `MoneyDto` refuses anything
         // beyond 2^53 - 1, so a JavaScript number holds every value exactly.

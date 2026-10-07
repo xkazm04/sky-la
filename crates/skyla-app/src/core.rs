@@ -440,9 +440,10 @@ impl Core {
         })
     }
 
-    /// Writes an issued document as ISDOC 6.0.2, with the document it refers
-    /// to and the advances it deducts.
-    pub fn invoice_isdoc(&self, id: i64) -> Result<DocumentXmlDto, CoreError> {
+    /// Writes an issued document in an exchange format: `isdoc` (ISDOC
+    /// 6.0.2), `ubl` (UBL 2.1, Peppol BIS Billing 3.0) or `cii` (CII D16B,
+    /// EN 16931), with the document it refers to and the advances it deducts.
+    pub fn invoice_xml(&self, id: i64, format: &str) -> Result<DocumentXmlDto, CoreError> {
         let db = self.db();
         let doc = skyla_invoicing::get(&db, &self.pack, id)?;
         let related = doc
@@ -455,17 +456,20 @@ impl Core {
             .map(|a| skyla_invoicing::get(&db, &self.pack, *a))
             .collect::<Result<Vec<_>, _>>()?;
         drop(db);
-        let xml = skyla_invoicing::to_isdoc(
-            &self.pack,
-            skyla_invoicing::ExportInput {
-                doc: &doc,
-                related: related.as_ref(),
-                advances: &advances,
-            },
-        )?;
+        let input = skyla_invoicing::ExportInput {
+            doc: &doc,
+            related: related.as_ref(),
+            advances: &advances,
+        };
+        let (xml, suffix) = match format {
+            "isdoc" => (skyla_invoicing::to_isdoc(&self.pack, input)?, "isdoc"),
+            "ubl" => (skyla_invoicing::to_ubl(&self.pack, input)?, "ubl.xml"),
+            "cii" => (skyla_invoicing::to_cii(&self.pack, input)?, "cii.xml"),
+            other => return Err(CoreError::BadRequest(format!("unknown format {other:?}"))),
+        };
         let number = doc.number.unwrap_or_else(|| format!("draft-{id}"));
         Ok(DocumentXmlDto {
-            file_name: format!("{number}.isdoc"),
+            file_name: format!("{number}.{suffix}"),
             media_type: "application/xml".into(),
             xml,
         })

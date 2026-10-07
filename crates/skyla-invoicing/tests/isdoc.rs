@@ -1,105 +1,18 @@
 //! WP-13 acceptance: ISDOC 6.0.2 documents are valid against the official
 //! schema, and their content is pinned by snapshots.
 
+mod common;
+
 use std::path::Path;
 use std::process::Command;
 
-use rusqlite::Connection;
-use skyla_invoicing::{
-    Accounts, Customer, DocKind, Document, DraftInput, ExportInput, LineInput, Supplier,
-    apply_schema, create_draft, define_series, draft_credit_note, get, issue, set_supplier,
-    to_isdoc,
-};
-use skyla_ledger::{ChartSpec, NewEntry, NewLine, SourceKind, open_period, post_entry};
-use skyla_money::{Currency, Money};
-use skyla_rules::Pack;
+use common::{Books, books, draft, line};
+use skyla_invoicing::{DocKind, Document, ExportInput, create_draft, get, issue, to_isdoc};
 
-const CZ_CHART: &str = include_str!("../../../rules/cz/chart.toml");
 const XSD: &str = concat!(
     env!("CARGO_MANIFEST_DIR"),
     "/tests/schemas/isdoc-invoice-6.0.2.xsd"
 );
-
-struct Books {
-    conn: Connection,
-    pack: Pack,
-    accounts: Accounts,
-}
-
-fn books(vat_payer: bool) -> Books {
-    let conn = Connection::open_in_memory().expect("db");
-    conn.execute_batch("PRAGMA foreign_keys = ON;")
-        .expect("pragma");
-    skyla_ledger::apply_schema(&conn).expect("ledger schema");
-    apply_schema(&conn).expect("invoicing schema");
-    skyla_ledger::seed_chart(&conn, &ChartSpec::from_toml(CZ_CHART).expect("chart")).expect("seed");
-    skyla_ledger::set_functional_currency(&conn, Currency::CZK).expect("ccy");
-    open_period(&conn, "2026-01-01", "2026-12-31").expect("2026");
-    for (series, kind, pattern) in [
-        ("FV", DocKind::Invoice, "{YYYY}-{NNN}"),
-        ("OD", DocKind::CreditNote, "OD{YY}{NNNN}"),
-        ("ZF", DocKind::Advance, "ZF{YYYY}-{NN}"),
-        ("DZ", DocKind::AdvanceTax, "DZ{YYYY}-{NN}"),
-    ] {
-        define_series(&conn, series, kind, pattern, series).expect("series");
-    }
-    set_supplier(
-        &conn,
-        &Supplier {
-            name: "Jana Nováková".into(),
-            ico: Some("25596641".into()),
-            dic: vat_payer.then(|| "CZ25596641".into()),
-            address: "Korunní 2569/108\n101 00 Praha 10".into(),
-            iban: Some("CZ6508000000192000145399".into()),
-            bic: Some("GIBACZPX".into()),
-            email: Some("jana@example.cz".into()),
-            vat_payer,
-            registration: "Fyzická osoba zapsaná v živnostenském rejstříku".into(),
-        },
-    )
-    .expect("supplier");
-    Books {
-        conn,
-        pack: Pack::cz_2026().expect("pack"),
-        accounts: Accounts::cz(),
-    }
-}
-
-fn line(
-    description: &str,
-    quantity: &str,
-    unit: &str,
-    unit_price_minor: i64,
-    vat: &str,
-) -> LineInput {
-    LineInput {
-        description: description.into(),
-        quantity: quantity.into(),
-        unit: unit.into(),
-        unit_price_minor,
-        vat_code: vat.into(),
-        account: None,
-    }
-}
-
-fn draft(kind: DocKind, series: &str, lines: Vec<LineInput>) -> DraftInput {
-    DraftInput {
-        kind,
-        series: series.into(),
-        customer: Customer {
-            name: "Studio Brno s.r.o.".into(),
-            ico: Some("27082440".into()),
-            dic: Some("CZ27082440".into()),
-            address: Some("Masarykova 12, 602 00 Brno".into()),
-        },
-        due_date: Some("2026-09-29".into()),
-        tax_point_date: None,
-        note: "Děkuji za spolupráci & těším se na další <projekt>.".into(),
-        lines,
-        related_id: None,
-        advances: Vec::new(),
-    }
-}
 
 /// The document as ISDOC, checked against the schema, with its UUIDs
 /// replaced so snapshots are stable.
@@ -182,23 +95,7 @@ fn writes_a_valid_tax_invoice() {
 #[test]
 fn writes_a_credit_note_referring_to_its_invoice() {
     let b = books(true);
-    let id = create_draft(
-        &b.conn,
-        &draft(
-            DocKind::Invoice,
-            "FV",
-            vec![line("Workshop", "1", "ks", 1_200_000, "OUT21")],
-        ),
-    )
-    .expect("draft");
-    issue(&b.conn, &b.pack, &b.accounts, id, "2026-09-10", None).expect("issue");
-    let credit =
-        draft_credit_note(&b.conn, &b.pack, id, "OD", None, "Workshop zrušen").expect("credit");
-    issue(&b.conn, &b.pack, &b.accounts, credit, "2026-09-20", None).expect("issue");
-    let (invoice, credit) = (
-        get(&b.conn, &b.pack, id).expect("get"),
-        get(&b.conn, &b.pack, credit).expect("get"),
-    );
+    let (invoice, credit) = b.credit_chain();
     let xml = isdoc(&b, &credit, Some(&invoice), &[]);
     assert!(xml.contains("<DocumentType>2</DocumentType>"));
     assert!(xml.contains("<OriginalDocumentReference ref=\"original\">"));
@@ -212,55 +109,7 @@ fn writes_a_credit_note_referring_to_its_invoice() {
 #[test]
 fn writes_the_advance_chain() {
     let b = books(true);
-    let advance = create_draft(
-        &b.conn,
-        &draft(
-            DocKind::Advance,
-            "ZF",
-            vec![line("Záloha na web", "1", "", 10_000_000, "OUT21")],
-        ),
-    )
-    .expect("draft");
-    issue(&b.conn, &b.pack, &b.accounts, advance, "2026-08-01", None).expect("issue");
-    let receipt = skyla_ledger::create_draft(
-        &b.conn,
-        &NewEntry {
-            date: "2026-08-05".into(),
-            source_kind: SourceKind::Bank,
-            source_ref: None,
-            memo: "Záloha".into(),
-            created_by: "user".into(),
-            lines: vec![
-                NewLine::debit("221", Money::new(12_100_000, Currency::CZK)),
-                NewLine::credit("324", Money::new(12_100_000, Currency::CZK)).expect("ok"),
-            ],
-        },
-    )
-    .expect("receipt");
-    post_entry(&b.conn, receipt, None).expect("post");
-    let mut tax = draft(
-        DocKind::AdvanceTax,
-        "DZ",
-        vec![line("Přijatá záloha", "1", "", 12_100_000, "OUT21")],
-    );
-    tax.related_id = Some(advance);
-    tax.due_date = None;
-    tax.tax_point_date = Some("2026-08-05".into());
-    let tax = create_draft(&b.conn, &tax).expect("draft");
-    issue(&b.conn, &b.pack, &b.accounts, tax, "2026-08-06", None).expect("issue");
-    let mut fin = draft(
-        DocKind::Invoice,
-        "FV",
-        vec![line("Web", "1", "", 15_000_000, "OUT21")],
-    );
-    fin.advances = vec![tax];
-    fin.due_date = Some("2026-09-30".into());
-    let fin = create_draft(&b.conn, &fin).expect("draft");
-    issue(&b.conn, &b.pack, &b.accounts, fin, "2026-09-15", None).expect("issue");
-
-    let advance = get(&b.conn, &b.pack, advance).expect("get");
-    let tax = get(&b.conn, &b.pack, tax).expect("get");
-    let fin = get(&b.conn, &b.pack, fin).expect("get");
+    let (advance, tax, fin) = b.advance_chain();
     let a = isdoc(&b, &advance, None, &[]);
     assert!(a.contains("<DocumentType>4</DocumentType>"));
     assert!(
@@ -307,7 +156,7 @@ fn writes_a_supplier_outside_vat() {
     let doc = get(&b.conn, &b.pack, id).expect("get");
     let xml = isdoc(&b, &doc, None, &[]);
     assert!(xml.contains("<VATApplicable>false</VATApplicable>"));
-    assert!(!xml.contains("<PartyTaxScheme>\n          <CompanyID>CZ25596641"));
+    assert!(!xml.contains("<PartyTaxScheme>\n          <CompanyID>CZ92588034"));
     assert!(xml.contains("<PayableAmount>2800.00</PayableAmount>"));
     insta::assert_snapshot!("non_payer", xml);
 }

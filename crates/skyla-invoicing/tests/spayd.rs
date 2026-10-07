@@ -125,10 +125,10 @@ fn derives_the_variable_symbol_from_the_number() {
 
 #[test]
 fn checks_ico_and_stores_the_profile() {
-    assert!(valid_ico("25596641"));
-    assert!(valid_ico("27074358"));
-    assert!(!valid_ico("25596642"));
-    assert!(!valid_ico("2559664"));
+    assert!(valid_ico("92588034"));
+    assert!(valid_ico("93617453"));
+    assert!(!valid_ico("92588035"));
+    assert!(!valid_ico("9258803"));
 
     let conn = rusqlite::Connection::open_in_memory().expect("ok");
     skyla_ledger::apply_schema(&conn).expect("ok");
@@ -137,7 +137,7 @@ fn checks_ico_and_stores_the_profile() {
 
     let mut profile = Supplier {
         name: "  Jana Nováková ".into(),
-        ico: Some("25596642".into()),
+        ico: Some("92588035".into()),
         dic: None,
         address: String::new(),
         iban: Some("CZ5855000000001265098002".into()),
@@ -153,13 +153,13 @@ fn checks_ico_and_stores_the_profile() {
         assert!(problems.contains(expected), "{problems}");
     }
 
-    profile.ico = Some("25596641".into());
-    profile.dic = Some("cz 25596641".into());
+    profile.ico = Some("92588034".into());
+    profile.dic = Some("cz 92588034".into());
     profile.address = "Dlouhá 12\n110 00 Praha 1".into();
     profile.iban = Some("cz58 5500 0000 0012 6509 8001".into());
     let saved = set_supplier(&conn, &profile).expect("ok");
     assert_eq!(saved.name, "Jana Nováková");
-    assert_eq!(saved.dic.as_deref(), Some("CZ25596641"));
+    assert_eq!(saved.dic.as_deref(), Some("CZ92588034"));
     assert_eq!(saved.iban.as_deref(), Some("CZ5855000000001265098001"));
     assert_eq!(supplier(&conn).expect("ok"), Some(saved));
 }

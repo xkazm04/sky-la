@@ -575,8 +575,8 @@ fn issuing_snapshots_the_supplier_and_asks_for_payment() {
     let b = books();
     let mut profile = skyla_invoicing::Supplier {
         name: "Jana Nováková".into(),
-        ico: Some("25596641".into()),
-        dic: Some("CZ25596641".into()),
+        ico: Some("92588034".into()),
+        dic: Some("CZ92588034".into()),
         address: "Dlouhá 12\n110 00 Praha 1".into(),
         iban: Some("CZ5855000000001265098001".into()),
         bic: None,
@@ -620,7 +620,7 @@ fn a_supplier_outside_vat_charges_none() {
     let b = books();
     let profile = skyla_invoicing::Supplier {
         name: "Petr Malý".into(),
-        ico: Some("25596641".into()),
+        ico: Some("92588034".into()),
         dic: None,
         address: "Krátká 3\n370 01 České Budějovice".into(),
         iban: None,

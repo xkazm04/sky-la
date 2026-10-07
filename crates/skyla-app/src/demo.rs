@@ -220,12 +220,30 @@ pub(crate) fn seed_invoicing(
     let accounts = Accounts::cz();
     let mut scheduled = HashMap::new();
     for (i, doc) in domain.invoices.iter().enumerate() {
+        let client = domain
+            .clients
+            .iter()
+            .find(|c| c.name == doc.client)
+            .ok_or_else(|| {
+                CoreError::Demo(format!(
+                    "invoice {}: unknown client {}",
+                    doc.number, doc.client
+                ))
+            })?;
+        if !skyla_invoicing::valid_ico(&client.ico) {
+            return Err(CoreError::Demo(format!(
+                "client {}: invalid IČO {}",
+                client.name, client.ico
+            )));
+        }
         let input = DraftInput {
             kind: DocKind::Invoice,
             series: "FV".into(),
             customer: Customer {
-                name: doc.client.clone(),
-                ..Customer::default()
+                name: client.legal_name.clone(),
+                ico: Some(client.ico.clone()),
+                dic: client.dic.clone(),
+                address: Some(client.address.clone()),
             },
             due_date: doc.due_on.clone(),
             tax_point_date: None,
@@ -284,6 +302,8 @@ pub(crate) struct Domain {
     pub(crate) entity: DomainEntity,
     /// The supplier profile printed on documents.
     pub(crate) supplier: DomainSupplier,
+    /// Customers, by the name invoices use.
+    pub(crate) clients: Vec<DomainClient>,
     /// Invoice documents (issued ones link to the ledger by number).
     pub(crate) invoices: Vec<DomainInvoice>,
     /// The latest bank import.
@@ -292,6 +312,17 @@ pub(crate) struct Domain {
     pub(crate) proposals: Vec<DomainProposal>,
     /// The egress register.
     pub(crate) egress_runs: Vec<crate::dto::EgressRunDto>,
+}
+
+/// A customer.
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub(crate) struct DomainClient {
+    pub(crate) name: String,
+    pub(crate) legal_name: String,
+    pub(crate) ico: String,
+    pub(crate) dic: Option<String>,
+    pub(crate) address: String,
 }
 
 /// The entity's settings.

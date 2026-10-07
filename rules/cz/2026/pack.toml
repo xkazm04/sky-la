@@ -226,6 +226,7 @@ rows = [
   { row = "1", part = "base", credit_positive = true },
   { row = "1", part = "tax", credit_positive = true },
 ]
+einvoice = { category = "S" }
 
 [[vat_code]]
 code = "OUT12"
@@ -236,6 +237,7 @@ rows = [
   { row = "2", part = "base", credit_positive = true },
   { row = "2", part = "tax", credit_positive = true },
 ]
+einvoice = { category = "S" }
 
 [[vat_code]]
 code = "NOVAT"
@@ -244,6 +246,7 @@ rate = "vat.rate.none"
 cite = { act = "zdph", section = "§ 6" }
 rows = []
 outside_vat = true
+einvoice = { category = "O", exemption_reason = "Dodavatel není plátcem DPH (§ 6 zákona o DPH)." }
 
 [[vat_code]]
 code = "RC21S"

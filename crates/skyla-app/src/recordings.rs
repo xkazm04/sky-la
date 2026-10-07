@@ -48,7 +48,9 @@ pub fn canonical_requests() -> Vec<(&'static str, Value)> {
         // The overdue invoice, for the PDF export in both languages.
         ("invoice_pdf", json!({ "id": 6, "lang": "cs" })),
         ("invoice_pdf", json!({ "id": 6, "lang": "en" })),
-        ("invoice_isdoc", json!({ "id": 6 })),
+        ("invoice_xml", json!({ "id": 6, "format": "isdoc" })),
+        ("invoice_xml", json!({ "id": 6, "format": "ubl" })),
+        ("invoice_xml", json!({ "id": 6, "format": "cii" })),
     ];
     for (from, to) in [
         ("2026-07-01", "2026-07-31"),
@@ -113,7 +115,7 @@ pub fn dispatch(core: &Core, command: &str, args: &Value) -> Result<Value, IpcFa
                 })?;
             to_value(core.invoice_pdf(id, arg(args, "lang")?))
         }
-        "invoice_isdoc" => {
+        "invoice_xml" => {
             let id = args
                 .get("id")
                 .and_then(Value::as_i64)
@@ -121,7 +123,7 @@ pub fn dispatch(core: &Core, command: &str, args: &Value) -> Result<Value, IpcFa
                     code: "bad_request".into(),
                     message: "missing argument id".into(),
                 })?;
-            to_value(core.invoice_isdoc(id))
+            to_value(core.invoice_xml(id, arg(args, "format")?))
         }
         "vat_return" => to_value(core.vat_return(arg(args, "from")?, arg(args, "to")?)),
         "profit_and_loss" => to_value(core.profit_and_loss(arg(args, "from")?, arg(args, "to")?)),

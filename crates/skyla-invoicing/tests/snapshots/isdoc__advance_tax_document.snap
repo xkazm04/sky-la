@@ -19,7 +19,7 @@ expression: t
   <AccountingSupplierParty>
     <Party>
       <PartyIdentification>
-        <ID>25596641</ID>
+        <ID>92588034</ID>
       </PartyIdentification>
       <PartyName>
         <Name>Jana Nováková</Name>
@@ -35,7 +35,7 @@ expression: t
         </Country>
       </PostalAddress>
       <PartyTaxScheme>
-        <CompanyID>CZ25596641</CompanyID>
+        <CompanyID>CZ92588034</CompanyID>
         <TaxScheme>VAT</TaxScheme>
       </PartyTaxScheme>
       <Contact>
@@ -46,7 +46,7 @@ expression: t
   <AccountingCustomerParty>
     <Party>
       <PartyIdentification>
-        <ID>27082440</ID>
+        <ID>91341272</ID>
       </PartyIdentification>
       <PartyName>
         <Name>Studio Brno s.r.o.</Name>
@@ -62,7 +62,7 @@ expression: t
         </Country>
       </PostalAddress>
       <PartyTaxScheme>
-        <CompanyID>CZ27082440</CompanyID>
+        <CompanyID>CZ91341272</CompanyID>
         <TaxScheme>VAT</TaxScheme>
       </PartyTaxScheme>
     </Party>
