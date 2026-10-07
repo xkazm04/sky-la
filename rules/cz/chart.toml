@@ -1,0 +1,650 @@
+# Czech chart of accounts for sky-la entities (OSVČ and s.r.o.).
+#
+# Source: the "směrná účtová osnova" for entrepreneurs under vyhláška
+# č. 500/2002 Sb., which fixes the account classes and groups. The three-digit
+# synthetic accounts are the customary model chart built on those groups.
+# Entities add analytic accounts (e.g. 221.001 for one bank account) under
+# these; an account with children can no longer be posted to.
+#
+# kind:        asset | liability | equity | revenue | expense | closing
+# normal_side: debit | credit. Assets are debit-normal and liabilities, revenue
+#              credit-normal, except accounts marked `contra = true` (accumulated
+#              depreciation 07x/08x). Equity and closing accounts may be either.
+
+id = "cz-chart"
+version = "2026.1"
+citation = "vyhláška č. 500/2002 Sb., směrná účtová osnova pro podnikatele"
+
+# ── Class 0: long-term assets ───────────────────────────────────────────────
+[[account]]
+code = "013"
+name_cs = "Software"
+name_en = "Software"
+kind = "asset"
+normal_side = "debit"
+
+[[account]]
+code = "022"
+name_cs = "Hmotné movité věci a jejich soubory"
+name_en = "Tangible movable assets"
+kind = "asset"
+normal_side = "debit"
+
+[[account]]
+code = "042"
+name_cs = "Nedokončený dlouhodobý hmotný majetek"
+name_en = "Tangible assets under construction"
+kind = "asset"
+normal_side = "debit"
+
+[[account]]
+code = "073"
+name_cs = "Oprávky k softwaru"
+name_en = "Accumulated amortisation of software"
+kind = "asset"
+normal_side = "credit"
+contra = true
+
+[[account]]
+code = "082"
+name_cs = "Oprávky k hmotným movitým věcem a jejich souborům"
+name_en = "Accumulated depreciation of tangible movable assets"
+kind = "asset"
+normal_side = "credit"
+contra = true
+
+# ── Class 1: inventory ─────────────────────────────────────────────────────
+[[account]]
+code = "112"
+name_cs = "Materiál na skladě"
+name_en = "Materials in stock"
+kind = "asset"
+normal_side = "debit"
+
+[[account]]
+code = "132"
+name_cs = "Zboží na skladě a v prodejnách"
+name_en = "Goods in stock"
+kind = "asset"
+normal_side = "debit"
+
+# ── Class 2: cash, bank and short-term finance ─────────────────────────────
+[[account]]
+code = "211"
+name_cs = "Pokladna"
+name_en = "Cash"
+kind = "asset"
+normal_side = "debit"
+
+[[account]]
+code = "221"
+name_cs = "Peněžní prostředky na účtech"
+name_en = "Bank accounts"
+kind = "asset"
+normal_side = "debit"
+
+[[account]]
+code = "231"
+name_cs = "Krátkodobé úvěry"
+name_en = "Short-term bank loans"
+kind = "liability"
+normal_side = "credit"
+
+[[account]]
+code = "261"
+name_cs = "Peníze na cestě"
+name_en = "Cash in transit"
+kind = "asset"
+normal_side = "debit"
+
+# ── Class 3: receivables and payables ──────────────────────────────────────
+[[account]]
+code = "311"
+name_cs = "Pohledávky z obchodních vztahů"
+name_en = "Trade receivables"
+kind = "asset"
+normal_side = "debit"
+
+[[account]]
+code = "314"
+name_cs = "Poskytnuté zálohy"
+name_en = "Advances paid"
+kind = "asset"
+normal_side = "debit"
+
+[[account]]
+code = "321"
+name_cs = "Závazky z obchodních vztahů"
+name_en = "Trade payables"
+kind = "liability"
+normal_side = "credit"
+
+[[account]]
+code = "324"
+name_cs = "Přijaté zálohy"
+name_en = "Advances received"
+kind = "liability"
+normal_side = "credit"
+
+[[account]]
+code = "331"
+name_cs = "Zaměstnanci"
+name_en = "Employees"
+kind = "liability"
+normal_side = "credit"
+
+[[account]]
+code = "336"
+name_cs = "Zúčtování s institucemi sociálního zabezpečení a zdravotního pojištění"
+name_en = "Social security and health insurance settlements"
+kind = "liability"
+normal_side = "credit"
+
+[[account]]
+code = "341"
+name_cs = "Daň z příjmů"
+name_en = "Income tax"
+kind = "liability"
+normal_side = "credit"
+
+[[account]]
+code = "342"
+name_cs = "Ostatní přímé daně"
+name_en = "Other direct taxes"
+kind = "liability"
+normal_side = "credit"
+
+[[account]]
+code = "343"
+name_cs = "Daň z přidané hodnoty"
+name_en = "Value added tax"
+kind = "liability"
+normal_side = "credit"
+
+[[account]]
+code = "345"
+name_cs = "Ostatní daně a poplatky"
+name_en = "Other taxes and fees"
+kind = "liability"
+normal_side = "credit"
+
+[[account]]
+code = "378"
+name_cs = "Jiné pohledávky"
+name_en = "Other receivables"
+kind = "asset"
+normal_side = "debit"
+
+[[account]]
+code = "379"
+name_cs = "Jiné závazky"
+name_en = "Other payables"
+kind = "liability"
+normal_side = "credit"
+
+[[account]]
+code = "381"
+name_cs = "Náklady příštích období"
+name_en = "Prepaid expenses"
+kind = "asset"
+normal_side = "debit"
+
+[[account]]
+code = "383"
+name_cs = "Výdaje příštích období"
+name_en = "Accrued expenses"
+kind = "liability"
+normal_side = "credit"
+
+[[account]]
+code = "384"
+name_cs = "Výnosy příštích období"
+name_en = "Deferred revenue"
+kind = "liability"
+normal_side = "credit"
+
+[[account]]
+code = "385"
+name_cs = "Příjmy příštích období"
+name_en = "Accrued revenue"
+kind = "asset"
+normal_side = "debit"
+
+[[account]]
+code = "395"
+name_cs = "Vnitřní zúčtování"
+name_en = "Internal settlement"
+kind = "asset"
+normal_side = "debit"
+
+# ── Class 4: equity and long-term liabilities ──────────────────────────────
+[[account]]
+code = "411"
+name_cs = "Základní kapitál"
+name_en = "Registered capital"
+kind = "equity"
+normal_side = "credit"
+
+[[account]]
+code = "428"
+name_cs = "Nerozdělený zisk minulých let"
+name_en = "Retained earnings"
+kind = "equity"
+normal_side = "credit"
+
+[[account]]
+code = "429"
+name_cs = "Neuhrazená ztráta minulých let"
+name_en = "Accumulated losses"
+kind = "equity"
+normal_side = "debit"
+
+[[account]]
+code = "431"
+name_cs = "Výsledek hospodaření ve schvalovacím řízení"
+name_en = "Profit or loss awaiting approval"
+kind = "equity"
+normal_side = "credit"
+
+[[account]]
+code = "491"
+name_cs = "Účet individuálního podnikatele"
+name_en = "Sole trader's own account"
+kind = "equity"
+normal_side = "credit"
+
+# ── Class 5: expenses ──────────────────────────────────────────────────────
+[[account]]
+code = "501"
+name_cs = "Spotřeba materiálu"
+name_en = "Materials consumed"
+kind = "expense"
+normal_side = "debit"
+
+[[account]]
+code = "502"
+name_cs = "Spotřeba energie"
+name_en = "Energy consumed"
+kind = "expense"
+normal_side = "debit"
+
+[[account]]
+code = "504"
+name_cs = "Prodané zboží"
+name_en = "Cost of goods sold"
+kind = "expense"
+normal_side = "debit"
+
+[[account]]
+code = "511"
+name_cs = "Opravy a udržování"
+name_en = "Repairs and maintenance"
+kind = "expense"
+normal_side = "debit"
+
+[[account]]
+code = "512"
+name_cs = "Cestovné"
+name_en = "Travel"
+kind = "expense"
+normal_side = "debit"
+
+[[account]]
+code = "513"
+name_cs = "Náklady na reprezentaci"
+name_en = "Entertainment"
+kind = "expense"
+normal_side = "debit"
+
+[[account]]
+code = "518"
+name_cs = "Ostatní služby"
+name_en = "Other services"
+kind = "expense"
+normal_side = "debit"
+
+[[account]]
+code = "521"
+name_cs = "Mzdové náklady"
+name_en = "Wages and salaries"
+kind = "expense"
+normal_side = "debit"
+
+[[account]]
+code = "524"
+name_cs = "Zákonné sociální a zdravotní pojištění"
+name_en = "Statutory social and health insurance"
+kind = "expense"
+normal_side = "debit"
+
+[[account]]
+code = "538"
+name_cs = "Ostatní daně a poplatky"
+name_en = "Other taxes and fees"
+kind = "expense"
+normal_side = "debit"
+
+[[account]]
+code = "543"
+name_cs = "Dary"
+name_en = "Gifts"
+kind = "expense"
+normal_side = "debit"
+
+[[account]]
+code = "545"
+name_cs = "Ostatní pokuty a penále"
+name_en = "Other fines and penalties"
+kind = "expense"
+normal_side = "debit"
+
+[[account]]
+code = "548"
+name_cs = "Ostatní provozní náklady"
+name_en = "Other operating expenses"
+kind = "expense"
+normal_side = "debit"
+
+[[account]]
+code = "551"
+name_cs = "Odpisy dlouhodobého nehmotného a hmotného majetku"
+name_en = "Depreciation and amortisation"
+kind = "expense"
+normal_side = "debit"
+
+[[account]]
+code = "562"
+name_cs = "Úroky"
+name_en = "Interest expense"
+kind = "expense"
+normal_side = "debit"
+
+[[account]]
+code = "563"
+name_cs = "Kurzové ztráty"
+name_en = "Foreign exchange losses"
+kind = "expense"
+normal_side = "debit"
+
+[[account]]
+code = "568"
+name_cs = "Ostatní finanční náklady"
+name_en = "Other financial expenses"
+kind = "expense"
+normal_side = "debit"
+
+[[account]]
+code = "591"
+name_cs = "Daň z příjmů – splatná"
+name_en = "Income tax – current"
+kind = "expense"
+normal_side = "debit"
+
+# ── Class 6: revenue ───────────────────────────────────────────────────────
+[[account]]
+code = "601"
+name_cs = "Tržby za vlastní výrobky"
+name_en = "Sales of own products"
+kind = "revenue"
+normal_side = "credit"
+
+[[account]]
+code = "602"
+name_cs = "Tržby z prodeje služeb"
+name_en = "Sales of services"
+kind = "revenue"
+normal_side = "credit"
+
+[[account]]
+code = "604"
+name_cs = "Tržby za zboží"
+name_en = "Sales of goods"
+kind = "revenue"
+normal_side = "credit"
+
+[[account]]
+code = "641"
+name_cs = "Tržby z prodeje dlouhodobého majetku"
+name_en = "Proceeds from sale of long-term assets"
+kind = "revenue"
+normal_side = "credit"
+
+[[account]]
+code = "644"
+name_cs = "Smluvní pokuty a úroky z prodlení"
+name_en = "Contractual penalties and late-payment interest"
+kind = "revenue"
+normal_side = "credit"
+
+[[account]]
+code = "648"
+name_cs = "Ostatní provozní výnosy"
+name_en = "Other operating income"
+kind = "revenue"
+normal_side = "credit"
+
+[[account]]
+code = "662"
+name_cs = "Úroky"
+name_en = "Interest income"
+kind = "revenue"
+normal_side = "credit"
+
+[[account]]
+code = "663"
+name_cs = "Kurzové zisky"
+name_en = "Foreign exchange gains"
+kind = "revenue"
+normal_side = "credit"
+
+[[account]]
+code = "668"
+name_cs = "Ostatní finanční výnosy"
+name_en = "Other financial income"
+kind = "revenue"
+normal_side = "credit"
+
+# ── Class 7: opening and closing ───────────────────────────────────────────
+[[account]]
+code = "701"
+name_cs = "Počáteční účet rozvažný"
+name_en = "Opening balance account"
+kind = "closing"
+normal_side = "debit"
+
+[[account]]
+code = "702"
+name_cs = "Konečný účet rozvažný"
+name_en = "Closing balance account"
+kind = "closing"
+normal_side = "debit"
+
+[[account]]
+code = "710"
+name_cs = "Účet zisků a ztrát"
+name_en = "Profit and loss account"
+kind = "closing"
+normal_side = "debit"
+
+# ── Categories: what freelancers see instead of account numbers ────────────
+# tax_treatment is the default for new postings; a posting can override it.
+#   taxable          income included in the tax base
+#   deductible       expense reducing the tax base
+#   non_deductible   expense kept out of the tax base (e.g. §25 ZDP)
+#   not_tax_relevant neither income nor expense (owner's money)
+
+[[category]]
+key = "services-sold"
+name_cs = "Prodej služeb"
+name_en = "Services sold"
+direction = "income"
+account = "602"
+tax_treatment = "taxable"
+
+[[category]]
+key = "goods-sold"
+name_cs = "Prodej zboží"
+name_en = "Goods sold"
+direction = "income"
+account = "604"
+tax_treatment = "taxable"
+
+[[category]]
+key = "late-payment-interest-received"
+name_cs = "Přijaté úroky z prodlení a smluvní pokuty"
+name_en = "Late-payment interest and penalties received"
+direction = "income"
+account = "644"
+tax_treatment = "taxable"
+
+[[category]]
+key = "other-income"
+name_cs = "Ostatní příjmy"
+name_en = "Other income"
+direction = "income"
+account = "648"
+tax_treatment = "taxable"
+
+[[category]]
+key = "materials-small-equipment"
+name_cs = "Materiál a drobný majetek"
+name_en = "Materials and small equipment"
+direction = "expense"
+account = "501"
+tax_treatment = "deductible"
+
+[[category]]
+key = "energy"
+name_cs = "Energie"
+name_en = "Energy"
+direction = "expense"
+account = "502"
+tax_treatment = "deductible"
+
+[[category]]
+key = "goods-for-resale"
+name_cs = "Nákup zboží"
+name_en = "Goods for resale"
+direction = "expense"
+account = "504"
+tax_treatment = "deductible"
+
+[[category]]
+key = "repairs"
+name_cs = "Opravy a údržba"
+name_en = "Repairs and maintenance"
+direction = "expense"
+account = "511"
+tax_treatment = "deductible"
+
+[[category]]
+key = "travel"
+name_cs = "Cestovné"
+name_en = "Travel"
+direction = "expense"
+account = "512"
+tax_treatment = "deductible"
+
+[[category]]
+key = "client-entertainment"
+name_cs = "Reprezentace"
+name_en = "Client entertainment"
+direction = "expense"
+account = "513"
+tax_treatment = "non_deductible"
+
+[[category]]
+key = "subcontractors"
+name_cs = "Subdodávky"
+name_en = "Subcontractors"
+direction = "expense"
+account = "518"
+tax_treatment = "deductible"
+
+[[category]]
+key = "software-subscriptions"
+name_cs = "Software a předplatné"
+name_en = "Software and subscriptions"
+direction = "expense"
+account = "518"
+tax_treatment = "deductible"
+
+[[category]]
+key = "rent"
+name_cs = "Nájem"
+name_en = "Rent"
+direction = "expense"
+account = "518"
+tax_treatment = "deductible"
+
+[[category]]
+key = "phone-internet"
+name_cs = "Telefon a internet"
+name_en = "Phone and internet"
+direction = "expense"
+account = "518"
+tax_treatment = "deductible"
+
+[[category]]
+key = "professional-services"
+name_cs = "Účetní, daňové a právní služby"
+name_en = "Accounting, tax and legal services"
+direction = "expense"
+account = "518"
+tax_treatment = "deductible"
+
+[[category]]
+key = "fees-and-taxes"
+name_cs = "Poplatky a daně"
+name_en = "Fees and taxes"
+direction = "expense"
+account = "538"
+tax_treatment = "deductible"
+
+[[category]]
+key = "gifts"
+name_cs = "Dary"
+name_en = "Gifts"
+direction = "expense"
+account = "543"
+tax_treatment = "non_deductible"
+
+[[category]]
+key = "fines-penalties"
+name_cs = "Pokuty a penále"
+name_en = "Fines and penalties"
+direction = "expense"
+account = "545"
+tax_treatment = "non_deductible"
+
+[[category]]
+key = "other-operating-expenses"
+name_cs = "Ostatní provozní výdaje"
+name_en = "Other operating expenses"
+direction = "expense"
+account = "548"
+tax_treatment = "deductible"
+
+[[category]]
+key = "bank-fees"
+name_cs = "Bankovní poplatky"
+name_en = "Bank fees"
+direction = "expense"
+account = "568"
+tax_treatment = "deductible"
+
+[[category]]
+key = "owner-withdrawal"
+name_cs = "Výběr pro soukromou potřebu"
+name_en = "Owner withdrawal"
+direction = "owner"
+account = "491"
+tax_treatment = "not_tax_relevant"
+
+[[category]]
+key = "owner-deposit"
+name_cs = "Vklad z vlastních zdrojů"
+name_en = "Owner deposit"
+direction = "owner"
+account = "491"
+tax_treatment = "not_tax_relevant"

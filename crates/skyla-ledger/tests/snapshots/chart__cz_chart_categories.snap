@@ -1,0 +1,26 @@
+---
+source: crates/skyla-ledger/tests/chart.rs
+expression: "categories.join(\"\\n\")"
+---
+bank-fees                        → 568  Deductible
+client-entertainment             → 513  NonDeductible
+energy                           → 502  Deductible
+fees-and-taxes                   → 538  Deductible
+fines-penalties                  → 545  NonDeductible
+gifts                            → 543  NonDeductible
+goods-for-resale                 → 504  Deductible
+goods-sold                       → 604  Taxable
+late-payment-interest-received   → 644  Taxable
+materials-small-equipment        → 501  Deductible
+other-income                     → 648  Taxable
+other-operating-expenses         → 548  Deductible
+owner-deposit                    → 491  NotTaxRelevant
+owner-withdrawal                 → 491  NotTaxRelevant
+phone-internet                   → 518  Deductible
+professional-services            → 518  Deductible
+rent                             → 518  Deductible
+repairs                          → 511  Deductible
+services-sold                    → 602  Taxable
+software-subscriptions           → 518  Deductible
+subcontractors                   → 518  Deductible
+travel                           → 512  Deductible

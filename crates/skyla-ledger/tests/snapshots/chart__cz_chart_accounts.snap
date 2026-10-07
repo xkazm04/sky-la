@@ -1,0 +1,67 @@
+---
+source: crates/skyla-ledger/tests/chart.rs
+expression: "accounts.join(\"\\n\")"
+---
+013      asset     debit  leaf Software
+022      asset     debit  leaf Tangible movable assets
+042      asset     debit  leaf Tangible assets under construction
+073      asset     credit contra leaf Accumulated amortisation of software
+082      asset     credit contra leaf Accumulated depreciation of tangible movable assets
+112      asset     debit  leaf Materials in stock
+132      asset     debit  leaf Goods in stock
+211      asset     debit  leaf Cash
+221      asset     debit  leaf Bank accounts
+231      liability credit leaf Short-term bank loans
+261      asset     debit  leaf Cash in transit
+311      asset     debit  leaf Trade receivables
+314      asset     debit  leaf Advances paid
+321      liability credit leaf Trade payables
+324      liability credit leaf Advances received
+331      liability credit leaf Employees
+336      liability credit leaf Social security and health insurance settlements
+341      liability credit leaf Income tax
+342      liability credit leaf Other direct taxes
+343      liability credit leaf Value added tax
+345      liability credit leaf Other taxes and fees
+378      asset     debit  leaf Other receivables
+379      liability credit leaf Other payables
+381      asset     debit  leaf Prepaid expenses
+383      liability credit leaf Accrued expenses
+384      liability credit leaf Deferred revenue
+385      asset     debit  leaf Accrued revenue
+395      asset     debit  leaf Internal settlement
+411      equity    credit leaf Registered capital
+428      equity    credit leaf Retained earnings
+429      equity    debit  leaf Accumulated losses
+431      equity    credit leaf Profit or loss awaiting approval
+491      equity    credit leaf Sole trader's own account
+501      expense   debit  leaf Materials consumed
+502      expense   debit  leaf Energy consumed
+504      expense   debit  leaf Cost of goods sold
+511      expense   debit  leaf Repairs and maintenance
+512      expense   debit  leaf Travel
+513      expense   debit  leaf Entertainment
+518      expense   debit  leaf Other services
+521      expense   debit  leaf Wages and salaries
+524      expense   debit  leaf Statutory social and health insurance
+538      expense   debit  leaf Other taxes and fees
+543      expense   debit  leaf Gifts
+545      expense   debit  leaf Other fines and penalties
+548      expense   debit  leaf Other operating expenses
+551      expense   debit  leaf Depreciation and amortisation
+562      expense   debit  leaf Interest expense
+563      expense   debit  leaf Foreign exchange losses
+568      expense   debit  leaf Other financial expenses
+591      expense   debit  leaf Income tax – current
+601      revenue   credit leaf Sales of own products
+602      revenue   credit leaf Sales of services
+604      revenue   credit leaf Sales of goods
+641      revenue   credit leaf Proceeds from sale of long-term assets
+644      revenue   credit leaf Contractual penalties and late-payment interest
+648      revenue   credit leaf Other operating income
+662      revenue   credit leaf Interest income
+663      revenue   credit leaf Foreign exchange gains
+668      revenue   credit leaf Other financial income
+701      closing   debit  leaf Opening balance account
+702      closing   debit  leaf Closing balance account
+710      closing   debit  leaf Profit and loss account
