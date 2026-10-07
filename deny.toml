@@ -13,6 +13,10 @@ ignore = [
     # (gtk-rs 0.18 -> glib-macros). No upgrade exists until Tauri leaves gtk-rs 0.18.
     # Revisit on every Tauri minor upgrade.
     { id = "RUSTSEC-2024-0370", reason = "transitive build-time dep of Tauri's GTK3 stack; no upgrade available" },
+    # "Unmaintained" notice, not a vulnerability. paste is a build-time
+    # proc-macro reached only through specta (the IPC type exporter, WP-09).
+    # Revisit when specta 2 leaves release candidates.
+    { id = "RUSTSEC-2024-0436", reason = "build-time proc-macro of specta; no maintained replacement upstream yet" },
 ]
 
 [licenses]

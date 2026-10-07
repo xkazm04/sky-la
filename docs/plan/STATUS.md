@@ -4,8 +4,8 @@ Update this file in the same commit series that completes a work packet.
 
 ## Current state
 
-- **Phase:** M1 Ledger kernel in progress. Done: WP-00 – WP-08 (M0 and M1 complete; M2 in progress).
-- **Next packet:** WP-09 (typed IPC with tauri-specta; the mock transport serves the golden fixtures).
+- **Phase:** M1 Ledger kernel in progress. Done: WP-00 – WP-09 (M0 and M1 complete; M2 in progress).
+- **Next packet:** WP-10 (every v1 screen navigable on the recorded core, in A's chrome).
 - **Blocking decisions:** none open. Wave 4 recorded as D-017 (dark first-class from WP-08) and D-018 (spike run in the cloud).
 
 ## Packets
@@ -21,7 +21,7 @@ Update this file in the same commit series that completes a work packet.
 | WP-06 | Periods, reversals, close | done | this session | 10 tests incl. 40 random single-byte tamperings; chain head sealed at close |
 | WP-07 | Projections | done | this session | 7 tests on the golden journal + `just bench` (TB over 100k entries: ~0.1 s) |
 | WP-08 | Tokens + primitives (direction A) | done | this session | Gallery `#/gallery`; axe clean in light and dark; 41 ui unit tests |
-| WP-09 | Typed IPC + fixtures | todo | | |
+| WP-09 | Typed IPC + fixtures | done | this session | 13 typed commands; 30 recordings round-trip identically over Tauri IPC and the mock |
 | WP-10 | Navigable app on fixtures | todo | | |
 | WP-11 – WP-34 | See the plan | todo | | |
 
@@ -40,6 +40,7 @@ Update this file in the same commit series that completes a work packet.
 - 2026-10-07 — WP-06: period state machine (open → closing → closed; closing takes adjustments; closed is final; date order; close records who, when and the chain head), pluggable `CloseCheck`s with four kernel checks and a report that lists every failure, `reverse_entry` (mirror entry via `reverses_id`, at most once, foreign amounts included), and the SHA-256 hash chain computed in the posting transaction. `verify_chain` names the first missing, altered or seal-inconsistent entry. All rules also hold as triggers against raw SQL.
 - 2026-10-07 — WP-07: trial balance, P&L and balance sheet (by synthetic account), cash basis (*daňová evidence*) over settlement links and cash-flagged accounts, VAT ledger by form row from pack-supplied rules, and an input-snapshot hash on every report. Golden journal `packages/fixtures/data/demo-ledger.json` (52 entries for Jan Novák, Q2–Q3 2026) reproduces the canvas P&L to the cent: Q3 revenue 456 500,00, expenses 176 150,00, profit 280 350,00 (Q2: 391 000,00 / 112 220,00 / 278 780,00). Northwind receipt → cash-basis income 70 000,00. Trial balance over 100 000 entries: ~106 ms in release (one pass over covering indexes; the first two-query version took 426 ms).
 - 2026-10-07 — WP-08: direction A tokens (`packages/ui/src/tokens.css`, light and dark, glass with opaque fallbacks for no-blur and reduced transparency) and React Aria-based primitives: Button, SegmentedControl, SearchField, Popup, Menu, DataTable (in-list sections), Inspector, SourceList, StatusBar, Badge, Kbd, plus AppWindow, Toolbar and ContentGroup. Gallery route `#/gallery` with a composed invoices window. Playwright: axe (WCAG 2.2 AA) clean in both appearances and with a menu open; keyboard walk across segmented control, source list, table, menu and search. Unit tests check token parity and contrast. Three colours moved off the canvas to pass AA (see DESIGN §6).
+- 2026-10-07 — WP-09: `skyla-app` (AGPL) holds the application core behind 13 typed commands (entity, periods, P&L, balance sheet, trial balance, cash basis, journal, integrity, invoices, bank statement, inbox proposals, egress register). Statements, the journal, invoice totals and payments, the bank tie-out and proposed VAT lines all come from the engine; `demo-domain.json` adds typed data for the domains not built yet (invoice documents, the bank import, the inbox, the register) and is validated against the ledger. tauri-specta 2.0.0-rc.25 generates the bindings; the mock replays the core's recordings through Tauri's `mockIPC`. Acceptance: every recording round-trips identically over the real Tauri IPC (MockRuntime) and through the mock (Vitest). The round-trip test found that wall-clock posting times and random uids made the demo's hash chain differ on every run; the ledger gained `create_draft_as`, `post_entry_at` and `reverse_entry_at` for replays with known identities.
 
 ## Backlog notes from sessions
 
@@ -57,3 +58,6 @@ Update this file in the same commit series that completes a work packet.
 - A reversed invoice that was already settled still recognises income through its links; credit notes (WP-11) must reverse links too.
 - The shell still uses a hash route (`apps/desktop/src/route.ts`); WP-10 should pick a router (and wire React Aria's `RouterProvider` so source-list items can be links).
 - `formatMinor` in `packages/ui` lays out digits only. Locale-aware formatting beyond cs-CZ (and the currency symbol table) should come from the core with the amount, once WP-09 types it.
+- specta 2 pulls in `paste` (RUSTSEC-2024-0436, unmaintained, build-time only); scoped exception in `deny.toml`. Revisit when specta 2 is stable.
+- The demo core is in memory and unencrypted, so the shell's status line says "Demo data · in memory". WP-30 opens a real encrypted store through `skyla-store`.
+- Commands are synchronous over a `Mutex<Connection>`. Move long reports to async commands on a blocking pool once the real store's writer thread is wired in.

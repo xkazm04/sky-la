@@ -61,7 +61,8 @@ pub enum TaxTreatment {
 }
 
 impl AccountKind {
-    pub(crate) fn as_str(self) -> &'static str {
+    /// The database spelling.
+    pub fn as_str(self) -> &'static str {
         match self {
             Self::Asset => "asset",
             Self::Liability => "liability",
@@ -74,7 +75,8 @@ impl AccountKind {
 }
 
 impl NormalSide {
-    pub(crate) fn as_str(self) -> &'static str {
+    /// The database spelling.
+    pub fn as_str(self) -> &'static str {
         match self {
             Self::Debit => "debit",
             Self::Credit => "credit",
@@ -83,7 +85,8 @@ impl NormalSide {
 }
 
 impl Direction {
-    pub(crate) fn as_str(self) -> &'static str {
+    /// The database spelling.
+    pub fn as_str(self) -> &'static str {
         match self {
             Self::Income => "income",
             Self::Expense => "expense",

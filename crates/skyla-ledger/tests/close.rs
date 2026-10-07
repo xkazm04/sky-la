@@ -635,3 +635,86 @@ fn a_broken_chain_blocks_the_close() {
     );
     assert!(chain.problems[0].ends_with("changed after it was posted"));
 }
+
+#[test]
+fn a_replayed_identity_makes_the_chain_reproducible() {
+    let uid = |n: u32| format!("00000000-0000-7000-8000-{n:012}");
+    let build = || {
+        let Ledger { conn, .. } = ledger();
+        for (n, date) in [(1, "2026-08-01"), (2, "2026-08-02")] {
+            let id = skyla_ledger::create_draft_as(
+                &conn,
+                &NewEntry {
+                    date: date.into(),
+                    source_kind: SourceKind::Manual,
+                    source_ref: None,
+                    memo: format!("entry {n}"),
+                    created_by: "user".into(),
+                    lines: pair("501", "221", 100),
+                },
+                &uid(n),
+            )
+            .unwrap();
+            skyla_ledger::post_entry_at(&conn, id, None, Some(&format!("{date}T18:00:00.000Z")))
+                .unwrap();
+        }
+        let replay = skyla_ledger::Replay {
+            uid: &uid(3),
+            posted_at: "2026-08-03T18:00:00.000Z",
+        };
+        skyla_ledger::reverse_entry_at(&conn, 1, "2026-08-03", "user", None, Some(replay)).unwrap();
+        assert_eq!(get_entry(&conn, 3).unwrap().uid, uid(3));
+        verify_chain(&conn).unwrap()
+    };
+    let (a, b) = (build(), build());
+    assert!(a.is_intact());
+    assert_eq!(a.head, b.head);
+    assert_eq!(a.entries_checked, 3);
+
+    let Ledger { conn, .. } = ledger();
+    let draft = NewEntry {
+        date: "2026-08-01".into(),
+        source_kind: SourceKind::Manual,
+        source_ref: None,
+        memo: String::new(),
+        created_by: "user".into(),
+        lines: pair("501", "221", 100),
+    };
+    for bad in [
+        "not-a-uuid",
+        "00000000-0000-7000-8000-00000000000A",
+        "{00000000-0000-7000-8000-000000000001}",
+    ] {
+        assert!(
+            matches!(
+                skyla_ledger::create_draft_as(&conn, &draft, bad),
+                Err(LedgerError::InvalidEntry(_))
+            ),
+            "{bad}"
+        );
+    }
+    let id = skyla_ledger::create_draft_as(&conn, &draft, &uid(9)).unwrap();
+    assert!(matches!(
+        skyla_ledger::create_draft_as(&conn, &draft, &uid(9)),
+        Err(LedgerError::Sql(_))
+    ));
+    for bad in [
+        "2026-08-01",
+        "2026-08-01T25:00:00.000Z",
+        "2026-02-30T10:00:00.000Z",
+        "2026-08-01 10:00:00.000Z",
+    ] {
+        assert!(
+            matches!(
+                skyla_ledger::post_entry_at(&conn, id, None, Some(bad)),
+                Err(LedgerError::InvalidEntry(_))
+            ),
+            "{bad}"
+        );
+    }
+    skyla_ledger::post_entry_at(&conn, id, None, Some("2026-08-01T09:30:00.250Z")).unwrap();
+    assert_eq!(
+        get_entry(&conn, id).unwrap().posted_at.as_deref(),
+        Some("2026-08-01T09:30:00.250Z")
+    );
+}

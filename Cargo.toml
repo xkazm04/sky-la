@@ -12,6 +12,7 @@ members = [
     "crates/skyla-egress",
     "crates/skyla-advisor",
     "crates/skyla-mcp",
+    "crates/skyla-app",
     "apps/desktop/src-tauri",
 ]
 # The desktop crate needs WebKitGTK on Linux. Everything `just ci` checks
@@ -28,6 +29,7 @@ default-members = [
     "crates/skyla-egress",
     "crates/skyla-advisor",
     "crates/skyla-mcp",
+    "crates/skyla-app",
 ]
 
 [workspace.package]

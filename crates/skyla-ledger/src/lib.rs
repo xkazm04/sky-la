@@ -33,9 +33,10 @@ pub use close::{
 };
 pub use error::LedgerError;
 pub use posting::{
-    Entry, EntryStatus, Line, NewEntry, NewLine, Reversal, SourceKind, create_draft, delete_draft,
-    functional_currency, get_entry, is_iso_date, link_settlement, post_entry, reverse_entry,
-    set_functional_currency,
+    Entry, EntryStatus, Line, NewEntry, NewLine, Replay, Reversal, SettlementLink, SourceKind,
+    create_draft, create_draft_as, delete_draft, find_posted_by_ref, functional_currency,
+    get_entry, is_iso_date, link_settlement, list_posted, post_entry, post_entry_at, reverse_entry,
+    reverse_entry_at, set_functional_currency, settlements_of,
 };
 pub use reports::{
     BalanceSheet, CashBasis, CashBasisLine, CashBasisTotal, ProfitAndLoss, Snapshot, StatementLine,

@@ -32,7 +32,8 @@ pub enum SourceKind {
 }
 
 impl SourceKind {
-    fn as_str(self) -> &'static str {
+    /// The stored name, e.g. `invoice`.
+    pub fn as_str(self) -> &'static str {
         match self {
             Self::Manual => "manual",
             Self::Invoice => "invoice",
@@ -321,13 +322,45 @@ pub fn create_draft(conn: &Connection, entry: &NewEntry) -> Result<i64, LedgerEr
             "reversals are created with reverse_entry".into(),
         ));
     }
-    insert_draft(conn, entry, None)
+    insert_draft(conn, entry, None, None)
+}
+
+/// [`create_draft`] with a given uid instead of a fresh UUID v7. For
+/// replaying or importing books whose entry identities are known, and for
+/// reproducible demos: the uid is part of the hash chain.
+pub fn create_draft_as(conn: &Connection, entry: &NewEntry, uid: &str) -> Result<i64, LedgerError> {
+    if entry.source_kind == SourceKind::Reversal {
+        return Err(LedgerError::InvalidEntry(
+            "reversals are created with reverse_entry".into(),
+        ));
+    }
+    insert_draft(conn, entry, None, Some(canonical_uid(uid)?))
+}
+
+/// A uid must be a UUID in its canonical lowercase, hyphenated form.
+fn canonical_uid(uid: &str) -> Result<&str, LedgerError> {
+    match uuid::Uuid::parse_str(uid) {
+        Ok(parsed) if parsed.hyphenated().to_string() == uid => Ok(uid),
+        _ => Err(LedgerError::InvalidEntry(format!(
+            "entry uid {uid:?} isn't a canonical UUID"
+        ))),
+    }
+}
+
+/// A known identity for a replayed posting: its uid and posting time.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Replay<'a> {
+    /// Canonical UUID.
+    pub uid: &'a str,
+    /// `YYYY-MM-DDTHH:MM:SS.sssZ`.
+    pub posted_at: &'a str,
 }
 
 fn insert_draft(
     conn: &Connection,
     entry: &NewEntry,
     reverses_id: Option<i64>,
+    uid: Option<&str>,
 ) -> Result<i64, LedgerError> {
     if !is_iso_date(&entry.date) {
         return Err(LedgerError::InvalidDate(entry.date.clone()));
@@ -336,7 +369,7 @@ fn insert_draft(
     atomically(conn, |tx| {
         tx.execute(
         "INSERT INTO journal_entry (uid, entry_date, source_kind, source_ref, memo, created_by, reverses_id) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
-        params![uuid::Uuid::now_v7().to_string(), entry.date, entry.source_kind.as_str(), entry.source_ref, entry.memo, entry.created_by, reverses_id],
+        params![uid.map_or_else(|| uuid::Uuid::now_v7().to_string(), str::to_owned), entry.date, entry.source_kind.as_str(), entry.source_ref, entry.memo, entry.created_by, reverses_id],
     )?;
         let id = tx.last_insert_rowid();
         for (index, line) in entry.lines.iter().enumerate() {
@@ -389,6 +422,43 @@ pub fn post_entry(
     id: i64,
     approved_by: Option<&str>,
 ) -> Result<i64, LedgerError> {
+    post_entry_at(conn, id, approved_by, None)
+}
+
+/// True for a UTC timestamp written `YYYY-MM-DDTHH:MM:SS.sssZ`.
+fn is_posting_time(text: &str) -> bool {
+    let b = text.as_bytes();
+    b.len() == 24
+        && is_iso_date(&text[..10])
+        && b[10] == b'T'
+        && b[13] == b':'
+        && b[16] == b':'
+        && b[19] == b'.'
+        && b[23] == b'Z'
+        && [11, 12, 14, 15, 17, 18, 20, 21, 22]
+            .iter()
+            .all(|&i| b[i].is_ascii_digit())
+        && text[11..13] < *"24"
+        && text[14..16] < *"60"
+        && text[17..19] < *"60"
+}
+
+/// [`post_entry`] with a given posting time (`YYYY-MM-DDTHH:MM:SS.sssZ`, UTC)
+/// instead of now. For replaying or importing books whose posting times are
+/// known, and for reproducible demos: the time is part of the hash chain.
+pub fn post_entry_at(
+    conn: &Connection,
+    id: i64,
+    approved_by: Option<&str>,
+    posted_at: Option<&str>,
+) -> Result<i64, LedgerError> {
+    if let Some(time) = posted_at
+        && !is_posting_time(time)
+    {
+        return Err(LedgerError::InvalidEntry(format!(
+            "posting time {time:?} isn't YYYY-MM-DDTHH:MM:SS.sssZ"
+        )));
+    }
     let entry = get_entry(conn, id)?;
     if entry.status == EntryStatus::Posted {
         return Err(LedgerError::AlreadyPosted(id));
@@ -429,10 +499,12 @@ pub fn post_entry(
             [],
             |r| r.get(0),
         )?;
-        let posted_at: String =
-            tx.query_row("SELECT strftime('%Y-%m-%dT%H:%M:%fZ', 'now')", [], |r| {
+        let posted_at: String = match posted_at {
+            Some(time) => time.to_owned(),
+            None => tx.query_row("SELECT strftime('%Y-%m-%dT%H:%M:%fZ', 'now')", [], |r| {
                 r.get(0)
-            })?;
+            })?,
+        };
         let chain_hash = hash_for_post(tx, id, seq, &posted_at, approver)?;
         tx.execute(
             "UPDATE journal_entry
@@ -496,6 +568,20 @@ pub fn reverse_entry(
     created_by: &str,
     memo: Option<&str>,
 ) -> Result<Reversal, LedgerError> {
+    reverse_entry_at(conn, id, date, created_by, memo, None)
+}
+
+/// [`reverse_entry`] with a known uid and posting time for the reversal; see
+/// [`create_draft_as`] and [`post_entry_at`].
+pub fn reverse_entry_at(
+    conn: &Connection,
+    id: i64,
+    date: &str,
+    created_by: &str,
+    memo: Option<&str>,
+    replay: Option<Replay<'_>>,
+) -> Result<Reversal, LedgerError> {
+    let uid = replay.map(|r| canonical_uid(r.uid)).transpose()?;
     let original = get_entry(conn, id)?;
     let Some(seq) = original.posted_seq else {
         return Err(LedgerError::NotPosted(id));
@@ -555,14 +641,14 @@ pub fn reverse_entry(
         lines,
     };
     atomically(conn, |tx| {
-        let entry_id = insert_draft(tx, &reversal, Some(id))?;
+        let entry_id = insert_draft(tx, &reversal, Some(id), uid)?;
         // A reversed payment un-settles what it settled.
         tx.execute(
             "INSERT INTO settlement (cash_entry_id, settled_entry_id, amount_func_minor)
              SELECT ?1, settled_entry_id, -amount_func_minor FROM settlement WHERE cash_entry_id = ?2",
             params![entry_id, id],
         )?;
-        let posted_seq = post_entry(tx, entry_id, None)?;
+        let posted_seq = post_entry_at(tx, entry_id, None, replay.map(|r| r.posted_at))?;
         Ok(Reversal {
             entry_id,
             posted_seq,
@@ -665,4 +751,76 @@ pub fn get_entry(conn: &Connection, id: i64) -> Result<Entry, LedgerError> {
         chain_hash,
         lines,
     })
+}
+
+/// Posted entries dated `from..=to`, in posting order.
+pub fn list_posted(conn: &Connection, from: &str, to: &str) -> Result<Vec<Entry>, LedgerError> {
+    for date in [from, to] {
+        if !is_iso_date(date) {
+            return Err(LedgerError::InvalidDate(date.to_owned()));
+        }
+    }
+    let ids: Vec<i64> = conn
+        .prepare_cached(
+            "SELECT id FROM journal_entry
+             WHERE status = 'posted' AND entry_date BETWEEN ?1 AND ?2 ORDER BY posted_seq",
+        )?
+        .query_map([from, to], |r| r.get(0))?
+        .collect::<Result<_, _>>()?;
+    ids.into_iter().map(|id| get_entry(conn, id)).collect()
+}
+
+/// The posted entry whose origin reference is `source_ref` (an invoice
+/// number, say), if there is exactly one.
+pub fn find_posted_by_ref(
+    conn: &Connection,
+    source_kind: SourceKind,
+    source_ref: &str,
+) -> Result<Option<i64>, LedgerError> {
+    let ids: Vec<i64> = conn
+        .prepare_cached(
+            "SELECT id FROM journal_entry
+             WHERE status = 'posted' AND source_kind = ?1 AND source_ref = ?2 LIMIT 2",
+        )?
+        .query_map([source_kind.as_str(), source_ref], |r| r.get(0))?
+        .collect::<Result<_, _>>()?;
+    Ok(match ids.as_slice() {
+        [id] => Some(*id),
+        _ => None,
+    })
+}
+
+/// One posted payment against a settled entry.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+pub struct SettlementLink {
+    /// The paying entry.
+    pub cash_entry_id: i64,
+    /// Its date.
+    pub date: String,
+    /// The amount it settled (negative for a reversed payment).
+    pub amount: Money,
+}
+
+/// The posted payments that settle `settled_entry_id`, by date.
+pub fn settlements_of(
+    conn: &Connection,
+    settled_entry_id: i64,
+) -> Result<Vec<SettlementLink>, LedgerError> {
+    let currency = functional_currency(conn)?;
+    let links = conn
+        .prepare_cached(
+            "SELECT s.cash_entry_id, c.entry_date, s.amount_func_minor
+             FROM settlement s JOIN journal_entry c ON c.id = s.cash_entry_id
+             WHERE s.settled_entry_id = ?1 AND c.status = 'posted'
+             ORDER BY c.entry_date, c.posted_seq",
+        )?
+        .query_map([settled_entry_id], |r| {
+            Ok(SettlementLink {
+                cash_entry_id: r.get(0)?,
+                date: r.get(1)?,
+                amount: Money::new(r.get(2)?, currency),
+            })
+        })?
+        .collect::<Result<_, _>>()?;
+    Ok(links)
 }

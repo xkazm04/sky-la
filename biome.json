@@ -13,7 +13,9 @@
       "!**/target",
       "!**/src-tauri/gen",
       "!**/test-results",
-      "!**/playwright-report"
+      "!**/playwright-report",
+      "!**/ipc-recordings.json",
+      "!packages/ipc/src/bindings.ts"
     ]
   },
   "formatter": {

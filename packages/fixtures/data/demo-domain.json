@@ -1,0 +1,513 @@
+{
+  "$comment": "Typed demo data for domains not built yet (invoice documents, the bank import, the inbox, the egress register). Rust (skyla-app) validates it against the golden journal and computes every derived amount; the webview only displays recordings of the core's answers.",
+  "entity": {
+    "displayName": "Jan Novák",
+    "legalForm": "OSVČ",
+    "vatPeriod": "monthly",
+    "functionalCurrency": "CZK",
+    "asOf": "2026-10-07",
+    "bankAccount": "221",
+    "bankName": "ČSOB Business ··4412"
+  },
+  "invoices": [
+    {
+      "number": "2026-041",
+      "client": "Northwind Traders",
+      "dueOn": "2026-04-24",
+      "lines": [
+        {
+          "description": "Product design · April",
+          "quantity": "96",
+          "unit": "h",
+          "unitPriceMinor": 125000,
+          "vatRatePercent": "21"
+        }
+      ]
+    },
+    {
+      "number": "2026-058",
+      "client": "Acme Analytics",
+      "dueOn": "2026-05-26",
+      "lines": [
+        {
+          "description": "Analytics dashboard design · fixed fee",
+          "quantity": "1",
+          "unit": "pc",
+          "unitPriceMinor": 15000000,
+          "vatRatePercent": "21"
+        }
+      ]
+    },
+    {
+      "number": "2026-073",
+      "client": "Studio Brno",
+      "dueOn": "2026-06-29",
+      "lines": [
+        {
+          "description": "Brand refresh",
+          "quantity": "1",
+          "unit": "pc",
+          "unitPriceMinor": 9500000,
+          "vatRatePercent": "21"
+        },
+        {
+          "description": "Illustration set",
+          "quantity": "26",
+          "unit": "pc",
+          "unitPriceMinor": 100000,
+          "vatRatePercent": "21"
+        }
+      ]
+    },
+    {
+      "number": "2026-089",
+      "client": "Northwind Traders",
+      "dueOn": "2026-07-28",
+      "lines": [
+        {
+          "description": "Product design · June and July",
+          "quantity": "112",
+          "unit": "h",
+          "unitPriceMinor": 125000,
+          "vatRatePercent": "21"
+        }
+      ]
+    },
+    {
+      "number": "2026-097",
+      "client": "Acme Analytics",
+      "dueOn": "2026-08-25",
+      "lines": [
+        {
+          "description": "Dashboard phase 2 · fixed fee",
+          "quantity": "1",
+          "unit": "pc",
+          "unitPriceMinor": 16000000,
+          "vatRatePercent": "21"
+        }
+      ]
+    },
+    {
+      "number": "2026-102",
+      "client": "Studio Brno",
+      "dueOn": "2026-09-24",
+      "lines": [
+        {
+          "description": "Website design",
+          "quantity": "71",
+          "unit": "h",
+          "unitPriceMinor": 120000,
+          "vatRatePercent": "21"
+        }
+      ]
+    },
+    {
+      "number": "2026-114",
+      "client": "Northwind Traders",
+      "dueOn": "2026-09-29",
+      "lines": [
+        {
+          "description": "Product design · September",
+          "quantity": "56",
+          "unit": "h",
+          "unitPriceMinor": 125000,
+          "vatRatePercent": "21"
+        }
+      ]
+    },
+    {
+      "number": "2026-121",
+      "client": "Acme Analytics",
+      "state": "draft",
+      "lines": [
+        {
+          "description": "Dashboard phase 3 · fixed fee",
+          "quantity": "1",
+          "unit": "pc",
+          "unitPriceMinor": 8000000,
+          "vatRatePercent": "21"
+        }
+      ]
+    },
+    {
+      "number": "2026-122",
+      "client": "Northwind Traders",
+      "state": "scheduled",
+      "scheduledFor": "2026-11-01",
+      "dueOn": "2026-11-15",
+      "lines": [
+        {
+          "description": "Product design · October",
+          "quantity": "112",
+          "unit": "h",
+          "unitPriceMinor": 125000,
+          "vatRatePercent": "21"
+        }
+      ]
+    }
+  ],
+  "bankImport": {
+    "file": "csob_2026-10-06.xml",
+    "format": "CAMT.053",
+    "from": "2026-10-01",
+    "to": "2026-10-06",
+    "openingAsOf": "2026-09-30",
+    "reportedClosingMinor": 90274158,
+    "lines": [
+      {
+        "id": "bl-1",
+        "date": "2026-10-01",
+        "counterparty": "Pixelfarm s.r.o.",
+        "reference": "VS 20260917",
+        "amountMinor": -2613600,
+        "status": "matched",
+        "matchedTo": "Received invoice PF-2026-0917"
+      },
+      {
+        "id": "bl-2",
+        "date": "2026-10-02",
+        "counterparty": "Studio Brno",
+        "reference": "VS 2026102",
+        "amountMinor": 5309200,
+        "status": "open",
+        "proposalId": "p-studio-brno",
+        "candidates": [
+          {
+            "label": "Invoice 2026-102 · Studio Brno",
+            "detail": "53 092,00 open · due 24 Sep",
+            "score": "0.96",
+            "confidence": "certain",
+            "contributions": [
+              {
+                "reason": "Amount matches the open balance exactly",
+                "weight": "+.40"
+              },
+              {
+                "reason": "VS 2026102 is the invoice number",
+                "weight": "+.35"
+              },
+              {
+                "reason": "Payer account is on the client record",
+                "weight": "+.15"
+              },
+              {
+                "reason": "Payer name matches",
+                "weight": "+.05"
+              },
+              {
+                "reason": "Paid 8 days after the due date",
+                "weight": "+.01"
+              }
+            ]
+          },
+          {
+            "label": "Invoice 2026-121 · Acme Analytics",
+            "detail": "Draft · amount and VS differ",
+            "score": "0.04",
+            "confidence": "unlikely",
+            "contributions": [
+              {
+                "reason": "Amount differs",
+                "weight": "+.00"
+              },
+              {
+                "reason": "VS differs",
+                "weight": "+.00"
+              },
+              {
+                "reason": "Payer differs",
+                "weight": "+.04"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "bl-3",
+        "date": "2026-10-03",
+        "counterparty": "Google Ireland Ltd",
+        "reference": "CARD 45,86 EUR · IE",
+        "amountMinor": -115292,
+        "foreign": {
+          "amountMinor": -4586,
+          "currency": "EUR",
+          "rate": "25.140"
+        },
+        "status": "open",
+        "proposalId": "p-google"
+      },
+      {
+        "id": "bl-4",
+        "date": "2026-10-04",
+        "counterparty": "ATM withdrawal, Brno",
+        "reference": "No reference",
+        "amountMinor": -600000,
+        "status": "open",
+        "proposalId": "p-atm"
+      },
+      {
+        "id": "bl-5",
+        "date": "2026-10-05",
+        "counterparty": "Alza.cz a.s.",
+        "reference": "VS 4402917733",
+        "amountMinor": -242000,
+        "status": "open",
+        "proposalId": "p-alza"
+      },
+      {
+        "id": "bl-6",
+        "date": "2026-10-06",
+        "counterparty": "ČSOB",
+        "reference": "Account fee · September",
+        "amountMinor": -9500,
+        "status": "open",
+        "proposalId": "p-bank-fee"
+      }
+    ]
+  },
+  "proposals": [
+    {
+      "id": "p-studio-brno",
+      "kind": "posting",
+      "title": "Studio Brno → invoice 2026-102",
+      "detail": "Amount, VS and payer match · settles the open balance",
+      "confidence": "certain",
+      "sourceKind": "matcher",
+      "source": "Matched by rules",
+      "bankLineId": "bl-2",
+      "entry": {
+        "date": "2026-10-02",
+        "memo": "Platba Studio Brno · 2026-102",
+        "lines": [
+          {
+            "account": "221",
+            "amountMinor": 5309200
+          },
+          {
+            "account": "311",
+            "amountMinor": -5309200
+          }
+        ],
+        "settles": [
+          {
+            "invoice": "2026-102",
+            "amountMinor": 5309200
+          }
+        ]
+      },
+      "reasons": [
+        "The amount equals the invoice's open balance.",
+        "The variable symbol is the invoice number.",
+        "Matched by rules, without the advisor."
+      ]
+    },
+    {
+      "id": "p-google",
+      "kind": "posting",
+      "title": "Google Ireland · reverse-charge posting",
+      "detail": "Rule “EU SaaS” · same as 14 earlier lines",
+      "confidence": "certain",
+      "sourceKind": "rule",
+      "source": "Rule “EU SaaS”",
+      "bankLineId": "bl-3",
+      "entry": {
+        "date": "2026-10-03",
+        "memo": "Google Workspace (45,86 EUR, přenesená daňová povinnost)",
+        "lines": [
+          {
+            "account": "518",
+            "amountMinor": 115292,
+            "vatCode": "RC21S"
+          },
+          {
+            "account": "221",
+            "amountMinor": -115292
+          },
+          {
+            "account": "343",
+            "amountMinor": 24211,
+            "vatCode": "RC21S"
+          },
+          {
+            "account": "343",
+            "amountMinor": -24211,
+            "vatCode": "RC21S"
+          }
+        ],
+        "reverseCharge": {
+          "baseMinor": 115292,
+          "vatRatePercent": "21"
+        }
+      },
+      "reasons": [
+        "Supplier is VAT-registered in Ireland, so you self-assess Czech VAT on the service.",
+        "Your rule “EU SaaS” has posted 14 earlier Google and AWS lines exactly this way.",
+        "The VAT base uses the ČNB rate for the supply date; the bank used the same rate, so there's no FX difference to book."
+      ]
+    },
+    {
+      "id": "p-alza",
+      "kind": "posting",
+      "title": "Alza.cz · USB-C dock, expensed directly",
+      "detail": "Below the fixed-asset threshold, so no depreciation schedule",
+      "confidence": "likely",
+      "sourceKind": "rule",
+      "source": "Rule “Small equipment”",
+      "bankLineId": "bl-5",
+      "entry": {
+        "date": "2026-10-05",
+        "memo": "USB-C dock Alza",
+        "lines": [
+          {
+            "account": "501",
+            "amountMinor": 200000,
+            "vatCode": "IN21"
+          },
+          {
+            "account": "343",
+            "amountMinor": 42000,
+            "vatCode": "IN21"
+          },
+          {
+            "account": "221",
+            "amountMinor": -242000
+          }
+        ],
+        "vatSplit": {
+          "grossMinor": 242000,
+          "vatRatePercent": "21"
+        }
+      },
+      "reasons": [
+        "The receipt lists one item, a USB-C dock.",
+        "Equipment below the fixed-asset threshold is expensed directly.",
+        "Alza is VAT-registered, so the input VAT is claimable."
+      ]
+    },
+    {
+      "id": "p-bank-fee",
+      "kind": "posting",
+      "title": "ČSOB · account fee",
+      "detail": "Rule “Bank fees”",
+      "confidence": "certain",
+      "sourceKind": "rule",
+      "source": "Rule “Bank fees”",
+      "bankLineId": "bl-6",
+      "entry": {
+        "date": "2026-10-06",
+        "memo": "Poplatek za vedení účtu · září",
+        "lines": [
+          {
+            "account": "568",
+            "amountMinor": 9500
+          },
+          {
+            "account": "221",
+            "amountMinor": -9500
+          }
+        ]
+      },
+      "reasons": ["The bank's own fee line, posted the same way every month."]
+    },
+    {
+      "id": "p-atm",
+      "kind": "posting",
+      "title": "ATM withdrawal, Brno · what was it for?",
+      "detail": "Owner withdrawal, or cash for a business expense?",
+      "confidence": "needs_you",
+      "sourceKind": "advisor",
+      "source": "Advisor suggestion",
+      "bankLineId": "bl-4",
+      "entry": {
+        "date": "2026-10-04",
+        "memo": "Výběr z bankomatu",
+        "lines": [
+          {
+            "account": "491",
+            "amountMinor": 600000
+          },
+          {
+            "account": "221",
+            "amountMinor": -600000
+          }
+        ]
+      },
+      "reasons": [
+        "Your last four ATM withdrawals were owner drawings, so that's the suggestion.",
+        "It scores below the auto-accept threshold, so it waits for you.",
+        "The advisor received the amount, date and line type only."
+      ]
+    },
+    {
+      "id": "p-dph-september",
+      "kind": "deadline",
+      "title": "DPH return and kontrolní hlášení · September",
+      "detail": "Draft for your review once September is closed",
+      "sourceKind": "calendar",
+      "source": "Rule pack cz-2026",
+      "dueOn": "2026-10-25",
+      "reasons": ["Monthly VAT payer: the return and the control statement are due together."]
+    },
+    {
+      "id": "p-flat-rate",
+      "kind": "advice",
+      "title": "Flat-rate expenses may beat your actual costs for 2026",
+      "detail": "Tax advisor · a scenario for the annual return; nothing to post now",
+      "sourceKind": "advisor",
+      "source": "Tax advisor",
+      "reasons": [
+        "A scenario, not tax advice. Open it to see the engine's figures and the assumptions."
+      ]
+    },
+    {
+      "id": "p-subcontracting",
+      "kind": "advice",
+      "title": "Subcontracting rose while billed hours stayed flat",
+      "detail": "Financial advisor · account 518 · three vendors",
+      "sourceKind": "advisor",
+      "source": "Financial advisor",
+      "reasons": ["A draft finding for your review. The figures come from the ledger."]
+    }
+  ],
+  "egressRuns": [
+    {
+      "id": "run-2026-10-06-01",
+      "at": "2026-10-06T18:04:12Z",
+      "advisor": "Financial advisor",
+      "purpose": "Explain this · account 518, Q3",
+      "provider": "Claude Code (your installation)",
+      "model": "your default",
+      "sent": "Monthly totals for account 518 by vendor; no account numbers or personal IDs",
+      "redacted": ["Vendor IČO"],
+      "toolCalls": 3,
+      "bytesSent": 2140,
+      "outcome": "Draft finding added to the inbox"
+    },
+    {
+      "id": "run-2026-10-04-02",
+      "at": "2026-10-04T09:12:40Z",
+      "advisor": "Advisor suggestion",
+      "purpose": "Classify a bank line without a reference",
+      "provider": "Claude Code (your installation)",
+      "model": "your default",
+      "sent": "Amount, date and line type of one bank line",
+      "redacted": ["Counterparty account", "Card number"],
+      "toolCalls": 1,
+      "bytesSent": 312,
+      "outcome": "Suggestion below the threshold; waiting for you"
+    },
+    {
+      "id": "run-2026-10-04-01",
+      "at": "2026-10-04T09:02:05Z",
+      "advisor": "Tax advisor",
+      "purpose": "Flat-rate expense scenario, 2026",
+      "provider": "Claude Code (your installation)",
+      "model": "your default",
+      "sent": "Year-to-date revenue and expense totals",
+      "redacted": [],
+      "toolCalls": 2,
+      "bytesSent": 980,
+      "outcome": "Scenario drafted for your review"
+    }
+  ]
+}

@@ -51,6 +51,14 @@ check-desktop:
 bench:
     cargo test -p skyla-ledger --release --locked --test projections -- --ignored --nocapture
 
+# Re-record the core's answers the mock transport replays (packages/fixtures/data/ipc-recordings.json).
+recordings:
+    UPDATE_RECORDINGS=1 cargo test -p skyla-app --test core the_committed_recordings_match_the_core
+
+# Regenerate packages/ipc/src/bindings.ts from the Tauri commands (needs WebKitGTK on Linux).
+bindings:
+    UPDATE_BINDINGS=1 cargo test -p skyla-desktop --test ipc the_generated_bindings_are_current
+
 # Supply-chain and licence policy for third-party crates.
 deny:
     cargo deny check

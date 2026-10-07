@@ -1,14 +1,17 @@
 import { demoEntity } from "@skyla/fixtures";
-import type { AppInfo, Transport } from "@skyla/ipc";
+import { type AppInfo, type CoreKind, commands, type IntegrityDto, unwrap } from "@skyla/ipc";
 import { AppWindow, ContentGroup, SourceList, StatusBar, Toolbar } from "@skyla/ui";
 import {
   ChartNoAxesColumn,
   FileText,
+  FlaskConical,
   Inbox,
   Landmark,
   LayoutGrid,
   Percent,
   PlugZap,
+  ShieldAlert,
+  ShieldCheck,
   Sparkles,
 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -34,22 +37,24 @@ const sections = [
  * The shell in direction A's chrome. Screens arrive in WP-10; `#/gallery`
  * shows the design system (WP-08).
  */
-export function App({ transport }: { transport: Transport }) {
+export function App({ core }: { core: CoreKind }) {
   const route = useRoute();
   const [section, setSection] = useState("overview");
   const [info, setInfo] = useState<AppInfo | null>(null);
+  const [integrity, setIntegrity] = useState<IntegrityDto | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    transport.invoke("app_info").then(setInfo, (e: unknown) => setError(String(e)));
-  }, [transport]);
+    commands.appInfo().then(setInfo, (e: unknown) => setError(String(e)));
+    unwrap(commands.integrity()).then(setIntegrity, (e: unknown) => setError(String(e)));
+  }, []);
 
   if (route === "gallery") return <Gallery />;
 
-  const core = error
+  const status = error
     ? `IPC error: ${error}`
     : info
-      ? `${info.name} ${info.version} · core via ${info.transport}`
+      ? `${info.name} ${info.version} · core via ${core}`
       : "Connecting to core…";
 
   return (
@@ -71,7 +76,27 @@ export function App({ transport }: { transport: Transport }) {
       status={
         <StatusBar
           data-testid="status-line"
-          items={[{ id: "core", icon: PlugZap, label: core, tone: error ? "negative" : "neutral" }]}
+          items={[
+            { id: "demo", icon: FlaskConical, label: "Demo data · in memory" },
+            ...(integrity
+              ? [
+                  integrity.chainIntact && integrity.balanced
+                    ? {
+                        id: "journal",
+                        icon: ShieldCheck,
+                        label: `Journal balanced · chain verified (${integrity.entriesChecked} entries)`,
+                        tone: "positive" as const,
+                      }
+                    : {
+                        id: "journal",
+                        icon: ShieldAlert,
+                        label: integrity.firstBreak ?? "Journal doesn't balance",
+                        tone: "negative" as const,
+                      },
+                ]
+              : []),
+            { id: "core", icon: PlugZap, label: status, tone: error ? "negative" : "neutral" },
+          ]}
           role={error ? "alert" : undefined}
         />
       }

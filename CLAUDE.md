@@ -40,6 +40,8 @@ just test           # Rust + web unit tests
 just dev-web        # UI in a plain browser on the fixture-backed mock transport (http://localhost:1420)
 just e2e            # Playwright against dev-web; screenshots land in apps/desktop/test-results/
 just bench          # release-build performance acceptance (WP-07: trial balance over 100k entries < 200 ms)
+just recordings     # re-record the core's IPC answers that the mock transport replays (after changing core output)
+just bindings       # regenerate packages/ipc/src/bindings.ts from the Tauri commands (needs WebKitGTK)
 just check-desktop  # compile + lint + test the Tauri shell (needs WebKitGTK on Linux; CI runs it)
 just deny           # cargo-deny supply-chain and licence policy (CI runs it)
 just fmt            # format Rust and TypeScript in place
@@ -48,3 +50,4 @@ just fmt            # format Rust and TypeScript in place
 - `.claude/hooks/session-start.sh` prepares cloud sessions (toolchain, `just`, crates, pnpm). It doesn't install WebKitGTK, so `check-desktop` isn't part of `just ci`.
 - If the container's Chromium build differs from the one `@playwright/test` expects, the hook exports `PLAYWRIGHT_CHROMIUM_EXECUTABLE=/opt/pw-browsers/chromium`; `playwright.config.ts` honours it.
 - Default cargo members exclude `apps/desktop/src-tauri`. Plain `cargo test` / `cargo clippy` never need WebKitGTK.
+- The webview talks to the core only through the generated `commands` in `packages/ipc/src/bindings.ts`. Outside Tauri, `connectCore()` mocks the IPC layer to replay `ipc-recordings.json`, so `dev:web` shows exactly what the Rust core returns. A new command needs a `Core` method, a Tauri command, a canonical request in `skyla_app::recordings`, then `just recordings` and `just bindings`.
