@@ -4,8 +4,8 @@ Update this file in the same commit series that completes a work packet.
 
 ## Current state
 
-- **Phase:** M1 Ledger kernel in progress. Done: WP-00, WP-02, WP-03, WP-04.
-- **Next packet:** WP-05 (posting engine + invariants). WP-01 (CLI spike) waits for the go-ahead because it spends live Claude usage.
+- **Phase:** M1 Ledger kernel in progress. Done: WP-00, WP-02, WP-03, WP-04, WP-05.
+- **Next packet:** WP-06 (periods, reversals, close checks, hash chain). WP-01 (CLI spike) waits for the go-ahead because it spends live Claude usage.
 - **Blocking decisions:** none. Open: Q-08 (next session's focus) and Q-09 (dark appearance) in [`../design/DECISIONS.md`](../design/DECISIONS.md).
 
 ## Packets
@@ -17,7 +17,7 @@ Update this file in the same commit series that completes a work packet.
 | WP-02 | skyla-money | done | this session | 30 tests incl. 8 property tests; float ban verified |
 | WP-03 | skyla-store + keys | done | this session | 13 tests; OS keychain adapter moved to WP-30 |
 | WP-04 | Accounts + categories | done | this session | 7 tests + 2 snapshots; CZ chart in `rules/cz/chart.toml` |
-| WP-05 | Posting engine + invariants | todo | | |
+| WP-05 | Posting engine + invariants | done | this session | 11 tests incl. property tests and a 10 000-entry fuzz run |
 | WP-06 | Periods, reversals, close | todo | | |
 | WP-07 | Projections | todo | | |
 | WP-08 | Tokens + primitives (direction A) | todo | | Q-09 decides dark |
@@ -35,6 +35,7 @@ Update this file in the same commit series that completes a work packet.
 - 2026-10-07 — CI: desktop jobs and cargo-deny fixed (crate docs; web build before Tauri; scoped RUSTSEC-2024-0370 exception).
 - 2026-10-07 — WP-04: jurisdiction-neutral `ChartSpec` (TOML) with a validator that reports every problem at once; CZ chart (63 synthetic accounts per vyhláška 500/2002 Sb., 22 freelancer categories with default tax treatment) as cited rule-pack data; ledger schema (`SCHEMA`) with triggers enforcing account structure (three-digit tops, analytic codes extend parents, kind/side inherited, structure immutable, never deleted, no sub-accounts under category targets) and periods (valid ISO dates, no overlap, fixed dates). The ledger owns its SQL and uses plain `rusqlite`, keeping the Apache-2.0 crate free of the AGPL store.
 - 2026-10-07 — CI: Windows desktop job fixed (generated `icon.ico` and the desktop icon set).
+- 2026-10-07 — WP-05: journal schema and posting engine. Invariants enforced in Rust (typed errors) and again in triggers (raw SQL can't bypass them): I1 balanced in functional currency, I2 posted entries and postings frozen and never deleted, I3 an open period covers the date, I4 active leaf accounts (re-checked at post time, which found and closed a gap where an account deactivated after drafting could still be posted to), I7 human approver for rule/advisor entries; gapless `posted_seq`; FX lines must carry their rate and same-sign functional amount; functional currency fixed once anything is booked; savepoint-based operations nest inside a caller's transaction.
 
 ## Backlog notes from sessions
 

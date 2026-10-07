@@ -12,6 +12,7 @@
 mod accounts;
 mod chart;
 mod error;
+mod posting;
 mod schema;
 
 pub use accounts::{
@@ -22,4 +23,8 @@ pub use chart::{
     AccountKind, AccountSpec, CategorySpec, ChartSpec, Direction, NormalSide, TaxTreatment,
 };
 pub use error::LedgerError;
+pub use posting::{
+    Entry, EntryStatus, Line, NewEntry, NewLine, SourceKind, create_draft, delete_draft,
+    functional_currency, get_entry, is_iso_date, post_entry, set_functional_currency,
+};
 pub use schema::{SCHEMA, SchemaStep, apply_schema};

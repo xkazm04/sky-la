@@ -84,7 +84,7 @@ fn direction_from(column: usize, s: &str) -> rusqlite::Result<Direction> {
     }
 }
 
-fn treatment_from(column: usize, s: &str) -> rusqlite::Result<TaxTreatment> {
+pub(crate) fn treatment_from(column: usize, s: &str) -> rusqlite::Result<TaxTreatment> {
     Ok(match s {
         "taxable" => TaxTreatment::Taxable,
         "exempt" => TaxTreatment::Exempt,

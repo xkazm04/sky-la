@@ -3359,10 +3359,13 @@ name = "skyla-ledger"
 version = "0.1.0"
 dependencies = [
  "insta",
+ "proptest",
  "rusqlite",
  "serde",
+ "skyla-money",
  "thiserror 2.0.21",
  "toml 1.1.6+spec-1.1.0",
+ "uuid",
 ]
 
 [[package]]

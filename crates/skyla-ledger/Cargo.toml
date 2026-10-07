@@ -15,8 +15,11 @@ workspace = true
 [dependencies]
 rusqlite = { version = "0.40.2", features = ["bundled"] }
 serde = { version = "1.0.229", features = ["derive"] }
+skyla-money = { version = "0.1.0", path = "../skyla-money" }
 thiserror = "2.0.21"
 toml = "1.1.6"
+uuid = { version = "1.27.0", features = ["v7"] }
 
 [dev-dependencies]
 insta = "1.49.0"
+proptest = "1.11.0"

@@ -93,7 +93,8 @@ impl Direction {
 }
 
 impl TaxTreatment {
-    pub(crate) fn as_str(self) -> &'static str {
+    /// The database spelling.
+    pub fn as_str(self) -> &'static str {
         match self {
             Self::Taxable => "taxable",
             Self::Exempt => "exempt",
