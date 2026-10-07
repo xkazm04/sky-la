@@ -5,6 +5,7 @@
 | **Status** | Review of record, round 2 |
 | **Date** | 2026-10-07 |
 | **Scope** | Product concept, technology stack, LLM integration, plan, and round 1 design prototypes |
+| **Resolution** | Wave 3 accepted every proposed change: CZ-first (D-004), API-key driver (D-005), opt-in reference data (D-006), hash chain on by default (D-007), direction A (D-011), inbox + explain-this (D-015), AGPL app + Apache-2.0 engine (D-016) |
 | **Outcome** | Corrections are folded into [`DESIGN.md`](./DESIGN.md), [`DECISIONS.md`](./DECISIONS.md) and [`../plan/IMPLEMENTATION_PLAN.md`](../plan/IMPLEMENTATION_PLAN.md) |
 
 This review treats every earlier decision as a hypothesis. Each verdict is **Keep**, **Change** or **Add**, with the reason. Claims that the architecture depends on were checked against primary sources (listed at the end), not memory.

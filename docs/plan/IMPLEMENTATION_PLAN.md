@@ -22,7 +22,7 @@ Sizes: **S** ≈ a third of a session · **M** ≈ half to most of one · **L** 
 M0 Foundation      WP-00 ─▶ WP-01 (spike) ─┐
                    WP-00 ─▶ WP-02 ─▶ WP-03 ─┤
 M1 Ledger                    WP-04 ─▶ WP-05 ─▶ WP-06 ─▶ WP-07 ─┐
-M2 Shell + DS      (Q-01) ─▶ WP-08 ─▶ WP-09 ─▶ WP-10 ──────────┤
+M2 Shell + DS      (dir. A) ─▶ WP-08 ─▶ WP-09 ─▶ WP-10 ──────────┤
 M3 Invoicing                 WP-11 ─▶ WP-12 · WP-13 · WP-14 · WP-15 ─▶ WP-16
 M4 Bank                      WP-17 ─▶ WP-18 ─▶ WP-19
 M5 Tax CZ                    WP-20 ─▶ WP-21 · WP-22 · WP-23
@@ -30,7 +30,7 @@ M6 Advisors        WP-01 ─▶  WP-24 ─▶ WP-25 ─▶ WP-26 ─▶ WP-27 ·
 M7 Release                   WP-30 · WP-31 · WP-32 · WP-33 · WP-34
 ```
 
-M2 can run in parallel with M1 once the design direction (Q-01) is locked. M3–M5 need M1. M6 needs M1, M5 (for the scenario engine) and the spike's findings.
+M2 can run in parallel with M1: design direction A is locked (D-011). M3–M5 need M1. M6 needs M1, M5 (for the scenario engine) and the spike's findings.
 
 ---
 
@@ -48,6 +48,7 @@ M2 can run in parallel with M1 once the design direction (Q-01) is locked. M3–
 - GitHub Actions: Rust fmt + clippy `-D warnings` + tests; `cargo-deny`; web lint, typecheck, Vitest; Playwright against `dev:web` on Chromium. Linux job required; macOS and Windows build jobs non-blocking.
 - `.claude/` SessionStart hook installing the Rust toolchain, pnpm and dependencies, so cloud sessions can run `just ci` immediately.
 - Tauri capabilities file with nothing granted beyond the defaults; CSP set (no remote sources, `connect-src 'none'` apart from IPC).
+- Licensing per D-016: root `LICENSE` (AGPL-3.0-or-later); `LICENSE` (Apache-2.0) in `crates/skyla-money`, `crates/skyla-ledger` and `crates/skyla-rules`; SPDX `license` fields in every `Cargo.toml` and `package.json`; a `cargo-deny` rule that fails if an Apache-2.0 crate depends on an AGPL crate.
 
 **Acceptance**
 - `just ci` passes locally and in GitHub Actions.
@@ -137,9 +138,9 @@ M2 can run in parallel with M1 once the design direction (Q-01) is locked. M3–
 - Period state machine (open → closing → closed).
 - Reversal entries linked through `reverses_id`.
 - A close-check framework (pluggable checks: journal balanced, bank tied out, VAT ledger matches account 343, no draft documents).
-- Optional hash chain behind a flag (depends on Q-07).
+- **Hash chain on by default** (D-007): `chain_hash` computed in the posting transaction; verifier on open and export.
 
-**Acceptance:** reversal leaves balances at zero; the close blocks while a check fails; the chain verifier detects a single tampered byte.
+**Acceptance:** reversal leaves balances at zero; the close blocks while a check fails; the chain verifier detects a single tampered byte and names the first bad entry.
 
 ### WP-07 · Projections · **L**
 
@@ -155,16 +156,16 @@ M2 can run in parallel with M1 once the design direction (Q-01) is locked. M3–
 
 ---
 
-## M2 — Shell and design system *(starts once Q-01 is answered)*
+## M2 — Shell and design system *(direction A locked; see `DESIGN.md` §6)*
 
 ### WP-08 · Tokens + primitives · **L**
-Tokens for the chosen direction in light and dark (colour, type scale, spacing, radii, elevation, glass materials with a non-blur fallback). React Aria-based primitives: Button, SegmentedControl, SearchField, Popup, Menu, Table/Grid, Inspector, SourceList, StatusBar, Badge, Kbd. **Acceptance:** Storybook-free gallery route in `dev:web`; Playwright screenshots in both appearances; axe accessibility check with no violations.
+Tokens for **direction A (Tahoe)**: light, plus dark if Q-09 confirms it (colour, type scale, spacing, radii, elevation, glass materials with a non-blur fallback). React Aria-based primitives: Button, SegmentedControl, SearchField, Popup, Menu, Table/Grid, Inspector, SourceList, StatusBar, Badge, Kbd. **Acceptance:** Storybook-free gallery route in `dev:web`; Playwright screenshots in both appearances; axe accessibility check with no violations.
 
 ### WP-09 · Typed IPC + fixtures · **M**
 `tauri-specta`-generated bindings (version pinned) behind `packages/ipc`. The mock transport serves `packages/fixtures`: the canvas entity with its invoices, bank lines, entries and proposals. **Acceptance:** one command round-trips identically over the mock and the real transport (integration test).
 
 ### WP-10 · Navigable app on fixtures · **L**
-Every v1 screen reachable with fixture data: home (per Q-01), invoices, bank workbench, statements, taxes, advisors, settings and the egress register. **Acceptance:** Playwright walks every route; screenshot baseline committed; keyboard navigation works for the main lists.
+Every v1 screen reachable with fixture data in A's three-pane chrome: overview, **inbox** (B pattern), invoices, bank workbench, statements, taxes, advisors, settings and the egress register. **Acceptance:** Playwright walks every route; screenshot baseline committed; keyboard navigation works for the main lists.
 
 ---
 
@@ -191,7 +192,7 @@ Every v1 screen reachable with fixture data: home (per Q-01), invoices, bank wor
 
 | WP | Scope | Size | Acceptance highlights |
 |---|---|---|---|
-| WP-20 | `cz-2026` pack data, effective dating, citations, loader | M | Every value has a citation; schema validation of the pack |
+| WP-20 | `cz-2026` pack data, effective dating, citations, loader; **opt-in reference data** (ČNB FX fetch, off by default, with manual import; minisign-verified pack updates) per D-006 | L | Every value has a citation; schema validation of the pack; a tampered pack signature is rejected; the app works with fetching disabled |
 | WP-21 | DPH return, kontrolní hlášení, souhrnné hlášení: computation + EPO XML (format versions pinned in the pack) | L | XSD-valid against the current EPO schemas; golden cases incl. reverse charge, the 12 % rate, non-deductible items, the KH threshold split |
 | WP-22 | DPFO §7 worksheet; **scenario engine** with levers (flat-rate vs actual, *paušální daň* eligibility, asset threshold timing) | L | Golden cases hand-verified. The flat-rate example in the review (projected 1 571 000 → 942 600 vs 383 200) reproduces exactly, side effects included |
 | WP-23 | Obligations calendar; insurance overview data | M | Calendar generated from the pack for 2026; deadline-shift rules (weekends and holidays) tested |
@@ -204,7 +205,7 @@ Every v1 screen reachable with fixture data: home (per Q-01), invoices, bank wor
 | WP-25 | `skyla-mcp` stdio shim + authenticated local socket to the core; read/compute/propose tool surface | L | No tool can write or post (tests); the shim has no database access (process test); token rotation per run |
 | WP-26 | Egress gate (scopes, policies, pseudonymisation), encrypted register, "What was shared" UI | L | Tool results pass through the gate (test); IBANs and personal IDs never appear in any payload (property test); register replay is byte-identical |
 | WP-27 | Tax advisor: lever selection, `ask_user`, explanation, **numeric-grounding validator** | L | A run with an injected wrong number is rejected; the eval set (≥ 30 CZ cases) passes on `Fake` |
-| WP-28 | Financial advisor detectors (variance, vendor rate change, margin by client, late payer, subscription creep, runway) + "explain this" on any figure | L | Detector unit tests on fixtures (the 42 % subcontracting finding in direction C reproduces); explain-this cites entry IDs |
+| WP-28 | Financial advisor detectors (variance, vendor rate change, margin by client, late payer, subscription creep, runway) + **inline "explain this"** on any figure, account or line (D-015) | L | Detector unit tests on fixtures (the 42 % subcontracting finding in direction C reproduces); explain-this cites entry IDs |
 | WP-29 | `AnthropicApi` driver (raw HTTPS, structured outputs, explicit effort, refusal fallbacks) + live eval harness | M | On-demand eval run with recorded cost; never runs in default CI |
 
 ## M7 — Hardening and release
@@ -219,4 +220,4 @@ Every v1 screen reachable with fixture data: home (per Q-01), invoices, bank wor
 
 ## Backlog (post-v1)
 
-EU OSS · UK and US community packs · Peppol Access Point integration · Factur-X/ZUGFeRD hybrid PDF · LLM bill capture · scoped chat advisor · multi-entity · encrypted sync · payroll · bank API connectors (e.g. Fio token API) · WASM sandboxed packs.
+Written period review (v1.x) · EU OSS · UK and US community packs · Peppol Access Point integration · Factur-X/ZUGFeRD hybrid PDF · LLM bill capture · scoped chat advisor · multi-entity · encrypted sync · payroll · bank API connectors (e.g. Fio token API) · WASM sandboxed packs.

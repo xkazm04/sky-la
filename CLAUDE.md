@@ -21,6 +21,8 @@ Open-source, local-first, encrypted desktop accounting for Czech freelancers (OS
 - **Egress:** prompts *and MCP tool results* pass through the egress gate. IBANs and personal IDs are never sent. Every run is recorded in the register.
 - **Claude Code usage terms:** use only the user-installed, unmodified `claude` binary. Never read, store or proxy Claude credentials; sign-in happens via `claude auth login` in the user's terminal. Never intermediate billing. Don't use Claude, Claude Code or Anthropic names or logos in product or feature names.
 - **Advisors are not tax advice.** UI copy says scenario, draft, for your review.
+- **Licence boundary:** `skyla-money`, `skyla-ledger` and `skyla-rules` are Apache-2.0 and must never depend on AGPL crates; everything else is AGPL-3.0-or-later.
+- **Design language is direction A (Tahoe)**, specified in `docs/design/DESIGN.md` §6. Don't introduce display serifs, decorative monospace or bordered card grids.
 
 ## Working in cloud sessions
 

@@ -26,4 +26,4 @@ sky-la can use **your own Claude Code installation** for its tax and financial a
 
 ## Licence
 
-To be decided (see `DECISIONS.md` Q-05).
+The application is **AGPL-3.0-or-later**. The engine crates (`skyla-money`, `skyla-ledger`, `skyla-rules`) and the rule-pack format are **Apache-2.0**, so the correctness work can be reused anywhere.

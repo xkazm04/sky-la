@@ -2,10 +2,10 @@
 
 | | |
 |---|---|
-| **Status** | Draft v2: architecture locked except the open questions in [`DECISIONS.md`](./DECISIONS.md) |
+| **Status** | v2.1: architecture and design direction locked (see [`DECISIONS.md`](./DECISIONS.md)) |
 | **Date** | 2026-10-07 |
 | **Read with** | [`REVIEW.md`](./REVIEW.md) (why things are the way they are) · [`../plan/IMPLEMENTATION_PLAN.md`](../plan/IMPLEMENTATION_PLAN.md) (how we build it) |
-| **Design canvas** | sky-la Design Directions (round 2, directions A–D), a private claude.ai artifact |
+| **Design canvas** | sky-la Design Directions, a private claude.ai artifact. **Direction A (Tahoe) is locked** |
 
 ---
 
@@ -83,7 +83,7 @@ Payroll calculation · multi-entity and consolidation · inventory · cloud sync
 | **Invoicing** | Issue (*daňový doklad*); credit note (*opravný daňový doklad*); proforma and advance (*zálohová faktura* + *daňový doklad k přijaté platbě*); number series with gap detection; PDF (Typst) with **QR Platba (SPAYD)**; **ISDOC 6** XML; **EN 16931**: UBL 2.1 (Peppol BIS Billing 3.0) + CII; recurring templates; dunning sequences with statutory late interest |
 | **Bank** | Import **CAMT.053**, **MT940**, **ABO/GPC**, CSV with saved column profiles; deduplication; **statement tie-out** (opening + movements = reported closing); rules; explainable scoring matcher (amount, VS/KS/SS symbols, IBAN, name, date window); splits; reconciliation workbench |
 | **Tax CZ** (`cz-2026` pack) | DPH return, kontrolní hlášení, souhrnné hlášení computation + EPO XML; DPFO §7 worksheet + flat-rate vs actual comparison; *paušální daň* eligibility check; insurance overviews data; obligations calendar |
-| **Advisors** | Tax scenario advisor; financial advisor (variance and inefficiency detectors + explanation); "explain this" on any figure; written period review |
+| **Advisors** | Tax scenario advisor; financial advisor (variance and inefficiency detectors + explanation). Users reach them through the **proposal inbox** and **inline "explain this"** on any figure, account or line (D-015). Written period review in v1.x; scoped chat after v1 |
 | **Security** | SQLCipher at rest; OS keychain; recovery key; encrypted scheduled backups; egress gate and register; auto-lock |
 | **Portability** | Full export (journal JSON + CSV, document archive with ISDOC/PDF); import from Pohoda and Fakturoid exports (v1.x) |
 
@@ -175,7 +175,7 @@ posting(entry_id, line_no, account_id, amount_minor i64 (debit +, credit −), c
 
 **Projections** are pure functions of the journal: trial balance, P&L, balance sheet, VAT ledger by form row, and **cash basis (*daňová evidence*)**. The cash basis recognises income and expense at *settlement*, using the `tax_treatment` and `settles_document_id` dimensions. Every report stamps an **input snapshot hash** (hash of the posted entries it read), so any statement can be reproduced exactly.
 
-**Optional tamper evidence** (open question Q-07): `chain_hash = H(prev_chain_hash ‖ canonical(entry))` on posting. A verifier runs on open and on export.
+**Tamper evidence (on by default, D-007):** `chain_hash = H(prev_chain_hash ‖ canonical(entry))` is computed in the posting transaction. A verifier runs on open and on export, and a break is a hard error with the first bad entry named.
 
 **FX:** functional currency CZK. Rates come from the ČNB daily fixing via the opt-in reference-data fetch (§3.9) or manual import. The rate source is stored on every posting.
 
@@ -286,7 +286,7 @@ The model de-duplicates, ranks, explains and proposes actions. Every finding cit
 | **At rest** | SQLCipher 4. A random 256-bit **DEK** is wrapped by (a) a KEK derived from the passphrase (Argon2id), cached in the OS keychain for convenience with Touch ID / Windows Hello where available, and (b) a **recovery key** printed at setup |
 | **Backups** | Scheduled encrypted snapshots (SQLCipher backup API) to a user-chosen folder. Restore runs in CI |
 | **Process** | Tauri v2 capabilities: minimum, with no fs, shell or http plugins exposed to the webview. Strict CSP. Isolation pattern. Typed command inputs re-validated in Rust. Secrets zeroised |
-| **Network** | No telemetry. Only three paths: (1) the user's `claude` process; (2) **opt-in** public reference data (ČNB FX rates; rule-pack updates signed with minisign); (3) opt-in update check. Only the reference-data module links an HTTP client |
+| **Network** | No telemetry. Only three paths: (1) the user's `claude` process; (2) **opt-in, off by default** public reference data (ČNB FX rates; rule-pack updates signed with minisign), with manual import always available (D-006); (3) opt-in update check. Only the reference-data module links an HTTP client |
 | **Supply chain** | `cargo-deny`, `cargo-audit`, a pinned lockfile, SBOM, signed and notarised releases, reproducible-build goal |
 | **Session** | Auto-lock on idle; lock on sleep; re-auth for exports and key changes |
 
@@ -337,9 +337,28 @@ The model de-duplicates, ranks, explains and proposes actions. Every finding cit
 - **Privacy:** processing is local. LLM egress happens only under the user's own Anthropic account and terms, and every transfer is in the register.
 - **Retention:** statutory multi-year retention makes backup, recovery and export correctness features.
 - **Trademark:** the product may say it runs or uses Claude Code. It must not use Claude or Anthropic names or logos in product or feature names.
+- **Licence (D-016):** the application is AGPL-3.0-or-later. The engine crates `skyla-money`, `skyla-ledger` and `skyla-rules`, and the rule-pack format, are Apache-2.0 so others can build on the correctness work. Apache-2.0 crates never depend on AGPL crates.
 
 ---
 
-## 6. Design language
+## 6. Design language: direction A, "Tahoe" (locked, D-011)
 
-Open (Q-01). Round 2 offers four information-architecture theses: A Tahoe three-pane, B Inbox, C Statement, D Workbench; see [`REVIEW.md` §6.2](./REVIEW.md). The likely synthesis is A's chrome, B as home, C for statements and D for reconciliation. Whatever is chosen becomes `packages/ui` tokens and components in WP-08.
+A macOS 26-era native three-pane language, applied on every platform with platform-adaptive window chrome.
+
+| Element | Specification |
+|---|---|
+| **Window** | A window backdrop with three panes. Side panes are **floating glass panels** inset 8 px from the window edge. Radii are concentric with the window (panels 18 px, inner groups 12–14 px, controls fully rounded) |
+| **Source list** (left) | 28 px rows, section labels at 11 px semibold secondary. The selected row gets an accent-tinted capsule with an accent icon, not a full accent fill. Counts and badges trail the row. The entity switcher sits at the bottom |
+| **Toolbar** | No solid bar. The title and a subtitle (key figures) sit at the content's top-left. Controls are **glass capsules**: a segmented filter, search, an icon group, and one accent primary action |
+| **Content** | One white list or table group per view: 40 px rows, hairline separators, section headers in-list ("Needs attention", "Drafts and scheduled", "Paid"), status pills with icon + label (never colour alone) |
+| **Inspector** (right) | The selected object: a document preview (e.g. the invoice paper with QR Platba), activity timeline, inline advisor note ("explain this" / finding), actions pinned to the bottom |
+| **Status line** | 30 px. Encryption state, journal integrity (balanced, hash chain), egress summary ("Nothing sent to Claude today") |
+| **Type** | System stack (`-apple-system` → SF Pro; Geist fallback off-Mac); 11 / 11.5 / 12.5 / 13 / 15 / 17 px; tracking tightens with size; **tabular figures in the sans**, with no decorative monospace |
+| **Colour** | Neutral greys, one accent (system blue by default, user-tweakable), and semantic status colours with matched-lightness pill backgrounds. Glass is `backdrop-filter` blur + saturation, with an opaque fallback where blur is unavailable |
+
+**Borrowed patterns inside A's chrome:**
+- **Inbox** (from B): a source-list item whose list holds decisions and whose inspector shows the proposal (journal entry, reasons, approve).
+- **Statements** (from C): a document-style content pane with drill-down rows, an accrual vs cash toggle, and advisor notes in the inspector.
+- **Reconciliation** (from D): bank lines as the list, candidates with an explained score breakdown, and the posting and its effects in the inspector, with statement tie-out in the subtitle.
+
+Dark appearance is open as Q-09 (recommended: first-class from WP-08).
