@@ -4,9 +4,9 @@
 
 use skyla_app::dto::{
     AppInfo, BalanceSheetDto, BankStatementDto, CashBasisDto, DocumentPdfDto, DocumentXmlDto,
-    DunningNoticeDto, EgressRunDto, EntityDto, IntegrityDto, InvoiceDto, JournalEntryDto,
-    PeriodDto, ProfitAndLossDto, ProposalDto, RecurringTemplateDto, RulePackDto, TrialBalanceDto,
-    VatReturnDto,
+    DunningNoticeDto, EgressRunDto, EntityDto, IntegrityDto, InvoiceDraftDto, InvoiceDto,
+    InvoiceFormDto, JournalEntryDto, PeriodDto, ProfitAndLossDto, ProposalDto,
+    RecurringTemplateDto, RulePackDto, TrialBalanceDto, VatReturnDto,
 };
 use skyla_app::{Core, IpcFailure};
 use tauri::{Runtime, State};
@@ -151,6 +151,34 @@ fn recurring_templates(core: State<'_, Core>) -> Answer<Vec<RecurringTemplateDto
     Ok(core.recurring_templates()?)
 }
 
+/// What the invoice editor offers.
+#[tauri::command]
+#[specta::specta]
+fn invoice_form(core: State<'_, Core>) -> Answer<InvoiceFormDto> {
+    Ok(core.invoice_form()?)
+}
+
+/// Saves a draft typed in the editor; the core parses and checks it.
+#[tauri::command]
+#[specta::specta]
+fn create_invoice_draft(core: State<'_, Core>, draft: InvoiceDraftDto) -> Answer<InvoiceDto> {
+    Ok(core.create_invoice_draft(&draft)?)
+}
+
+/// Issues a draft: the next number, posted through the kernel.
+#[tauri::command]
+#[specta::specta]
+fn issue_invoice(core: State<'_, Core>, id: i64, issue_date: String) -> Answer<InvoiceDto> {
+    Ok(core.issue_invoice(id, &issue_date)?)
+}
+
+/// Deletes a draft.
+#[tauri::command]
+#[specta::specta]
+fn delete_invoice_draft(core: State<'_, Core>, id: i64) -> Answer<()> {
+    Ok(core.delete_invoice_draft(id)?)
+}
+
 /// Every command, for the invoke handler and the TypeScript export.
 pub fn specta_builder<R: Runtime>() -> Builder<R> {
     Builder::<R>::new()
@@ -174,6 +202,10 @@ pub fn specta_builder<R: Runtime>() -> Builder<R> {
             invoice_xml,
             dunning_queue,
             recurring_templates,
+            invoice_form,
+            create_invoice_draft,
+            issue_invoice,
+            delete_invoice_draft,
         ])
         // Money crosses as integer minor units; `MoneyDto` refuses anything
         // beyond 2^53 - 1, so a JavaScript number holds every value exactly.

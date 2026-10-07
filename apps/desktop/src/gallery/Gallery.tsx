@@ -17,11 +17,13 @@ import {
   Popup,
   SearchField,
   SegmentedControl,
+  Select,
   SourceList,
   StatusBar,
   storeAppearance,
   storedAppearance,
   type TableColumn,
+  TextField,
   type Tone,
   Toolbar,
 } from "@skyla/ui";
@@ -346,6 +348,27 @@ function Composition() {
   );
 }
 
+function FieldSpecimen() {
+  const [vat, setVat] = useState("OUT21");
+  const [price, setPrice] = useState("1 200,00");
+  return (
+    <>
+      <TextField label="Unit price" numeric value={price} onChange={setPrice} className="w-32" />
+      <TextField label="Quantity" numeric defaultValue="1.5" isInvalid className="w-24" />
+      <Select
+        label="VAT"
+        className="w-36"
+        value={vat}
+        onChange={setVat}
+        options={[
+          { id: "OUT21", label: "21 %", detail: "Domestic supply, standard rate" },
+          { id: "OUT12", label: "12 %", detail: "Domestic supply, reduced rate" },
+        ]}
+      />
+    </>
+  );
+}
+
 function Specimen({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div className="flex min-h-12 items-center gap-6 border-hairline border-t px-5 py-3 first:border-t-0">
@@ -409,6 +432,9 @@ function Primitives() {
       </Specimen>
       <Specimen title="SearchField">
         <SearchField label="Search the ledger" placeholder="Search" shortcut="mod+k" />
+      </Specimen>
+      <Specimen title="TextField and Select">
+        <FieldSpecimen />
       </Specimen>
       <Specimen title="Menu and Popup">
         <Menu label="Sort" trigger={<Button>Sort by</Button>}>

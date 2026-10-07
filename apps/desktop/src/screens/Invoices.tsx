@@ -16,14 +16,15 @@ import {
   type Tone,
   Toolbar,
 } from "@skyla/ui";
-import { FileDown, Plus } from "lucide-react";
+import { FileDown, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { useQuery } from "../data";
+import { invalidateAll, problems, useQuery } from "../data";
 import { downloadBase64, downloadText } from "../download";
 import { day, money } from "../format";
 import { navigate } from "../router";
 import { InspectorPane } from "../shell/Shell";
-import { DemoNote, EmptyInspector, Loaded } from "./common";
+import { EmptyInspector, Loaded } from "./common";
+import { InvoiceEditor } from "./InvoiceEditor";
 
 type Filter = "all" | "open" | "paid";
 
@@ -191,17 +192,7 @@ function InvoiceInspector({ invoice }: { invoice: InvoiceDto }) {
                 Match a payment
               </Button>
             )}
-            {!posted && (
-              <Popup
-                label="Issue"
-                placement="top end"
-                trigger={<Button variant="primary">Issue</Button>}
-              >
-                <DemoNote>
-                  Issuing assigns the number and posts it through the kernel (WP-11).
-                </DemoNote>
-              </Popup>
-            )}
+            {!posted && <DraftActions invoice={invoice} />}
           </>
         }
       >
@@ -237,11 +228,108 @@ function InvoiceInspector({ invoice }: { invoice: InvoiceDto }) {
   );
 }
 
+/** Issue (with a confirmation naming the number) or delete a draft. */
+function DraftActions({ invoice }: { invoice: InvoiceDto }) {
+  const form = useQuery("invoice_form", () => unwrap(commands.invoiceForm()));
+  const [failure, setFailure] = useState<string[]>([]);
+  const [busy, setBusy] = useState(false);
+  const run = async (action: () => Promise<string | null>) => {
+    setBusy(true);
+    setFailure([]);
+    try {
+      const next = await action();
+      invalidateAll();
+      navigate("invoices", next, true);
+    } catch (e) {
+      setFailure(problems(e));
+      setBusy(false);
+    }
+  };
+  const ready = form.state === "ready" ? form.data : null;
+  return (
+    <>
+      <Popup
+        label="Delete draft"
+        placement="top end"
+        trigger={
+          <Button variant="plain" icon={Trash2} isDisabled={busy}>
+            Delete
+          </Button>
+        }
+      >
+        <p className="max-w-64 text-body">
+          Delete this draft? It has no number yet, so nothing is lost from the series.
+        </p>
+        <div className="mt-3 flex justify-end">
+          <Button
+            variant="destructive"
+            onPress={() =>
+              void run(async () => {
+                await unwrap(commands.deleteInvoiceDraft(invoice.id));
+                return null;
+              })
+            }
+          >
+            Delete draft
+          </Button>
+        </div>
+      </Popup>
+      <Popup
+        label="Issue invoice"
+        placement="top end"
+        trigger={
+          <Button variant="primary" isDisabled={busy || !ready}>
+            Issue
+          </Button>
+        }
+      >
+        <div className="max-w-72 text-body">
+          <p className="font-semibold">
+            Issue as {ready?.nextNumber} on {day(ready?.today, true)}?
+          </p>
+          <p className="mt-1 text-ink-secondary">
+            The invoice is numbered and posted to the ledger. After that it can't change;
+            corrections are credit notes.
+          </p>
+          {failure.length > 0 && (
+            <ul role="alert" className="mt-2 list-disc pl-5 text-negative-ink">
+              {failure.map((p) => (
+                <li key={p}>{p}</li>
+              ))}
+            </ul>
+          )}
+          <div className="mt-3 flex justify-end">
+            <Button
+              variant="primary"
+              isDisabled={busy || !ready}
+              onPress={() =>
+                void run(async () => {
+                  const issued = await unwrap(
+                    commands.issueInvoice(invoice.id, ready?.today ?? ""),
+                  );
+                  return issued.number;
+                })
+              }
+            >
+              Issue invoice
+            </Button>
+          </div>
+        </div>
+      </Popup>
+    </>
+  );
+}
+
 const needsAttention = (i: InvoiceDto) => ["overdue", "open", "partPaid"].includes(i.status);
 const unposted = (i: InvoiceDto) => i.status === "draft" || i.status === "scheduled";
 
 /** Invoices: one list, sections by state, the document in the inspector. */
 export function InvoicesScreen({ item }: { item: string | null }) {
+  if (item === "new") return <InvoiceEditor />;
+  return <InvoiceList item={item} />;
+}
+
+function InvoiceList({ item }: { item: string | null }) {
   const [filter, setFilter] = useState<Filter>("all");
   const invoices = useQuery("invoices", () => unwrap(commands.invoices()));
   const sheet = useQuery("bs:2026-10-07", () => unwrap(commands.balanceSheet("2026-10-07")));
@@ -273,17 +361,9 @@ export function InvoicesScreen({ item }: { item: string | null }) {
                 value={filter}
                 onChange={setFilter}
               />
-              <Popup
-                label="New invoice"
-                placement="bottom end"
-                trigger={
-                  <Button variant="primary" icon={Plus}>
-                    New invoice
-                  </Button>
-                }
-              >
-                <DemoNote>The invoice editor arrives with WP-11.</DemoNote>
-              </Popup>
+              <Button variant="primary" icon={Plus} onPress={() => navigate("invoices", "new")}>
+                New invoice
+              </Button>
             </Toolbar>
             <ContentGroup>
               <DataTable

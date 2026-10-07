@@ -2,6 +2,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { resolveAppearance } from "./appearance";
 import { Badge } from "./components/Badge";
+import { Select, TextField } from "./components/Field";
 import { Kbd } from "./components/Kbd";
 import { SegmentedControl } from "./components/SegmentedControl";
 import { formatMinor } from "./format";
@@ -60,5 +61,47 @@ describe("appearance", () => {
     expect(resolveAppearance("system", true)).toBe("dark");
     expect(resolveAppearance("system", false)).toBe("light");
     expect(resolveAppearance("light", true)).toBe("light");
+  });
+});
+
+describe("TextField", () => {
+  it("labels the input and marks it invalid with its message", () => {
+    const onChange = vi.fn();
+    render(
+      <TextField
+        label="Unit price"
+        value="1450.00"
+        onChange={onChange}
+        errorMessage="Use 1 450,00"
+      />,
+    );
+    const input = screen.getByLabelText("Unit price") as HTMLInputElement;
+    expect(input.getAttribute("aria-invalid")).toBe("true");
+    fireEvent.change(input, { target: { value: "1 450,00" } });
+    expect(onChange).toHaveBeenCalledWith("1 450,00");
+  });
+
+  it("keeps a hidden label for screen readers", () => {
+    render(<TextField label="Line 2 unit" labelHidden defaultValue="ks" />);
+    expect((screen.getByLabelText("Line 2 unit") as HTMLInputElement).value).toBe("ks");
+  });
+});
+
+describe("Select", () => {
+  it("shows the chosen option's label", () => {
+    render(
+      <Select
+        label="VAT"
+        value="OUT12"
+        onChange={() => {}}
+        options={[
+          { id: "OUT21", label: "21 %", detail: "standard" },
+          { id: "OUT12", label: "12 %", detail: "reduced" },
+        ]}
+      />,
+    );
+    const button = screen.getByRole("button");
+    expect(button.textContent).toContain("12 %");
+    expect(button.textContent).not.toContain("reduced");
   });
 });

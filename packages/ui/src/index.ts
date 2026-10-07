@@ -16,6 +16,13 @@ export {
 export { Badge, type BadgeProps, type Tone, toneClasses, toneIcon } from "./components/Badge";
 export { Button, type ButtonProps, type ButtonVariant, buttonClasses } from "./components/Button";
 export {
+  Select,
+  type SelectOption,
+  type SelectProps,
+  TextField,
+  type TextFieldProps,
+} from "./components/Field";
+export {
   FactList,
   type FactListProps,
   Inspector,

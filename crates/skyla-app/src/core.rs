@@ -17,6 +17,9 @@ use crate::dto::*;
 /// value: CZ books VAT on 343 (and its analytic sub-accounts).
 const VAT_ACCOUNTS: &[&str] = &["343"];
 
+/// The namespace of the demo's draft and posting ids (UUID v5).
+const DEMO_POSTING_NAMESPACE: uuid::Uuid = uuid::uuid!("5d2b8f61-0c7e-5a93-b4d1-7e3f9a2c6b08");
+
 /// The application core: one open entity and its ledger.
 pub struct Core {
     conn: Mutex<Connection>,
@@ -29,6 +32,8 @@ pub struct Core {
     /// The ČNB repo rate history for late interest. Reference data: imported
     /// or fetched on opt-in (WP-20); the demo has none, so it says so.
     repo_rates: Vec<skyla_invoicing::RepoRate>,
+    /// Drafts created in this session (the demo derives their ids from it).
+    drafts_created: std::sync::atomic::AtomicU64,
 }
 
 fn money(m: Money) -> Result<MoneyDto, CoreError> {
@@ -123,6 +128,7 @@ impl Core {
             pack,
             scheduled,
             repo_rates: Vec::new(),
+            drafts_created: std::sync::atomic::AtomicU64::new(0),
         })
     }
 
@@ -576,6 +582,168 @@ impl Core {
             });
         }
         Ok(out)
+    }
+
+    /// What the invoice editor offers: customers, the VAT codes this
+    /// supplier may charge, units, terms, and the next number.
+    pub fn invoice_form(&self) -> Result<InvoiceFormDto, CoreError> {
+        let db = self.db();
+        let today = self.domain.entity.as_of.clone();
+        let vat_payer = skyla_invoicing::supplier(&db)?.is_some_and(|s| s.vat_payer);
+        let clients = skyla_invoicing::customers(&db)?
+            .into_iter()
+            .map(|c| ClientDto {
+                name: c.name,
+                ico: c.ico,
+                dic: c.dic,
+                address: c.address,
+            })
+            .collect();
+        let mut vat_codes = Vec::new();
+        for c in &self.pack.vat_codes {
+            // Sales codes carry an e-invoice category; the supplier's
+            // registration decides which of them apply.
+            if c.einvoice.is_some() && c.outside_vat != vat_payer {
+                vat_codes.push(VatCodeChoiceDto {
+                    code: c.code.clone(),
+                    name: c.name.clone(),
+                    rate_percent: self.pack.vat_rate(&c.code, &today)?.normalize().to_string(),
+                });
+            }
+        }
+        Ok(InvoiceFormDto {
+            clients,
+            vat_codes,
+            units: ["h", "ks", "den", "měs", "km"].map(str::to_owned).to_vec(),
+            due_days: vec![7, 14, 21, 30],
+            next_number: skyla_invoicing::next_number(&db, "FV", &today)?,
+            today,
+        })
+    }
+
+    /// Saves a draft typed in the editor. Amounts are parsed here, in Czech
+    /// formats, and every problem is listed at once.
+    pub fn create_invoice_draft(&self, draft: &InvoiceDraftDto) -> Result<InvoiceDto, CoreError> {
+        let form = self.invoice_form()?;
+        let mut problems = Vec::new();
+        let client = form.clients.iter().find(|c| c.name == draft.client);
+        if client.is_none() {
+            problems.push(if draft.client.is_empty() {
+                "pick a customer".to_owned()
+            } else {
+                format!("{:?} isn't a known customer", draft.client)
+            });
+        }
+        if !form.due_days.contains(&draft.due_days) {
+            problems.push(format!(
+                "payment terms of {} days aren't offered",
+                draft.due_days
+            ));
+        }
+        if draft.lines.is_empty() {
+            problems.push("add at least one line".to_owned());
+        }
+        let mut lines = Vec::new();
+        for (i, l) in draft.lines.iter().enumerate() {
+            let n = i + 1;
+            let quantity = l.quantity.trim().replace(',', ".");
+            let quantity_ok = !quantity.is_empty()
+                && quantity.chars().all(|c| c.is_ascii_digit() || c == '.')
+                && quantity.matches('.').count() <= 1
+                && quantity.split('.').nth(1).is_none_or(|f| f.len() <= 4)
+                && quantity
+                    .parse::<skyla_money::Rate>()
+                    .is_ok_and(|q| q > skyla_money::Rate::ZERO);
+            if !quantity_ok {
+                problems.push(format!(
+                    "line {n}: quantity {:?} isn't a positive number",
+                    l.quantity
+                ));
+            }
+            let price = skyla_money::parse_amount_cs(&l.unit_price, self.currency);
+            match &price {
+                Ok(p) if p.minor() > 0 => {}
+                Ok(_) => problems.push(format!("line {n}: the unit price must be above zero")),
+                Err(_) => problems.push(format!(
+                    "line {n}: unit price {:?} isn't an amount like 1 200,00",
+                    l.unit_price
+                )),
+            }
+            if !form.vat_codes.iter().any(|c| c.code == l.vat_code) {
+                problems.push(format!("line {n}: VAT code {:?} isn't offered", l.vat_code));
+            }
+            lines.push(skyla_invoicing::LineInput {
+                description: l.description.trim().to_owned(),
+                quantity,
+                unit: l.unit.trim().to_owned(),
+                unit_price_minor: price.map(|p| p.minor()).unwrap_or_default(),
+                vat_code: l.vat_code.clone(),
+                account: None,
+            });
+        }
+        if !problems.is_empty() {
+            return Err(CoreError::Invoicing(
+                skyla_invoicing::InvoicingError::Invalid(problems),
+            ));
+        }
+        let client = client.cloned().unwrap_or_else(|| unreachable!());
+        let due = skyla_rules::date::parse(&form.today)
+            .map(|d| skyla_rules::date::format(d + i64::from(draft.due_days)));
+        let input = skyla_invoicing::DraftInput {
+            kind: skyla_invoicing::DocKind::Invoice,
+            series: "FV".into(),
+            customer: skyla_invoicing::Customer {
+                name: client.name,
+                ico: client.ico,
+                dic: client.dic,
+                address: client.address,
+            },
+            due_date: due,
+            tax_point_date: None,
+            note: draft.note.trim().to_owned(),
+            lines,
+            related_id: None,
+            advances: Vec::new(),
+        };
+        // A known id per draft, so the demo's recordings are reproducible.
+        let n = self
+            .drafts_created
+            .fetch_add(1, std::sync::atomic::Ordering::Relaxed)
+            + 1;
+        let uid = uuid::Uuid::new_v5(&DEMO_POSTING_NAMESPACE, format!("draft/{n}").as_bytes());
+        let id = skyla_invoicing::create_draft_as(&self.db(), &input, &uid.to_string())?;
+        self.invoice(id)
+    }
+
+    /// Issues a draft on `issue_date`: assigns the next number and posts it.
+    pub fn issue_invoice(&self, id: i64, issue_date: &str) -> Result<InvoiceDto, CoreError> {
+        let accounts = skyla_invoicing::Accounts::cz();
+        let db = self.db();
+        // The demo posts with a known identity and a fixed clock, so its
+        // recordings (and the hash chain) come out the same on every run.
+        let doc_uid = skyla_invoicing::get(&db, &self.pack, id)?.uid;
+        let uid = uuid::Uuid::new_v5(&DEMO_POSTING_NAMESPACE, doc_uid.as_bytes()).to_string();
+        let posted_at = format!("{issue_date}T12:00:00.000Z");
+        let replay = skyla_invoicing::IssueReplay {
+            uid: &uid,
+            posted_at: &posted_at,
+        };
+        skyla_invoicing::issue(&db, &self.pack, &accounts, id, issue_date, Some(replay))?;
+        drop(db);
+        self.invoice(id)
+    }
+
+    /// Deletes a draft. Issued documents never go away.
+    pub fn delete_invoice_draft(&self, id: i64) -> Result<(), CoreError> {
+        skyla_invoicing::delete_draft(&self.db(), id)?;
+        Ok(())
+    }
+
+    fn invoice(&self, id: i64) -> Result<InvoiceDto, CoreError> {
+        self.invoices()?
+            .into_iter()
+            .find(|i| i.id == id)
+            .ok_or_else(|| CoreError::BadRequest(format!("no invoice {id}")))
     }
 
     /// The latest bank import, tied out against the ledger.

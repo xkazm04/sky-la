@@ -13,6 +13,7 @@ publish = false
 workspace = true
 
 [dependencies]
+uuid = { version = "1.27.0", features = ["v5"] }
 base64 = "0.22.1"
 rusqlite = { version = "0.40.2", features = ["bundled"] }
 serde = { version = "1.0.229", features = ["derive"] }

@@ -16,8 +16,7 @@ fn repo() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../..")
 }
 
-#[test]
-fn every_recording_round_trips_identically_over_tauri_ipc() {
+fn app() -> (tauri::App<MockRuntime>, tauri::WebviewWindow<MockRuntime>) {
     let app = mock_builder()
         .manage(Core::demo().expect("demo core"))
         .invoke_handler(skyla_desktop_lib::specta_builder::<MockRuntime>().invoke_handler())
@@ -26,43 +25,69 @@ fn every_recording_round_trips_identically_over_tauri_ipc() {
     let webview = tauri::WebviewWindowBuilder::new(&app, "main", Default::default())
         .build()
         .expect("webview");
+    (app, webview)
+}
 
+fn replay(webview: &tauri::WebviewWindow<MockRuntime>, recording: &Recording) {
+    let response = get_ipc_response(
+        webview,
+        InvokeRequest {
+            cmd: recording.command.clone(),
+            callback: CallbackFn(0),
+            error: CallbackFn(1),
+            url: "tauri://localhost".parse().expect("url"),
+            body: InvokeBody::Json(recording.args.clone()),
+            headers: Default::default(),
+            invoke_key: INVOKE_KEY.to_string(),
+        },
+    );
+    let (value, is_error) = match response {
+        Ok(body) => (
+            body.deserialize::<serde_json::Value>().expect("json"),
+            false,
+        ),
+        Err(error) => (error, true),
+    };
+    assert_eq!(
+        is_error, recording.is_error,
+        "{} {}",
+        recording.command, recording.args
+    );
+    assert!(
+        value == recording.result,
+        "{} {} (scenario {:?}) differs over Tauri IPC from the recording",
+        recording.command,
+        recording.args,
+        recording.scenario
+    );
+}
+
+#[test]
+fn every_recording_round_trips_identically_over_tauri_ipc() {
     let recordings: Vec<Recording> = serde_json::from_str(
         &std::fs::read_to_string(repo().join(RECORDINGS_PATH)).expect("recordings"),
     )
     .expect("parse recordings");
     assert!(recordings.len() > 20);
-    for recording in recordings {
-        let response = get_ipc_response(
-            &webview,
-            InvokeRequest {
-                cmd: recording.command.clone(),
-                callback: CallbackFn(0),
-                error: CallbackFn(1),
-                url: "tauri://localhost".parse().expect("url"),
-                body: InvokeBody::Json(recording.args.clone()),
-                headers: Default::default(),
-                invoke_key: INVOKE_KEY.to_string(),
-            },
-        );
-        let (value, is_error) = match response {
-            Ok(body) => (
-                body.deserialize::<serde_json::Value>().expect("json"),
-                false,
-            ),
-            Err(error) => (error, true),
-        };
-        assert_eq!(
-            is_error, recording.is_error,
-            "{} {}",
-            recording.command, recording.args
-        );
-        assert!(
-            value == recording.result,
-            "{} {} differs over Tauri IPC from the recording",
-            recording.command,
-            recording.args
-        );
+    let (_app, webview) = app();
+    for recording in recordings.iter().filter(|r| r.scenario.is_none()) {
+        replay(&webview, recording);
+    }
+    // Each scenario runs in order on its own fresh core, as it was recorded.
+    let mut names: Vec<&str> = recordings
+        .iter()
+        .filter_map(|r| r.scenario.as_deref())
+        .collect();
+    names.dedup();
+    assert!(!names.is_empty());
+    for name in names {
+        let (_app, webview) = app();
+        for recording in recordings
+            .iter()
+            .filter(|r| r.scenario.as_deref() == Some(name))
+        {
+            replay(&webview, recording);
+        }
     }
 }
 

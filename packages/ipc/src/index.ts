@@ -5,7 +5,7 @@ import { type Recording, replay } from "./recordings";
 import { isTauriRuntime } from "./tauri";
 
 export * from "./bindings";
-export { type Recording, replay } from "./recordings";
+export { type Recording, type ReplaySession, replay } from "./recordings";
 export { isTauriRuntime } from "./tauri";
 
 /** Which core answers: the Rust core inside Tauri, or the recorded one. */
@@ -22,7 +22,8 @@ export function connectCore(
 ): CoreKind {
   if (!options.forceMock && isTauriRuntime()) return "tauri";
   const source = options.recordings ?? (recordings as readonly Recording[]);
-  mockIPC((command, args) => replay(source, command, args));
+  const session = { state: null };
+  mockIPC((command, args) => replay(source, command, args, session));
   return "mock";
 }
 

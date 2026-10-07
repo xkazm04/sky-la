@@ -311,6 +311,39 @@ fn series(conn: &Connection, code: &str) -> Result<(DocKind, String), InvoicingE
     Ok((DocKind::from_db(&kind)?, pattern))
 }
 
+/// Every customer on a document, by name, with the details of their most
+/// recent document.
+pub fn customers(conn: &Connection) -> Result<Vec<Customer>, InvoicingError> {
+    Ok(conn
+        .prepare(
+            "SELECT customer_name, customer_ico, customer_dic, customer_address FROM document d
+             WHERE id = (SELECT max(id) FROM document WHERE customer_name = d.customer_name)
+             ORDER BY customer_name",
+        )?
+        .query_map([], |r| {
+            Ok(Customer {
+                name: r.get(0)?,
+                ico: r.get(1)?,
+                dic: r.get(2)?,
+                address: r.get(3)?,
+            })
+        })?
+        .collect::<Result<_, _>>()?)
+}
+
+/// The number the next document issued in `code` on `date` would get. A
+/// preview only: issuing assigns it in the posting transaction.
+pub fn next_number(conn: &Connection, code: &str, date: &str) -> Result<String, InvoicingError> {
+    let (_, pattern) = series(conn, code)?;
+    let year = date_year(date)?;
+    let seq: i64 = conn.query_row(
+        "SELECT coalesce(max(seq), 0) + 1 FROM document WHERE series = ?1 AND year = ?2 AND status = 'issued'",
+        params![code, year],
+        |r| r.get(0),
+    )?;
+    Ok(format_number(&pattern, year, seq))
+}
+
 /// Formats a number from a series pattern.
 pub fn format_number(pattern: &str, year: i64, seq: i64) -> String {
     let mut out = pattern

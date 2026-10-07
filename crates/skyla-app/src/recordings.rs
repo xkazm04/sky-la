@@ -24,6 +24,125 @@ pub struct Recording {
     pub result: Value,
     /// True when `result` is an error.
     pub is_error: bool,
+    /// The scenario this step belongs to; none for the demo's initial answers.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub scenario: Option<String>,
+    /// The state the answer holds in; none for the initial state.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub state: Option<String>,
+    /// For a write: the state it leads to.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub leads_to: Option<String>,
+}
+
+/// Records a scenario: writes move the demo from state to state, and the
+/// reads after them are recorded in the state they hold in. The mock replays
+/// a write only from its recorded state, so a scripted flow (create, issue,
+/// export) runs end to end without the webview computing anything.
+pub struct Scenario<'a> {
+    core: &'a Core,
+    name: &'static str,
+    state: Option<String>,
+    out: Vec<Recording>,
+}
+
+impl Scenario<'_> {
+    fn call(&mut self, command: &str, args: Value, leads_to: Option<String>) -> Value {
+        let (result, is_error) = match dispatch(self.core, command, &args) {
+            Ok(value) => (value, false),
+            Err(failure) => (serde_json::to_value(failure).unwrap_or(Value::Null), true),
+        };
+        let leads_to = leads_to.filter(|_| !is_error);
+        self.out.push(Recording {
+            command: command.to_owned(),
+            args,
+            result: result.clone(),
+            is_error,
+            scenario: Some(self.name.to_owned()),
+            state: self.state.clone(),
+            leads_to: leads_to.clone(),
+        });
+        if let Some(next) = leads_to {
+            self.state = Some(next);
+        }
+        result
+    }
+
+    /// A read in the current state.
+    pub fn read(&mut self, command: &str, args: Value) -> Value {
+        self.call(command, args, None)
+    }
+
+    /// A write that moves to `state` (`<scenario>/<state>`) when it succeeds.
+    pub fn write(&mut self, command: &str, args: Value, state: &str) -> Value {
+        let next = format!("{}/{state}", self.name);
+        self.call(command, args, Some(next))
+    }
+}
+
+/// The editor's scripted invoice: typed in the e2e test exactly like this.
+pub fn scripted_draft() -> Value {
+    json!({
+        "client": "Northwind Traders s.r.o.",
+        "dueDays": 14,
+        "note": "Děkuji za spolupráci.",
+        "lines": [
+            { "description": "UX audit", "quantity": "12", "unit": "h", "unitPrice": "1 450,00", "vatCode": "OUT21" },
+            { "description": "Workshop", "quantity": "1", "unit": "ks", "unitPrice": "8 000,00", "vatCode": "OUT21" }
+        ]
+    })
+}
+
+/// A scenario's script.
+pub type Script = fn(&mut Scenario<'_>);
+
+/// Every scenario, each recorded on a fresh demo core.
+pub fn scenarios() -> Vec<(&'static str, Script)> {
+    vec![
+        ("new-invoice", |s| {
+            s.read("invoice_form", json!({}));
+            // The editor sends what was typed; the core lists every problem.
+            s.read(
+                "create_invoice_draft",
+                json!({ "draft": { "client": "", "dueDays": 14, "note": "", "lines": [
+                    { "description": "UX audit", "quantity": "12", "unit": "h", "unitPrice": "1450.00", "vatCode": "OUT21" }
+                ] } }),
+            );
+            let draft = s.write(
+                "create_invoice_draft",
+                json!({ "draft": scripted_draft() }),
+                "drafted",
+            );
+            let id = draft["id"].clone();
+            s.read("invoices", json!({}));
+            s.read("invoice_form", json!({}));
+            let issued = s.write(
+                "issue_invoice",
+                json!({ "id": id, "issueDate": "2026-10-07" }),
+                "issued",
+            );
+            s.read("invoices", json!({}));
+            s.read("balance_sheet", json!({ "asOf": "2026-10-07" }));
+            s.read("integrity", json!({}));
+            s.read("invoice_pdf", json!({ "id": issued["id"], "lang": "cs" }));
+            s.read(
+                "invoice_xml",
+                json!({ "id": issued["id"], "format": "isdoc" }),
+            );
+        }),
+        ("discard-draft", |s| {
+            let mut draft = scripted_draft();
+            draft["client"] = json!("Acme Analytics a.s.");
+            let created = s.write("create_invoice_draft", json!({ "draft": draft }), "drafted");
+            s.read("invoices", json!({}));
+            s.write(
+                "delete_invoice_draft",
+                json!({ "id": created["id"] }),
+                "deleted",
+            );
+            s.read("invoices", json!({}));
+        }),
+    ]
 }
 
 /// Every canonical request. The UI asks for these exact arguments in
@@ -77,6 +196,15 @@ pub fn canonical_requests() -> Vec<(&'static str, Value)> {
     requests
 }
 
+fn id_arg(args: &Value) -> Result<i64, IpcFailure> {
+    args.get("id")
+        .and_then(Value::as_i64)
+        .ok_or_else(|| IpcFailure {
+            code: "bad_request".into(),
+            message: "missing argument id".into(),
+        })
+}
+
 fn arg<'a>(args: &'a Value, name: &str) -> Result<&'a str, IpcFailure> {
     args.get(name)
         .and_then(Value::as_str)
@@ -108,6 +236,23 @@ pub fn dispatch(core: &Core, command: &str, args: &Value) -> Result<Value, IpcFa
         "egress_register" => to_value(Ok(core.egress_register())),
         "rule_pack" => to_value(Ok(core.rule_pack())),
         "recurring_templates" => to_value(core.recurring_templates()),
+        "invoice_form" => to_value(core.invoice_form()),
+        "create_invoice_draft" => {
+            let draft = args
+                .get("draft")
+                .cloned()
+                .and_then(|d| serde_json::from_value::<crate::dto::InvoiceDraftDto>(d).ok())
+                .ok_or_else(|| IpcFailure {
+                    code: "bad_request".into(),
+                    message: "missing or malformed argument draft".into(),
+                })?;
+            to_value(core.create_invoice_draft(&draft))
+        }
+        "issue_invoice" => {
+            let id = id_arg(args)?;
+            to_value(core.issue_invoice(id, arg(args, "issueDate")?))
+        }
+        "delete_invoice_draft" => to_value(core.delete_invoice_draft(id_arg(args)?)),
         "dunning_queue" => to_value(core.dunning_queue(arg(args, "asOf")?)),
         "invoice_pdf" => {
             let id = args
@@ -145,6 +290,24 @@ pub fn dispatch(core: &Core, command: &str, args: &Value) -> Result<Value, IpcFa
     }
 }
 
+/// Records the initial answers on `core`, then every scenario on a fresh
+/// core from `fresh`.
+pub fn record_all(core: &Core, fresh: impl Fn() -> Core) -> Vec<Recording> {
+    let mut out = record(core);
+    for (name, run) in scenarios() {
+        let core = fresh();
+        let mut s = Scenario {
+            core: &core,
+            name,
+            state: None,
+            out: Vec::new(),
+        };
+        run(&mut s);
+        out.extend(s.out);
+    }
+    out
+}
+
 /// Records every canonical request.
 pub fn record(core: &Core) -> Vec<Recording> {
     canonical_requests()
@@ -159,6 +322,9 @@ pub fn record(core: &Core) -> Vec<Recording> {
                 args,
                 result,
                 is_error,
+                scenario: None,
+                state: None,
+                leads_to: None,
             }
         })
         .collect()

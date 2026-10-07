@@ -1,0 +1,250 @@
+import { commands, type InvoiceDraftLineDto, type InvoiceFormDto, unwrap } from "@skyla/ipc";
+import {
+  Button,
+  ContentGroup,
+  FactList,
+  Inspector,
+  InspectorSection,
+  Select,
+  TextField,
+  Toolbar,
+} from "@skyla/ui";
+import { Plus, Trash2 } from "lucide-react";
+import { useId, useState } from "react";
+import { invalidateAll, problems, useQuery } from "../data";
+import { day } from "../format";
+import { navigate } from "../router";
+import { InspectorPane } from "../shell/Shell";
+import { Loaded } from "./common";
+
+interface LineDraft extends InvoiceDraftLineDto {
+  readonly key: number;
+}
+
+let nextKey = 1;
+const emptyLine = (vatCode: string): LineDraft => ({
+  key: nextKey++,
+  description: "",
+  quantity: "1",
+  unit: "h",
+  unitPrice: "",
+  vatCode,
+});
+
+/**
+ * The invoice editor. The webview only collects what was typed; the core
+ * parses the numbers, checks everything, computes the totals and saves the
+ * draft. Issuing happens from the draft's inspector.
+ */
+export function InvoiceEditor() {
+  const form = useQuery("invoice_form", () => unwrap(commands.invoiceForm()));
+  return <Loaded query={form}>{(f) => <Editor form={f} />}</Loaded>;
+}
+
+function Editor({ form }: { form: InvoiceFormDto }) {
+  const defaultVat = form.vatCodes[0]?.code ?? "";
+  const [client, setClient] = useState<string | null>(null);
+  const [dueDays, setDueDays] = useState(String(form.dueDays.includes(14) ? 14 : form.dueDays[0]));
+  const [note, setNote] = useState("");
+  const [lines, setLines] = useState<LineDraft[]>(() => [emptyLine(defaultVat)]);
+  const [saving, setSaving] = useState(false);
+  const [errors, setErrors] = useState<string[]>([]);
+  const errorsId = useId();
+
+  const update = (key: number, patch: Partial<InvoiceDraftLineDto>) =>
+    setLines((all) => all.map((l) => (l.key === key ? { ...l, ...patch } : l)));
+
+  const save = async () => {
+    setSaving(true);
+    setErrors([]);
+    try {
+      const saved = await unwrap(
+        commands.createInvoiceDraft({
+          client: client ?? "",
+          dueDays: Number(dueDays),
+          note,
+          lines: lines.map(({ key: _key, ...line }) => line),
+        }),
+      );
+      invalidateAll();
+      navigate("invoices", `draft-${saved.id}`, true);
+    } catch (e) {
+      setErrors(problems(e));
+      setSaving(false);
+    }
+  };
+
+  // Point each problem the core listed at the field it's about.
+  const problemFor = (n: number | null, ...words: string[]) =>
+    errors.find(
+      (p) => (n === null || p.startsWith(`line ${n}:`)) && words.some((w) => p.includes(w)),
+    );
+
+  const vatOptions = form.vatCodes.map((c) => ({
+    id: c.code,
+    label: `${c.ratePercent} %`,
+    detail: c.name,
+  }));
+
+  return (
+    <>
+      <Toolbar title="New invoice" subtitle={`Draft · issued as ${form.nextNumber} or later`}>
+        <Button variant="plain" onPress={() => navigate("invoices", null)}>
+          Cancel
+        </Button>
+        <Button variant="primary" onPress={() => void save()} isDisabled={saving}>
+          Save draft
+        </Button>
+      </Toolbar>
+      <ContentGroup>
+        <form
+          aria-label="New invoice"
+          aria-describedby={errors.length > 0 ? errorsId : undefined}
+          className="flex flex-col gap-5 p-5"
+          onSubmit={(e) => {
+            e.preventDefault();
+            void save();
+          }}
+        >
+          {errors.length > 0 && (
+            <div
+              id={errorsId}
+              role="alert"
+              className="rounded-inner bg-negative-tint px-3 py-2 text-body text-negative-ink"
+            >
+              <p className="font-semibold">The core couldn't save the draft:</p>
+              <ul className="mt-1 list-disc pl-5">
+                {errors.map((p) => (
+                  <li key={p}>{p}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+          <div className="grid grid-cols-[minmax(0,2fr)_minmax(0,1fr)] gap-4">
+            <Select
+              label="Customer"
+              options={form.clients.map((c) => ({
+                id: c.name,
+                label: c.name,
+                detail: [c.ico && `IČO ${c.ico}`, c.dic && `DIČ ${c.dic}`]
+                  .filter(Boolean)
+                  .join(" · "),
+              }))}
+              value={client}
+              onChange={setClient}
+              placeholder="Choose a customer…"
+              isInvalid={problemFor(null, "customer") !== undefined}
+            />
+            <Select
+              label="Payment terms"
+              options={form.dueDays.map((d) => ({ id: String(d), label: `${d} days` }))}
+              value={dueDays}
+              onChange={setDueDays}
+            />
+          </div>
+
+          <fieldset className="m-0 min-w-0 border-0 p-0">
+            <legend className="sr-only">Lines</legend>
+            <div className="grid grid-cols-[minmax(0,1fr)_4.5rem_4rem_7.5rem_6.5rem_1.75rem] items-start gap-x-2 gap-y-2">
+              <div aria-hidden className="contents text-footnote font-medium text-ink-secondary">
+                <span>Description</span>
+                <span className="text-right">Quantity</span>
+                <span>Unit</span>
+                <span className="text-right">Unit price</span>
+                <span>VAT</span>
+                <span />
+              </div>
+              {lines.map((l, i) => {
+                const n = i + 1;
+                return (
+                  <div key={l.key} className="contents">
+                    <TextField
+                      label={`Line ${n} description`}
+                      labelHidden
+                      value={l.description}
+                      onChange={(description) => update(l.key, { description })}
+                      placeholder="What you supplied"
+                    />
+                    <TextField
+                      label={`Line ${n} quantity`}
+                      labelHidden
+                      numeric
+                      isInvalid={problemFor(n, "quantity") !== undefined}
+                      value={l.quantity}
+                      onChange={(quantity) => update(l.key, { quantity })}
+                    />
+                    <TextField
+                      label={`Line ${n} unit`}
+                      labelHidden
+                      value={l.unit}
+                      onChange={(unit) => update(l.key, { unit })}
+                    />
+                    <TextField
+                      label={`Line ${n} unit price`}
+                      labelHidden
+                      numeric
+                      isInvalid={problemFor(n, "unit price") !== undefined}
+                      placeholder="1 200,00"
+                      value={l.unitPrice}
+                      onChange={(unitPrice) => update(l.key, { unitPrice })}
+                    />
+                    <Select
+                      label={`Line ${n} VAT`}
+                      labelHidden
+                      isInvalid={problemFor(n, "VAT code") !== undefined}
+                      options={vatOptions}
+                      value={l.vatCode}
+                      onChange={(vatCode) => update(l.key, { vatCode })}
+                    />
+                    <Button
+                      variant="plain"
+                      icon={Trash2}
+                      aria-label={`Remove line ${n}`}
+                      isDisabled={lines.length === 1}
+                      onPress={() => setLines((all) => all.filter((x) => x.key !== l.key))}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+            <p className="mt-1.5 text-footnote text-ink-secondary">
+              Prices exclude VAT. Type amounts as you would in Czech: 1 200,00.
+            </p>
+            <Button
+              variant="plain"
+              icon={Plus}
+              className="mt-2 -ml-2"
+              onPress={() => setLines((all) => [...all, emptyLine(defaultVat)])}
+            >
+              Add line
+            </Button>
+          </fieldset>
+
+          <TextField label="Note on the invoice" multiline value={note} onChange={setNote} />
+          <button type="submit" hidden aria-hidden tabIndex={-1} />
+        </form>
+      </ContentGroup>
+      <InspectorPane>
+        <Inspector label="New invoice" title="New invoice" subtitle="Draft">
+          <InspectorSection title="When you issue it">
+            <FactList
+              facts={[
+                { label: "Number", value: form.nextNumber },
+                { label: "Issue date", value: day(form.today, true) },
+                {
+                  label: "Due",
+                  value: `${dueDays} days after issue`,
+                },
+              ]}
+            />
+          </InspectorSection>
+          <p className="mt-3 text-footnote text-ink-secondary">
+            Saving keeps a draft you can still change or delete. The core computes VAT and totals
+            with the rule pack. Issuing posts the invoice to the ledger; after that it can't change,
+            and corrections are credit notes.
+          </p>
+        </Inspector>
+      </InspectorPane>
+    </>
+  );
+}

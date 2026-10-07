@@ -713,6 +713,80 @@ pub struct RecurringTemplateDto {
     pub gross: MoneyDto,
 }
 
+/// What the invoice editor offers.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct InvoiceFormDto {
+    /// Customers seen on earlier documents.
+    pub clients: Vec<ClientDto>,
+    /// The VAT codes this supplier may put on a sale.
+    pub vat_codes: Vec<VatCodeChoiceDto>,
+    /// Units the line editor suggests.
+    pub units: Vec<String>,
+    /// Payment terms the editor offers, in days.
+    pub due_days: Vec<u16>,
+    /// Today: the issue date a draft issued now gets.
+    pub today: String,
+    /// The number the next invoice issued today gets.
+    pub next_number: String,
+}
+
+/// A customer.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct ClientDto {
+    /// Legal name.
+    pub name: String,
+    /// IČO.
+    pub ico: Option<String>,
+    /// DIČ.
+    pub dic: Option<String>,
+    /// Postal address.
+    pub address: Option<String>,
+}
+
+/// A VAT code the editor offers.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct VatCodeChoiceDto {
+    /// The code.
+    pub code: String,
+    /// What it means.
+    pub name: String,
+    /// The rate today, e.g. `21`.
+    pub rate_percent: String,
+}
+
+/// A draft invoice as typed in the editor. The core parses and checks it.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct InvoiceDraftDto {
+    /// A customer's legal name, as [`InvoiceFormDto::clients`] lists them.
+    pub client: String,
+    /// Days from today to the due date.
+    pub due_days: u16,
+    /// Free text printed on the invoice.
+    pub note: String,
+    /// The lines.
+    pub lines: Vec<InvoiceDraftLineDto>,
+}
+
+/// A line as typed: Czech number formats (`1,5`, `1 200,00`).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct InvoiceDraftLineDto {
+    /// What was supplied.
+    pub description: String,
+    /// Quantity, e.g. `21` or `1,5`.
+    pub quantity: String,
+    /// Unit, e.g. `h`.
+    pub unit: String,
+    /// Price per unit excluding VAT, e.g. `1 200,00`.
+    pub unit_price: String,
+    /// One of [`InvoiceFormDto::vat_codes`].
+    pub vat_code: String,
+}
+
 /// The rule pack in force.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]

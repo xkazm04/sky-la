@@ -44,6 +44,14 @@ export const commands = {
 	dunningQueue: (asOf: string) => typedError<DunningNoticeDto[], IpcFailure>(__TAURI_INVOKE("dunning_queue", { asOf })),
 	/**  Recurring invoice templates and their next runs. */
 	recurringTemplates: () => typedError<RecurringTemplateDto[], IpcFailure>(__TAURI_INVOKE("recurring_templates")),
+	/**  What the invoice editor offers. */
+	invoiceForm: () => typedError<InvoiceFormDto, IpcFailure>(__TAURI_INVOKE("invoice_form")),
+	/**  Saves a draft typed in the editor; the core parses and checks it. */
+	createInvoiceDraft: (draft: InvoiceDraftDto) => typedError<InvoiceDto, IpcFailure>(__TAURI_INVOKE("create_invoice_draft", { draft })),
+	/**  Issues a draft: the next number, posted through the kernel. */
+	issueInvoice: (id: number, issueDate: string) => typedError<InvoiceDto, IpcFailure>(__TAURI_INVOKE("issue_invoice", { id, issueDate })),
+	/**  Deletes a draft. */
+	deleteInvoiceDraft: (id: number) => typedError<null, IpcFailure>(__TAURI_INVOKE("delete_invoice_draft", { id })),
 };
 
 /* Types */
@@ -175,6 +183,18 @@ export type CashBasisTotalDto = {
 	taxTreatment: string,
 	/**  The total. */
 	amount: MoneyDto,
+};
+
+/**  A customer. */
+export type ClientDto = {
+	/**  Legal name. */
+	name: string,
+	/**  IČO. */
+	ico: string | null,
+	/**  DIČ. */
+	dic: string | null,
+	/**  Postal address. */
+	address: string | null,
 };
 
 /**  A rendered document, ready to save or open. */
@@ -311,6 +331,32 @@ export type InterestPeriodDto = {
 	interest: MoneyDto,
 };
 
+/**  A draft invoice as typed in the editor. The core parses and checks it. */
+export type InvoiceDraftDto = {
+	/**  A customer's legal name, as [`InvoiceFormDto::clients`] lists them. */
+	client: string,
+	/**  Days from today to the due date. */
+	dueDays: number,
+	/**  Free text printed on the invoice. */
+	note: string,
+	/**  The lines. */
+	lines: InvoiceDraftLineDto[],
+};
+
+/**  A line as typed: Czech number formats (`1,5`, `1 200,00`). */
+export type InvoiceDraftLineDto = {
+	/**  What was supplied. */
+	description: string,
+	/**  Quantity, e.g. `21` or `1,5`. */
+	quantity: string,
+	/**  Unit, e.g. `h`. */
+	unit: string,
+	/**  Price per unit excluding VAT, e.g. `1 200,00`. */
+	unitPrice: string,
+	/**  One of [`InvoiceFormDto::vat_codes`]. */
+	vatCode: string,
+};
+
 /**  An issued (or drafted) invoice. */
 export type InvoiceDto = {
 	/**  Document id. */
@@ -349,6 +395,22 @@ export type InvoiceDto = {
 	entryId: number | null,
 	/**  The rule pack its totals were fixed with, once issued. */
 	pack: string | null,
+};
+
+/**  What the invoice editor offers. */
+export type InvoiceFormDto = {
+	/**  Customers seen on earlier documents. */
+	clients: ClientDto[],
+	/**  The VAT codes this supplier may put on a sale. */
+	vatCodes: VatCodeChoiceDto[],
+	/**  Units the line editor suggests. */
+	units: string[],
+	/**  Payment terms the editor offers, in days. */
+	dueDays: number[],
+	/**  Today: the issue date a draft issued now gets. */
+	today: string,
+	/**  The number the next invoice issued today gets. */
+	nextNumber: string,
 };
 
 /**  One invoice line. */
@@ -678,6 +740,16 @@ export type TrialBalanceRowDto = {
 	credit: MoneyDto,
 	/**  Debit minus credit. */
 	balance: MoneyDto,
+};
+
+/**  A VAT code the editor offers. */
+export type VatCodeChoiceDto = {
+	/**  The code. */
+	code: string,
+	/**  What it means. */
+	name: string,
+	/**  The rate today, e.g. `21`. */
+	ratePercent: string,
 };
 
 /**  A DPH return for one period, computed from the ledger with the rule pack. */

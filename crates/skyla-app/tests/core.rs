@@ -4,7 +4,7 @@
 use std::path::PathBuf;
 
 use skyla_app::Core;
-use skyla_app::recordings::{RECORDINGS_PATH, Recording, record};
+use skyla_app::recordings::{RECORDINGS_PATH, Recording, record_all};
 
 fn core() -> Core {
     Core::demo().expect("the demo core opens")
@@ -110,11 +110,12 @@ fn every_proposed_entry_balances_and_its_vat_is_the_engines() {
 fn the_committed_recordings_match_the_core() {
     let root = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../..");
     let path = root.join(RECORDINGS_PATH);
-    let current = record(&core());
+    let current = record_all(&core(), core);
+    // Only scenarios record failures on purpose (the editor's validation).
     assert!(
-        current.iter().all(|r| !r.is_error),
+        current.iter().all(|r| !r.is_error || r.scenario.is_some()),
         "a canonical request failed: {:#?}",
-        current.iter().find(|r| r.is_error)
+        current.iter().find(|r| r.is_error && r.scenario.is_none())
     );
     let json = serde_json::to_string_pretty(&current).unwrap() + "\n";
     if std::env::var_os("UPDATE_RECORDINGS").is_some() {

@@ -36,8 +36,8 @@ pub use cii::to_cii;
 pub use documents::{
     Accounts, Customer, DocKind, DocState, Document, DraftInput, IssueReplay, Issued, Line,
     LineInput, Settlement, Totals, VatRecap, compute_totals, create_draft, create_draft_as,
-    define_series, delete_draft, draft_credit_note, format_number, get, import_issued, issue,
-    reductions, series_gaps, state, update_draft,
+    customers, define_series, delete_draft, draft_credit_note, format_number, get, import_issued,
+    issue, next_number, reductions, series_gaps, state, update_draft,
 };
 pub use error::InvoicingError;
 pub use exchange::ExportInput;

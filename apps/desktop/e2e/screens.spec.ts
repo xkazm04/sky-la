@@ -31,6 +31,30 @@ const SCREENS = [
   { route: "settings", title: "Settings" },
 ] as const;
 
+async function axeClean(page: Page) {
+  const results = await new AxeBuilder({ page })
+    .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
+    .analyze();
+  expect(
+    results.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target).join(", ")}`),
+  ).toEqual([]);
+}
+
+/** Compares against the committed baseline when this Chromium made it. */
+async function baseline(page: Page, name: string) {
+  const browser = page.context().browser()?.version() ?? "unknown";
+  if (test.info().config.updateSnapshots === "all") writeFileSync(BROWSER_FILE, `${browser}\n`);
+  if (browser === baselineBrowser || test.info().config.updateSnapshots === "all") {
+    await expect(page).toHaveScreenshot(`${name}.png`, { maxDiffPixels: 50 });
+  } else {
+    test.info().annotations.push({
+      type: "visual baseline",
+      description: `made with Chromium ${baselineBrowser || "?"}; this run uses ${browser}, so pixels weren't compared`,
+    });
+    await page.screenshot({ path: `test-results/screens/${name}.png` });
+  }
+}
+
 async function settle(page: Page) {
   await expect(page.getByText("Loading…")).toHaveCount(0);
   await expect(page.getByTestId("status-line")).toContainText("chain verified");
@@ -53,29 +77,23 @@ for (const scheme of ["light", "dark"] as const) {
         );
         await settle(page);
 
-        const results = await new AxeBuilder({ page })
-          .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
-          .analyze();
-        expect(
-          results.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target).join(", ")}`),
-        ).toEqual([]);
-
-        const browser = page.context().browser()?.version() ?? "unknown";
-        if (test.info().config.updateSnapshots === "all")
-          writeFileSync(BROWSER_FILE, `${browser}\n`);
-        if (browser === baselineBrowser || test.info().config.updateSnapshots === "all") {
-          await expect(page).toHaveScreenshot(`${route}-${scheme}.png`, {
-            maxDiffPixels: 50,
-          });
-        } else {
-          test.info().annotations.push({
-            type: "visual baseline",
-            description: `made with Chromium ${baselineBrowser || "?"}; this run uses ${browser}, so pixels weren't compared`,
-          });
-          await page.screenshot({ path: `test-results/screens/${route}-${scheme}.png` });
-        }
+        await axeClean(page);
+        await baseline(page, `${route}-${scheme}`);
       });
     }
+
+    test("the invoice editor passes axe with the core's problems showing", async ({ page }) => {
+      await page.goto("/#/invoices/new");
+      await settle(page);
+      const form = page.getByRole("form", { name: "New invoice" });
+      await form.getByLabel("Line 1 description").fill("UX audit");
+      await form.getByLabel("Line 1 quantity").fill("12");
+      await form.getByLabel("Line 1 unit price").fill("1450.00");
+      await page.getByRole("button", { name: "Save draft" }).click();
+      await expect(form.getByRole("alert")).toContainText("pick a customer");
+      await axeClean(page);
+      await baseline(page, `invoice-editor-${scheme}`);
+    });
   });
 }
 
@@ -235,4 +253,98 @@ test("drafts offer no export until issued", async ({ page }) => {
   const inspector = page.getByRole("complementary", { name: "Draft invoice" });
   await expect(inspector.getByRole("button", { name: "Issue" })).toBeVisible();
   await expect(inspector.getByRole("button", { name: "Export" })).toHaveCount(0);
+});
+
+// WP-16 acceptance: create → issue → export, on the recorded core. The mock
+// replays the core's answers to exactly these steps (skyla_app::recordings).
+test("an invoice is created, issued and exported", async ({ page }) => {
+  await page.goto("/#/invoices");
+  await page.getByRole("button", { name: "New invoice" }).click();
+  await expect(page).toHaveURL(/#\/invoices\/new$/);
+  const form = page.getByRole("form", { name: "New invoice" });
+
+  // The core checks what was typed and lists every problem.
+  await form.getByLabel("Line 1 description").fill("UX audit");
+  await form.getByLabel("Line 1 quantity").fill("12");
+  await form.getByLabel("Line 1 unit price").fill("1450.00");
+  await page.getByRole("button", { name: "Save draft" }).click();
+  const alert = form.getByRole("alert");
+  await expect(alert).toContainText("pick a customer");
+  await expect(alert).toContainText('line 1: unit price "1450.00" isn\'t an amount like 1 200,00');
+
+  await form.getByRole("button", { name: /Customer/ }).click();
+  await page.getByRole("option", { name: /Northwind Traders s\.r\.o\./ }).click();
+  await form.getByLabel("Line 1 unit price").fill("1 450,00");
+  await form.getByRole("button", { name: "Add line" }).click();
+  await form.getByLabel("Line 2 description").fill("Workshop");
+  await form.getByLabel("Line 2 unit", { exact: true }).fill("ks");
+  await form.getByLabel("Line 2 unit price").fill("8 000,00");
+  await form.getByLabel("Note on the invoice").fill("Děkuji za spolupráci.");
+  await page.getByRole("button", { name: "Save draft" }).click();
+
+  // The draft, with the totals the core computed.
+  await expect(page).toHaveURL(/#\/invoices\/draft-\d+$/);
+  const draft = page.getByRole("complementary", { name: "Draft invoice" });
+  await expect(draft).toContainText("Northwind Traders s.r.o.");
+  await expect(draft).toContainText("25 400,00");
+  await expect(draft).toContainText("5 334,00");
+  await expect(draft).toContainText("30 734,00");
+
+  await draft.getByRole("button", { name: "Issue", exact: true }).click();
+  const confirm = page.getByRole("dialog", { name: "Issue invoice" });
+  await expect(confirm).toContainText("Issue as 2026-115 on 7 Oct 2026?");
+  await confirm.getByRole("button", { name: "Issue invoice" }).click();
+
+  await expect(page).toHaveURL(/#\/invoices\/2026-115$/);
+  const issued = page.getByRole("complementary", { name: "Invoice 2026-115" });
+  await expect(issued).toContainText("Due 21 Oct");
+  await expect(page.getByRole("row", { name: /2026-115/ })).toBeVisible();
+
+  const { readFileSync } = await import("node:fs");
+  await issued.getByRole("button", { name: "Export" }).click();
+  let downloaded = page.waitForEvent("download");
+  await page.getByRole("menuitem", { name: "Czech PDF" }).click();
+  let file = await downloaded;
+  expect(file.suggestedFilename()).toBe("Faktura 2026-115.pdf");
+  expect(
+    readFileSync(await file.path())
+      .subarray(0, 5)
+      .toString(),
+  ).toBe("%PDF-");
+
+  await issued.getByRole("button", { name: "Export" }).click();
+  downloaded = page.waitForEvent("download");
+  await page.getByRole("menuitem", { name: "ISDOC for accounting software" }).click();
+  file = await downloaded;
+  expect(file.suggestedFilename()).toBe("2026-115.isdoc");
+  expect(readFileSync(await file.path(), "utf8")).toContain(
+    "<PayableAmount>30734.00</PayableAmount>",
+  );
+});
+
+test("a draft can be discarded before it's issued", async ({ page }) => {
+  await page.goto("/#/invoices/new");
+  const form = page.getByRole("form", { name: "New invoice" });
+  await form.getByRole("button", { name: /Customer/ }).click();
+  await page.getByRole("option", { name: /Acme Analytics a\.s\./ }).click();
+  await form.getByLabel("Line 1 description").fill("UX audit");
+  await form.getByLabel("Line 1 quantity").fill("12");
+  await form.getByLabel("Line 1 unit price").fill("1 450,00");
+  await form.getByRole("button", { name: "Add line" }).click();
+  await form.getByLabel("Line 2 description").fill("Workshop");
+  await form.getByLabel("Line 2 unit", { exact: true }).fill("ks");
+  await form.getByLabel("Line 2 unit price").fill("8 000,00");
+  await form.getByLabel("Note on the invoice").fill("Děkuji za spolupráci.");
+  await page.getByRole("button", { name: "Save draft" }).click();
+  await expect(page).toHaveURL(/#\/invoices\/draft-\d+$/);
+  await expect(page.getByRole("rowheader", { name: "Draft", exact: true })).toHaveCount(3);
+
+  const draft = page.getByRole("complementary", { name: "Draft invoice" });
+  await draft.getByRole("button", { name: "Delete" }).click();
+  await page
+    .getByRole("dialog", { name: "Delete draft" })
+    .getByRole("button", { name: "Delete draft" })
+    .click();
+  await expect(page).toHaveURL(/#\/invoices$/);
+  await expect(page.getByRole("rowheader", { name: "Draft", exact: true })).toHaveCount(2);
 });
