@@ -4,15 +4,15 @@ Update this file in the same commit series that completes a work packet.
 
 ## Current state
 
-- **Phase:** design. No code yet.
-- **Next packet:** WP-00 (scaffold), then WP-01 (CLI spike).
+- **Phase:** M0 Foundation. WP-00 done.
+- **Next packet:** WP-01 (Claude Code CLI spike), then WP-02 (`skyla-money`).
 - **Blocking decisions:** none. Open: Q-08 (next session's focus) and Q-09 (dark appearance) in [`../design/DECISIONS.md`](../design/DECISIONS.md).
 
 ## Packets
 
 | WP | Title | Status | Session / commit | Notes |
 |---|---|---|---|---|
-| WP-00 | Scaffold, CI, cloud readiness | todo | | |
+| WP-00 | Scaffold, CI, cloud readiness | done | this session | `just ci` green locally; GitHub Actions runs on push |
 | WP-01 | Claude Code CLI spike | todo | | |
 | WP-02 | skyla-money | todo | | |
 | WP-03 | skyla-store + keys | todo | | |
@@ -29,7 +29,9 @@ Update this file in the same commit series that completes a work packet.
 
 - 2026-10-07 — Design round 1 (six dashboard skins) rejected. Full solution review completed; four round-2 directions published to the design canvas. `DESIGN.md`, `REVIEW.md`, `DECISIONS.md` and this plan written.
 - 2026-10-07 — Wave 3: direction A (Tahoe) locked. CZ-first, API-key driver, hash chain on and opt-in reference data accepted. Advisors reached through the inbox + explain-this. Licence: AGPL app + Apache-2.0 engine crates.
+- 2026-10-07 — WP-00: Cargo workspace (11 engine crates + Tauri shell), pnpm workspace (desktop, ipc, fixtures, ui), Biome, `justfile`, CI (core, cargo-deny, desktop Linux, desktop macOS/Windows non-blocking), licence files and boundary check, SessionStart hook. Resolved versions: Rust 1.97, TypeScript 7, Vite 8, Vitest 5, Playwright 1.63, Tailwind 4.3, Tauri 2.
 
 ## Backlog notes from sessions
 
-_(empty)_
+- Playwright 1.63 expects Chromium build 1243; cloud containers ship 1194. Handled through `PLAYWRIGHT_CHROMIUM_EXECUTABLE`. Revisit if the container image updates.
+- `tauri-specta` is still a release candidate; WP-09 pins it.

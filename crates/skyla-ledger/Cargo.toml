@@ -1,0 +1,15 @@
+[package]
+name = "skyla-ledger"
+description = "Double-entry ledger kernel: accounts, journal entries, invariants, periods and projections."
+license = "Apache-2.0"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+authors.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+[dependencies]

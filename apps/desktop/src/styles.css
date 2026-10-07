@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+/* Placeholder tokens for direction A ("Tahoe"); WP-08 replaces these with the real token set. */
+@theme {
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  --color-backdrop: #e8e9ee;
+  --color-ink: #1d1d1f;
+  --color-ink-secondary: #6e6e73;
+  --color-accent: #0a74f0;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-backdrop);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}

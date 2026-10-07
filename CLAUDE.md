@@ -34,11 +34,16 @@ Open-source, local-first, encrypted desktop accounting for Czech freelancers (OS
 
 ## Commands
 
-These are created in WP-00; until then the repository holds documentation only.
+```
+just ci             # the gate: fmt check, clippy -D warnings, biome, typecheck, licence boundary, tests, Playwright e2e
+just test           # Rust + web unit tests
+just dev-web        # UI in a plain browser on the fixture-backed mock transport (http://localhost:1420)
+just e2e            # Playwright against dev-web; screenshots land in apps/desktop/test-results/
+just check-desktop  # compile + lint + test the Tauri shell (needs WebKitGTK on Linux; CI runs it)
+just deny           # cargo-deny supply-chain and licence policy (CI runs it)
+just fmt            # format Rust and TypeScript in place
+```
 
-```
-just ci        # fmt check, clippy -D warnings, cargo test, web lint + typecheck + vitest, playwright (mock IPC)
-just test      # Rust + web unit tests
-just dev-web   # UI in a plain browser on the mock transport
-just e2e       # Playwright against dev-web
-```
+- `.claude/hooks/session-start.sh` prepares cloud sessions (toolchain, `just`, crates, pnpm). It doesn't install WebKitGTK, so `check-desktop` isn't part of `just ci`.
+- If the container's Chromium build differs from the one `@playwright/test` expects, the hook exports `PLAYWRIGHT_CHROMIUM_EXECUTABLE=/opt/pw-browsers/chromium`; `playwright.config.ts` honours it.
+- Default cargo members exclude `apps/desktop/src-tauri`. Plain `cargo test` / `cargo clippy` never need WebKitGTK.

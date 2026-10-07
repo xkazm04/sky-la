@@ -1,0 +1,15 @@
+[package]
+name = "skyla-rules"
+description = "Rule-pack loader: versioned, effective-dated, cited statutory data per jurisdiction."
+license = "Apache-2.0"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+authors.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+[dependencies]

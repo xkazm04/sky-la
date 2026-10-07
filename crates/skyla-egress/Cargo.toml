@@ -1,0 +1,15 @@
+[package]
+name = "skyla-egress"
+description = "Egress gate: scopes, policies, pseudonymisation and the encrypted register of everything sent to an LLM."
+license = "AGPL-3.0-or-later"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+authors.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+[dependencies]

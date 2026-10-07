@@ -1,0 +1,15 @@
+[package]
+name = "skyla-tax-cz"
+description = "Czech tax computations, scenario-engine levers and EPO XML writers."
+license = "AGPL-3.0-or-later"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+authors.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+[dependencies]

@@ -1,0 +1,15 @@
+[package]
+name = "skyla-bank"
+description = "Bank statement parsers, deduplication, statement tie-out, rules and the explainable matcher."
+license = "AGPL-3.0-or-later"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+authors.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+[dependencies]
