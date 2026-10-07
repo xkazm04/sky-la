@@ -84,7 +84,7 @@ M2 can run in parallel with M1: design direction A is locked (D-011). M3–M5 ne
 **Deliverables**
 - `Money { minor: i64, currency }` with checked arithmetic.
 - `Rate` (decimal) and `RoundingMode` (half-even, half-up, toward-zero).
-- `allocate(total, weights)`: the parts always sum to the total; the remainder goes to the largest weights.
+- `allocate(total, weights)`: the parts always sum to the total. Largest-remainder method, ties broken by weight then position, so it's deterministic.
 - VAT helpers: base ↔ gross, with explicit rounding.
 - `cs-CZ` formatting and parsing (`84 700,00`), plus ISO 4217 minor-unit table.
 
