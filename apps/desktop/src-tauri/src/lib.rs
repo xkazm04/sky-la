@@ -5,7 +5,7 @@
 use skyla_app::dto::{
     AppInfo, BalanceSheetDto, BankStatementDto, CashBasisDto, EgressRunDto, EntityDto,
     IntegrityDto, InvoiceDto, JournalEntryDto, PeriodDto, ProfitAndLossDto, ProposalDto,
-    TrialBalanceDto,
+    RulePackDto, TrialBalanceDto, VatReturnDto,
 };
 use skyla_app::{Core, IpcFailure};
 use tauri::{Runtime, State};
@@ -108,6 +108,20 @@ fn egress_register(core: State<'_, Core>) -> Vec<EgressRunDto> {
     core.egress_register()
 }
 
+/// The DPH return for a period, mapped by the rule pack.
+#[tauri::command]
+#[specta::specta]
+fn vat_return(core: State<'_, Core>, from: String, to: String) -> Answer<VatReturnDto> {
+    Ok(core.vat_return(&from, &to)?)
+}
+
+/// The rule pack in force, with citations.
+#[tauri::command]
+#[specta::specta]
+fn rule_pack(core: State<'_, Core>) -> RulePackDto {
+    core.rule_pack()
+}
+
 /// Every command, for the invoke handler and the TypeScript export.
 pub fn specta_builder<R: Runtime>() -> Builder<R> {
     Builder::<R>::new()
@@ -125,6 +139,8 @@ pub fn specta_builder<R: Runtime>() -> Builder<R> {
             bank_statement,
             proposals,
             egress_register,
+            vat_return,
+            rule_pack,
         ])
         // Money crosses as integer minor units; `MoneyDto` refuses anything
         // beyond 2^53 - 1, so a JavaScript number holds every value exactly.

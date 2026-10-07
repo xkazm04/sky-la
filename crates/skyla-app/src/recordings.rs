@@ -44,7 +44,15 @@ pub fn canonical_requests() -> Vec<(&'static str, Value)> {
         ("bank_statement", json!({})),
         ("proposals", json!({})),
         ("egress_register", json!({})),
+        ("rule_pack", json!({})),
     ];
+    for (from, to) in [
+        ("2026-07-01", "2026-07-31"),
+        ("2026-08-01", "2026-08-31"),
+        ("2026-09-01", "2026-09-30"),
+    ] {
+        requests.push(("vat_return", json!({ "from": from, "to": to })));
+    }
     for (from, to) in quarters {
         requests.push(("profit_and_loss", json!({ "from": from, "to": to })));
         requests.push(("cash_basis", json!({ "from": from, "to": to })));
@@ -90,6 +98,8 @@ pub fn dispatch(core: &Core, command: &str, args: &Value) -> Result<Value, IpcFa
         "bank_statement" => to_value(core.bank_statement()),
         "proposals" => to_value(core.proposals()),
         "egress_register" => to_value(Ok(core.egress_register())),
+        "rule_pack" => to_value(Ok(core.rule_pack())),
+        "vat_return" => to_value(core.vat_return(arg(args, "from")?, arg(args, "to")?)),
         "profit_and_loss" => to_value(core.profit_and_loss(arg(args, "from")?, arg(args, "to")?)),
         "cash_basis" => to_value(core.cash_basis(arg(args, "from")?, arg(args, "to")?)),
         "journal" => to_value(core.journal(arg(args, "from")?, arg(args, "to")?)),

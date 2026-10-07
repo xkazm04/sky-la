@@ -96,6 +96,7 @@
               "currency": "CZK",
               "minor": 2940000
             },
+            "vatCode": "OUT21",
             "vatRatePercent": "21"
           }
         ],
@@ -147,6 +148,7 @@
               "currency": "CZK",
               "minor": 1680000
             },
+            "vatCode": "OUT21",
             "vatRatePercent": "21"
           }
         ],
@@ -198,6 +200,7 @@
               "currency": "CZK",
               "minor": 1470000
             },
+            "vatCode": "OUT21",
             "vatRatePercent": "21"
           }
         ],
@@ -249,6 +252,7 @@
               "currency": "CZK",
               "minor": 1789200
             },
+            "vatCode": "OUT21",
             "vatRatePercent": "21"
           }
         ],
@@ -300,6 +304,7 @@
               "currency": "CZK",
               "minor": 3360000
             },
+            "vatCode": "OUT21",
             "vatRatePercent": "21"
           }
         ],
@@ -351,6 +356,7 @@
               "currency": "CZK",
               "minor": 2940000
             },
+            "vatCode": "OUT21",
             "vatRatePercent": "21"
           }
         ],
@@ -402,6 +408,7 @@
               "currency": "CZK",
               "minor": 1995000
             },
+            "vatCode": "OUT21",
             "vatRatePercent": "21"
           },
           {
@@ -420,6 +427,7 @@
               "currency": "CZK",
               "minor": 546000
             },
+            "vatCode": "OUT21",
             "vatRatePercent": "21"
           }
         ],
@@ -471,6 +479,7 @@
               "currency": "CZK",
               "minor": 3150000
             },
+            "vatCode": "OUT21",
             "vatRatePercent": "21"
           }
         ],
@@ -522,6 +531,7 @@
               "currency": "CZK",
               "minor": 2520000
             },
+            "vatCode": "OUT21",
             "vatRatePercent": "21"
           }
         ],
@@ -1037,12 +1047,13 @@
         "bankLineId": null,
         "confidence": null,
         "detail": "Draft for your review once September is closed",
-        "dueOn": "2026-10-25",
+        "dueOn": "2026-10-26",
         "entry": null,
         "id": "p-dph-september",
         "kind": "deadline",
         "reasons": [
-          "Monthly VAT payer: the return and the control statement are due together."
+          "Monthly VAT payer: the return and the control statement are due together, 25 days after the month ends.",
+          "25 October 2026 is a Sunday, so the deadline moves to the next working day (daňový řád § 33 odst. 4)."
         ],
         "source": "Rule pack cz-2026",
         "sourceKind": "calendar",
@@ -1132,6 +1143,414 @@
         "toolCalls": 2
       }
     ],
+    "isError": false
+  },
+  {
+    "command": "rule_pack",
+    "args": {},
+    "result": {
+      "holidays": 13,
+      "omitted": [
+        "income_tax.solidarity_threshold (36 × the 2026 average wage): needs the 2026 average-wage regulation",
+        "social and health insurance minimum advances for 2026: need the 2026 regulation",
+        "paušální daň bands for 2026: need the 2026 amounts",
+        "ČNB repo rate: reference data (imported or fetched), not statutory pack data"
+      ],
+      "provenance": "cz-2026@2026.1",
+      "review": "draft",
+      "summary": "VAT, income-tax basics, thresholds, deadlines and VAT-return row mapping for Czech freelancers (OSVČ) and micro-companies.",
+      "values": [
+        {
+          "citation": "Zákon č. 586/1992 Sb., o daních z příjmů, § 26 odst. 2 písm. a)",
+          "effectiveFrom": "2021-01-01",
+          "effectiveTo": null,
+          "key": "assets.tangible.threshold",
+          "kind": "amount",
+          "note": "Tangible assets above this price, with a useful life over one year, are depreciated; cheaper ones are expensed.",
+          "url": "https://www.zakonyprolidi.cz/cs/1992-586",
+          "value": "80000.00"
+        },
+        {
+          "citation": "Zákon č. 280/2009 Sb., daňový řád, § 33 odst. 4",
+          "effectiveFrom": "2011-01-01",
+          "effectiveTo": null,
+          "key": "deadline.shift_to_next_working_day",
+          "kind": "flag",
+          "note": "A deadline ending on a Saturday, Sunday or public holiday moves to the next working day.",
+          "url": "https://www.zakonyprolidi.cz/cs/2009-280",
+          "value": "true"
+        },
+        {
+          "citation": "Zákon č. 586/1992 Sb., o daních z příjmů, § 35ba odst. 1 písm. a)",
+          "effectiveFrom": "2023-01-01",
+          "effectiveTo": null,
+          "key": "income_tax.credit.taxpayer",
+          "kind": "amount",
+          "note": null,
+          "url": "https://www.zakonyprolidi.cz/cs/1992-586",
+          "value": "30840.00"
+        },
+        {
+          "citation": "Zákon č. 586/1992 Sb., o daních z příjmů, § 7 odst. 7 písm. a)",
+          "effectiveFrom": "2021-01-01",
+          "effectiveTo": null,
+          "key": "income_tax.flat_rate.craft.cap",
+          "kind": "amount",
+          "note": null,
+          "url": "https://www.zakonyprolidi.cz/cs/1992-586",
+          "value": "1600000.00"
+        },
+        {
+          "citation": "Zákon č. 586/1992 Sb., o daních z příjmů, § 7 odst. 7 písm. a)",
+          "effectiveFrom": "2021-01-01",
+          "effectiveTo": null,
+          "key": "income_tax.flat_rate.craft.percent",
+          "kind": "percent",
+          "note": null,
+          "url": "https://www.zakonyprolidi.cz/cs/1992-586",
+          "value": "80"
+        },
+        {
+          "citation": "Zákon č. 586/1992 Sb., o daních z příjmů, § 7 odst. 7 písm. c)",
+          "effectiveFrom": "2021-01-01",
+          "effectiveTo": null,
+          "key": "income_tax.flat_rate.liberal.cap",
+          "kind": "amount",
+          "note": null,
+          "url": "https://www.zakonyprolidi.cz/cs/1992-586",
+          "value": "800000.00"
+        },
+        {
+          "citation": "Zákon č. 586/1992 Sb., o daních z příjmů, § 7 odst. 7 písm. c)",
+          "effectiveFrom": "2021-01-01",
+          "effectiveTo": null,
+          "key": "income_tax.flat_rate.liberal.percent",
+          "kind": "percent",
+          "note": null,
+          "url": "https://www.zakonyprolidi.cz/cs/1992-586",
+          "value": "40"
+        },
+        {
+          "citation": "Zákon č. 586/1992 Sb., o daních z příjmů, § 7 odst. 7 písm. b)",
+          "effectiveFrom": "2021-01-01",
+          "effectiveTo": null,
+          "key": "income_tax.flat_rate.trade.cap",
+          "kind": "amount",
+          "note": "60 % of at most 2 000 000 Kč of income.",
+          "url": "https://www.zakonyprolidi.cz/cs/1992-586",
+          "value": "1200000.00"
+        },
+        {
+          "citation": "Zákon č. 586/1992 Sb., o daních z příjmů, § 7 odst. 7 písm. b)",
+          "effectiveFrom": "2021-01-01",
+          "effectiveTo": null,
+          "key": "income_tax.flat_rate.trade.percent",
+          "kind": "percent",
+          "note": "Flat-rate expenses for trades other than crafts (živnost volná, vázaná, koncesovaná).",
+          "url": "https://www.zakonyprolidi.cz/cs/1992-586",
+          "value": "60"
+        },
+        {
+          "citation": "Zákon č. 586/1992 Sb., o daních z příjmů, § 16 odst. 1 písm. a)",
+          "effectiveFrom": "2021-01-01",
+          "effectiveTo": null,
+          "key": "income_tax.rate.base",
+          "kind": "percent",
+          "note": null,
+          "url": "https://www.zakonyprolidi.cz/cs/1992-586",
+          "value": "15"
+        },
+        {
+          "citation": "Nařízení vlády č. 351/2013 Sb., kterým se určuje výše úroků z prodlení a nákladů spojených s uplatněním každé pohledávky, § 2",
+          "effectiveFrom": "2014-01-01",
+          "effectiveTo": null,
+          "key": "late_interest.margin_pp",
+          "kind": "percent",
+          "note": "Annual rate = ČNB repo rate valid on the first day of the calendar half-year in which the delay began, plus this margin.",
+          "url": "https://www.zakonyprolidi.cz/cs/2013-351",
+          "value": "8"
+        },
+        {
+          "citation": "Zákon č. 235/2004 Sb., o dani z přidané hodnoty, § 101e odst. 1",
+          "effectiveFrom": "2016-01-01",
+          "effectiveTo": null,
+          "key": "vat.control_statement.due_days_after_period",
+          "kind": "days",
+          "note": null,
+          "url": "https://www.zakonyprolidi.cz/cs/2004-235",
+          "value": "25"
+        },
+        {
+          "citation": "Zákon č. 235/2004 Sb., o dani z přidané hodnoty, § 101c; pokyny ke kontrolnímu hlášení, oddíly A.4 a B.2",
+          "effectiveFrom": "2016-01-01",
+          "effectiveTo": null,
+          "key": "vat.control_statement.itemise_above",
+          "kind": "amount",
+          "note": "Documents above 10 000 Kč including VAT are listed one by one (A.4, B.2); smaller ones are summed (A.5, B.3).",
+          "url": "https://www.zakonyprolidi.cz/cs/2004-235",
+          "value": "10000.00"
+        },
+        {
+          "citation": "Zákon č. 235/2004 Sb., o dani z přidané hodnoty, § 47 odst. 1 písm. b), ve znění zákona č. 349/2023 Sb.",
+          "effectiveFrom": "2024-01-01",
+          "effectiveTo": null,
+          "key": "vat.rate.reduced",
+          "kind": "percent",
+          "note": null,
+          "url": "https://www.zakonyprolidi.cz/cs/2004-235",
+          "value": "12"
+        },
+        {
+          "citation": "Zákon č. 235/2004 Sb., o dani z přidané hodnoty, § 47 odst. 1 písm. a)",
+          "effectiveFrom": "2013-01-01",
+          "effectiveTo": null,
+          "key": "vat.rate.standard",
+          "kind": "percent",
+          "note": null,
+          "url": "https://www.zakonyprolidi.cz/cs/2004-235",
+          "value": "21"
+        },
+        {
+          "citation": "Zákon č. 235/2004 Sb., o dani z přidané hodnoty, § 6 odst. 1, ve znění zákona č. 471/2024 Sb.",
+          "effectiveFrom": "2025-01-01",
+          "effectiveTo": null,
+          "key": "vat.registration.threshold",
+          "kind": "amount",
+          "note": "Turnover in a calendar year. Exceeding it makes the business a VAT payer from the next year.",
+          "url": "https://www.zakonyprolidi.cz/cs/2004-235",
+          "value": "2000000.00"
+        },
+        {
+          "citation": "Zákon č. 235/2004 Sb., o dani z přidané hodnoty, § 101 odst. 1",
+          "effectiveFrom": "2013-01-01",
+          "effectiveTo": null,
+          "key": "vat.return.due_days_after_period",
+          "kind": "days",
+          "note": null,
+          "url": "https://www.zakonyprolidi.cz/cs/2004-235",
+          "value": "25"
+        },
+        {
+          "citation": "Zákon č. 235/2004 Sb., o dani z přidané hodnoty, § 37 odst. 1 (výpočet daně); zaokrouhlení na haléře",
+          "effectiveFrom": "2013-01-01",
+          "effectiveTo": null,
+          "key": "vat.rounding.document",
+          "kind": "rounding",
+          "note": "Tax on a document is computed per rate and rounded to the haléř, half up.",
+          "url": "https://www.zakonyprolidi.cz/cs/2004-235",
+          "value": "half_up"
+        }
+      ]
+    },
+    "isError": false
+  },
+  {
+    "command": "vat_return",
+    "args": {
+      "from": "2026-07-01",
+      "to": "2026-07-31"
+    },
+    "result": {
+      "dueOn": "2026-08-25",
+      "from": "2026-07-01",
+      "inputTax": {
+        "currency": "CZK",
+        "minor": 607257
+      },
+      "outputTax": {
+        "currency": "CZK",
+        "minor": 2940000
+      },
+      "pack": "cz-2026@2026.1",
+      "packReview": "draft",
+      "payable": {
+        "currency": "CZK",
+        "minor": 2332743
+      },
+      "rows": [
+        {
+          "base": {
+            "currency": "CZK",
+            "minor": 14000000
+          },
+          "label": "Domestic supply, standard rate",
+          "row": "1",
+          "side": "output",
+          "tax": {
+            "currency": "CZK",
+            "minor": 2940000
+          }
+        },
+        {
+          "base": {
+            "currency": "CZK",
+            "minor": 2891700
+          },
+          "label": "Domestic purchase, standard rate (input VAT)",
+          "row": "40",
+          "side": "input",
+          "tax": {
+            "currency": "CZK",
+            "minor": 607257
+          }
+        }
+      ],
+      "snapshot": {
+        "entries": 5,
+        "hash": "7b6d9653bf0948abb079be84701f24fb2f3b17f8078e09d2f5a3ae6fb5f6da33",
+        "lastPostedSeq": 51
+      },
+      "to": "2026-07-31",
+      "unmapped": []
+    },
+    "isError": false
+  },
+  {
+    "command": "vat_return",
+    "args": {
+      "from": "2026-08-01",
+      "to": "2026-08-31"
+    },
+    "result": {
+      "dueOn": "2026-09-25",
+      "from": "2026-08-01",
+      "inputTax": {
+        "currency": "CZK",
+        "minor": 1173900
+      },
+      "outputTax": {
+        "currency": "CZK",
+        "minor": 5149200
+      },
+      "pack": "cz-2026@2026.1",
+      "packReview": "draft",
+      "payable": {
+        "currency": "CZK",
+        "minor": 3975300
+      },
+      "rows": [
+        {
+          "base": {
+            "currency": "CZK",
+            "minor": 24520000
+          },
+          "label": "Domestic supply, standard rate",
+          "row": "1",
+          "side": "output",
+          "tax": {
+            "currency": "CZK",
+            "minor": 5149200
+          }
+        },
+        {
+          "base": {
+            "currency": "CZK",
+            "minor": 5590000
+          },
+          "label": "Domestic purchase, standard rate (input VAT)",
+          "row": "40",
+          "side": "input",
+          "tax": {
+            "currency": "CZK",
+            "minor": 1173900
+          }
+        }
+      ],
+      "snapshot": {
+        "entries": 9,
+        "hash": "82f952a01920aaef610c823bafbb0323e7af17bde1ba161f4a0f0e19d0f75af4",
+        "lastPostedSeq": 52
+      },
+      "to": "2026-08-31",
+      "unmapped": []
+    },
+    "isError": false
+  },
+  {
+    "command": "vat_return",
+    "args": {
+      "from": "2026-09-01",
+      "to": "2026-09-30"
+    },
+    "result": {
+      "dueOn": "2026-10-26",
+      "from": "2026-09-01",
+      "inputTax": {
+        "currency": "CZK",
+        "minor": 764434
+      },
+      "outputTax": {
+        "currency": "CZK",
+        "minor": 1728691
+      },
+      "pack": "cz-2026@2026.1",
+      "packReview": "draft",
+      "payable": {
+        "currency": "CZK",
+        "minor": 964257
+      },
+      "rows": [
+        {
+          "base": {
+            "currency": "CZK",
+            "minor": 7000000
+          },
+          "label": "Domestic supply, standard rate",
+          "row": "1",
+          "side": "output",
+          "tax": {
+            "currency": "CZK",
+            "minor": 1470000
+          }
+        },
+        {
+          "base": {
+            "currency": "CZK",
+            "minor": 1231860
+          },
+          "label": "Service received from another member state, standard rate (reverse charge)",
+          "row": "5",
+          "side": "output",
+          "tax": {
+            "currency": "CZK",
+            "minor": 258691
+          }
+        },
+        {
+          "base": {
+            "currency": "CZK",
+            "minor": 2408300
+          },
+          "label": "Domestic purchase, standard rate (input VAT)",
+          "row": "40",
+          "side": "input",
+          "tax": {
+            "currency": "CZK",
+            "minor": 505743
+          }
+        },
+        {
+          "base": {
+            "currency": "CZK",
+            "minor": 1231860
+          },
+          "label": "Service received from another member state, standard rate (reverse charge)",
+          "row": "43",
+          "side": "input",
+          "tax": {
+            "currency": "CZK",
+            "minor": 258691
+          }
+        }
+      ],
+      "snapshot": {
+        "entries": 16,
+        "hash": "9bb575e6ab9c42c916727b410e1659fb7189bbc846e2098298c72043a113c501",
+        "lastPostedSeq": 50
+      },
+      "to": "2026-09-30",
+      "unmapped": []
+    },
     "isError": false
   },
   {

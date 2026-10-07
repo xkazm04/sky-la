@@ -16,6 +16,9 @@ pub enum CoreError {
     /// A request was malformed.
     #[error("{0}")]
     BadRequest(String),
+    /// The rule pack refused or lacks a value.
+    #[error(transparent)]
+    Rules(#[from] skyla_rules::RulesError),
     /// An amount doesn't fit a JavaScript number exactly.
     #[error("amount {0} is beyond the range the webview can show exactly")]
     OutOfRange(i64),
@@ -37,6 +40,7 @@ impl From<CoreError> for IpcFailure {
         let code = match &error {
             CoreError::Ledger(_) => "ledger",
             CoreError::Money(_) => "money",
+            CoreError::Rules(_) => "rules",
             CoreError::Demo(_) => "demo",
             CoreError::BadRequest(_) => "bad_request",
             CoreError::OutOfRange(_) => "out_of_range",

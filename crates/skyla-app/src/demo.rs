@@ -219,7 +219,8 @@ pub(crate) struct DomainInvoiceLine {
     pub(crate) quantity: String,
     pub(crate) unit: String,
     pub(crate) unit_price_minor: i64,
-    pub(crate) vat_rate_percent: String,
+    /// A VAT code from the rule pack; the rate comes from the pack.
+    pub(crate) vat_code: String,
 }
 
 /// A bank import.
@@ -274,9 +275,19 @@ pub(crate) struct DomainProposal {
     pub(crate) source: String,
     pub(crate) bank_line_id: Option<String>,
     pub(crate) due_on: Option<String>,
+    /// For deadlines: computed from the rule pack instead of stored.
+    pub(crate) deadline: Option<DomainDeadline>,
     pub(crate) entry: Option<DomainEntry>,
     #[serde(default)]
     pub(crate) reasons: Vec<String>,
+}
+
+/// A deadline the core computes: `key` days after `period_end`, shifted.
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub(crate) struct DomainDeadline {
+    pub(crate) key: String,
+    pub(crate) period_end: String,
 }
 
 /// A proposed entry.
@@ -317,7 +328,7 @@ pub(crate) struct DomainSettle {
 pub(crate) struct DomainVatCheck {
     pub(crate) base_minor: Option<i64>,
     pub(crate) gross_minor: Option<i64>,
-    pub(crate) vat_rate_percent: String,
+    pub(crate) vat_code: String,
 }
 
 /// Parses `demo-domain.json`.

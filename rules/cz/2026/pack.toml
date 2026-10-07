@@ -1,0 +1,343 @@
+# sky-la rule pack: Czech Republic, 2026.
+#
+# Every value is effective-dated and cites the provision it comes from.
+# Logic never hard-codes a rate, threshold or deadline; it asks the pack.
+#
+# Review status is "draft": values were compiled from the cited provisions
+# but haven't yet been checked line by line against the official consolidated
+# texts by a second person. The app shows the status next to every figure
+# that depends on the pack. Values the compiler wasn't sure of are left out
+# (see `[pack].omitted`) rather than guessed.
+
+[pack]
+id = "cz-2026"
+version = "2026.1"
+jurisdiction = "CZ"
+valid_from = "2026-01-01"
+valid_to = "2026-12-31"
+review = "draft"
+currency = "CZK"
+summary = "VAT, income-tax basics, thresholds, deadlines and VAT-return row mapping for Czech freelancers (OSVČ) and micro-companies."
+omitted = [
+  "income_tax.solidarity_threshold (36 × the 2026 average wage): needs the 2026 average-wage regulation",
+  "social and health insurance minimum advances for 2026: need the 2026 regulation",
+  "paušální daň bands for 2026: need the 2026 amounts",
+  "ČNB repo rate: reference data (imported or fetched), not statutory pack data",
+]
+
+[[act]]
+id = "zdph"
+name = "Zákon č. 235/2004 Sb., o dani z přidané hodnoty"
+url = "https://www.zakonyprolidi.cz/cs/2004-235"
+
+[[act]]
+id = "zdp"
+name = "Zákon č. 586/1992 Sb., o daních z příjmů"
+url = "https://www.zakonyprolidi.cz/cs/1992-586"
+
+[[act]]
+id = "dr"
+name = "Zákon č. 280/2009 Sb., daňový řád"
+url = "https://www.zakonyprolidi.cz/cs/2009-280"
+
+[[act]]
+id = "nv351"
+name = "Nařízení vlády č. 351/2013 Sb., kterým se určuje výše úroků z prodlení a nákladů spojených s uplatněním každé pohledávky"
+url = "https://www.zakonyprolidi.cz/cs/2013-351"
+
+[[act]]
+id = "svatky"
+name = "Zákon č. 245/2000 Sb., o státních svátcích, o ostatních svátcích, o významných dnech a o dnech pracovního klidu"
+url = "https://www.zakonyprolidi.cz/cs/2000-245"
+
+[[act]]
+id = "dphdp3"
+name = "Pokyny k vyplnění přiznání k dani z přidané hodnoty (tiskopis 25 5401, EPO DPHDP3)"
+url = "https://adisspr.mfcr.cz/dpr/adis/idpr_pub/epo2_info/popis_struktury_detail.faces?zkratka=DPHDP3"
+
+# ── VAT ────────────────────────────────────────────────────────────────────
+
+[[value]]
+key = "vat.rate.standard"
+kind = "percent"
+value = "21"
+effective_from = "2013-01-01"
+cite = { act = "zdph", section = "§ 47 odst. 1 písm. a)" }
+
+[[value]]
+key = "vat.rate.reduced"
+kind = "percent"
+value = "15"
+effective_from = "2015-01-01"
+effective_to = "2023-12-31"
+cite = { act = "zdph", section = "§ 47 odst. 1 písm. b), ve znění do 31. 12. 2023" }
+note = "Until 2023 there were two reduced rates (15 % and 10 %); the 2024 consolidation merged them into 12 %."
+
+[[value]]
+key = "vat.rate.reduced"
+kind = "percent"
+value = "12"
+effective_from = "2024-01-01"
+cite = { act = "zdph", section = "§ 47 odst. 1 písm. b), ve znění zákona č. 349/2023 Sb." }
+
+[[value]]
+key = "vat.rounding.document"
+kind = "rounding"
+value = "half_up"
+effective_from = "2013-01-01"
+cite = { act = "zdph", section = "§ 37 odst. 1 (výpočet daně); zaokrouhlení na haléře" }
+note = "Tax on a document is computed per rate and rounded to the haléř, half up."
+
+[[value]]
+key = "vat.registration.threshold"
+kind = "amount"
+value = "2000000.00"
+effective_from = "2025-01-01"
+cite = { act = "zdph", section = "§ 6 odst. 1, ve znění zákona č. 471/2024 Sb." }
+note = "Turnover in a calendar year. Exceeding it makes the business a VAT payer from the next year."
+
+[[value]]
+key = "vat.return.due_days_after_period"
+kind = "days"
+value = "25"
+effective_from = "2013-01-01"
+cite = { act = "zdph", section = "§ 101 odst. 1" }
+
+[[value]]
+key = "vat.control_statement.due_days_after_period"
+kind = "days"
+value = "25"
+effective_from = "2016-01-01"
+cite = { act = "zdph", section = "§ 101e odst. 1" }
+
+[[value]]
+key = "vat.control_statement.itemise_above"
+kind = "amount"
+value = "10000.00"
+effective_from = "2016-01-01"
+cite = { act = "zdph", section = "§ 101c; pokyny ke kontrolnímu hlášení, oddíly A.4 a B.2" }
+note = "Documents above 10 000 Kč including VAT are listed one by one (A.4, B.2); smaller ones are summed (A.5, B.3)."
+
+# ── Income tax ─────────────────────────────────────────────────────────────
+
+[[value]]
+key = "income_tax.rate.base"
+kind = "percent"
+value = "15"
+effective_from = "2021-01-01"
+cite = { act = "zdp", section = "§ 16 odst. 1 písm. a)" }
+
+[[value]]
+key = "income_tax.credit.taxpayer"
+kind = "amount"
+value = "30840.00"
+effective_from = "2023-01-01"
+cite = { act = "zdp", section = "§ 35ba odst. 1 písm. a)" }
+
+[[value]]
+key = "income_tax.flat_rate.trade.percent"
+kind = "percent"
+value = "60"
+effective_from = "2021-01-01"
+cite = { act = "zdp", section = "§ 7 odst. 7 písm. b)" }
+note = "Flat-rate expenses for trades other than crafts (živnost volná, vázaná, koncesovaná)."
+
+[[value]]
+key = "income_tax.flat_rate.trade.cap"
+kind = "amount"
+value = "1200000.00"
+effective_from = "2021-01-01"
+cite = { act = "zdp", section = "§ 7 odst. 7 písm. b)" }
+note = "60 % of at most 2 000 000 Kč of income."
+
+[[value]]
+key = "income_tax.flat_rate.craft.percent"
+kind = "percent"
+value = "80"
+effective_from = "2021-01-01"
+cite = { act = "zdp", section = "§ 7 odst. 7 písm. a)" }
+
+[[value]]
+key = "income_tax.flat_rate.craft.cap"
+kind = "amount"
+value = "1600000.00"
+effective_from = "2021-01-01"
+cite = { act = "zdp", section = "§ 7 odst. 7 písm. a)" }
+
+[[value]]
+key = "income_tax.flat_rate.liberal.percent"
+kind = "percent"
+value = "40"
+effective_from = "2021-01-01"
+cite = { act = "zdp", section = "§ 7 odst. 7 písm. c)" }
+
+[[value]]
+key = "income_tax.flat_rate.liberal.cap"
+kind = "amount"
+value = "800000.00"
+effective_from = "2021-01-01"
+cite = { act = "zdp", section = "§ 7 odst. 7 písm. c)" }
+
+[[value]]
+key = "assets.tangible.threshold"
+kind = "amount"
+value = "80000.00"
+effective_from = "2021-01-01"
+cite = { act = "zdp", section = "§ 26 odst. 2 písm. a)" }
+note = "Tangible assets above this price, with a useful life over one year, are depreciated; cheaper ones are expensed."
+
+# ── Late-payment interest ──────────────────────────────────────────────────
+
+[[value]]
+key = "late_interest.margin_pp"
+kind = "percent"
+value = "8"
+effective_from = "2014-01-01"
+cite = { act = "nv351", section = "§ 2" }
+note = "Annual rate = ČNB repo rate valid on the first day of the calendar half-year in which the delay began, plus this margin."
+
+# ── Deadlines ──────────────────────────────────────────────────────────────
+
+[[value]]
+key = "deadline.shift_to_next_working_day"
+kind = "flag"
+value = "true"
+effective_from = "2011-01-01"
+cite = { act = "dr", section = "§ 33 odst. 4" }
+note = "A deadline ending on a Saturday, Sunday or public holiday moves to the next working day."
+
+# ── VAT codes and the return's rows ────────────────────────────────────────
+# A posting's vat_code names one of these. `rows` map its base and tax onto
+# the DPH return (DPHDP3); `credit_positive` shows credits as positive.
+
+[[vat_code]]
+code = "OUT21"
+name = "Domestic supply, standard rate"
+rate = "vat.rate.standard"
+cite = { act = "dphdp3", section = "ř. 1" }
+rows = [
+  { row = "1", part = "base", credit_positive = true },
+  { row = "1", part = "tax", credit_positive = true },
+]
+
+[[vat_code]]
+code = "OUT12"
+name = "Domestic supply, reduced rate"
+rate = "vat.rate.reduced"
+cite = { act = "dphdp3", section = "ř. 2" }
+rows = [
+  { row = "2", part = "base", credit_positive = true },
+  { row = "2", part = "tax", credit_positive = true },
+]
+
+[[vat_code]]
+code = "RC21S"
+name = "Service received from another member state, standard rate (reverse charge)"
+rate = "vat.rate.standard"
+cite = { act = "dphdp3", section = "ř. 5 a ř. 43" }
+rows = [
+  { row = "5", part = "base", credit_positive = false },
+  { row = "5", part = "tax_credit", credit_positive = true },
+  { row = "43", part = "base", credit_positive = false },
+  { row = "43", part = "tax_debit", credit_positive = false },
+]
+
+[[vat_code]]
+code = "RC12S"
+name = "Service received from another member state, reduced rate (reverse charge)"
+rate = "vat.rate.reduced"
+cite = { act = "dphdp3", section = "ř. 6 a ř. 44" }
+rows = [
+  { row = "6", part = "base", credit_positive = false },
+  { row = "6", part = "tax_credit", credit_positive = true },
+  { row = "44", part = "base", credit_positive = false },
+  { row = "44", part = "tax_debit", credit_positive = false },
+]
+
+[[vat_code]]
+code = "IN21"
+name = "Domestic purchase, standard rate (input VAT)"
+rate = "vat.rate.standard"
+cite = { act = "dphdp3", section = "ř. 40" }
+rows = [
+  { row = "40", part = "base", credit_positive = false },
+  { row = "40", part = "tax", credit_positive = false },
+]
+
+[[vat_code]]
+code = "IN12"
+name = "Domestic purchase, reduced rate (input VAT)"
+rate = "vat.rate.reduced"
+cite = { act = "dphdp3", section = "ř. 41" }
+rows = [
+  { row = "41", part = "base", credit_positive = false },
+  { row = "41", part = "tax", credit_positive = false },
+]
+
+# ── Public holidays (days off work), for deadline shifts ───────────────────
+# Fixed dates are MM-DD; Easter-relative ones count days from Easter Sunday.
+
+[[holiday]]
+name = "Den obnovy samostatného českého státu; Nový rok"
+date = "01-01"
+cite = { act = "svatky", section = "§ 1 písm. a) a § 2 odst. 2 písm. a)" }
+
+[[holiday]]
+name = "Velký pátek"
+easter_offset = -2
+cite = { act = "svatky", section = "§ 2 odst. 2 písm. b)" }
+
+[[holiday]]
+name = "Velikonoční pondělí"
+easter_offset = 1
+cite = { act = "svatky", section = "§ 2 odst. 2 písm. c)" }
+
+[[holiday]]
+name = "Svátek práce"
+date = "05-01"
+cite = { act = "svatky", section = "§ 2 odst. 2 písm. d)" }
+
+[[holiday]]
+name = "Den vítězství"
+date = "05-08"
+cite = { act = "svatky", section = "§ 1 písm. b)" }
+
+[[holiday]]
+name = "Den slovanských věrozvěstů Cyrila a Metoděje"
+date = "07-05"
+cite = { act = "svatky", section = "§ 1 písm. c)" }
+
+[[holiday]]
+name = "Den upálení mistra Jana Husa"
+date = "07-06"
+cite = { act = "svatky", section = "§ 1 písm. d)" }
+
+[[holiday]]
+name = "Den české státnosti"
+date = "09-28"
+cite = { act = "svatky", section = "§ 1 písm. e)" }
+
+[[holiday]]
+name = "Den vzniku samostatného československého státu"
+date = "10-28"
+cite = { act = "svatky", section = "§ 1 písm. f)" }
+
+[[holiday]]
+name = "Den boje za svobodu a demokracii a Mezinárodní den studentstva"
+date = "11-17"
+cite = { act = "svatky", section = "§ 1 písm. g)" }
+
+[[holiday]]
+name = "Štědrý den"
+date = "12-24"
+cite = { act = "svatky", section = "§ 2 odst. 2 písm. e)" }
+
+[[holiday]]
+name = "1. svátek vánoční"
+date = "12-25"
+cite = { act = "svatky", section = "§ 2 odst. 2 písm. f)" }
+
+[[holiday]]
+name = "2. svátek vánoční"
+date = "12-26"
+cite = { act = "svatky", section = "§ 2 odst. 2 písm. g)" }

@@ -315,7 +315,9 @@ pub struct InvoiceLineDto {
     pub unit: String,
     /// Price per unit, excluding VAT.
     pub unit_price: MoneyDto,
-    /// VAT rate in percent, from the rule pack.
+    /// The rule pack's VAT code.
+    pub vat_code: String,
+    /// Its rate in percent on the document date, from the rule pack.
     pub vat_rate_percent: String,
     /// Quantity × unit price.
     pub base: MoneyDto,
@@ -513,6 +515,90 @@ pub struct ProposalDto {
     pub entry: Option<ProposedEntryDto>,
     /// Why.
     pub reasons: Vec<String>,
+}
+
+/// One row of the DPH return.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct VatReturnRowDto {
+    /// Row as printed on the form.
+    pub row: String,
+    /// What feeds it.
+    pub label: String,
+    /// `output` (tax due) or `input` (tax claimed).
+    pub side: String,
+    /// Tax base.
+    pub base: MoneyDto,
+    /// Tax.
+    pub tax: MoneyDto,
+}
+
+/// A DPH return for one period, computed from the ledger with the rule pack.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct VatReturnDto {
+    /// First day.
+    pub from: String,
+    /// Last day.
+    pub to: String,
+    /// The pack that mapped it, `cz-2026@2026.1`.
+    pub pack: String,
+    /// `draft` or `reviewed`.
+    pub pack_review: String,
+    /// Rows in form order.
+    pub rows: Vec<VatReturnRowDto>,
+    /// Tax due on supplies and reverse charges.
+    pub output_tax: MoneyDto,
+    /// Tax claimed.
+    pub input_tax: MoneyDto,
+    /// Output minus input: positive to pay, negative for an excess deduction.
+    pub payable: MoneyDto,
+    /// VAT codes posted but not mapped; the return isn't complete while any exist.
+    pub unmapped: Vec<String>,
+    /// Filing and payment deadline (shifted to a working day).
+    pub due_on: String,
+    /// What it read.
+    pub snapshot: SnapshotDto,
+}
+
+/// One statutory value with its source.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct PackValueDto {
+    /// Dotted key.
+    pub key: String,
+    /// `percent`, `amount`, `days`, `rounding`, `flag`.
+    pub kind: String,
+    /// As written in the pack.
+    pub value: String,
+    /// First day it applies.
+    pub effective_from: String,
+    /// Last day, if it ends.
+    pub effective_to: Option<String>,
+    /// Act and provision.
+    pub citation: String,
+    /// Where to read the act.
+    pub url: String,
+    /// Context.
+    pub note: Option<String>,
+}
+
+/// The rule pack in force.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct RulePackDto {
+    /// `cz-2026@2026.1`.
+    pub provenance: String,
+    /// `draft` or `reviewed`.
+    pub review: String,
+    /// Scope.
+    pub summary: String,
+    /// What the pack leaves out, and why.
+    pub omitted: Vec<String>,
+    /// Values effective on the entity's as-of date.
+    pub values: Vec<PackValueDto>,
+    /// Public holidays it knows.
+    pub holidays: u32,
 }
 
 /// One run in the egress register.

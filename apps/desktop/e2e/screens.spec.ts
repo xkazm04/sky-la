@@ -143,3 +143,24 @@ test("figures on screen are the core's: overview, bank tie-out, cash basis", asy
   await page.goto("/#/taxes/taxable-income");
   await expect(page.getByRole("complementary", { name: "Taxable income" })).toBeVisible();
 });
+
+test("the September DPH return comes from the ledger, mapped by the rule pack", async ({
+  page,
+}) => {
+  await page.goto("/#/taxes/vat-2026-09");
+  const inspector = page.getByRole("complementary", { name: "DPH return · September 2026" });
+  await expect(inspector).toContainText("9 642,57 Kč");
+  await expect(inspector).toContainText("26 Oct 2026");
+  const rows = inspector.getByRole("table", { name: "DPH return rows" });
+  await expect(rows).toContainText("ř. 43");
+  await expect(rows).toContainText("12 318,60");
+  await expect(inspector).toContainText("cz-2026@2026.1 (draft)");
+
+  await page.goto("/#/settings/rule-pack");
+  const pack = page.getByRole("complementary", { name: "Rule pack" });
+  await expect(pack).toContainText("vat.rate.reduced");
+  await expect(pack).toContainText(
+    "Zákon č. 235/2004 Sb., o dani z přidané hodnoty, § 47 odst. 1 písm. b)",
+  );
+  await expect(pack).toContainText("Left out on purpose");
+});

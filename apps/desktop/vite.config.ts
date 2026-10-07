@@ -9,7 +9,8 @@ export default defineConfig({
   server: {
     port: 1420,
     strictPort: true,
-    watch: { ignored: ["**/src-tauri/**"] },
+    // Playwright writes baselines and results here; a reload mid-test would break it.
+    watch: { ignored: ["**/src-tauri/**", "**/e2e/**", "**/test-results/**"] },
   },
   envPrefix: ["VITE_", "TAURI_ENV_"],
   build: { target: "es2022", sourcemap: true },

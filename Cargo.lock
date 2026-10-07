@@ -3392,6 +3392,7 @@ dependencies = [
  "serde_json",
  "skyla-ledger",
  "skyla-money",
+ "skyla-rules",
  "specta",
  "thiserror 2.0.21",
 ]
@@ -3460,6 +3461,12 @@ version = "0.1.0"
 [[package]]
 name = "skyla-rules"
 version = "0.1.0"
+dependencies = [
+ "serde",
+ "skyla-money",
+ "thiserror 2.0.21",
+ "toml 1.1.6+spec-1.1.0",
+]
 
 [[package]]
 name = "skyla-store"

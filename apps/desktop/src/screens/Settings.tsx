@@ -1,4 +1,4 @@
-import { type CoreKind, commands } from "@skyla/ipc";
+import { type CoreKind, commands, type RulePackDto } from "@skyla/ipc";
 import {
   type Appearance,
   applyAppearance,
@@ -26,6 +26,7 @@ interface Setting {
   detail: string;
   value: ReactNode;
   about: string[];
+  pack?: RulePackDto | undefined;
 }
 
 const columns: TableColumn<Setting>[] = [
@@ -46,6 +47,7 @@ export function SettingsScreen({ item, core }: { item: string | null; core: Core
     return applyAppearance(appearance);
   }, [appearance]);
   const info = useQuery("app_info", () => commands.appInfo());
+  const pack = useQuery("rule_pack", () => commands.rulePack());
 
   const settings: Setting[] = [
     {
@@ -106,6 +108,29 @@ export function SettingsScreen({ item, core }: { item: string | null; core: Core
       ],
     },
     {
+      id: "rule-pack",
+      title: "Rule pack",
+      detail: "Statutory rates, thresholds and deadlines, each with its source",
+      value:
+        pack.state === "ready" ? (
+          <Badge tone={pack.data.review === "draft" ? "warning" : "positive"}>
+            {`${pack.data.provenance} · ${pack.data.review}`}
+          </Badge>
+        ) : (
+          "…"
+        ),
+      about:
+        pack.state === "ready"
+          ? [
+              pack.data.summary,
+              pack.data.review === "draft"
+                ? "Draft: compiled from the cited provisions, not yet verified line by line by a second person."
+                : "Reviewed against the official texts.",
+            ]
+          : [],
+      pack: pack.state === "ready" ? pack.data : undefined,
+    },
+    {
       id: "about",
       title: "About",
       detail: "Open source: AGPL-3.0 app, Apache-2.0 engine",
@@ -130,8 +155,8 @@ export function SettingsScreen({ item, core }: { item: string | null; core: Core
           sections={[
             { id: "general", title: "General", rows: settings.slice(0, 1) },
             { id: "security", title: "Security", rows: settings.slice(1, 3) },
-            { id: "advisors", title: "Advisors and data", rows: settings.slice(3, 5) },
-            { id: "about", title: "About", rows: settings.slice(5) },
+            { id: "advisors", title: "Advisors and data", rows: settings.slice(3, 6) },
+            { id: "about", title: "About", rows: settings.slice(6) },
           ]}
           selectedId={selected?.id ?? null}
           onSelect={(id) => navigate("settings", id, true)}
@@ -143,6 +168,39 @@ export function SettingsScreen({ item, core }: { item: string | null; core: Core
             <InspectorSection title="About this setting">
               <Reasons reasons={selected.about} />
             </InspectorSection>
+            {selected.pack && (
+              <>
+                <InspectorSection title={`Values in force · ${selected.pack.values.length}`}>
+                  <ul className="overflow-hidden rounded-inner bg-surface shadow-group">
+                    {selected.pack.values.map((v) => (
+                      <li
+                        key={v.key}
+                        className="border-hairline border-t px-3 py-2 first:border-t-0"
+                      >
+                        <div className="flex items-baseline justify-between gap-2">
+                          <span className="truncate font-medium">{v.key}</span>
+                          <span className="shrink-0">
+                            {v.value}
+                            {v.kind === "percent" ? " %" : ""}
+                          </span>
+                        </div>
+                        <a
+                          href={v.url}
+                          className="block text-footnote text-accent-ink underline-offset-2 hover:underline"
+                          rel="noreferrer"
+                          target="_blank"
+                        >
+                          {v.citation}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </InspectorSection>
+                <InspectorSection title="Left out on purpose">
+                  <Reasons reasons={selected.pack.omitted} />
+                </InspectorSection>
+              </>
+            )}
           </Inspector>
         </InspectorPane>
       )}

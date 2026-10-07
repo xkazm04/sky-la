@@ -32,6 +32,10 @@ export const commands = {
 	proposals: () => typedError<ProposalDto[], IpcFailure>(__TAURI_INVOKE("proposals")),
 	/**  The egress register. */
 	egressRegister: () => __TAURI_INVOKE<EgressRunDto[]>("egress_register"),
+	/**  The DPH return for a period, mapped by the rule pack. */
+	vatReturn: (from: string, to: string) => typedError<VatReturnDto, IpcFailure>(__TAURI_INVOKE("vat_return", { from, to })),
+	/**  The rule pack in force, with citations. */
+	rulePack: () => __TAURI_INVOKE<RulePackDto>("rule_pack"),
 };
 
 /* Types */
@@ -273,7 +277,9 @@ export type InvoiceLineDto = {
 	unit: string,
 	/**  Price per unit, excluding VAT. */
 	unitPrice: MoneyDto,
-	/**  VAT rate in percent, from the rule pack. */
+	/**  The rule pack's VAT code. */
+	vatCode: string,
+	/**  Its rate in percent on the document date, from the rule pack. */
 	vatRatePercent: string,
 	/**  Quantity × unit price. */
 	base: MoneyDto,
@@ -354,6 +360,26 @@ export type MoneyDto = {
 	minor: number,
 	/**  ISO 4217 code. */
 	currency: string,
+};
+
+/**  One statutory value with its source. */
+export type PackValueDto = {
+	/**  Dotted key. */
+	key: string,
+	/**  `percent`, `amount`, `days`, `rounding`, `flag`. */
+	kind: string,
+	/**  As written in the pack. */
+	value: string,
+	/**  First day it applies. */
+	effectiveFrom: string,
+	/**  Last day, if it ends. */
+	effectiveTo: string | null,
+	/**  Act and provision. */
+	citation: string,
+	/**  Where to read the act. */
+	url: string,
+	/**  Context. */
+	note: string | null,
 };
 
 /**  An accounting period. */
@@ -448,6 +474,22 @@ export type ProposedLineDto = {
 	vatCode: string | null,
 };
 
+/**  The rule pack in force. */
+export type RulePackDto = {
+	/**  `cz-2026@2026.1`. */
+	provenance: string,
+	/**  `draft` or `reviewed`. */
+	review: string,
+	/**  Scope. */
+	summary: string,
+	/**  What the pack leaves out, and why. */
+	omitted: string[],
+	/**  Values effective on the entity's as-of date. */
+	values: PackValueDto[],
+	/**  Public holidays it knows. */
+	holidays: number,
+};
+
 /**  One weighted reason in a match score. */
 export type ScoreContributionDto = {
 	/**  Why. */
@@ -510,6 +552,46 @@ export type TrialBalanceRowDto = {
 	credit: MoneyDto,
 	/**  Debit minus credit. */
 	balance: MoneyDto,
+};
+
+/**  A DPH return for one period, computed from the ledger with the rule pack. */
+export type VatReturnDto = {
+	/**  First day. */
+	from: string,
+	/**  Last day. */
+	to: string,
+	/**  The pack that mapped it, `cz-2026@2026.1`. */
+	pack: string,
+	/**  `draft` or `reviewed`. */
+	packReview: string,
+	/**  Rows in form order. */
+	rows: VatReturnRowDto[],
+	/**  Tax due on supplies and reverse charges. */
+	outputTax: MoneyDto,
+	/**  Tax claimed. */
+	inputTax: MoneyDto,
+	/**  Output minus input: positive to pay, negative for an excess deduction. */
+	payable: MoneyDto,
+	/**  VAT codes posted but not mapped; the return isn't complete while any exist. */
+	unmapped: string[],
+	/**  Filing and payment deadline (shifted to a working day). */
+	dueOn: string,
+	/**  What it read. */
+	snapshot: SnapshotDto,
+};
+
+/**  One row of the DPH return. */
+export type VatReturnRowDto = {
+	/**  Row as printed on the form. */
+	row: string,
+	/**  What feeds it. */
+	label: string,
+	/**  `output` (tax due) or `input` (tax claimed). */
+	side: string,
+	/**  Tax base. */
+	base: MoneyDto,
+	/**  Tax. */
+	tax: MoneyDto,
 };
 
 /* Tauri Specta runtime */

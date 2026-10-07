@@ -20,7 +20,7 @@
           "quantity": "96",
           "unit": "h",
           "unitPriceMinor": 125000,
-          "vatRatePercent": "21"
+          "vatCode": "OUT21"
         }
       ]
     },
@@ -34,7 +34,7 @@
           "quantity": "1",
           "unit": "pc",
           "unitPriceMinor": 15000000,
-          "vatRatePercent": "21"
+          "vatCode": "OUT21"
         }
       ]
     },
@@ -48,14 +48,14 @@
           "quantity": "1",
           "unit": "pc",
           "unitPriceMinor": 9500000,
-          "vatRatePercent": "21"
+          "vatCode": "OUT21"
         },
         {
           "description": "Illustration set",
           "quantity": "26",
           "unit": "pc",
           "unitPriceMinor": 100000,
-          "vatRatePercent": "21"
+          "vatCode": "OUT21"
         }
       ]
     },
@@ -69,7 +69,7 @@
           "quantity": "112",
           "unit": "h",
           "unitPriceMinor": 125000,
-          "vatRatePercent": "21"
+          "vatCode": "OUT21"
         }
       ]
     },
@@ -83,7 +83,7 @@
           "quantity": "1",
           "unit": "pc",
           "unitPriceMinor": 16000000,
-          "vatRatePercent": "21"
+          "vatCode": "OUT21"
         }
       ]
     },
@@ -97,7 +97,7 @@
           "quantity": "71",
           "unit": "h",
           "unitPriceMinor": 120000,
-          "vatRatePercent": "21"
+          "vatCode": "OUT21"
         }
       ]
     },
@@ -111,7 +111,7 @@
           "quantity": "56",
           "unit": "h",
           "unitPriceMinor": 125000,
-          "vatRatePercent": "21"
+          "vatCode": "OUT21"
         }
       ]
     },
@@ -125,7 +125,7 @@
           "quantity": "1",
           "unit": "pc",
           "unitPriceMinor": 8000000,
-          "vatRatePercent": "21"
+          "vatCode": "OUT21"
         }
       ]
     },
@@ -141,7 +141,7 @@
           "quantity": "112",
           "unit": "h",
           "unitPriceMinor": 125000,
-          "vatRatePercent": "21"
+          "vatCode": "OUT21"
         }
       ]
     }
@@ -336,7 +336,7 @@
         ],
         "reverseCharge": {
           "baseMinor": 115292,
-          "vatRatePercent": "21"
+          "vatCode": "RC21S"
         }
       },
       "reasons": [
@@ -375,7 +375,7 @@
         ],
         "vatSplit": {
           "grossMinor": 242000,
-          "vatRatePercent": "21"
+          "vatCode": "IN21"
         }
       },
       "reasons": [
@@ -445,8 +445,14 @@
       "detail": "Draft for your review once September is closed",
       "sourceKind": "calendar",
       "source": "Rule pack cz-2026",
-      "dueOn": "2026-10-25",
-      "reasons": ["Monthly VAT payer: the return and the control statement are due together."]
+      "reasons": [
+        "Monthly VAT payer: the return and the control statement are due together, 25 days after the month ends.",
+        "25 October 2026 is a Sunday, so the deadline moves to the next working day (daňový řád § 33 odst. 4)."
+      ],
+      "deadline": {
+        "key": "vat.return.due_days_after_period",
+        "periodEnd": "2026-09-30"
+      }
     },
     {
       "id": "p-flat-rate",

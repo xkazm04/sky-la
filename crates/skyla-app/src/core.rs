@@ -7,15 +7,16 @@ use skyla_ledger::{
     get_entry, list_accounts, list_periods, list_posted, profit_and_loss, settlements_of,
     trial_balance, verify_chain,
 };
-use skyla_money::{Currency, Money, Rate, RoundingMode, vat};
+use skyla_money::{Currency, Money, Rate, vat};
+use skyla_rules::{Pack, RowPart};
 
 use crate::CoreError;
 use crate::demo::{Domain, DomainEntry, demo_domain, demo_ledger};
 use crate::dto::*;
 
-/// VAT rounding for the demo's invoice lines. The real value comes from the
-/// rule pack (WP-20); half-up is the Czech convention for VAT on a document.
-const DEMO_VAT_ROUNDING: RoundingMode = RoundingMode::HalfUp;
+/// Accounts that hold VAT in the chart. A chart property, not a statutory
+/// value: CZ books VAT on 343 (and its analytic sub-accounts).
+const VAT_ACCOUNTS: &[&str] = &["343"];
 
 /// The application core: one open entity and its ledger.
 pub struct Core {
@@ -23,6 +24,7 @@ pub struct Core {
     domain: Domain,
     accounts: HashMap<String, (String, AccountKind)>,
     currency: Currency,
+    pack: Pack,
 }
 
 fn money(m: Money) -> Result<MoneyDto, CoreError> {
@@ -88,6 +90,7 @@ impl Core {
             domain: demo_domain()?,
             accounts,
             currency,
+            pack: Pack::cz_2026()?,
         })
     }
 
@@ -322,18 +325,23 @@ impl Core {
             // Lines: quantity × unit price, VAT per line with the pack's rate.
             let mut line_dtos = Vec::new();
             let (mut base_sum, mut vat_sum) = (zero, zero);
+            // The document date picks the pack's rate and rounding.
+            let posted_on = find_posted_by_ref(&db, SourceKind::Invoice, &doc.number)?
+                .map(|id| get_entry(&db, id).map(|e| e.date))
+                .transpose()?;
+            let on = posted_on
+                .or_else(|| doc.scheduled_for.clone())
+                .unwrap_or_else(|| self.domain.entity.as_of.clone());
+            let rounding = self.pack.rounding("vat.rounding.document", &on)?;
             for l in &doc.lines {
                 let quantity: Rate = l
                     .quantity
                     .parse()
                     .map_err(|_| CoreError::Demo(format!("quantity {}", l.quantity)))?;
-                let rate: Rate = l
-                    .vat_rate_percent
-                    .parse()
-                    .map_err(|_| CoreError::Demo(format!("rate {}", l.vat_rate_percent)))?;
+                let rate = self.pack.vat_rate(&l.vat_code, &on)?;
                 let unit = Money::new(l.unit_price_minor, self.currency);
-                let base = unit.mul_rate(quantity, DEMO_VAT_ROUNDING)?;
-                let split = vat::from_base(base, rate, DEMO_VAT_ROUNDING)?;
+                let base = unit.mul_rate(quantity, rounding)?;
+                let split = vat::from_base(base, rate, rounding)?;
                 base_sum = base_sum.checked_add(split.base)?;
                 vat_sum = vat_sum.checked_add(split.vat)?;
                 line_dtos.push(InvoiceLineDto {
@@ -341,7 +349,8 @@ impl Core {
                     quantity: l.quantity.clone(),
                     unit: l.unit.clone(),
                     unit_price: money(unit)?,
-                    vat_rate_percent: l.vat_rate_percent.clone(),
+                    vat_code: l.vat_code.clone(),
+                    vat_rate_percent: rate.to_string(),
                     base: money(split.base)?,
                     vat: money(split.vat)?,
                 });
@@ -532,10 +541,13 @@ impl Core {
                 vat_code: l.vat_code.clone(),
             });
         }
-        // VAT lines must be what the engine computes, not what the fixture says.
-        let rate = |text: &str| {
-            text.parse::<Rate>()
-                .map_err(|_| CoreError::Demo(format!("rate {text}")))
+        // VAT lines must be what the engine computes with the pack, not what
+        // the fixture says.
+        let rounding = self.pack.rounding("vat.rounding.document", &entry.date)?;
+        let rate = |code: &str| {
+            self.pack
+                .vat_rate(code, &entry.date)
+                .map_err(CoreError::from)
         };
         let tax_lines = |positive: bool| -> i64 {
             entry
@@ -549,7 +561,7 @@ impl Core {
         };
         if let Some(check) = &entry.reverse_charge {
             let base = Money::new(check.base_minor.unwrap_or_default(), self.currency);
-            let split = vat::from_base(base, rate(&check.vat_rate_percent)?, DEMO_VAT_ROUNDING)?;
+            let split = vat::from_base(base, rate(&check.vat_code)?, rounding)?;
             if tax_lines(true) != split.vat.minor() || -tax_lines(false) != split.vat.minor() {
                 return Err(CoreError::Demo(format!(
                     "reverse charge on {}: VAT should be {:?}",
@@ -559,7 +571,7 @@ impl Core {
         }
         if let Some(check) = &entry.vat_split {
             let gross = Money::new(check.gross_minor.unwrap_or_default(), self.currency);
-            let split = vat::from_gross(gross, rate(&check.vat_rate_percent)?, DEMO_VAT_ROUNDING)?;
+            let split = vat::from_gross(gross, rate(&check.vat_code)?, rounding)?;
             if tax_lines(true) != split.vat.minor() {
                 return Err(CoreError::Demo(format!(
                     "VAT split on {}: VAT should be {:?}",
@@ -620,13 +632,127 @@ impl Core {
                     source_kind: p.source_kind.clone(),
                     source: p.source.clone(),
                     bank_line_id: p.bank_line_id.clone(),
-                    due_on: p.due_on.clone(),
+                    due_on: match &p.deadline {
+                        Some(d) => Some(self.pack.deadline_after(&d.key, &d.period_end)?),
+                        None => p.due_on.clone(),
+                    },
                     amount,
                     entry,
                     reasons: p.reasons.clone(),
                 })
             })
             .collect()
+    }
+
+    /// The DPH return for `from..=to`: the ledger's VAT postings mapped onto
+    /// form rows by the rule pack, with the payable amount and the deadline.
+    pub fn vat_return(&self, from: &str, to: &str) -> Result<VatReturnDto, CoreError> {
+        let rules: Vec<skyla_ledger::VatRowRule> = self
+            .pack
+            .vat_codes
+            .iter()
+            .flat_map(|code| {
+                code.rows.iter().map(|m| skyla_ledger::VatRowRule {
+                    vat_code: code.code.clone(),
+                    row: m.row.clone(),
+                    part: match m.part {
+                        RowPart::Base => skyla_ledger::VatPart::Base,
+                        RowPart::Tax => skyla_ledger::VatPart::Tax,
+                        RowPart::TaxDebit => skyla_ledger::VatPart::TaxDebit,
+                        RowPart::TaxCredit => skyla_ledger::VatPart::TaxCredit,
+                    },
+                    credit_positive: m.credit_positive,
+                })
+            })
+            .collect();
+        let ledger = skyla_ledger::vat_ledger(&self.db(), from, to, VAT_ACCOUNTS, &rules)?;
+        // A row is on the output side when its tax is shown credit-positive.
+        let output_side = |row: &str| {
+            self.pack
+                .vat_codes
+                .iter()
+                .flat_map(|c| &c.rows)
+                .any(|m| m.row == row && m.part != RowPart::Base && m.credit_positive)
+        };
+        let label = |row: &str| {
+            self.pack
+                .vat_codes
+                .iter()
+                .filter(|c| c.rows.iter().any(|m| m.row == row))
+                .map(|c| c.name.as_str())
+                .collect::<Vec<_>>()
+                .join("; ")
+        };
+        let (mut output, mut input) = (Money::zero(self.currency), Money::zero(self.currency));
+        let mut rows = Vec::new();
+        for r in ledger.rows {
+            let out = output_side(&r.row);
+            if out {
+                output = output.checked_add(r.tax)?;
+            } else {
+                input = input.checked_add(r.tax)?;
+            }
+            if r.base.is_zero() && r.tax.is_zero() {
+                continue;
+            }
+            rows.push(VatReturnRowDto {
+                label: label(&r.row),
+                side: if out { "output" } else { "input" }.into(),
+                base: money(r.base)?,
+                tax: money(r.tax)?,
+                row: r.row,
+            });
+        }
+        rows.sort_by_key(|r| r.row.parse::<u32>().unwrap_or(u32::MAX));
+        Ok(VatReturnDto {
+            from: ledger.from,
+            to: ledger.to,
+            pack: self.pack.provenance(),
+            pack_review: format!("{:?}", self.pack.info.review).to_lowercase(),
+            rows,
+            output_tax: money(output)?,
+            input_tax: money(input)?,
+            payable: money(output.checked_sub(input)?)?,
+            unmapped: ledger.unmapped,
+            due_on: self
+                .pack
+                .deadline_after("vat.return.due_days_after_period", to)?,
+            snapshot: snapshot(ledger.snapshot),
+        })
+    }
+
+    /// The rule pack in force, with every value effective on the as-of date.
+    pub fn rule_pack(&self) -> RulePackDto {
+        let on = &self.domain.entity.as_of;
+        let values = self
+            .pack
+            .keys()
+            .into_iter()
+            .filter_map(|key| self.pack.value(key, on).ok())
+            .map(|v| PackValueDto {
+                key: v.key.clone(),
+                kind: format!("{:?}", v.kind).to_lowercase(),
+                value: v.value.clone(),
+                effective_from: v.effective_from.clone(),
+                effective_to: v.effective_to.clone(),
+                citation: self.pack.citation(&v.cite),
+                url: self
+                    .pack
+                    .acts
+                    .get(&v.cite.act)
+                    .map(|a| a.url.clone())
+                    .unwrap_or_default(),
+                note: v.note.clone(),
+            })
+            .collect();
+        RulePackDto {
+            provenance: self.pack.provenance(),
+            review: format!("{:?}", self.pack.info.review).to_lowercase(),
+            summary: self.pack.info.summary.clone(),
+            omitted: self.pack.info.omitted.clone(),
+            values,
+            holidays: u32::try_from(self.pack.holidays.len()).unwrap_or(u32::MAX),
+        }
     }
 
     /// Every advisor run, newest first.
