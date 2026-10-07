@@ -219,7 +219,7 @@ trait LlmProvider {
 // drivers: ClaudeCodeCli (default v1) · AnthropicApi (API key in OS keychain) · Fake (recorded fixtures)
 ```
 
-- **`ClaudeCodeCli`** runs the user-installed, unmodified `claude` binary with the launch profile in [`REVIEW.md` §4.2](./REVIEW.md). It reads `system/init`, `assistant`, `result` (`structured_output`, `total_cost_usd`) and `system/api_retry` events from stream-json.
+- **`ClaudeCodeCli`** runs the user-installed, unmodified `claude` binary with the launch profile in [`REVIEW.md` §4.2](./REVIEW.md). It reads `system/init`, `assistant`, `user` (tool results), `result` (`structured_output`, `total_cost_usd`) and `system/api_retry` events from stream-json, and aborts the run if `init` shows any tool, MCP server, command or skill beyond the hardened set (`skyla_advisor::cli_stream::profile_violations`). Findings: [`docs/spikes/WP-01-cli.md`](../spikes/WP-01-cli.md).
 - **`AnthropicApi`** speaks raw HTTPS (there's no official Rust SDK) to the Messages API. Model defaults to `claude-opus-5-5` with explicit `output_config.effort`; `claude-sonnet-5-5` or `claude-haiku-4-5` for high-volume ranking. Uses structured outputs (`output_config.format`), not forced `tool_choice`, which current models reject. Enables server-side refusal fallbacks as the API docs recommend.
 - **`Fake`** replays recorded transcripts. All CI and all cloud sessions use it unless a live eval is explicitly invoked.
 
@@ -361,4 +361,4 @@ A macOS 26-era native three-pane language, applied on every platform with platfo
 - **Statements** (from C): a document-style content pane with drill-down rows, an accrual vs cash toggle, and advisor notes in the inspector.
 - **Reconciliation** (from D): bank lines as the list, candidates with an explained score breakdown, and the posting and its effects in the inspector, with statement tie-out in the subtitle.
 
-Dark appearance is open as Q-09 (recommended: first-class from WP-08).
+**Dark appearance is first-class from WP-08** (D-017): re-stepped greys and elevation, not an inversion. Every colour is a token with a light and a dark value, and every screen's Playwright check runs in both appearances.

@@ -23,13 +23,14 @@ Status values: **Locked** · **Open**.
 | D-014 | Development model: work packets sized to one session; headless-verifiable UI; recorded LLM fixtures | Review | Locked |
 | D-015 | Advisor access in v1: **proposal inbox** + **inline "explain this"** on any figure, account or line. Written period review in v1.x; scoped chat after v1 | Wave 3 (Q-04) | Locked |
 | D-016 | Licence: **AGPL-3.0-or-later for the application**; **Apache-2.0 for the engine crates** `skyla-money`, `skyla-ledger`, `skyla-rules` and the rule-pack format. Apache-2.0 crates must never depend on AGPL crates | Wave 3 (Q-05) | Locked |
+| D-017 | **Dark appearance first-class from WP-08**: re-stepped greys and elevation, not an inversion; tokens carry light and dark values; Playwright checks both | Wave 4 (Q-09) | Locked |
+| D-018 | **WP-01 spike run in a cloud session**; launch profile finalised with `--disable-slash-commands`, closed stdin and a scrubbed environment (`docs/spikes/WP-01-cli.md`). The signed-out / desktop-keychain check (C6) runs on a real machine before WP-24 | Wave 4 (Q-08) | Locked |
 
 ## Open questions
 
 | ID | Question | Options | Recommendation |
 |---|---|---|---|
-| Q-08 | What the next session builds | WP-00 + WP-01 · extend direction A to the full screen set first · both | Both: WP-00 + WP-01 in code; A screen set on the canvas in parallel |
-| Q-09 | Direction A refinements | Dark appearance first-class from WP-08 · light-only in v1 · compact density mode | Dark first-class: re-stepped greys and elevation, not an inversion |
+| — | None open. Q-08 → D-018, Q-09 → D-017 | | |
 
 ## Wave history
 
@@ -37,3 +38,4 @@ Status values: **Locked** · **Open**.
 - **Wave 2:** design round 1 (rejected: "outdated typography, section design and UI quality"), ledger kernel, invoicing scope, first slices. A sixth, macOS-native round-1 direction was added and then superseded.
 - **Review (round 2):** full solution review (`REVIEW.md`), with four new information-architecture directions A–D.
 - **Wave 3:** A locked; CZ-first, API driver, hash chain on and opt-in reference data accepted; inbox + explain-this; AGPL app + Apache engine.
+- **Wave 4:** run the WP-01 spike in the cloud now; dark appearance first-class from WP-08; continue autonomously through M1.

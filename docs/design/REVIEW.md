@@ -109,21 +109,24 @@ From Claude Code's *Legal and compliance* documentation (October 2026):
 `--bare` would have been the natural choice for a scripted engine, but in bare mode Claude Code *never reads OAuth credentials or the keychain*, so subscription users can't use it. The hardened profile is:
 
 ```text
+env -i HOME PATH LANG CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1   # scrubbed environment
 claude -p
   --restricted                      # no command/code tools, no WebFetch; only managed + --settings load
   --tools ""                        # no built-in tools at all
+  --disable-slash-commands          # no user commands or skills in the session
   --strict-mcp-config --mcp-config <run>/skyla-mcp.json   # only sky-la's MCP server
   --allowedTools "mcp__skyla__*"
   --permission-mode dontAsk --permission-prompts none
   --system-prompt-file <run>/system.md
   --output-format stream-json --verbose
-  --json-schema <run>/output.schema.json
+  --json-schema <run>/output.schema.json   # adds a StructuredOutput tool
   --no-session-persistence --max-turns 8
   --model <user choice> --effort <per task>
-cwd = an empty, per-run temp directory; environment scrubbed
+  < /dev/null                       # an open stdin costs a 3 s wait
+cwd = an empty, per-run temp directory
 ```
 
-**Still to be proven by the spike (WP-01):** that `--restricted` works with subscription OAuth, and what user context still loads (`~/.claude/CLAUDE.md`, auto memory). If anything leaks, add `--setting-sources` / `--settings` with an explicit empty configuration. Also: that `--tools ""` with MCP tools behaves as documented; real cold-start latency; and that the `total_cost_usd` and `structured_output` fields are present.
+**Proven by the spike (WP-01, [`docs/spikes/WP-01-cli.md`](../spikes/WP-01-cli.md)):** `--restricted` works with OAuth sign-in; a canary in `~/.claude/CLAUDE.md` does not reach the hardened session; the only tools are sky-la's MCP tools plus `StructuredOutput`; `structured_output` and `total_cost_usd` are present; an interrupted run still ends with a `result` event; warm latency is about 1.35 s with stdin closed. The spike added `--disable-slash-commands`, the closed stdin and the scrubbed environment. **Still open:** the signed-out path and the desktop keychain login (C6), which need a real machine.
 
 ### 4.3 Where the egress boundary really is
 

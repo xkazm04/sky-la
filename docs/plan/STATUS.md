@@ -4,23 +4,23 @@ Update this file in the same commit series that completes a work packet.
 
 ## Current state
 
-- **Phase:** M1 Ledger kernel in progress. Done: WP-00, WP-02, WP-03, WP-04, WP-05.
-- **Next packet:** WP-06 (periods, reversals, close checks, hash chain). WP-01 (CLI spike) waits for the go-ahead because it spends live Claude usage.
-- **Blocking decisions:** none. Open: Q-08 (next session's focus) and Q-09 (dark appearance) in [`../design/DECISIONS.md`](../design/DECISIONS.md).
+- **Phase:** M1 Ledger kernel in progress. Done: WP-00, WP-01, WP-02, WP-03, WP-04, WP-05.
+- **Next packet:** WP-06 (periods, reversals, close checks, hash chain).
+- **Blocking decisions:** none open. Wave 4 recorded as D-017 (dark first-class from WP-08) and D-018 (spike run in the cloud).
 
 ## Packets
 
 | WP | Title | Status | Session / commit | Notes |
 |---|---|---|---|---|
 | WP-00 | Scaffold, CI, cloud readiness | done | this session | `just ci` green locally; GitHub Actions runs on push |
-| WP-01 | Claude Code CLI spike | todo | | |
+| WP-01 | Claude Code CLI spike | done | this session | 10 of 11 checks pass; C6 (signed out, desktop keychain) needs a real machine. Findings in `docs/spikes/WP-01-cli.md` |
 | WP-02 | skyla-money | done | this session | 30 tests incl. 8 property tests; float ban verified |
 | WP-03 | skyla-store + keys | done | this session | 13 tests; OS keychain adapter moved to WP-30 |
 | WP-04 | Accounts + categories | done | this session | 7 tests + 2 snapshots; CZ chart in `rules/cz/chart.toml` |
 | WP-05 | Posting engine + invariants | done | this session | 11 tests incl. property tests and a 10 000-entry fuzz run |
 | WP-06 | Periods, reversals, close | todo | | |
 | WP-07 | Projections | todo | | |
-| WP-08 | Tokens + primitives (direction A) | todo | | Q-09 decides dark |
+| WP-08 | Tokens + primitives (direction A) | todo | | Dark first-class (D-017) |
 | WP-09 | Typed IPC + fixtures | todo | | |
 | WP-10 | Navigable app on fixtures | todo | | |
 | WP-11 – WP-34 | See the plan | todo | | |
@@ -36,6 +36,7 @@ Update this file in the same commit series that completes a work packet.
 - 2026-10-07 — WP-04: jurisdiction-neutral `ChartSpec` (TOML) with a validator that reports every problem at once; CZ chart (63 synthetic accounts per vyhláška 500/2002 Sb., 22 freelancer categories with default tax treatment) as cited rule-pack data; ledger schema (`SCHEMA`) with triggers enforcing account structure (three-digit tops, analytic codes extend parents, kind/side inherited, structure immutable, never deleted, no sub-accounts under category targets) and periods (valid ISO dates, no overlap, fixed dates). The ledger owns its SQL and uses plain `rusqlite`, keeping the Apache-2.0 crate free of the AGPL store.
 - 2026-10-07 — CI: Windows desktop job fixed (generated `icon.ico` and the desktop icon set).
 - 2026-10-07 — WP-05: journal schema and posting engine. Invariants enforced in Rust (typed errors) and again in triggers (raw SQL can't bypass them): I1 balanced in functional currency, I2 posted entries and postings frozen and never deleted, I3 an open period covers the date, I4 active leaf accounts (re-checked at post time, which found and closed a gap where an account deactivated after drafting could still be posted to), I7 human approver for rule/advisor entries; gapless `posted_seq`; FX lines must carry their rate and same-sign functional amount; functional currency fixed once anything is booked; savepoint-based operations nest inside a caller's transaction.
+- 2026-10-07 — WP-01: CLI spike run live in this cloud session (cheapest model, ~20 short calls). The hardened profile works with OAuth sign-in, keeps `~/.claude/CLAUDE.md` out (canary test), exposes only sky-la MCP tools plus `StructuredOutput`, and returns `structured_output` and a cost estimate. Added to the profile: `--disable-slash-commands`, stdin closed (an open stdin costs a 3 s wait; p50 now ≈ 1.35 s), a scrubbed environment with `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1` (the child otherwise inherits the parent's session id). `skyla_advisor::cli_stream` parses stream-json and guards the profile; 6 replay tests over 4 recorded transcripts.
 
 ## Backlog notes from sessions
 
@@ -44,3 +45,4 @@ Update this file in the same commit series that completes a work packet.
 - WP-03 scope split: the OS keychain `KeyStore` adapter moved to WP-30. keyring 4.x has a new store-based API, and the adapter belongs with the unlock UX. `MemoryKeyStore` covers tests and headless sessions.
 - One entity per encrypted database file (no `entity` table). Isolation between entities is then physical, and a bookkeeper's multi-entity view (post-v1) opens several stores.
 - SQLCipher logs `error decrypting page 1` to stderr on a wrong-key attempt. That's expected in the wrong-key tests; consider `PRAGMA cipher_log_level` when the app gets structured logging.
+- **C6 on a desktop before WP-24:** run `spikes/cli/run_spike.sh` signed out, and signed in through the macOS keychain, Linux and Windows. It settles the scrubbed-environment allow-list (e.g. `XDG_RUNTIME_DIR`, `DBUS_SESSION_BUS_ADDRESS`) and the not-signed-in error shape.
