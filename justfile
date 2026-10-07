@@ -41,7 +41,9 @@ dev:
     pnpm --filter @skyla/desktop tauri dev
 
 # Compile, lint and test the Tauri shell. Needs WebKitGTK on Linux.
+# Builds the web app first: a non-dev Tauri build embeds `dist/`.
 check-desktop:
+    pnpm --filter @skyla/desktop build
     cargo clippy -p skyla-desktop --all-targets --locked -- -D warnings
     cargo test -p skyla-desktop --locked
 

@@ -6,6 +6,14 @@ all-features = true
 [advisories]
 version = 2
 yanked = "deny"
+# Every exception names one advisory, says why it can't be fixed here, and when to revisit it.
+ignore = [
+    # "Unmaintained" notice, not a vulnerability. proc-macro-error is a build-time
+    # proc-macro reached only through Tauri's Linux GTK3 stack
+    # (gtk-rs 0.18 -> glib-macros). No upgrade exists until Tauri leaves gtk-rs 0.18.
+    # Revisit on every Tauri minor upgrade.
+    { id = "RUSTSEC-2024-0370", reason = "transitive build-time dep of Tauri's GTK3 stack; no upgrade available" },
+]
 
 [licenses]
 version = 2
