@@ -3,9 +3,9 @@
 //! signatures and types to `packages/ipc/src/bindings.ts`.
 
 use skyla_app::dto::{
-    AppInfo, BalanceSheetDto, BankStatementDto, CashBasisDto, DocumentPdfDto, EgressRunDto,
-    EntityDto, IntegrityDto, InvoiceDto, JournalEntryDto, PeriodDto, ProfitAndLossDto, ProposalDto,
-    RulePackDto, TrialBalanceDto, VatReturnDto,
+    AppInfo, BalanceSheetDto, BankStatementDto, CashBasisDto, DocumentPdfDto, DocumentXmlDto,
+    EgressRunDto, EntityDto, IntegrityDto, InvoiceDto, JournalEntryDto, PeriodDto,
+    ProfitAndLossDto, ProposalDto, RulePackDto, TrialBalanceDto, VatReturnDto,
 };
 use skyla_app::{Core, IpcFailure};
 use tauri::{Runtime, State};
@@ -129,6 +129,13 @@ fn invoice_pdf(core: State<'_, Core>, id: i64, lang: String) -> Answer<DocumentP
     Ok(core.invoice_pdf(id, &lang)?)
 }
 
+/// An issued document as ISDOC 6.0.2 XML.
+#[tauri::command]
+#[specta::specta]
+fn invoice_isdoc(core: State<'_, Core>, id: i64) -> Answer<DocumentXmlDto> {
+    Ok(core.invoice_isdoc(id)?)
+}
+
 /// Every command, for the invoke handler and the TypeScript export.
 pub fn specta_builder<R: Runtime>() -> Builder<R> {
     Builder::<R>::new()
@@ -149,6 +156,7 @@ pub fn specta_builder<R: Runtime>() -> Builder<R> {
             vat_return,
             rule_pack,
             invoice_pdf,
+            invoice_isdoc,
         ])
         // Money crosses as integer minor units; `MoneyDto` refuses anything
         // beyond 2^53 - 1, so a JavaScript number holds every value exactly.

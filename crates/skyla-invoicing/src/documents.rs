@@ -6,8 +6,8 @@ use std::collections::BTreeMap;
 use rusqlite::{Connection, OptionalExtension, params};
 use serde::Serialize;
 use skyla_ledger::{
-    NewEntry, NewLine, Replay, SourceKind, create_draft_as, functional_currency, get_entry,
-    link_settlement, post_entry_at, settlements_of,
+    NewEntry, NewLine, Replay, SourceKind, create_draft_as as create_entry_as, functional_currency,
+    get_entry, link_settlement, post_entry_at, settlements_of,
 };
 use skyla_money::{Currency, Money, Rate, vat};
 use skyla_rules::Pack;
@@ -401,6 +401,16 @@ fn validate(input: &DraftInput, series_kind: DocKind) -> Vec<String> {
 
 /// Creates a draft. Drafts can change freely until issued.
 pub fn create_draft(conn: &Connection, input: &DraftInput) -> Result<i64, InvoicingError> {
+    create_draft_as(conn, input, &uuid::Uuid::now_v7().to_string())
+}
+
+/// Creates a draft with a known stable id, for replays and imports whose
+/// identities must come out the same every time.
+pub fn create_draft_as(
+    conn: &Connection,
+    input: &DraftInput,
+    uid: &str,
+) -> Result<i64, InvoicingError> {
     let (kind, _) = series(conn, &input.series)?;
     let problems = validate(input, kind);
     if !problems.is_empty() {
@@ -413,7 +423,7 @@ pub fn create_draft(conn: &Connection, input: &DraftInput) -> Result<i64, Invoic
                                    customer_dic, customer_address, currency, note, related_id)
              VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)",
             params![
-                uuid::Uuid::now_v7().to_string(),
+                uid,
                 input.kind.as_str(),
                 input.series,
                 input.due_date,
@@ -915,7 +925,7 @@ pub fn issue(
                 lines,
             };
             let uid = replay.map_or_else(|| uuid::Uuid::now_v7().to_string(), |r| r.uid.to_owned());
-            let entry_id = create_draft_as(tx, &entry, &uid)?;
+            let entry_id = create_entry_as(tx, &entry, &uid)?;
             // A credit note settles the invoice it corrects.
             if doc.kind == DocKind::CreditNote
                 && let Some(invoice) = doc.related_id
@@ -1093,9 +1103,14 @@ pub fn series_gaps(conn: &Connection, code: &str) -> Result<Vec<String>, Invoici
     Ok(gaps)
 }
 
+/// The namespace of imported documents' ids (UUID v5 of `entry uid/number`).
+const IMPORT_NAMESPACE: uuid::Uuid = uuid::uuid!("6b1e2c9a-3f0d-5e7b-9a41-0c8d2f5e7a13");
+
 /// Records a document that was issued and posted elsewhere (an import from
 /// another program, or the demo's golden journal). The ledger entry must
-/// already exist and carry exactly the document's totals.
+/// already exist and carry exactly the document's totals. The document's id
+/// derives from the entry's, so importing the same books twice yields the
+/// same documents.
 pub fn import_issued(
     conn: &Connection,
     pack: &Pack,
@@ -1138,8 +1153,12 @@ pub fn import_issued(
             totals.gross.minor()
         )]));
     }
+    let uid = uuid::Uuid::new_v5(
+        &IMPORT_NAMESPACE,
+        format!("{}/{number}", entry.uid).as_bytes(),
+    );
     atomically(conn, |tx| {
-        let id = create_draft(tx, input)?;
+        let id = create_draft_as(tx, input, &uid.to_string())?;
         for r in &totals.recap {
             tx.execute(
                 "INSERT INTO document_total (document_id, vat_code, rate, base_minor, vat_minor) VALUES (?1, ?2, ?3, ?4, ?5)",

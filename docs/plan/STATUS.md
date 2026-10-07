@@ -4,8 +4,8 @@ Update this file in the same commit series that completes a work packet.
 
 ## Current state
 
-- **Phase:** M3 Invoicing in progress. Done: WP-00 – WP-12 (M0, M1 and M2 complete), and the data half of WP-20.
-- **Next packet:** WP-13 (ISDOC 6 writer). WP-20 is half done: the pack data and loader landed first because invoicing needs VAT rates from the pack; the opt-in fetch and signed pack updates remain.
+- **Phase:** M3 Invoicing in progress. Done: WP-00 – WP-13 (M0, M1 and M2 complete), and the data half of WP-20.
+- **Next packet:** WP-14 (EN 16931: UBL 2.1 Peppol BIS 3.0 + CII). WP-20 is half done: the pack data and loader landed first because invoicing needs VAT rates from the pack; the opt-in fetch and signed pack updates remain.
 - **Blocking decisions:** none open. Wave 4 recorded as D-017 (dark first-class from WP-08) and D-018 (spike run in the cloud).
 
 ## Packets
@@ -25,7 +25,8 @@ Update this file in the same commit series that completes a work packet.
 | WP-10 | Navigable app on fixtures | done | this session | 9 screens; 27 Playwright tests; 18 committed baselines (light and dark) |
 | WP-11 | Invoicing documents and lifecycle | done | this session | 8 tests incl. a 48-case lifecycle property test |
 | WP-12 | Typst PDF (cs/en) + SPAYD QR Platba | done | this session | 6 SPAYD/IBAN/IČO tests on the spec examples; 3 text-layer snapshots; QR decodes back; PDF byte-identical across runs |
-| WP-13 – WP-19 | See the plan | todo | | |
+| WP-13 | ISDOC 6 writer | done | this session | 5 tests: invoice, credit note, advance tax document, final invoice with a taxed deposit, non-payer; each xmllint-valid against the official 6.0.2 XSD and snapshotted |
+| WP-14 – WP-19 | See the plan | todo | | |
 | WP-20 | Rule pack cz-2026 + loader | partly done | this session | Data, citations, effective dating, holidays and deadlines done; opt-in ČNB fetch and minisign-verified updates still to do |
 | WP-21 – WP-34 | See the plan | todo | | |
 
@@ -51,6 +52,7 @@ Update this file in the same commit series that completes a work packet.
 
 - 2026-10-07 — WP-12: `skyla-render` compiles a Typst 0.15 template in an in-memory world (template, `data.json`, the QR SVG and embedded Geist; no file system, network or clock), so a document renders to the same bytes every time. Rust prepares every printed string (amounts, dates, rates, the payment block); the template only lays out the cs/en labels and titles per document kind. QR Platba: `skyla_invoicing::spayd` builds SPAYD 1.0 strings in a fixed key order (matches the specification's examples, escapes `*` and `%`, cuts MSG and RN to their limits, validates IBAN mod 97, BIC and the variable symbol). Supplier profile (`set_supplier`, IČO checksum, DIČ, IBAN) is snapshotted onto each document at issue, so a later change never rewrites an issued invoice. The snapshot found a real bug: a supplier outside VAT was still charged 21 %; the pack gained `NOVAT` (0 %, § 6 ZDPH, no return rows) and issuing now refuses VAT codes that don't match the supplier's registration. New command `invoice_pdf` (base64 PDF + SPAYD); the invoice inspector's PDF menu exports Czech or English, verified by a Playwright download test. Build hygiene: dev builds keep line tables only for our crates (the target dir went from 27 GB to 2.6 GB); six Typst-transitive advisories are scoped in `deny.toml` with reasons.
 
+- 2026-10-07 — WP-13: `skyla_invoicing::to_isdoc` writes ISDOC 6.0.2 from an issued document (document types 1, 2, 4, 5), with the parties' IČO, DIČ and a split postal address (`address::split_address`), lines with per-line VAT and tax-inclusive unit prices, the recapitulation per rate, taxed deposits and "already claimed" amounts on a final invoice, original-document references on credit notes and tax documents, and the bank transfer (domestic account and bank code derived from the IBAN, variable symbol). What every exchange format needs is prepared once (`exchange.rs`) so WP-14's UBL and CII writers reuse it. The official XSD is vendored under `tests/schemas` (its notice allows it; fetched from the npm package that bundles it because isdoc.cz is outside the container's network policy) and every test document is validated with xmllint; CI installs libxml2-utils. New command `invoice_isdoc`; the inspector's button is now "Export" with Czech PDF, English PDF and ISDOC, hidden on drafts.
 ## Backlog notes from sessions
 
 - Playwright 1.63 expects Chromium build 1243; cloud containers ship 1194. Handled through `PLAYWRIGHT_CHROMIUM_EXECUTABLE`. Revisit if the container image updates.
@@ -81,3 +83,5 @@ Update this file in the same commit series that completes a work packet.
 - Typst brings quick-xml 0.38 (two DoS advisories), bincode, yaml-rust, rustybuzz and ttf-parser (unmaintained). All scoped in `deny.toml`; revisit on each Typst upgrade.
 - The mock records `invoice_pdf` only for invoice 2026-102 (cs and en); other invoices answer "not recorded" in `dev:web`. Recordings ship in the web bundle, so keep binary answers few.
 - Invoice PDFs don't yet print the customer's bank-payment status or a "paid" mark; decide with WP-15 (dunning) whether reprints of paid invoices should show one.
+- ISDOC credit notes carry the books' signs (negative quantities and amounts). Check against a reference reader (e.g. the ISDOC Reader or Pohoda import) whether recipients expect positive amounts with DocumentType 2.
+- ISDOC export doesn't yet wrap the PDF (ISDOC.PDF / .isdocx). Add with WP-16 if users want one attachment.

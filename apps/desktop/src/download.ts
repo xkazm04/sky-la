@@ -3,7 +3,16 @@ export function downloadBase64(fileName: string, base64: string, type: string): 
   const binary = atob(base64);
   const bytes = new Uint8Array(binary.length);
   for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-  const url = URL.createObjectURL(new Blob([bytes], { type }));
+  save(fileName, new Blob([bytes], { type }));
+}
+
+/** Saves text the core produced (XML, CSV) as a file the user downloads. */
+export function downloadText(fileName: string, text: string, type: string): void {
+  save(fileName, new Blob([text], { type: `${type};charset=utf-8` }));
+}
+
+function save(fileName: string, blob: Blob): void {
+  const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
   a.download = fileName;

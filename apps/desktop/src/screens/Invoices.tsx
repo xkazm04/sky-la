@@ -18,7 +18,7 @@ import {
 import { FileDown, Plus } from "lucide-react";
 import { useState } from "react";
 import { useQuery } from "../data";
-import { downloadBase64 } from "../download";
+import { downloadBase64, downloadText } from "../download";
 import { day, money } from "../format";
 import { navigate } from "../router";
 import { InspectorPane } from "../shell/Shell";
@@ -129,16 +129,21 @@ function InvoiceInspector({ invoice }: { invoice: InvoiceDto }) {
   const [exported, setExported] = useState<{ id: number; result: Export } | null>(null);
   const result = exported?.id === invoice.id ? exported.result : null;
 
-  const exportPdf = async (lang: string) => {
+  const exportAs = async (format: string) => {
     setExported({ id: invoice.id, result: { state: "busy" } });
     try {
-      const pdf = await unwrap(commands.invoicePdf(invoice.id, lang));
-      downloadBase64(pdf.fileName, pdf.pdfBase64, "application/pdf");
-      const qr = pdf.spayd ? " with the QR Platba code" : "";
-      setExported({
-        id: invoice.id,
-        result: { state: "done", text: `Saved ${pdf.fileName}${qr}.` },
-      });
+      let text: string;
+      if (format === "isdoc") {
+        const file = await unwrap(commands.invoiceIsdoc(invoice.id));
+        downloadText(file.fileName, file.xml, file.mediaType);
+        text = `Saved ${file.fileName} (ISDOC 6.0.2).`;
+      } else {
+        const pdf = await unwrap(commands.invoicePdf(invoice.id, format));
+        downloadBase64(pdf.fileName, pdf.pdfBase64, "application/pdf");
+        const qr = pdf.spayd ? " with the QR Platba code" : "";
+        text = `Saved ${pdf.fileName}${qr}.`;
+      }
+      setExported({ id: invoice.id, result: { state: "done", text } });
     } catch (e) {
       const text = e instanceof Error ? e.message : String(e);
       setExported({ id: invoice.id, result: { state: "failed", text } });
@@ -154,19 +159,22 @@ function InvoiceInspector({ invoice }: { invoice: InvoiceDto }) {
         accessory={<Badge tone={s.tone}>{s.label}</Badge>}
         actions={
           <>
-            <Menu
-              label="Export PDF"
-              placement="bottom end"
-              onAction={(lang) => void exportPdf(lang)}
-              trigger={
-                <Button variant="plain" icon={FileDown} isDisabled={result?.state === "busy"}>
-                  PDF
-                </Button>
-              }
-            >
-              <MenuItem id="cs">Czech PDF</MenuItem>
-              <MenuItem id="en">English PDF</MenuItem>
-            </Menu>
+            {posted && (
+              <Menu
+                label="Export"
+                placement="bottom end"
+                onAction={(format) => void exportAs(format)}
+                trigger={
+                  <Button variant="plain" icon={FileDown} isDisabled={result?.state === "busy"}>
+                    Export
+                  </Button>
+                }
+              >
+                <MenuItem id="cs">Czech PDF</MenuItem>
+                <MenuItem id="en">English PDF</MenuItem>
+                <MenuItem id="isdoc">ISDOC for accounting software</MenuItem>
+              </Menu>
+            )}
             {posted && invoice.status !== "paid" && (
               <Button variant="primary" onPress={() => navigate("bank")}>
                 Match a payment

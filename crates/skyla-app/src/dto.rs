@@ -603,6 +603,18 @@ pub struct DocumentPdfDto {
     pub spayd: Option<String>,
 }
 
+/// A document written in an exchange format (ISDOC, UBL, CII).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct DocumentXmlDto {
+    /// Suggested file name, e.g. `2026-041.isdoc`.
+    pub file_name: String,
+    /// The file's media type.
+    pub media_type: String,
+    /// The XML.
+    pub xml: String,
+}
+
 /// The rule pack in force.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]

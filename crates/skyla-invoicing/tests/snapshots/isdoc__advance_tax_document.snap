@@ -1,0 +1,126 @@
+---
+source: crates/skyla-invoicing/tests/isdoc.rs
+expression: t
+---
+<?xml version="1.0" encoding="UTF-8"?>
+<Invoice xmlns="http://isdoc.cz/namespace/2013" version="6.0.2">
+  <DocumentType>5</DocumentType>
+  <ID>DZ2026-01</ID>
+  <UUID>00000000-0000-0000-0000-000000000001</UUID>
+  <IssuingSystem>sky-la</IssuingSystem>
+  <IssueDate>2026-08-06</IssueDate>
+  <TaxPointDate>2026-08-05</TaxPointDate>
+  <VATApplicable>true</VATApplicable>
+  <ElectronicPossibilityAgreementReference/>
+  <Note>Děkuji za spolupráci &amp; těším se na další &lt;projekt&gt;.</Note>
+  <LocalCurrencyCode>CZK</LocalCurrencyCode>
+  <CurrRate>1</CurrRate>
+  <RefCurrRate>1</RefCurrRate>
+  <AccountingSupplierParty>
+    <Party>
+      <PartyIdentification>
+        <ID>25596641</ID>
+      </PartyIdentification>
+      <PartyName>
+        <Name>Jana Nováková</Name>
+      </PartyName>
+      <PostalAddress>
+        <StreetName>Korunní</StreetName>
+        <BuildingNumber>2569/108</BuildingNumber>
+        <CityName>Praha 10</CityName>
+        <PostalZone>10100</PostalZone>
+        <Country>
+          <IdentificationCode>CZ</IdentificationCode>
+          <Name>Česká republika</Name>
+        </Country>
+      </PostalAddress>
+      <PartyTaxScheme>
+        <CompanyID>CZ25596641</CompanyID>
+        <TaxScheme>VAT</TaxScheme>
+      </PartyTaxScheme>
+      <Contact>
+        <ElectronicMail>jana@example.cz</ElectronicMail>
+      </Contact>
+    </Party>
+  </AccountingSupplierParty>
+  <AccountingCustomerParty>
+    <Party>
+      <PartyIdentification>
+        <ID>27082440</ID>
+      </PartyIdentification>
+      <PartyName>
+        <Name>Studio Brno s.r.o.</Name>
+      </PartyName>
+      <PostalAddress>
+        <StreetName>Masarykova</StreetName>
+        <BuildingNumber>12</BuildingNumber>
+        <CityName>Brno</CityName>
+        <PostalZone>60200</PostalZone>
+        <Country>
+          <IdentificationCode>CZ</IdentificationCode>
+          <Name>Česká republika</Name>
+        </Country>
+      </PostalAddress>
+      <PartyTaxScheme>
+        <CompanyID>CZ27082440</CompanyID>
+        <TaxScheme>VAT</TaxScheme>
+      </PartyTaxScheme>
+    </Party>
+  </AccountingCustomerParty>
+  <OriginalDocumentReferences>
+    <OriginalDocumentReference id="original">
+      <ID>ZF2026-01</ID>
+      <IssueDate>2026-08-01</IssueDate>
+      <UUID>00000000-0000-0000-0000-000000000002</UUID>
+    </OriginalDocumentReference>
+  </OriginalDocumentReferences>
+  <InvoiceLines>
+    <InvoiceLine>
+      <ID>1</ID>
+      <OriginalDocumentReference ref="original">
+      </OriginalDocumentReference>
+      <InvoicedQuantity>1</InvoicedQuantity>
+      <LineExtensionAmount>100000.00</LineExtensionAmount>
+      <LineExtensionAmountTaxInclusive>121000.00</LineExtensionAmountTaxInclusive>
+      <LineExtensionTaxAmount>21000.00</LineExtensionTaxAmount>
+      <UnitPrice>100000.00</UnitPrice>
+      <UnitPriceTaxInclusive>121000.00</UnitPriceTaxInclusive>
+      <ClassifiedTaxCategory>
+        <Percent>21</Percent>
+        <VATCalculationMethod>0</VATCalculationMethod>
+        <VATApplicable>true</VATApplicable>
+      </ClassifiedTaxCategory>
+      <Item>
+        <Description>Přijatá záloha</Description>
+      </Item>
+    </InvoiceLine>
+  </InvoiceLines>
+  <TaxTotal>
+    <TaxSubTotal>
+      <TaxableAmount>100000.00</TaxableAmount>
+      <TaxAmount>21000.00</TaxAmount>
+      <TaxInclusiveAmount>121000.00</TaxInclusiveAmount>
+      <AlreadyClaimedTaxableAmount>0.00</AlreadyClaimedTaxableAmount>
+      <AlreadyClaimedTaxAmount>0.00</AlreadyClaimedTaxAmount>
+      <AlreadyClaimedTaxInclusiveAmount>0.00</AlreadyClaimedTaxInclusiveAmount>
+      <DifferenceTaxableAmount>100000.00</DifferenceTaxableAmount>
+      <DifferenceTaxAmount>21000.00</DifferenceTaxAmount>
+      <DifferenceTaxInclusiveAmount>121000.00</DifferenceTaxInclusiveAmount>
+      <TaxCategory>
+        <Percent>21</Percent>
+        <VATApplicable>true</VATApplicable>
+      </TaxCategory>
+    </TaxSubTotal>
+    <TaxAmount>21000.00</TaxAmount>
+  </TaxTotal>
+  <LegalMonetaryTotal>
+    <TaxExclusiveAmount>100000.00</TaxExclusiveAmount>
+    <TaxInclusiveAmount>121000.00</TaxInclusiveAmount>
+    <AlreadyClaimedTaxExclusiveAmount>0.00</AlreadyClaimedTaxExclusiveAmount>
+    <AlreadyClaimedTaxInclusiveAmount>0.00</AlreadyClaimedTaxInclusiveAmount>
+    <DifferenceTaxExclusiveAmount>100000.00</DifferenceTaxExclusiveAmount>
+    <DifferenceTaxInclusiveAmount>121000.00</DifferenceTaxInclusiveAmount>
+    <PaidDepositsAmount>0.00</PaidDepositsAmount>
+    <PayableAmount>121000.00</PayableAmount>
+  </LegalMonetaryTotal>
+</Invoice>

@@ -20,7 +20,8 @@ skyla-ledger = { version = "0.1.0", path = "../skyla-ledger" }
 skyla-money = { version = "0.1.0", path = "../skyla-money" }
 skyla-rules = { version = "0.1.0", path = "../skyla-rules" }
 thiserror = "2.0.21"
-uuid = { version = "1.27.0", features = ["v7"] }
+uuid = { version = "1.27.0", features = ["v5", "v7"] }
 
 [dev-dependencies]
+insta = "1.49.0"
 proptest = "1.11.0"

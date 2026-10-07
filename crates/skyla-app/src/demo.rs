@@ -219,7 +219,7 @@ pub(crate) fn seed_invoicing(
     )?;
     let accounts = Accounts::cz();
     let mut scheduled = HashMap::new();
-    for doc in &domain.invoices {
+    for (i, doc) in domain.invoices.iter().enumerate() {
         let input = DraftInput {
             kind: DocKind::Invoice,
             series: "FV".into(),
@@ -264,7 +264,9 @@ pub(crate) fn seed_invoicing(
                 )?;
             }
             Some(_) => {
-                let id = skyla_invoicing::create_draft(conn, &input)?;
+                // A fixed id per demo draft, so recordings come out the same.
+                let uid = format!("00000000-0000-7000-8000-{:012}", i + 1);
+                let id = skyla_invoicing::create_draft_as(conn, &input, &uid)?;
                 if let Some(when) = &doc.scheduled_for {
                     scheduled.insert(id, when.clone());
                 }

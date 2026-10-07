@@ -1,0 +1,128 @@
+---
+source: crates/skyla-invoicing/tests/isdoc.rs
+expression: xml
+---
+<?xml version="1.0" encoding="UTF-8"?>
+<Invoice xmlns="http://isdoc.cz/namespace/2013" version="6.0.2">
+  <DocumentType>1</DocumentType>
+  <ID>2026-001</ID>
+  <UUID>00000000-0000-0000-0000-000000000001</UUID>
+  <IssuingSystem>sky-la</IssuingSystem>
+  <IssueDate>2026-09-01</IssueDate>
+  <TaxPointDate>2026-09-01</TaxPointDate>
+  <VATApplicable>false</VATApplicable>
+  <ElectronicPossibilityAgreementReference/>
+  <Note>Děkuji za spolupráci &amp; těším se na další &lt;projekt&gt;.</Note>
+  <LocalCurrencyCode>CZK</LocalCurrencyCode>
+  <CurrRate>1</CurrRate>
+  <RefCurrRate>1</RefCurrRate>
+  <AccountingSupplierParty>
+    <Party>
+      <PartyIdentification>
+        <ID>25596641</ID>
+      </PartyIdentification>
+      <PartyName>
+        <Name>Jana Nováková</Name>
+      </PartyName>
+      <PostalAddress>
+        <StreetName>Korunní</StreetName>
+        <BuildingNumber>2569/108</BuildingNumber>
+        <CityName>Praha 10</CityName>
+        <PostalZone>10100</PostalZone>
+        <Country>
+          <IdentificationCode>CZ</IdentificationCode>
+          <Name>Česká republika</Name>
+        </Country>
+      </PostalAddress>
+      <Contact>
+        <ElectronicMail>jana@example.cz</ElectronicMail>
+      </Contact>
+    </Party>
+  </AccountingSupplierParty>
+  <AccountingCustomerParty>
+    <Party>
+      <PartyIdentification>
+        <ID>27082440</ID>
+      </PartyIdentification>
+      <PartyName>
+        <Name>Studio Brno s.r.o.</Name>
+      </PartyName>
+      <PostalAddress>
+        <StreetName>Masarykova</StreetName>
+        <BuildingNumber>12</BuildingNumber>
+        <CityName>Brno</CityName>
+        <PostalZone>60200</PostalZone>
+        <Country>
+          <IdentificationCode>CZ</IdentificationCode>
+          <Name>Česká republika</Name>
+        </Country>
+      </PostalAddress>
+      <PartyTaxScheme>
+        <CompanyID>CZ27082440</CompanyID>
+        <TaxScheme>VAT</TaxScheme>
+      </PartyTaxScheme>
+    </Party>
+  </AccountingCustomerParty>
+  <InvoiceLines>
+    <InvoiceLine>
+      <ID>1</ID>
+      <InvoicedQuantity unitCode="HUR">3.5</InvoicedQuantity>
+      <LineExtensionAmount>2800.00</LineExtensionAmount>
+      <LineExtensionAmountTaxInclusive>2800.00</LineExtensionAmountTaxInclusive>
+      <LineExtensionTaxAmount>0.00</LineExtensionTaxAmount>
+      <UnitPrice>800.00</UnitPrice>
+      <UnitPriceTaxInclusive>800.00</UnitPriceTaxInclusive>
+      <ClassifiedTaxCategory>
+        <Percent>0</Percent>
+        <VATCalculationMethod>0</VATCalculationMethod>
+        <VATApplicable>false</VATApplicable>
+      </ClassifiedTaxCategory>
+      <Item>
+        <Description>Překlad</Description>
+      </Item>
+    </InvoiceLine>
+  </InvoiceLines>
+  <TaxTotal>
+    <TaxSubTotal>
+      <TaxableAmount>2800.00</TaxableAmount>
+      <TaxAmount>0.00</TaxAmount>
+      <TaxInclusiveAmount>2800.00</TaxInclusiveAmount>
+      <AlreadyClaimedTaxableAmount>0.00</AlreadyClaimedTaxableAmount>
+      <AlreadyClaimedTaxAmount>0.00</AlreadyClaimedTaxAmount>
+      <AlreadyClaimedTaxInclusiveAmount>0.00</AlreadyClaimedTaxInclusiveAmount>
+      <DifferenceTaxableAmount>2800.00</DifferenceTaxableAmount>
+      <DifferenceTaxAmount>0.00</DifferenceTaxAmount>
+      <DifferenceTaxInclusiveAmount>2800.00</DifferenceTaxInclusiveAmount>
+      <TaxCategory>
+        <Percent>0</Percent>
+        <VATApplicable>false</VATApplicable>
+      </TaxCategory>
+    </TaxSubTotal>
+    <TaxAmount>0.00</TaxAmount>
+  </TaxTotal>
+  <LegalMonetaryTotal>
+    <TaxExclusiveAmount>2800.00</TaxExclusiveAmount>
+    <TaxInclusiveAmount>2800.00</TaxInclusiveAmount>
+    <AlreadyClaimedTaxExclusiveAmount>0.00</AlreadyClaimedTaxExclusiveAmount>
+    <AlreadyClaimedTaxInclusiveAmount>0.00</AlreadyClaimedTaxInclusiveAmount>
+    <DifferenceTaxExclusiveAmount>2800.00</DifferenceTaxExclusiveAmount>
+    <DifferenceTaxInclusiveAmount>2800.00</DifferenceTaxInclusiveAmount>
+    <PaidDepositsAmount>0.00</PaidDepositsAmount>
+    <PayableAmount>2800.00</PayableAmount>
+  </LegalMonetaryTotal>
+  <PaymentMeans>
+    <Payment>
+      <PaidAmount>2800.00</PaidAmount>
+      <PaymentMeansCode>42</PaymentMeansCode>
+      <Details>
+        <PaymentDueDate>2026-09-29</PaymentDueDate>
+        <ID>19-2000145399</ID>
+        <BankCode>0800</BankCode>
+        <Name/>
+        <IBAN>CZ6508000000192000145399</IBAN>
+        <BIC>GIBACZPX</BIC>
+        <VariableSymbol>2026001</VariableSymbol>
+      </Details>
+    </Payment>
+  </PaymentMeans>
+</Invoice>

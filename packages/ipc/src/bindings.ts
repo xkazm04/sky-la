@@ -38,6 +38,8 @@ export const commands = {
 	rulePack: () => __TAURI_INVOKE<RulePackDto>("rule_pack"),
 	/**  A document rendered to PDF (`cs` or `en`), base64-encoded. */
 	invoicePdf: (id: number, lang: string) => typedError<DocumentPdfDto, IpcFailure>(__TAURI_INVOKE("invoice_pdf", { id, lang })),
+	/**  An issued document as ISDOC 6.0.2 XML. */
+	invoiceIsdoc: (id: number) => typedError<DocumentXmlDto, IpcFailure>(__TAURI_INVOKE("invoice_isdoc", { id })),
 };
 
 /* Types */
@@ -181,6 +183,16 @@ export type DocumentPdfDto = {
 	pages: number,
 	/**  The QR Platba payload, if the document asks for a payment. */
 	spayd: string | null,
+};
+
+/**  A document written in an exchange format (ISDOC, UBL, CII). */
+export type DocumentXmlDto = {
+	/**  Suggested file name, e.g. `2026-041.isdoc`. */
+	fileName: string,
+	/**  The file's media type. */
+	mediaType: string,
+	/**  The XML. */
+	xml: string,
 };
 
 /**  One run in the egress register. */

@@ -168,7 +168,7 @@ test("the September DPH return comes from the ledger, mapped by the rule pack", 
 test("an invoice exports as a PDF the core rendered, with the QR Platba code", async ({ page }) => {
   await page.goto("/#/invoices/2026-102");
   const inspector = page.getByRole("complementary", { name: "Invoice 2026-102" });
-  await inspector.getByRole("button", { name: "PDF" }).click();
+  await inspector.getByRole("button", { name: "Export" }).click();
   const downloaded = page.waitForEvent("download");
   await page.getByRole("menuitem", { name: "Czech PDF" }).click();
   const file = await downloaded;
@@ -179,4 +179,31 @@ test("an invoice exports as a PDF the core rendered, with the QR Platba code", a
   await expect(inspector.getByRole("status")).toContainText(
     "Saved Faktura 2026-102.pdf with the QR Platba code.",
   );
+});
+
+test("an invoice exports as ISDOC for accounting software", async ({ page }) => {
+  await page.goto("/#/invoices/2026-102");
+  const inspector = page.getByRole("complementary", { name: "Invoice 2026-102" });
+  await inspector.getByRole("button", { name: "Export" }).click();
+  const downloaded = page.waitForEvent("download");
+  await page.getByRole("menuitem", { name: "ISDOC for accounting software" }).click();
+  const file = await downloaded;
+  expect(file.suggestedFilename()).toBe("2026-102.isdoc");
+  const { readFileSync } = await import("node:fs");
+  const xml = readFileSync(await file.path(), "utf8");
+  expect(xml).toContain('<Invoice xmlns="http://isdoc.cz/namespace/2013" version="6.0.2">');
+  expect(xml).toContain("<PayableAmount>103092.00</PayableAmount>");
+  await expect(inspector.getByRole("status")).toContainText("Saved 2026-102.isdoc (ISDOC 6.0.2).");
+});
+
+test("drafts offer no export until issued", async ({ page }) => {
+  await page.goto("/#/invoices");
+  await page
+    .getByRole("row")
+    .filter({ hasText: "Acme Analytics" })
+    .filter({ hasText: "Draft" })
+    .click();
+  const inspector = page.getByRole("complementary", { name: "Draft invoice" });
+  await expect(inspector.getByRole("button", { name: "Issue" })).toBeVisible();
+  await expect(inspector.getByRole("button", { name: "Export" })).toHaveCount(0);
 });

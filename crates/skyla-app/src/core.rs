@@ -440,6 +440,37 @@ impl Core {
         })
     }
 
+    /// Writes an issued document as ISDOC 6.0.2, with the document it refers
+    /// to and the advances it deducts.
+    pub fn invoice_isdoc(&self, id: i64) -> Result<DocumentXmlDto, CoreError> {
+        let db = self.db();
+        let doc = skyla_invoicing::get(&db, &self.pack, id)?;
+        let related = doc
+            .related_id
+            .map(|r| skyla_invoicing::get(&db, &self.pack, r))
+            .transpose()?;
+        let advances = doc
+            .advances
+            .iter()
+            .map(|a| skyla_invoicing::get(&db, &self.pack, *a))
+            .collect::<Result<Vec<_>, _>>()?;
+        drop(db);
+        let xml = skyla_invoicing::to_isdoc(
+            &self.pack,
+            skyla_invoicing::ExportInput {
+                doc: &doc,
+                related: related.as_ref(),
+                advances: &advances,
+            },
+        )?;
+        let number = doc.number.unwrap_or_else(|| format!("draft-{id}"));
+        Ok(DocumentXmlDto {
+            file_name: format!("{number}.isdoc"),
+            media_type: "application/xml".into(),
+            xml,
+        })
+    }
+
     /// The latest bank import, tied out against the ledger.
     pub fn bank_statement(&self) -> Result<BankStatementDto, CoreError> {
         let import = &self.domain.bank_import;
