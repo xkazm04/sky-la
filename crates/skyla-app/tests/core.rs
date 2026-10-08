@@ -87,8 +87,9 @@ fn the_bank_import_ties_out_against_the_ledger() {
 #[test]
 fn every_proposed_entry_balances_and_its_vat_is_the_engines() {
     let proposals = core().proposals().unwrap();
-    // Studio Brno's payment is the workbench's certain match now, not a proposal.
-    assert_eq!(proposals.len(), 7);
+    // Studio Brno's payment is the workbench's certain match now, not a proposal;
+    // the financial advisor's two actionable findings come from its detectors.
+    assert_eq!(proposals.len(), 8);
     for p in proposals
         .iter()
         .filter_map(|p| p.entry.as_ref().map(|e| (p, e)))

@@ -910,6 +910,78 @@ pub struct PackUpdateDto {
     pub message: String,
 }
 
+/// What to explain: an account over a period, or one entry.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct ExplainTargetDto {
+    /// `account` or `entry`.
+    pub kind: String,
+    /// For an account.
+    pub account: Option<String>,
+    /// First day, for an account.
+    pub from: Option<String>,
+    /// Last day, for an account.
+    pub to: Option<String>,
+    /// For an entry.
+    pub entry: Option<i64>,
+}
+
+/// An entry behind a figure.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct ExplainedEntryDto {
+    /// Entry id.
+    pub id: i64,
+    /// Date.
+    pub date: String,
+    /// Memo.
+    pub memo: String,
+    /// Its amount on the account (or its gross, for an entry).
+    pub amount: MoneyDto,
+}
+
+/// An explanation, checked against the books.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct ExplanationDto {
+    /// `accepted`, `rejected`, `needs_confirmation`, `blocked`, `failed`.
+    pub status: String,
+    /// The explanation, when accepted.
+    pub text: Option<String>,
+    /// Entries it cites, when accepted.
+    pub cites: Vec<i64>,
+    /// Why it was rejected or didn't run.
+    pub problems: Vec<String>,
+    /// Figures matched to the books.
+    pub grounded: u32,
+    /// The register entry.
+    pub run_id: Option<String>,
+    /// Every entry behind the figure.
+    pub entries: Vec<ExplainedEntryDto>,
+}
+
+/// A detector's finding, citing the entries it rests on.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct FindingDto {
+    /// Stable id.
+    pub id: String,
+    /// `variance`, `vendor_rate`, `client_margin`, `late_payer`, `subscription`, `runway`.
+    pub detector: String,
+    /// One line.
+    pub title: String,
+    /// Second line.
+    pub detail: String,
+    /// The period it's about.
+    pub period: String,
+    /// Its figures.
+    pub figures: Vec<(String, MoneyDto)>,
+    /// Its percentages, whole percent.
+    pub percents: Vec<(String, String)>,
+    /// Journal entries it rests on.
+    pub cites: Vec<i64>,
+}
+
 /// The tax advisor's answer, checked against the engine.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]

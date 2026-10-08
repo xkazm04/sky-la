@@ -71,6 +71,10 @@ export const commands = {
 	/**  Its price excluding claimable VAT (empty for none). */
 	purchasePrice: string,
 } | null, confirmed: boolean) => typedError<TaxAdviceDto, IpcFailure>(__TAURI_INVOKE("run_tax_advisor", { projection, confirmed })),
+	/**  The financial advisor's findings for the last complete quarter. */
+	financialFindings: () => typedError<FindingDto[], IpcFailure>(__TAURI_INVOKE("financial_findings")),
+	/**  "Explain this" on an account or an entry, citing the entries behind it. */
+	explain: (target: ExplainTargetDto, confirmed: boolean) => typedError<ExplanationDto, IpcFailure>(__TAURI_INVOKE("explain", { target, confirmed })),
 	/**  The obligations calendar for a year, from the pack. */
 	obligations: (year: number) => typedError<ObligationDto[], IpcFailure>(__TAURI_INVOKE("obligations", { year })),
 	/**  Whether advisors can run, and what to do if not. */
@@ -503,6 +507,70 @@ export type EntityDto = {
 	asOf: string,
 	/**  Bank account label, masked. */
 	bankName: string,
+};
+
+/**  What to explain: an account over a period, or one entry. */
+export type ExplainTargetDto = {
+	/**  `account` or `entry`. */
+	kind: string,
+	/**  For an account. */
+	account: string | null,
+	/**  First day, for an account. */
+	from: string | null,
+	/**  Last day, for an account. */
+	to: string | null,
+	/**  For an entry. */
+	entry: number | null,
+};
+
+/**  An entry behind a figure. */
+export type ExplainedEntryDto = {
+	/**  Entry id. */
+	id: number,
+	/**  Date. */
+	date: string,
+	/**  Memo. */
+	memo: string,
+	/**  Its amount on the account (or its gross, for an entry). */
+	amount: MoneyDto,
+};
+
+/**  An explanation, checked against the books. */
+export type ExplanationDto = {
+	/**  `accepted`, `rejected`, `needs_confirmation`, `blocked`, `failed`. */
+	status: string,
+	/**  The explanation, when accepted. */
+	text: string | null,
+	/**  Entries it cites, when accepted. */
+	cites: number[],
+	/**  Why it was rejected or didn't run. */
+	problems: string[],
+	/**  Figures matched to the books. */
+	grounded: number,
+	/**  The register entry. */
+	runId: string | null,
+	/**  Every entry behind the figure. */
+	entries: ExplainedEntryDto[],
+};
+
+/**  A detector's finding, citing the entries it rests on. */
+export type FindingDto = {
+	/**  Stable id. */
+	id: string,
+	/**  `variance`, `vendor_rate`, `client_margin`, `late_payer`, `subscription`, `runway`. */
+	detector: string,
+	/**  One line. */
+	title: string,
+	/**  Second line. */
+	detail: string,
+	/**  The period it's about. */
+	period: string,
+	/**  Its figures. */
+	figures: ([string, MoneyDto])[],
+	/**  Its percentages, whole percent. */
+	percents: ([string, string])[],
+	/**  Journal entries it rests on. */
+	cites: number[],
 };
 
 /**  Journal integrity for the status line. */

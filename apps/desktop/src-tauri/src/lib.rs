@@ -5,10 +5,11 @@
 use skyla_app::dto::{
     AdvisorStatusDto, AppInfo, BalanceSheetDto, BankAllocationDto, BankRuleInputDto,
     BankStatementDto, CashBasisDto, ControlStatementDto, DocumentPdfDto, DocumentXmlDto,
-    DunningNoticeDto, EgressPayloadDto, EgressPolicyDto, EgressRunDto, EntityDto, IntegrityDto,
-    InvoiceDraftDto, InvoiceDto, InvoiceFormDto, JournalEntryDto, ObligationDto, PackUpdateDto,
-    PeriodDto, ProfitAndLossDto, ProposalDto, RecurringTemplateDto, RefDataDto, RulePackDto,
-    TaxAdviceDto, TaxProjectionDto, TaxScenariosDto, TrialBalanceDto, VatReturnDto,
+    DunningNoticeDto, EgressPayloadDto, EgressPolicyDto, EgressRunDto, EntityDto, ExplainTargetDto,
+    ExplanationDto, FindingDto, IntegrityDto, InvoiceDraftDto, InvoiceDto, InvoiceFormDto,
+    JournalEntryDto, ObligationDto, PackUpdateDto, PeriodDto, ProfitAndLossDto, ProposalDto,
+    RecurringTemplateDto, RefDataDto, RulePackDto, TaxAdviceDto, TaxProjectionDto, TaxScenariosDto,
+    TrialBalanceDto, VatReturnDto,
 };
 use skyla_app::{Core, IpcFailure};
 use std::path::Path;
@@ -176,6 +177,24 @@ fn run_tax_advisor(
     confirmed: bool,
 ) -> Answer<TaxAdviceDto> {
     Ok(core.run_tax_advisor(projection.as_ref(), confirmed)?)
+}
+
+/// The financial advisor's findings for the last complete quarter.
+#[tauri::command]
+#[specta::specta]
+fn financial_findings(core: State<'_, Core>) -> Answer<Vec<FindingDto>> {
+    Ok(core.financial_findings()?)
+}
+
+/// "Explain this" on an account or an entry, citing the entries behind it.
+#[tauri::command]
+#[specta::specta]
+fn explain(
+    core: State<'_, Core>,
+    target: ExplainTargetDto,
+    confirmed: bool,
+) -> Answer<ExplanationDto> {
+    Ok(core.explain(&target, confirmed)?)
 }
 
 /// The obligations calendar for a year, from the pack.
@@ -363,6 +382,8 @@ pub fn specta_builder<R: Runtime>() -> Builder<R> {
             control_statement,
             income_tax_scenarios,
             run_tax_advisor,
+            financial_findings,
+            explain,
             obligations,
             advisor_status,
             rule_pack,

@@ -4783,6 +4783,7 @@ name = "skyla-app"
 version = "0.1.0"
 dependencies = [
  "base64 0.22.1",
+ "regex",
  "rusqlite",
  "serde",
  "serde_json",

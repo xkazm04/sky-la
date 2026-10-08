@@ -19,6 +19,7 @@ import { day, money, shortHash } from "../format";
 import { navigate } from "../router";
 import { InspectorPane } from "../shell/Shell";
 import { EmptyInspector, Loaded } from "./common";
+import { ExplainThis } from "./ExplainThis";
 
 type Report = "pnl" | "balance" | "cash";
 type Range = "q2" | "q3" | "ytd";
@@ -129,6 +130,7 @@ function Provenance({ snapshot }: { snapshot: SnapshotDto }) {
 
 function Drilldown({ code, from, to }: { code: string; from: string; to: string }) {
   const journal = useQuery(`journal:${from}:${to}`, () => unwrap(commands.journal(from, to)));
+  const [cited, setCited] = useState<number[]>([]);
   return (
     <InspectorPane>
       <Inspector
@@ -136,6 +138,11 @@ function Drilldown({ code, from, to }: { code: string; from: string; to: string 
         title={`Account ${code}`}
         subtitle={`${day(from, true)} – ${day(to, true)}`}
       >
+        <ExplainThis
+          key={`${code}:${from}:${to}`}
+          target={{ kind: "account", account: code, from, to, entry: null }}
+          onCites={setCited}
+        />
         <Loaded query={journal}>
           {(entries: JournalEntryDto[]) => {
             const hits = entries.flatMap((e) =>
@@ -149,8 +156,10 @@ function Drilldown({ code, from, to }: { code: string; from: string; to: string 
                   {hits.map(({ e, l }) => (
                     <li
                       key={`${e.id}-${l.lineNo}`}
-                      className="flex items-center gap-3 border-hairline border-t px-3 py-2 first:border-t-0"
+                      data-cited={cited.includes(e.id) || undefined}
+                      className="flex items-center gap-3 border-hairline border-t px-3 py-2 first:border-t-0 data-cited:bg-accent-tint"
                     >
+                      <span className="w-9 shrink-0 text-footnote text-ink-secondary">#{e.id}</span>
                       <span className="w-12 shrink-0 text-footnote text-ink-secondary">
                         {day(e.date)}
                       </span>

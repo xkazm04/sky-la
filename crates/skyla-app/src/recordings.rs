@@ -137,6 +137,16 @@ pub fn scenarios() -> Vec<(&'static str, Script)> {
             s.read("proposals", json!({}));
             s.read("egress_payload", json!({ "id": "run-2026-10-07-05" }));
         }),
+        // "Explain this" on account 518 for Q3, then what was shared.
+        ("explain-518", |s| {
+            s.write(
+                "explain",
+                json!({ "target": explain_518(), "confirmed": true }),
+                "explained",
+            );
+            s.read("egress_register", json!({}));
+            s.read("egress_payload", json!({ "id": "run-2026-10-07-04" }));
+        }),
         // The user stops the tax advisor from running at all.
         ("egress-policy", |s| {
             s.write(
@@ -294,6 +304,11 @@ pub fn canonical_requests() -> Vec<(&'static str, Value)> {
         ("income_tax_scenarios", json!({ "projection": null })),
         ("obligations", json!({ "year": 2026 })),
         ("advisor_status", json!({})),
+        ("financial_findings", json!({})),
+        (
+            "explain",
+            json!({ "target": explain_518(), "confirmed": false }),
+        ),
         (
             "income_tax_scenarios",
             json!({ "projection": review_projection() }),
@@ -463,6 +478,17 @@ pub fn dispatch(core: &Core, command: &str, args: &Value) -> Result<Value, IpcFa
             to_value(core.income_tax_scenarios(projection.as_ref()))
         }
         "advisor_status" => to_value(Ok(core.advisor_status())),
+        "financial_findings" => to_value(core.financial_findings()),
+        "explain" => {
+            let target: crate::dto::ExplainTargetDto =
+                serde_json::from_value(args["target"].clone())
+                    .map_err(|e| crate::CoreError::BadRequest(e.to_string()))?;
+            let confirmed = args
+                .get("confirmed")
+                .and_then(Value::as_bool)
+                .unwrap_or(false);
+            to_value(core.explain(&target, confirmed))
+        }
         "run_tax_advisor" => {
             let projection: Option<crate::dto::TaxProjectionDto> = match args.get("projection") {
                 None | Some(Value::Null) => None,
@@ -563,4 +589,9 @@ fn mistyped_projection() -> Value {
     let mut p = review_projection();
     p["income"] = json!("1.571.000");
     p
+}
+
+/// Account 518 for Q3 2026, the demo's "explain this".
+fn explain_518() -> Value {
+    json!({ "kind": "account", "account": "518", "from": "2026-07-01", "to": "2026-09-30", "entry": null })
 }

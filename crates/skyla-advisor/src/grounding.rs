@@ -87,6 +87,8 @@ static IGNORED: LazyLock<Regex> = LazyLock::new(|| {
         // Section, paragraph, row and letter references.
         r"|§\s?\d+[a-z]*(?:\s(?:odst\.|písm\.)\s?\d*[a-z]?\)?)*",
         r"|(?:odst\.|ř\.|řádek|row|Q)\s?\d+",
+        // Account numbers in the chart.
+        r"|(?i:accounts?|účet|účtu|účtem|účty)\s\d{3,6}(?:\s?(?:and|a|,)\s?\d{3,6})*",
         // Years.
         r"|\b(?:19|20)\d{2}\b",
     ))
@@ -203,7 +205,8 @@ mod tests {
     fn grounded_prose_passes() {
         let text = "Na rok 2026 (do 31. prosince) vychází paušál 60 % na 942 600 Kč proti skutečným 383 200 Kč. \
                     Daň a pojistné klesnou z 400 926 Kč na 197 584 Kč, tedy o 203 342 Kč; sazba 15 % a sleva 30 840 Kč \
-                    podle § 35ba odst. 1 písm. a), ř. 40 a 2026-12-31. Sociální pojistné 29,2 %. Two scenarios, 2 levers.";
+                    podle § 35ba odst. 1 písm. a), ř. 40 a 2026-12-31. Sociální pojistné 29,2 %. Two scenarios, 2 levers. \
+                    Account 518 and účet 602.";
         let g = check(text, &allowed(), 13);
         assert!(g.passes(), "{:?}", g.ungrounded);
         assert_eq!(g.grounded, 9);

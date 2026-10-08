@@ -23,6 +23,8 @@ const DEMO_POSTING_NAMESPACE: uuid::Uuid = uuid::uuid!("5d2b8f61-0c7e-5a93-b4d1-
 mod advisor;
 mod bank;
 pub mod egress;
+mod explain;
+pub mod findings;
 pub mod refdata;
 mod tax;
 pub mod toolhost;
@@ -945,6 +947,34 @@ impl Core {
                 amount: Some(l.amount.clone()),
                 entry: None,
                 reasons: l.held_because.iter().cloned().collect(),
+            });
+        }
+        // The financial advisor's actionable findings (the rest are on the
+        // Advisors screen): a big swing, a duplicated charge, a short runway.
+        for f in self.financial_findings()? {
+            if !(f.detector == "variance"
+                || f.detector == "runway"
+                || f.id.starts_with("duplicate:"))
+            {
+                continue;
+            }
+            let cited: Vec<String> = f.cites.iter().map(|c| format!("#{c}")).collect();
+            items.push(ProposalDto {
+                id: format!("finding-{}", f.id),
+                kind: "advice".into(),
+                title: f.title.clone(),
+                detail: format!("Financial advisor · {}", f.detail),
+                confidence: None,
+                source_kind: "advisor".into(),
+                source: "Financial advisor".into(),
+                bank_line_id: None,
+                due_on: None,
+                amount: None,
+                entry: None,
+                reasons: vec![
+                    "A finding from the books for your review; nothing to post.".into(),
+                    format!("Entries: {}", cited.join(", ")),
+                ],
             });
         }
         // What advisors filed through their tools, waiting for review.

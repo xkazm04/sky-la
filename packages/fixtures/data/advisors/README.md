@@ -10,4 +10,5 @@ changing any one figure is caught.
 | File | Answers |
 |---|---|
 | `tax-books.jsonl` | The tax advisor on the books so far (no projection) |
+| `explain-518-q3.jsonl` | "Explain this" on account 518 for Q3 2026, citing the entries behind it |
 | `tax-review-projection.jsonl` | The tax advisor on the design review's projection (1 571 000 Kč income, 60 % flat rate, a laptop to time) |

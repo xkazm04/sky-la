@@ -308,6 +308,28 @@ test("the tax advisor explains the scenarios, and every figure was checked", asy
   ).toContainText("run_scenario");
 });
 
+test("the financial advisor's detectors find the 42 % rise in subcontracting", async ({ page }) => {
+  await page.goto("/#/advisors/financial");
+  const list = page.getByRole("list", { name: "Findings" });
+  await expect(list).toContainText("Subcontracting rose 42 % on the previous quarter");
+  await expect(list).toContainText("74 700,00 Kč → 106 100,00 Kč");
+  await expect(list).toContainText("Entries #8, #9, #10, #34, #35, #36");
+  await expect(list).toContainText("Figma charged twice, and refunded");
+  await axeClean(page);
+});
+
+test("explain this cites the entries behind a figure", async ({ page }) => {
+  await page.goto("/#/statements/518");
+  const inspector = page.getByRole("complementary", { name: "Account 518" });
+  await inspector.getByRole("button", { name: "Explain this…" }).click();
+  await page.getByRole("button", { name: "Send and explain" }).click();
+  const explanation = inspector.getByTestId("explanation");
+  await expect(explanation).toContainText("120 800 Kč");
+  await expect(explanation).toContainText("Cites #34, #35, #36, #39, #40, #41, #42, #43");
+  await expect(inspector.locator("li[data-cited]")).toHaveCount(8);
+  await axeClean(page);
+});
+
 test("an invoice exports as a PDF the core rendered, with the QR Platba code", async ({ page }) => {
   await page.goto("/#/invoices/2026-102");
   const inspector = page.getByRole("complementary", { name: "Invoice 2026-102" });

@@ -50,8 +50,40 @@ pub enum Role {
 /// Names and the stable pseudonyms that stand for them.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Pseudonyms {
-    /// Real name → pseudonym.
+    /// Real name (and its short form) → pseudonym.
     by_name: BTreeMap<String, String>,
+    /// Pseudonym → the full name, to put back.
+    reveal: BTreeMap<String, String>,
+}
+
+/// Legal forms a name may carry or drop ("Pixelfarm s.r.o." is "Pixelfarm").
+const LEGAL_FORMS: &[&str] = &[
+    "spol. s r.o.",
+    "s. r. o.",
+    "s.r.o.",
+    "a. s.",
+    "a.s.",
+    "v.o.s.",
+    "k.s.",
+    "z.s.",
+    "SE",
+    "SARL",
+    "GmbH",
+    "Ltd",
+    "Inc.",
+    "LLC",
+];
+
+/// The name without a trailing legal form.
+fn short_form(name: &str) -> String {
+    let mut n = name.trim().trim_end_matches(',').to_owned();
+    for form in LEGAL_FORMS {
+        if let Some(rest) = n.strip_suffix(form) {
+            n = rest.trim().trim_end_matches(',').trim().to_owned();
+            break;
+        }
+    }
+    n
 }
 
 fn letters(mut n: usize) -> String {
@@ -70,15 +102,24 @@ impl Pseudonyms {
     /// Pseudonyms for `parties`, assigned in name order per role, so the
     /// same books always give the same letters.
     pub fn new(parties: &[(String, Role)]) -> Self {
-        let mut sorted: BTreeSet<(Role, String)> = BTreeSet::new();
+        // One pseudonym per party, however its name is written.
+        let mut full: BTreeMap<(Role, String), String> = BTreeMap::new();
         for (name, role) in parties {
-            if !name.trim().is_empty() {
-                sorted.insert((*role, name.trim().to_owned()));
+            let name = name.trim();
+            if name.is_empty() {
+                continue;
+            }
+            let entry = full
+                .entry((*role, short_form(name)))
+                .or_insert_with(|| name.to_owned());
+            if name.len() > entry.len() {
+                *entry = name.to_owned();
             }
         }
         let mut by_name = BTreeMap::new();
+        let mut reveal = BTreeMap::new();
         let (mut c, mut v) = (0, 0);
-        for (role, name) in sorted {
+        for ((role, short), name) in full {
             if by_name.contains_key(&name) {
                 continue;
             }
@@ -92,9 +133,13 @@ impl Pseudonyms {
                     format!("Vendor {}", letters(v - 1))
                 }
             };
-            by_name.insert(name, label);
+            if short.chars().count() >= 3 {
+                by_name.insert(short, label.clone());
+            }
+            by_name.insert(name.clone(), label.clone());
+            reveal.insert(label, name);
         }
-        Self { by_name }
+        Self { by_name, reveal }
     }
 
     /// Replaces every known name (longest first) with its pseudonym.
@@ -115,11 +160,11 @@ impl Pseudonyms {
 
     /// Puts the real names back into a model's answer, for the user only.
     pub fn reveal(&self, text: &str) -> String {
-        let mut labels: Vec<(&String, &String)> = self.by_name.iter().collect();
+        let mut labels: Vec<(&String, &String)> = self.reveal.iter().collect();
         // "Customer AB" before "Customer A".
-        labels.sort_by_key(|(_, l)| std::cmp::Reverse(l.len()));
+        labels.sort_by_key(|(l, _)| std::cmp::Reverse(l.len()));
         let mut out = text.to_owned();
-        for (name, label) in labels {
+        for (label, name) in labels {
             out = out.replace(label.as_str(), name);
         }
         out
@@ -293,6 +338,8 @@ mod tests {
             "Northwind Traders s.r.o. is late"
         );
         assert_eq!(parties(), p);
+        // The short form is the same party.
+        assert_eq!(p.hide("Pixelfarm invoiced").0, "Vendor A invoiced");
         assert_eq!(letters(25), "Z");
         assert_eq!(letters(26), "AA");
     }

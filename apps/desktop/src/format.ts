@@ -32,3 +32,8 @@ export function moment(at: string): string {
 export function shortHash(hash: string | null | undefined): string {
   return hash ? `${hash.slice(0, 4)}…${hash.slice(-4)}` : "—";
 }
+
+/** Keeps `803 622,31 Kč` and `60 %` on one line (presentation only). */
+export function keepFiguresTogether(text: string): string {
+  return text.replace(/(\d) (?=\d{3}\b)/g, "$1\u00a0").replace(/(\d) (Kč|%)/g, "$1\u00a0$2");
+}

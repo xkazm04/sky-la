@@ -9,7 +9,7 @@ import {
 import { Badge, Button, FactList, InspectorSection, Popup, Select, TextField } from "@skyla/ui";
 import { type FormEvent, useState } from "react";
 import { invalidateAll, problems, useQuery } from "../data";
-import { day, money, signed } from "../format";
+import { day, keepFiguresTogether, money, signed } from "../format";
 import { navigate } from "../router";
 import { Reasons } from "./common";
 
@@ -83,11 +83,6 @@ function Analysis({ t }: { t: TaxScenariosDto }) {
       </InspectorSection>
     </>
   );
-}
-
-/** Keeps `803 622,31 Kč` and `60 %` on one line (presentation only). */
-function keepFiguresTogether(text: string): string {
-  return text.replace(/(\d) (?=\d{3}\b)/g, "$1\u00a0").replace(/(\d) (Kč|%)/g, "$1\u00a0$2");
 }
 
 /** Asks the tax advisor to explain what's on screen, after saying what it sends. */

@@ -73,6 +73,7 @@ const columns = (status: { tone: Tone; label: string }): TableColumn<Advisor>[] 
 export function AdvisorsScreen({ item }: { item: string | null }) {
   const runs = useQuery("egress_register", () => unwrap(commands.egressRegister()));
   const status = useQuery("advisor_status", () => commands.advisorStatus());
+  const findings = useQuery("financial_findings", () => unwrap(commands.financialFindings()));
   const connection = status.state === "ready" ? status.data : undefined;
   const proposals = useQuery("proposals", () => unwrap(commands.proposals()));
   const selected = ADVISORS.find((a) => a.id === item) ?? ADVISORS[0];
@@ -111,6 +112,33 @@ export function AdvisorsScreen({ item }: { item: string | null }) {
             <InspectorSection title="Can propose">
               <p className="text-body">{selected.proposes}</p>
             </InspectorSection>
+            {selected.id === "financial" && (
+              <InspectorSection title="Findings from the detectors · last quarter">
+                <Loaded query={findings}>
+                  {(all) => (
+                    <ul
+                      aria-label="Findings"
+                      className="overflow-hidden rounded-inner bg-surface shadow-group"
+                    >
+                      {all.map((f) => (
+                        <li
+                          key={f.id}
+                          className="border-hairline border-t px-3 py-2 first:border-t-0"
+                        >
+                          <span className="block font-medium">{f.title}</span>
+                          <span className="block text-footnote text-ink-secondary">{f.detail}</span>
+                          {f.cites.length > 0 && (
+                            <span className="block text-footnote text-ink-secondary">
+                              Entries {f.cites.map((c) => `#${c}`).join(", ")}
+                            </span>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </Loaded>
+              </InspectorSection>
+            )}
             <InspectorSection title="Recent findings">
               <Loaded query={proposals}>
                 {(all) => (

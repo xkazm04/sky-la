@@ -13,6 +13,8 @@ mod error;
 pub mod recordings;
 
 pub use crate::core::Core;
+/// The financial advisor's detectors, for tests and tools.
+pub use crate::core::findings as core_findings;
 pub use crate::core::toolhost::{ToolCallLog, ToolRun};
 pub use crate::core::tools::{ToolError, ToolKind, ToolSpec, tool_specs};
 pub use error::{CoreError, IpcFailure};

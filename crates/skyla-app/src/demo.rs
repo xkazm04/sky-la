@@ -378,6 +378,12 @@ pub(crate) struct DomainPurchase {
     pub(crate) reference: String,
     pub(crate) supplier: String,
     pub(crate) vat_id: Option<String>,
+    /// Hours billed, for subcontractors.
+    #[serde(default)]
+    pub(crate) hours: Option<String>,
+    /// The customer the work was for.
+    #[serde(default)]
+    pub(crate) client: Option<String>,
 }
 
 /// A recurring invoice template.
@@ -541,6 +547,10 @@ pub const TAX_BOOKS_TRANSCRIPT: &str =
 pub const TAX_REVIEW_TRANSCRIPT: &str =
     include_str!("../../../packages/fixtures/data/advisors/tax-review-projection.jsonl");
 
+/// "Explain this" on account 518 for Q3 (synthetic transcript).
+pub const EXPLAIN_518_TRANSCRIPT: &str =
+    include_str!("../../../packages/fixtures/data/advisors/explain-518-q3.jsonl");
+
 /// The demo's provider: recorded answers, no model.
 pub fn demo_provider() -> skyla_advisor::Fake {
     skyla_advisor::Fake::new()
@@ -549,4 +559,9 @@ pub fn demo_provider() -> skyla_advisor::Fake {
         })
         .with("tax.scenarios", TAX_BOOKS_TRANSCRIPT)
         .with_matching("tax.scenarios", "1 571 000", TAX_REVIEW_TRANSCRIPT)
+        .with_matching(
+            "explain.figure",
+            "account 518 for 2026-07-01 to 2026-09-30",
+            EXPLAIN_518_TRANSCRIPT,
+        )
 }

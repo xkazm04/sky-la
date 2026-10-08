@@ -48,32 +48,44 @@
     {
       "ref": "KV-2026-05",
       "supplier": "Kvasnička Dev s.r.o.",
-      "vatId": "CZ95123458"
+      "vatId": "CZ95123458",
+      "hours": "56",
+      "client": "Northwind Traders"
     },
     {
       "ref": "KV-2026-08",
       "supplier": "Kvasnička Dev s.r.o.",
-      "vatId": "CZ95123458"
+      "vatId": "CZ95123458",
+      "hours": "80",
+      "client": "Northwind Traders"
     },
     {
       "ref": "PF-2026-0612",
       "supplier": "Pixelfarm s.r.o.",
-      "vatId": "CZ96234563"
+      "vatId": "CZ96234563",
+      "hours": "31",
+      "client": "Acme Analytics"
     },
     {
       "ref": "PF-2026-0917",
       "supplier": "Pixelfarm s.r.o.",
-      "vatId": "CZ96234563"
+      "vatId": "CZ96234563",
+      "hours": "36",
+      "client": "Acme Analytics"
     },
     {
       "ref": "MH-14",
       "supplier": "Marek Horák",
-      "vatId": null
+      "vatId": null,
+      "hours": "52",
+      "client": "Studio Brno"
     },
     {
       "ref": "MH-19",
       "supplier": "Marek Horák",
-      "vatId": null
+      "vatId": null,
+      "hours": "55",
+      "client": "Studio Brno"
     },
     {
       "ref": "AWS-2026-09",
@@ -412,15 +424,6 @@
       "reasons": [
         "A scenario, not tax advice. Open it to see the engine's figures and the assumptions."
       ]
-    },
-    {
-      "id": "p-subcontracting",
-      "kind": "advice",
-      "title": "Subcontracting rose while billed hours stayed flat",
-      "detail": "Financial advisor · account 518 · three vendors",
-      "sourceKind": "advisor",
-      "source": "Financial advisor",
-      "reasons": ["A draft finding for your review. The figures come from the ledger."]
     }
   ],
   "egressRuns": [
