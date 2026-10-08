@@ -49,6 +49,8 @@ pub struct Core {
     advisor_inbox: Mutex<Vec<ProposalDto>>,
     /// What the user lets each advisor task do.
     egress_policies: Mutex<egress::Policies>,
+    /// The `skyla-mcp` shim advisors' runs start.
+    shim: Mutex<std::path::PathBuf>,
 }
 
 fn money(m: Money) -> Result<MoneyDto, CoreError> {
@@ -147,13 +149,10 @@ impl Core {
             bank: Mutex::new(bank::BankState::default()),
             // The demo answers from recorded runs; the desktop shell swaps in
             // the user's own Claude Code CLI.
-            provider: Mutex::new(Box::new(skyla_advisor::Fake::new().available(
-                skyla_advisor::Availability::Ready {
-                    version: "demo".into(),
-                },
-            ))),
+            provider: Mutex::new(Box::new(crate::demo::demo_provider())),
             advisor_inbox: Mutex::new(Vec::new()),
             egress_policies: Mutex::new(egress::Policies::new()),
+            shim: Mutex::new(std::path::PathBuf::from("skyla-mcp")),
         };
         // The demo's first October statement, imported but not yet booked.
         core.import_bytes(

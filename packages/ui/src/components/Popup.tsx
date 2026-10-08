@@ -29,7 +29,8 @@ export interface PopupProps {
   trigger: ReactElement;
   /** Accessible name for the dialog. */
   label: string;
-  children: ReactNode;
+  /** Content, or a function of `close` for content that ends the popup itself. */
+  children: ReactNode | ((close: () => void) => ReactNode);
   placement?: PopoverProps["placement"];
   className?: string;
 }
@@ -47,7 +48,7 @@ export function Popup({
       {trigger}
       <PopoverSurface placement={placement}>
         <Dialog aria-label={label} className={cx("p-3 outline-none", className)}>
-          {children}
+          {({ close }) => (typeof children === "function" ? children(close) : children)}
         </Dialog>
       </PopoverSurface>
     </DialogTrigger>

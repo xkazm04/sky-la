@@ -280,6 +280,34 @@ test("a task can be stopped from sharing anything", async ({ page }) => {
   await axeClean(page);
 });
 
+test("the tax advisor explains the scenarios, and every figure was checked", async ({ page }) => {
+  await page.goto("/#/taxes/scenarios");
+  const inspector = page.getByRole("complementary", { name: "Actual or flat-rate expenses" });
+  await inspector.getByRole("button", { name: "Explain with the tax advisor…" }).click();
+  await expect(page.getByRole("dialog")).toContainText("are never sent");
+  await page.getByRole("button", { name: "Send and explain" }).click();
+  const advice = inspector.getByTestId("tax-advice");
+  await expect(advice).toContainText("Draft for your review");
+  await expect(advice).toContainText("80 324 Kč less");
+  await expect(advice).toContainText("figures checked against the engine");
+  await axeClean(page);
+
+  // The review's projection, then what was shared.
+  const form = inspector.getByRole("form", { name: "Projection" });
+  await form.getByLabel("Income (§ 7)").fill("1 571 000");
+  await form.getByLabel("Actual expenses").fill("383 200");
+  await form.getByLabel("Planned purchase").fill("Laptop");
+  await form.getByLabel("Its price excluding VAT").fill("60 000");
+  await form.getByRole("button", { name: "Compare" }).click();
+  await inspector.getByRole("button", { name: "Explain with the tax advisor…" }).click();
+  await page.getByRole("button", { name: "Send and explain" }).click();
+  await expect(inspector.getByTestId("tax-advice")).toContainText("197 584 Kč");
+  await inspector.getByRole("button", { name: "What was shared" }).click();
+  await expect(
+    page.getByRole("complementary", { name: "Explain the tax scenarios" }),
+  ).toContainText("run_scenario");
+});
+
 test("an invoice exports as a PDF the core rendered, with the QR Platba code", async ({ page }) => {
   await page.goto("/#/invoices/2026-102");
   const inspector = page.getByRole("complementary", { name: "Invoice 2026-102" });

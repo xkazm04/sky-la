@@ -55,6 +55,22 @@ export const commands = {
 	/**  Its price excluding claimable VAT (empty for none). */
 	purchasePrice: string,
 } | null) => typedError<TaxScenariosDto, IpcFailure>(__TAURI_INVOKE("income_tax_scenarios", { projection })),
+	/**
+	 *  Asks the tax advisor to explain the scenarios; every figure is checked
+	 *  against the engine. `confirmed` answers the "ask before each run" policy.
+	 */
+	runTaxAdvisor: (projection: {
+	/**  § 7 income, e.g. `1 571 000`. */
+	income: string,
+	/**  Actual tax-deductible expenses. */
+	expenses: string,
+	/**  `craft`, `trade` or `liberal`; empty when unknown. */
+	flatRate: string | null,
+	/**  A planned purchase, for the timing lever (may be empty). */
+	purchaseDescription: string,
+	/**  Its price excluding claimable VAT (empty for none). */
+	purchasePrice: string,
+} | null, confirmed: boolean) => typedError<TaxAdviceDto, IpcFailure>(__TAURI_INVOKE("run_tax_advisor", { projection, confirmed })),
 	/**  The obligations calendar for a year, from the pack. */
 	obligations: (year: number) => typedError<ObligationDto[], IpcFailure>(__TAURI_INVOKE("obligations", { year })),
 	/**  Whether advisors can run, and what to do if not. */
@@ -1008,6 +1024,28 @@ export type StatementLineDto = {
 	nameEn: string,
 	/**  Amount as the statement reads. */
 	amount: MoneyDto,
+};
+
+/**  The tax advisor's answer, checked against the engine. */
+export type TaxAdviceDto = {
+	/**  `accepted`, `rejected`, `needs_confirmation`, `blocked`, or how the run failed. */
+	status: string,
+	/**  The scenario it puts first, when accepted. */
+	recommendation: string | null,
+	/**  Its explanation, when accepted (every figure checked). */
+	explanation: string | null,
+	/**  Levers it considered. */
+	levers: string[],
+	/**  Facts it needs from the user. */
+	questions: string[],
+	/**  Why it was rejected or didn't run. */
+	problems: string[],
+	/**  Figures matched to engine values. */
+	grounded: number,
+	/**  The register entry. */
+	runId: string | null,
+	/**  The engine's scenarios it explains. */
+	scenarios: TaxScenariosDto,
 };
 
 /**  The user's projection for the year, typed in the scenario form. */

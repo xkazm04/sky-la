@@ -110,6 +110,33 @@ pub type Script = fn(&mut Scenario<'_>);
 /// Every scenario, each recorded on a fresh demo core.
 pub fn scenarios() -> Vec<(&'static str, Script)> {
     vec![
+        // Asking the tax advisor: it asks first, then explains the books
+        // and then the review's projection; each run is recorded.
+        ("tax-advisor", |s| {
+            s.read(
+                "run_tax_advisor",
+                json!({ "projection": null, "confirmed": false }),
+            );
+            s.write(
+                "run_tax_advisor",
+                json!({ "projection": null, "confirmed": true }),
+                "books",
+            );
+            s.read("egress_register", json!({}));
+            s.read("proposals", json!({}));
+            s.read(
+                "run_tax_advisor",
+                json!({ "projection": review_projection(), "confirmed": false }),
+            );
+            s.write(
+                "run_tax_advisor",
+                json!({ "projection": review_projection(), "confirmed": true }),
+                "review",
+            );
+            s.read("egress_register", json!({}));
+            s.read("proposals", json!({}));
+            s.read("egress_payload", json!({ "id": "run-2026-10-07-05" }));
+        }),
         // The user stops the tax advisor from running at all.
         ("egress-policy", |s| {
             s.write(
@@ -436,6 +463,20 @@ pub fn dispatch(core: &Core, command: &str, args: &Value) -> Result<Value, IpcFa
             to_value(core.income_tax_scenarios(projection.as_ref()))
         }
         "advisor_status" => to_value(Ok(core.advisor_status())),
+        "run_tax_advisor" => {
+            let projection: Option<crate::dto::TaxProjectionDto> = match args.get("projection") {
+                None | Some(Value::Null) => None,
+                Some(v) => Some(
+                    serde_json::from_value(v.clone())
+                        .map_err(|e| crate::CoreError::BadRequest(e.to_string()))?,
+                ),
+            };
+            let confirmed = args
+                .get("confirmed")
+                .and_then(Value::as_bool)
+                .unwrap_or(false);
+            to_value(core.run_tax_advisor(projection.as_ref(), confirmed))
+        }
         "obligations" => {
             let year = args
                 .get("year")

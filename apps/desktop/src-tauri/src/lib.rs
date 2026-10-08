@@ -8,9 +8,11 @@ use skyla_app::dto::{
     DunningNoticeDto, EgressPayloadDto, EgressPolicyDto, EgressRunDto, EntityDto, IntegrityDto,
     InvoiceDraftDto, InvoiceDto, InvoiceFormDto, JournalEntryDto, ObligationDto, PackUpdateDto,
     PeriodDto, ProfitAndLossDto, ProposalDto, RecurringTemplateDto, RefDataDto, RulePackDto,
-    TaxProjectionDto, TaxScenariosDto, TrialBalanceDto, VatReturnDto,
+    TaxAdviceDto, TaxProjectionDto, TaxScenariosDto, TrialBalanceDto, VatReturnDto,
 };
 use skyla_app::{Core, IpcFailure};
+use std::path::Path;
+
 use tauri::{Runtime, State};
 use tauri_specta::{Builder, collect_commands};
 
@@ -162,6 +164,18 @@ fn income_tax_scenarios(
     projection: Option<TaxProjectionDto>,
 ) -> Answer<TaxScenariosDto> {
     Ok(core.income_tax_scenarios(projection.as_ref())?)
+}
+
+/// Asks the tax advisor to explain the scenarios; every figure is checked
+/// against the engine. `confirmed` answers the "ask before each run" policy.
+#[tauri::command]
+#[specta::specta]
+fn run_tax_advisor(
+    core: State<'_, Core>,
+    projection: Option<TaxProjectionDto>,
+    confirmed: bool,
+) -> Answer<TaxAdviceDto> {
+    Ok(core.run_tax_advisor(projection.as_ref(), confirmed)?)
 }
 
 /// The obligations calendar for a year, from the pack.
@@ -348,6 +362,7 @@ pub fn specta_builder<R: Runtime>() -> Builder<R> {
             vat_return,
             control_statement,
             income_tax_scenarios,
+            run_tax_advisor,
             obligations,
             advisor_status,
             rule_pack,
@@ -399,6 +414,17 @@ pub fn run() {
     let core = Core::demo().expect("the demo entity failed to open");
     // Advisors run on the user's own, unmodified `claude` binary.
     core.replace_provider(Box::new(skyla_advisor::ClaudeCodeCli::from_system()));
+    // The shim ships next to the app binary.
+    if let Some(dir) = std::env::current_exe()
+        .ok()
+        .and_then(|p| p.parent().map(Path::to_path_buf))
+    {
+        core.set_shim_path(dir.join(if cfg!(windows) {
+            "skyla-mcp.exe"
+        } else {
+            "skyla-mcp"
+        }));
+    }
     tauri::Builder::default()
         .manage(core)
         .invoke_handler(builder.invoke_handler())

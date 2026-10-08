@@ -11149,6 +11149,1925 @@
     "isError": false
   },
   {
+    "command": "run_tax_advisor",
+    "args": {
+      "confirmed": false,
+      "projection": null
+    },
+    "result": {
+      "explanation": null,
+      "grounded": 0,
+      "levers": [],
+      "problems": [],
+      "questions": [],
+      "recommendation": null,
+      "runId": null,
+      "scenarios": {
+        "actualExpenses": {
+          "currency": "CZK",
+          "minor": 26122000
+        },
+        "assumptions": [
+          "From the books, 2026-01-01 to 2026-10-07 (cash basis), not a projection for the whole year.",
+          "The higher rate above the solidarity threshold isn't applied: the pack doesn't hold the threshold for this year.",
+          "The minimum assessment bases aren't applied: the pack doesn't hold the 2026 average wage. If either base is below its minimum, that insurance is higher.",
+          "Only § 7 income; no other income, deductions or credits besides the taxpayer's own."
+        ],
+        "baseline": "actual",
+        "flatRate": "trade",
+        "from": "2026-01-01",
+        "income": {
+          "currency": "CZK",
+          "minor": 80362231
+        },
+        "lowestTotal": "flat_rate.trade",
+        "notEvaluated": [
+          "Paušální daň: the pack doesn't hold the 2026 bands, so eligibility and its amount aren't assessed."
+        ],
+        "pack": "cz-2026@2026.1",
+        "questions": [],
+        "scenarios": [
+          {
+            "capped": false,
+            "expenses": {
+              "currency": "CZK",
+              "minor": 26122000
+            },
+            "flatRateCap": null,
+            "flatRatePercent": null,
+            "health": {
+              "currency": "CZK",
+              "minor": 3661300
+            },
+            "healthBase": {
+              "currency": "CZK",
+              "minor": 27120200
+            },
+            "healthRatePercent": "13,5",
+            "id": "actual",
+            "label": "Actual expenses",
+            "profit": {
+              "currency": "CZK",
+              "minor": 54240231
+            },
+            "social": {
+              "currency": "CZK",
+              "minor": 7919100
+            },
+            "socialBase": {
+              "currency": "CZK",
+              "minor": 27120200
+            },
+            "socialRatePercent": "29,2",
+            "tax": {
+              "currency": "CZK",
+              "minor": 5052000
+            },
+            "taxBase": {
+              "currency": "CZK",
+              "minor": 54240000
+            },
+            "taxBeforeCredits": {
+              "currency": "CZK",
+              "minor": 8136000
+            },
+            "taxRatePercent": "15",
+            "taxpayerCredit": {
+              "currency": "CZK",
+              "minor": 3084000
+            },
+            "total": {
+              "currency": "CZK",
+              "minor": 16632400
+            },
+            "vsBaselineInsurance": {
+              "currency": "CZK",
+              "minor": 0
+            },
+            "vsBaselinePensionBase": {
+              "currency": "CZK",
+              "minor": 0
+            },
+            "vsBaselineTax": {
+              "currency": "CZK",
+              "minor": 0
+            },
+            "vsBaselineTotal": {
+              "currency": "CZK",
+              "minor": 0
+            }
+          },
+          {
+            "capped": false,
+            "expenses": {
+              "currency": "CZK",
+              "minor": 48217338
+            },
+            "flatRateCap": {
+              "currency": "CZK",
+              "minor": 120000000
+            },
+            "flatRatePercent": "60",
+            "health": {
+              "currency": "CZK",
+              "minor": 2169800
+            },
+            "healthBase": {
+              "currency": "CZK",
+              "minor": 16072500
+            },
+            "healthRatePercent": "13,5",
+            "id": "flat_rate.trade",
+            "label": "Flat-rate expenses 60 %",
+            "profit": {
+              "currency": "CZK",
+              "minor": 32144893
+            },
+            "social": {
+              "currency": "CZK",
+              "minor": 4693200
+            },
+            "socialBase": {
+              "currency": "CZK",
+              "minor": 16072500
+            },
+            "socialRatePercent": "29,2",
+            "tax": {
+              "currency": "CZK",
+              "minor": 1737000
+            },
+            "taxBase": {
+              "currency": "CZK",
+              "minor": 32140000
+            },
+            "taxBeforeCredits": {
+              "currency": "CZK",
+              "minor": 4821000
+            },
+            "taxRatePercent": "15",
+            "taxpayerCredit": {
+              "currency": "CZK",
+              "minor": 3084000
+            },
+            "total": {
+              "currency": "CZK",
+              "minor": 8600000
+            },
+            "vsBaselineInsurance": {
+              "currency": "CZK",
+              "minor": -4717400
+            },
+            "vsBaselinePensionBase": {
+              "currency": "CZK",
+              "minor": -11047700
+            },
+            "vsBaselineTax": {
+              "currency": "CZK",
+              "minor": -3315000
+            },
+            "vsBaselineTotal": {
+              "currency": "CZK",
+              "minor": -8032400
+            }
+          }
+        ],
+        "source": "books",
+        "to": "2026-10-07",
+        "year": "2026"
+      },
+      "status": "needs_confirmation"
+    },
+    "isError": false,
+    "scenario": "tax-advisor"
+  },
+  {
+    "command": "run_tax_advisor",
+    "args": {
+      "confirmed": true,
+      "projection": null
+    },
+    "result": {
+      "explanation": "From the books so far (1 Jan – 7 Oct 2026), § 7 income is 803 622,31 Kč and actual expenses 261 220,00 Kč. With actual expenses, tax and insurance come to 166 324 Kč: income tax 50 520 Kč, social insurance 79 191 Kč and health insurance 36 613 Kč. Claiming the 60 % flat rate instead counts 482 173,38 Kč of expenses and brings the total to 86 000 Kč, which is 80 324 Kč less. The flip side: the social insurance assessment base, from which your pension is later worked out, falls by 110 477 Kč. These are figures for the year so far, not a projection, and paušální daň isn't assessed because the rule pack doesn't hold the 2026 bands yet. A scenario for your review, not tax advice.",
+      "grounded": 11,
+      "levers": [
+        "Expenses: actual or the 60 % flat rate"
+      ],
+      "problems": [],
+      "questions": [
+        "Do you expect more income or larger expenses before the year ends? These figures cover the year so far."
+      ],
+      "recommendation": "flat_rate.trade",
+      "runId": "run-2026-10-07-04",
+      "scenarios": {
+        "actualExpenses": {
+          "currency": "CZK",
+          "minor": 26122000
+        },
+        "assumptions": [
+          "From the books, 2026-01-01 to 2026-10-07 (cash basis), not a projection for the whole year.",
+          "The higher rate above the solidarity threshold isn't applied: the pack doesn't hold the threshold for this year.",
+          "The minimum assessment bases aren't applied: the pack doesn't hold the 2026 average wage. If either base is below its minimum, that insurance is higher.",
+          "Only § 7 income; no other income, deductions or credits besides the taxpayer's own."
+        ],
+        "baseline": "actual",
+        "flatRate": "trade",
+        "from": "2026-01-01",
+        "income": {
+          "currency": "CZK",
+          "minor": 80362231
+        },
+        "lowestTotal": "flat_rate.trade",
+        "notEvaluated": [
+          "Paušální daň: the pack doesn't hold the 2026 bands, so eligibility and its amount aren't assessed."
+        ],
+        "pack": "cz-2026@2026.1",
+        "questions": [],
+        "scenarios": [
+          {
+            "capped": false,
+            "expenses": {
+              "currency": "CZK",
+              "minor": 26122000
+            },
+            "flatRateCap": null,
+            "flatRatePercent": null,
+            "health": {
+              "currency": "CZK",
+              "minor": 3661300
+            },
+            "healthBase": {
+              "currency": "CZK",
+              "minor": 27120200
+            },
+            "healthRatePercent": "13,5",
+            "id": "actual",
+            "label": "Actual expenses",
+            "profit": {
+              "currency": "CZK",
+              "minor": 54240231
+            },
+            "social": {
+              "currency": "CZK",
+              "minor": 7919100
+            },
+            "socialBase": {
+              "currency": "CZK",
+              "minor": 27120200
+            },
+            "socialRatePercent": "29,2",
+            "tax": {
+              "currency": "CZK",
+              "minor": 5052000
+            },
+            "taxBase": {
+              "currency": "CZK",
+              "minor": 54240000
+            },
+            "taxBeforeCredits": {
+              "currency": "CZK",
+              "minor": 8136000
+            },
+            "taxRatePercent": "15",
+            "taxpayerCredit": {
+              "currency": "CZK",
+              "minor": 3084000
+            },
+            "total": {
+              "currency": "CZK",
+              "minor": 16632400
+            },
+            "vsBaselineInsurance": {
+              "currency": "CZK",
+              "minor": 0
+            },
+            "vsBaselinePensionBase": {
+              "currency": "CZK",
+              "minor": 0
+            },
+            "vsBaselineTax": {
+              "currency": "CZK",
+              "minor": 0
+            },
+            "vsBaselineTotal": {
+              "currency": "CZK",
+              "minor": 0
+            }
+          },
+          {
+            "capped": false,
+            "expenses": {
+              "currency": "CZK",
+              "minor": 48217338
+            },
+            "flatRateCap": {
+              "currency": "CZK",
+              "minor": 120000000
+            },
+            "flatRatePercent": "60",
+            "health": {
+              "currency": "CZK",
+              "minor": 2169800
+            },
+            "healthBase": {
+              "currency": "CZK",
+              "minor": 16072500
+            },
+            "healthRatePercent": "13,5",
+            "id": "flat_rate.trade",
+            "label": "Flat-rate expenses 60 %",
+            "profit": {
+              "currency": "CZK",
+              "minor": 32144893
+            },
+            "social": {
+              "currency": "CZK",
+              "minor": 4693200
+            },
+            "socialBase": {
+              "currency": "CZK",
+              "minor": 16072500
+            },
+            "socialRatePercent": "29,2",
+            "tax": {
+              "currency": "CZK",
+              "minor": 1737000
+            },
+            "taxBase": {
+              "currency": "CZK",
+              "minor": 32140000
+            },
+            "taxBeforeCredits": {
+              "currency": "CZK",
+              "minor": 4821000
+            },
+            "taxRatePercent": "15",
+            "taxpayerCredit": {
+              "currency": "CZK",
+              "minor": 3084000
+            },
+            "total": {
+              "currency": "CZK",
+              "minor": 8600000
+            },
+            "vsBaselineInsurance": {
+              "currency": "CZK",
+              "minor": -4717400
+            },
+            "vsBaselinePensionBase": {
+              "currency": "CZK",
+              "minor": -11047700
+            },
+            "vsBaselineTax": {
+              "currency": "CZK",
+              "minor": -3315000
+            },
+            "vsBaselineTotal": {
+              "currency": "CZK",
+              "minor": -8032400
+            }
+          }
+        ],
+        "source": "books",
+        "to": "2026-10-07",
+        "year": "2026"
+      },
+      "status": "accepted"
+    },
+    "isError": false,
+    "scenario": "tax-advisor",
+    "leadsTo": "tax-advisor/books"
+  },
+  {
+    "command": "egress_register",
+    "args": {},
+    "result": [
+      {
+        "advisor": "Tax advisor",
+        "at": "2026-10-07T12:00:00Z",
+        "bytesSent": 184,
+        "costNote": "about $0.0041 (the provider's estimate)",
+        "id": "run-2026-10-07-04",
+        "intact": true,
+        "model": "claude-sonnet",
+        "outcome": "Scenario explained; figures checked against the engine",
+        "provider": "fake",
+        "purpose": "Explain the tax scenarios",
+        "redacted": [],
+        "sent": "Totals for periods; Account balances and movements",
+        "toolCalls": 0
+      },
+      {
+        "advisor": "Financial advisor",
+        "at": "2026-10-06T18:04:12Z",
+        "bytesSent": 3444,
+        "costNote": null,
+        "id": "run-2026-10-06-01",
+        "intact": true,
+        "model": "your default",
+        "outcome": "Draft finding added to the inbox",
+        "provider": "Claude Code (your installation)",
+        "purpose": "Explain this · account 518, Q3",
+        "redacted": [
+          "IBAN ×3"
+        ],
+        "sent": "Totals for periods; Account balances and movements; Line memos and payment messages",
+        "toolCalls": 2
+      },
+      {
+        "advisor": "Advisor suggestion",
+        "at": "2026-10-04T09:12:40Z",
+        "bytesSent": 895,
+        "costNote": null,
+        "id": "run-2026-10-04-02",
+        "intact": true,
+        "model": "your default",
+        "outcome": "Suggestion below the threshold; waiting for you",
+        "provider": "Claude Code (your installation)",
+        "purpose": "Classify a bank line without a reference",
+        "redacted": [
+          "Counterparty names → pseudonyms ×6",
+          "Field “counterpartyAccount” (outside the task's scope)"
+        ],
+        "sent": "Totals for periods; Line memos and payment messages",
+        "toolCalls": 1
+      },
+      {
+        "advisor": "Tax advisor",
+        "at": "2026-10-04T09:02:05Z",
+        "bytesSent": 3706,
+        "costNote": null,
+        "id": "run-2026-10-04-01",
+        "intact": true,
+        "model": "your default",
+        "outcome": "Scenario drafted for your review",
+        "provider": "Claude Code (your installation)",
+        "purpose": "Flat-rate expense scenario, 2026",
+        "redacted": [
+          "Account number ×1"
+        ],
+        "sent": "Totals for periods; Account balances and movements",
+        "toolCalls": 2
+      }
+    ],
+    "isError": false,
+    "scenario": "tax-advisor",
+    "state": "tax-advisor/books"
+  },
+  {
+    "command": "proposals",
+    "args": {},
+    "result": [
+      {
+        "amount": {
+          "currency": "CZK",
+          "minor": -115292
+        },
+        "bankLineId": "s1-2",
+        "confidence": "certain",
+        "detail": "Rule “EU SaaS” · same as 14 earlier lines",
+        "dueOn": null,
+        "entry": {
+          "balanced": true,
+          "date": "2026-10-03",
+          "lines": [
+            {
+              "account": "518",
+              "accountName": "Other services",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 115292
+              },
+              "vatCode": "RC21S"
+            },
+            {
+              "account": "221",
+              "accountName": "Bank accounts",
+              "credit": {
+                "currency": "CZK",
+                "minor": 115292
+              },
+              "debit": null,
+              "vatCode": null
+            },
+            {
+              "account": "343",
+              "accountName": "Value added tax",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 24211
+              },
+              "vatCode": "RC21S"
+            },
+            {
+              "account": "343",
+              "accountName": "Value added tax",
+              "credit": {
+                "currency": "CZK",
+                "minor": 24211
+              },
+              "debit": null,
+              "vatCode": "RC21S"
+            }
+          ],
+          "memo": "Google Workspace (45,86 EUR, přenesená daňová povinnost)",
+          "totalCredit": {
+            "currency": "CZK",
+            "minor": 139503
+          },
+          "totalDebit": {
+            "currency": "CZK",
+            "minor": 139503
+          }
+        },
+        "id": "p-google",
+        "kind": "posting",
+        "reasons": [
+          "Supplier is VAT-registered in Ireland, so you self-assess Czech VAT on the service.",
+          "Your rule “EU SaaS” has posted 14 earlier Google and AWS lines exactly this way.",
+          "The VAT base uses the ČNB rate for the supply date; the bank used the same rate, so there's no FX difference to book."
+        ],
+        "source": "Rule “EU SaaS”",
+        "sourceKind": "rule",
+        "title": "Google Ireland · reverse-charge posting"
+      },
+      {
+        "amount": {
+          "currency": "CZK",
+          "minor": -242000
+        },
+        "bankLineId": "s1-4",
+        "confidence": "likely",
+        "detail": "Below the fixed-asset threshold, so no depreciation schedule",
+        "dueOn": null,
+        "entry": {
+          "balanced": true,
+          "date": "2026-10-05",
+          "lines": [
+            {
+              "account": "501",
+              "accountName": "Materials consumed",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 200000
+              },
+              "vatCode": "IN21"
+            },
+            {
+              "account": "343",
+              "accountName": "Value added tax",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 42000
+              },
+              "vatCode": "IN21"
+            },
+            {
+              "account": "221",
+              "accountName": "Bank accounts",
+              "credit": {
+                "currency": "CZK",
+                "minor": 242000
+              },
+              "debit": null,
+              "vatCode": null
+            }
+          ],
+          "memo": "USB-C dock Alza",
+          "totalCredit": {
+            "currency": "CZK",
+            "minor": 242000
+          },
+          "totalDebit": {
+            "currency": "CZK",
+            "minor": 242000
+          }
+        },
+        "id": "p-alza",
+        "kind": "posting",
+        "reasons": [
+          "The receipt lists one item, a USB-C dock.",
+          "Equipment below the fixed-asset threshold is expensed directly.",
+          "Alza is VAT-registered, so the input VAT is claimable."
+        ],
+        "source": "Rule “Small equipment”",
+        "sourceKind": "rule",
+        "title": "Alza.cz · USB-C dock, expensed directly"
+      },
+      {
+        "amount": {
+          "currency": "CZK",
+          "minor": -9500
+        },
+        "bankLineId": "s1-5",
+        "confidence": "certain",
+        "detail": "Rule “Bank fees”",
+        "dueOn": null,
+        "entry": {
+          "balanced": true,
+          "date": "2026-10-06",
+          "lines": [
+            {
+              "account": "568",
+              "accountName": "Other financial expenses",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 9500
+              },
+              "vatCode": null
+            },
+            {
+              "account": "221",
+              "accountName": "Bank accounts",
+              "credit": {
+                "currency": "CZK",
+                "minor": 9500
+              },
+              "debit": null,
+              "vatCode": null
+            }
+          ],
+          "memo": "Poplatek za vedení účtu · září",
+          "totalCredit": {
+            "currency": "CZK",
+            "minor": 9500
+          },
+          "totalDebit": {
+            "currency": "CZK",
+            "minor": 9500
+          }
+        },
+        "id": "p-bank-fee",
+        "kind": "posting",
+        "reasons": [
+          "The bank's own fee line, posted the same way every month."
+        ],
+        "source": "Rule “Bank fees”",
+        "sourceKind": "rule",
+        "title": "ČSOB · account fee"
+      },
+      {
+        "amount": {
+          "currency": "CZK",
+          "minor": -600000
+        },
+        "bankLineId": "s1-3",
+        "confidence": "needs_you",
+        "detail": "Owner withdrawal, or cash for a business expense?",
+        "dueOn": null,
+        "entry": {
+          "balanced": true,
+          "date": "2026-10-04",
+          "lines": [
+            {
+              "account": "491",
+              "accountName": "Sole trader's own account",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 600000
+              },
+              "vatCode": null
+            },
+            {
+              "account": "221",
+              "accountName": "Bank accounts",
+              "credit": {
+                "currency": "CZK",
+                "minor": 600000
+              },
+              "debit": null,
+              "vatCode": null
+            }
+          ],
+          "memo": "Výběr z bankomatu",
+          "totalCredit": {
+            "currency": "CZK",
+            "minor": 600000
+          },
+          "totalDebit": {
+            "currency": "CZK",
+            "minor": 600000
+          }
+        },
+        "id": "p-atm",
+        "kind": "posting",
+        "reasons": [
+          "Your last four ATM withdrawals were owner drawings, so that's the suggestion.",
+          "It scores below the auto-accept threshold, so it waits for you.",
+          "The advisor received the amount, date and line type only."
+        ],
+        "source": "Advisor suggestion",
+        "sourceKind": "advisor",
+        "title": "ATM withdrawal, Brno · what was it for?"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "Draft for your review once September is closed",
+        "dueOn": "2026-10-26",
+        "entry": null,
+        "id": "p-dph-september",
+        "kind": "deadline",
+        "reasons": [
+          "Monthly VAT payer: the return and the control statement are due together, 25 days after the month ends.",
+          "25 October 2026 is a Sunday, so the deadline moves to the next working day (daňový řád § 33 odst. 4)."
+        ],
+        "source": "Rule pack cz-2026",
+        "sourceKind": "calendar",
+        "title": "DPH return and kontrolní hlášení · September"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "Tax advisor · a scenario for the annual return; nothing to post now",
+        "dueOn": null,
+        "entry": null,
+        "id": "p-flat-rate",
+        "kind": "advice",
+        "reasons": [
+          "A scenario, not tax advice. Open it to see the engine's figures and the assumptions."
+        ],
+        "source": "Tax advisor",
+        "sourceKind": "advisor",
+        "title": "Flat-rate expenses may beat your actual costs for 2026"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "Financial advisor · account 518 · three vendors",
+        "dueOn": null,
+        "entry": null,
+        "id": "p-subcontracting",
+        "kind": "advice",
+        "reasons": [
+          "A draft finding for your review. The figures come from the ledger."
+        ],
+        "source": "Financial advisor",
+        "sourceKind": "advisor",
+        "title": "Subcontracting rose while billed hours stayed flat"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "Tax advisor · a scenario for your review, not tax advice",
+        "dueOn": null,
+        "entry": null,
+        "id": "advisor-1",
+        "kind": "advice",
+        "reasons": [
+          "From the books so far (1 Jan – 7 Oct 2026), § 7 income is 803 622,31 Kč and actual expenses 261 220,00 Kč. With actual expenses, tax and insurance come to 166 324 Kč: income tax 50 520 Kč, social insurance 79 191 Kč and health insurance 36 613 Kč. Claiming the 60 % flat rate instead counts 482 173,38 Kč of expenses and brings the total to 86 000 Kč, which is 80 324 Kč less. The flip side: the social insurance assessment base, from which your pension is later worked out, falls by 110 477 Kč. These are figures for the year so far, not a projection, and paušální daň isn't assessed because the rule pack doesn't hold the 2026 bands yet. A scenario for your review, not tax advice.",
+          "Question: Do you expect more income or larger expenses before the year ends? These figures cover the year so far."
+        ],
+        "source": "Tax advisor",
+        "sourceKind": "advisor",
+        "title": "Tax scenario for 2026: Flat-rate expenses 60 %"
+      }
+    ],
+    "isError": false,
+    "scenario": "tax-advisor",
+    "state": "tax-advisor/books"
+  },
+  {
+    "command": "run_tax_advisor",
+    "args": {
+      "confirmed": false,
+      "projection": {
+        "expenses": "383 200",
+        "flatRate": "trade",
+        "income": "1 571 000",
+        "purchaseDescription": "Laptop",
+        "purchasePrice": "60 000"
+      }
+    },
+    "result": {
+      "explanation": null,
+      "grounded": 0,
+      "levers": [],
+      "problems": [],
+      "questions": [],
+      "recommendation": null,
+      "runId": null,
+      "scenarios": {
+        "actualExpenses": {
+          "currency": "CZK",
+          "minor": 38320000
+        },
+        "assumptions": [
+          "The higher rate above the solidarity threshold isn't applied: the pack doesn't hold the threshold for this year.",
+          "The minimum assessment bases aren't applied: the pack doesn't hold the 2026 average wage. If either base is below its minimum, that insurance is higher.",
+          "Only § 7 income; no other income, deductions or credits besides the taxpayer's own."
+        ],
+        "baseline": "actual+purchase.this_year",
+        "flatRate": "trade",
+        "from": "2026-01-01",
+        "income": {
+          "currency": "CZK",
+          "minor": 157100000
+        },
+        "lowestTotal": "flat_rate.trade+purchase.this_year",
+        "notEvaluated": [
+          "Paušální daň: the pack doesn't hold the 2026 bands, so eligibility and its amount aren't assessed."
+        ],
+        "pack": "cz-2026@2026.1",
+        "questions": [],
+        "scenarios": [
+          {
+            "capped": false,
+            "expenses": {
+              "currency": "CZK",
+              "minor": 44320000
+            },
+            "flatRateCap": null,
+            "flatRatePercent": null,
+            "health": {
+              "currency": "CZK",
+              "minor": 7612700
+            },
+            "healthBase": {
+              "currency": "CZK",
+              "minor": 56390000
+            },
+            "healthRatePercent": "13,5",
+            "id": "actual+purchase.this_year",
+            "label": "Actual expenses · Laptop bought this year",
+            "profit": {
+              "currency": "CZK",
+              "minor": 112780000
+            },
+            "social": {
+              "currency": "CZK",
+              "minor": 16465900
+            },
+            "socialBase": {
+              "currency": "CZK",
+              "minor": 56390000
+            },
+            "socialRatePercent": "29,2",
+            "tax": {
+              "currency": "CZK",
+              "minor": 13833000
+            },
+            "taxBase": {
+              "currency": "CZK",
+              "minor": 112780000
+            },
+            "taxBeforeCredits": {
+              "currency": "CZK",
+              "minor": 16917000
+            },
+            "taxRatePercent": "15",
+            "taxpayerCredit": {
+              "currency": "CZK",
+              "minor": 3084000
+            },
+            "total": {
+              "currency": "CZK",
+              "minor": 37911600
+            },
+            "vsBaselineInsurance": {
+              "currency": "CZK",
+              "minor": 0
+            },
+            "vsBaselinePensionBase": {
+              "currency": "CZK",
+              "minor": 0
+            },
+            "vsBaselineTax": {
+              "currency": "CZK",
+              "minor": 0
+            },
+            "vsBaselineTotal": {
+              "currency": "CZK",
+              "minor": 0
+            }
+          },
+          {
+            "capped": false,
+            "expenses": {
+              "currency": "CZK",
+              "minor": 38320000
+            },
+            "flatRateCap": null,
+            "flatRatePercent": null,
+            "health": {
+              "currency": "CZK",
+              "minor": 8017700
+            },
+            "healthBase": {
+              "currency": "CZK",
+              "minor": 59390000
+            },
+            "healthRatePercent": "13,5",
+            "id": "actual+purchase.next_year",
+            "label": "Actual expenses · Laptop bought next year",
+            "profit": {
+              "currency": "CZK",
+              "minor": 118780000
+            },
+            "social": {
+              "currency": "CZK",
+              "minor": 17341900
+            },
+            "socialBase": {
+              "currency": "CZK",
+              "minor": 59390000
+            },
+            "socialRatePercent": "29,2",
+            "tax": {
+              "currency": "CZK",
+              "minor": 14733000
+            },
+            "taxBase": {
+              "currency": "CZK",
+              "minor": 118780000
+            },
+            "taxBeforeCredits": {
+              "currency": "CZK",
+              "minor": 17817000
+            },
+            "taxRatePercent": "15",
+            "taxpayerCredit": {
+              "currency": "CZK",
+              "minor": 3084000
+            },
+            "total": {
+              "currency": "CZK",
+              "minor": 40092600
+            },
+            "vsBaselineInsurance": {
+              "currency": "CZK",
+              "minor": 1281000
+            },
+            "vsBaselinePensionBase": {
+              "currency": "CZK",
+              "minor": 3000000
+            },
+            "vsBaselineTax": {
+              "currency": "CZK",
+              "minor": 900000
+            },
+            "vsBaselineTotal": {
+              "currency": "CZK",
+              "minor": 2181000
+            }
+          },
+          {
+            "capped": false,
+            "expenses": {
+              "currency": "CZK",
+              "minor": 94260000
+            },
+            "flatRateCap": {
+              "currency": "CZK",
+              "minor": 120000000
+            },
+            "flatRatePercent": "60",
+            "health": {
+              "currency": "CZK",
+              "minor": 4241700
+            },
+            "healthBase": {
+              "currency": "CZK",
+              "minor": 31420000
+            },
+            "healthRatePercent": "13,5",
+            "id": "flat_rate.trade+purchase.this_year",
+            "label": "Flat-rate expenses 60 % · Laptop bought this year",
+            "profit": {
+              "currency": "CZK",
+              "minor": 62840000
+            },
+            "social": {
+              "currency": "CZK",
+              "minor": 9174700
+            },
+            "socialBase": {
+              "currency": "CZK",
+              "minor": 31420000
+            },
+            "socialRatePercent": "29,2",
+            "tax": {
+              "currency": "CZK",
+              "minor": 6342000
+            },
+            "taxBase": {
+              "currency": "CZK",
+              "minor": 62840000
+            },
+            "taxBeforeCredits": {
+              "currency": "CZK",
+              "minor": 9426000
+            },
+            "taxRatePercent": "15",
+            "taxpayerCredit": {
+              "currency": "CZK",
+              "minor": 3084000
+            },
+            "total": {
+              "currency": "CZK",
+              "minor": 19758400
+            },
+            "vsBaselineInsurance": {
+              "currency": "CZK",
+              "minor": -10662200
+            },
+            "vsBaselinePensionBase": {
+              "currency": "CZK",
+              "minor": -24970000
+            },
+            "vsBaselineTax": {
+              "currency": "CZK",
+              "minor": -7491000
+            },
+            "vsBaselineTotal": {
+              "currency": "CZK",
+              "minor": -18153200
+            }
+          },
+          {
+            "capped": false,
+            "expenses": {
+              "currency": "CZK",
+              "minor": 94260000
+            },
+            "flatRateCap": {
+              "currency": "CZK",
+              "minor": 120000000
+            },
+            "flatRatePercent": "60",
+            "health": {
+              "currency": "CZK",
+              "minor": 4241700
+            },
+            "healthBase": {
+              "currency": "CZK",
+              "minor": 31420000
+            },
+            "healthRatePercent": "13,5",
+            "id": "flat_rate.trade+purchase.next_year",
+            "label": "Flat-rate expenses 60 % · Laptop bought next year",
+            "profit": {
+              "currency": "CZK",
+              "minor": 62840000
+            },
+            "social": {
+              "currency": "CZK",
+              "minor": 9174700
+            },
+            "socialBase": {
+              "currency": "CZK",
+              "minor": 31420000
+            },
+            "socialRatePercent": "29,2",
+            "tax": {
+              "currency": "CZK",
+              "minor": 6342000
+            },
+            "taxBase": {
+              "currency": "CZK",
+              "minor": 62840000
+            },
+            "taxBeforeCredits": {
+              "currency": "CZK",
+              "minor": 9426000
+            },
+            "taxRatePercent": "15",
+            "taxpayerCredit": {
+              "currency": "CZK",
+              "minor": 3084000
+            },
+            "total": {
+              "currency": "CZK",
+              "minor": 19758400
+            },
+            "vsBaselineInsurance": {
+              "currency": "CZK",
+              "minor": -10662200
+            },
+            "vsBaselinePensionBase": {
+              "currency": "CZK",
+              "minor": -24970000
+            },
+            "vsBaselineTax": {
+              "currency": "CZK",
+              "minor": -7491000
+            },
+            "vsBaselineTotal": {
+              "currency": "CZK",
+              "minor": -18153200
+            }
+          }
+        ],
+        "source": "projection",
+        "to": "2026-12-31",
+        "year": "2026"
+      },
+      "status": "needs_confirmation"
+    },
+    "isError": false,
+    "scenario": "tax-advisor",
+    "state": "tax-advisor/books"
+  },
+  {
+    "command": "run_tax_advisor",
+    "args": {
+      "confirmed": true,
+      "projection": {
+        "expenses": "383 200",
+        "flatRate": "trade",
+        "income": "1 571 000",
+        "purchaseDescription": "Laptop",
+        "purchasePrice": "60 000"
+      }
+    },
+    "result": {
+      "explanation": "For your projection of 1 571 000 Kč income and 383 200 Kč actual expenses: the 60 % flat rate counts 942 600 Kč of expenses, and tax and insurance come to 197 584 Kč whether you buy the laptop this year or next, because under the flat rate the purchase doesn't change the tax base. With actual expenses and the laptop bought this year the total is 379 116 Kč; buying it next year instead adds 21 810 Kč. Against that baseline the flat rate is 181 532 Kč lower, but your social insurance assessment base, from which your pension is later worked out, is 249 700 Kč lower too. Paušální daň isn't assessed because the rule pack doesn't hold the 2026 bands yet. A scenario for your review, not tax advice.",
+      "grounded": 9,
+      "levers": [
+        "Expenses: actual or the 60 % flat rate",
+        "Laptop: bought this year or next"
+      ],
+      "problems": [],
+      "questions": [],
+      "recommendation": "flat_rate.trade+purchase.this_year",
+      "runId": "run-2026-10-07-05",
+      "scenarios": {
+        "actualExpenses": {
+          "currency": "CZK",
+          "minor": 38320000
+        },
+        "assumptions": [
+          "The higher rate above the solidarity threshold isn't applied: the pack doesn't hold the threshold for this year.",
+          "The minimum assessment bases aren't applied: the pack doesn't hold the 2026 average wage. If either base is below its minimum, that insurance is higher.",
+          "Only § 7 income; no other income, deductions or credits besides the taxpayer's own."
+        ],
+        "baseline": "actual+purchase.this_year",
+        "flatRate": "trade",
+        "from": "2026-01-01",
+        "income": {
+          "currency": "CZK",
+          "minor": 157100000
+        },
+        "lowestTotal": "flat_rate.trade+purchase.this_year",
+        "notEvaluated": [
+          "Paušální daň: the pack doesn't hold the 2026 bands, so eligibility and its amount aren't assessed."
+        ],
+        "pack": "cz-2026@2026.1",
+        "questions": [],
+        "scenarios": [
+          {
+            "capped": false,
+            "expenses": {
+              "currency": "CZK",
+              "minor": 44320000
+            },
+            "flatRateCap": null,
+            "flatRatePercent": null,
+            "health": {
+              "currency": "CZK",
+              "minor": 7612700
+            },
+            "healthBase": {
+              "currency": "CZK",
+              "minor": 56390000
+            },
+            "healthRatePercent": "13,5",
+            "id": "actual+purchase.this_year",
+            "label": "Actual expenses · Laptop bought this year",
+            "profit": {
+              "currency": "CZK",
+              "minor": 112780000
+            },
+            "social": {
+              "currency": "CZK",
+              "minor": 16465900
+            },
+            "socialBase": {
+              "currency": "CZK",
+              "minor": 56390000
+            },
+            "socialRatePercent": "29,2",
+            "tax": {
+              "currency": "CZK",
+              "minor": 13833000
+            },
+            "taxBase": {
+              "currency": "CZK",
+              "minor": 112780000
+            },
+            "taxBeforeCredits": {
+              "currency": "CZK",
+              "minor": 16917000
+            },
+            "taxRatePercent": "15",
+            "taxpayerCredit": {
+              "currency": "CZK",
+              "minor": 3084000
+            },
+            "total": {
+              "currency": "CZK",
+              "minor": 37911600
+            },
+            "vsBaselineInsurance": {
+              "currency": "CZK",
+              "minor": 0
+            },
+            "vsBaselinePensionBase": {
+              "currency": "CZK",
+              "minor": 0
+            },
+            "vsBaselineTax": {
+              "currency": "CZK",
+              "minor": 0
+            },
+            "vsBaselineTotal": {
+              "currency": "CZK",
+              "minor": 0
+            }
+          },
+          {
+            "capped": false,
+            "expenses": {
+              "currency": "CZK",
+              "minor": 38320000
+            },
+            "flatRateCap": null,
+            "flatRatePercent": null,
+            "health": {
+              "currency": "CZK",
+              "minor": 8017700
+            },
+            "healthBase": {
+              "currency": "CZK",
+              "minor": 59390000
+            },
+            "healthRatePercent": "13,5",
+            "id": "actual+purchase.next_year",
+            "label": "Actual expenses · Laptop bought next year",
+            "profit": {
+              "currency": "CZK",
+              "minor": 118780000
+            },
+            "social": {
+              "currency": "CZK",
+              "minor": 17341900
+            },
+            "socialBase": {
+              "currency": "CZK",
+              "minor": 59390000
+            },
+            "socialRatePercent": "29,2",
+            "tax": {
+              "currency": "CZK",
+              "minor": 14733000
+            },
+            "taxBase": {
+              "currency": "CZK",
+              "minor": 118780000
+            },
+            "taxBeforeCredits": {
+              "currency": "CZK",
+              "minor": 17817000
+            },
+            "taxRatePercent": "15",
+            "taxpayerCredit": {
+              "currency": "CZK",
+              "minor": 3084000
+            },
+            "total": {
+              "currency": "CZK",
+              "minor": 40092600
+            },
+            "vsBaselineInsurance": {
+              "currency": "CZK",
+              "minor": 1281000
+            },
+            "vsBaselinePensionBase": {
+              "currency": "CZK",
+              "minor": 3000000
+            },
+            "vsBaselineTax": {
+              "currency": "CZK",
+              "minor": 900000
+            },
+            "vsBaselineTotal": {
+              "currency": "CZK",
+              "minor": 2181000
+            }
+          },
+          {
+            "capped": false,
+            "expenses": {
+              "currency": "CZK",
+              "minor": 94260000
+            },
+            "flatRateCap": {
+              "currency": "CZK",
+              "minor": 120000000
+            },
+            "flatRatePercent": "60",
+            "health": {
+              "currency": "CZK",
+              "minor": 4241700
+            },
+            "healthBase": {
+              "currency": "CZK",
+              "minor": 31420000
+            },
+            "healthRatePercent": "13,5",
+            "id": "flat_rate.trade+purchase.this_year",
+            "label": "Flat-rate expenses 60 % · Laptop bought this year",
+            "profit": {
+              "currency": "CZK",
+              "minor": 62840000
+            },
+            "social": {
+              "currency": "CZK",
+              "minor": 9174700
+            },
+            "socialBase": {
+              "currency": "CZK",
+              "minor": 31420000
+            },
+            "socialRatePercent": "29,2",
+            "tax": {
+              "currency": "CZK",
+              "minor": 6342000
+            },
+            "taxBase": {
+              "currency": "CZK",
+              "minor": 62840000
+            },
+            "taxBeforeCredits": {
+              "currency": "CZK",
+              "minor": 9426000
+            },
+            "taxRatePercent": "15",
+            "taxpayerCredit": {
+              "currency": "CZK",
+              "minor": 3084000
+            },
+            "total": {
+              "currency": "CZK",
+              "minor": 19758400
+            },
+            "vsBaselineInsurance": {
+              "currency": "CZK",
+              "minor": -10662200
+            },
+            "vsBaselinePensionBase": {
+              "currency": "CZK",
+              "minor": -24970000
+            },
+            "vsBaselineTax": {
+              "currency": "CZK",
+              "minor": -7491000
+            },
+            "vsBaselineTotal": {
+              "currency": "CZK",
+              "minor": -18153200
+            }
+          },
+          {
+            "capped": false,
+            "expenses": {
+              "currency": "CZK",
+              "minor": 94260000
+            },
+            "flatRateCap": {
+              "currency": "CZK",
+              "minor": 120000000
+            },
+            "flatRatePercent": "60",
+            "health": {
+              "currency": "CZK",
+              "minor": 4241700
+            },
+            "healthBase": {
+              "currency": "CZK",
+              "minor": 31420000
+            },
+            "healthRatePercent": "13,5",
+            "id": "flat_rate.trade+purchase.next_year",
+            "label": "Flat-rate expenses 60 % · Laptop bought next year",
+            "profit": {
+              "currency": "CZK",
+              "minor": 62840000
+            },
+            "social": {
+              "currency": "CZK",
+              "minor": 9174700
+            },
+            "socialBase": {
+              "currency": "CZK",
+              "minor": 31420000
+            },
+            "socialRatePercent": "29,2",
+            "tax": {
+              "currency": "CZK",
+              "minor": 6342000
+            },
+            "taxBase": {
+              "currency": "CZK",
+              "minor": 62840000
+            },
+            "taxBeforeCredits": {
+              "currency": "CZK",
+              "minor": 9426000
+            },
+            "taxRatePercent": "15",
+            "taxpayerCredit": {
+              "currency": "CZK",
+              "minor": 3084000
+            },
+            "total": {
+              "currency": "CZK",
+              "minor": 19758400
+            },
+            "vsBaselineInsurance": {
+              "currency": "CZK",
+              "minor": -10662200
+            },
+            "vsBaselinePensionBase": {
+              "currency": "CZK",
+              "minor": -24970000
+            },
+            "vsBaselineTax": {
+              "currency": "CZK",
+              "minor": -7491000
+            },
+            "vsBaselineTotal": {
+              "currency": "CZK",
+              "minor": -18153200
+            }
+          }
+        ],
+        "source": "projection",
+        "to": "2026-12-31",
+        "year": "2026"
+      },
+      "status": "accepted"
+    },
+    "isError": false,
+    "scenario": "tax-advisor",
+    "state": "tax-advisor/books",
+    "leadsTo": "tax-advisor/review"
+  },
+  {
+    "command": "egress_register",
+    "args": {},
+    "result": [
+      {
+        "advisor": "Tax advisor",
+        "at": "2026-10-07T12:00:00Z",
+        "bytesSent": 391,
+        "costNote": "about $0.0047 (the provider's estimate)",
+        "id": "run-2026-10-07-05",
+        "intact": true,
+        "model": "claude-sonnet",
+        "outcome": "Scenario explained; figures checked against the engine",
+        "provider": "fake",
+        "purpose": "Explain the tax scenarios",
+        "redacted": [],
+        "sent": "Totals for periods; Account balances and movements",
+        "toolCalls": 0
+      },
+      {
+        "advisor": "Tax advisor",
+        "at": "2026-10-07T12:00:00Z",
+        "bytesSent": 184,
+        "costNote": "about $0.0041 (the provider's estimate)",
+        "id": "run-2026-10-07-04",
+        "intact": true,
+        "model": "claude-sonnet",
+        "outcome": "Scenario explained; figures checked against the engine",
+        "provider": "fake",
+        "purpose": "Explain the tax scenarios",
+        "redacted": [],
+        "sent": "Totals for periods; Account balances and movements",
+        "toolCalls": 0
+      },
+      {
+        "advisor": "Financial advisor",
+        "at": "2026-10-06T18:04:12Z",
+        "bytesSent": 3444,
+        "costNote": null,
+        "id": "run-2026-10-06-01",
+        "intact": true,
+        "model": "your default",
+        "outcome": "Draft finding added to the inbox",
+        "provider": "Claude Code (your installation)",
+        "purpose": "Explain this · account 518, Q3",
+        "redacted": [
+          "IBAN ×3"
+        ],
+        "sent": "Totals for periods; Account balances and movements; Line memos and payment messages",
+        "toolCalls": 2
+      },
+      {
+        "advisor": "Advisor suggestion",
+        "at": "2026-10-04T09:12:40Z",
+        "bytesSent": 895,
+        "costNote": null,
+        "id": "run-2026-10-04-02",
+        "intact": true,
+        "model": "your default",
+        "outcome": "Suggestion below the threshold; waiting for you",
+        "provider": "Claude Code (your installation)",
+        "purpose": "Classify a bank line without a reference",
+        "redacted": [
+          "Counterparty names → pseudonyms ×6",
+          "Field “counterpartyAccount” (outside the task's scope)"
+        ],
+        "sent": "Totals for periods; Line memos and payment messages",
+        "toolCalls": 1
+      },
+      {
+        "advisor": "Tax advisor",
+        "at": "2026-10-04T09:02:05Z",
+        "bytesSent": 3706,
+        "costNote": null,
+        "id": "run-2026-10-04-01",
+        "intact": true,
+        "model": "your default",
+        "outcome": "Scenario drafted for your review",
+        "provider": "Claude Code (your installation)",
+        "purpose": "Flat-rate expense scenario, 2026",
+        "redacted": [
+          "Account number ×1"
+        ],
+        "sent": "Totals for periods; Account balances and movements",
+        "toolCalls": 2
+      }
+    ],
+    "isError": false,
+    "scenario": "tax-advisor",
+    "state": "tax-advisor/review"
+  },
+  {
+    "command": "proposals",
+    "args": {},
+    "result": [
+      {
+        "amount": {
+          "currency": "CZK",
+          "minor": -115292
+        },
+        "bankLineId": "s1-2",
+        "confidence": "certain",
+        "detail": "Rule “EU SaaS” · same as 14 earlier lines",
+        "dueOn": null,
+        "entry": {
+          "balanced": true,
+          "date": "2026-10-03",
+          "lines": [
+            {
+              "account": "518",
+              "accountName": "Other services",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 115292
+              },
+              "vatCode": "RC21S"
+            },
+            {
+              "account": "221",
+              "accountName": "Bank accounts",
+              "credit": {
+                "currency": "CZK",
+                "minor": 115292
+              },
+              "debit": null,
+              "vatCode": null
+            },
+            {
+              "account": "343",
+              "accountName": "Value added tax",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 24211
+              },
+              "vatCode": "RC21S"
+            },
+            {
+              "account": "343",
+              "accountName": "Value added tax",
+              "credit": {
+                "currency": "CZK",
+                "minor": 24211
+              },
+              "debit": null,
+              "vatCode": "RC21S"
+            }
+          ],
+          "memo": "Google Workspace (45,86 EUR, přenesená daňová povinnost)",
+          "totalCredit": {
+            "currency": "CZK",
+            "minor": 139503
+          },
+          "totalDebit": {
+            "currency": "CZK",
+            "minor": 139503
+          }
+        },
+        "id": "p-google",
+        "kind": "posting",
+        "reasons": [
+          "Supplier is VAT-registered in Ireland, so you self-assess Czech VAT on the service.",
+          "Your rule “EU SaaS” has posted 14 earlier Google and AWS lines exactly this way.",
+          "The VAT base uses the ČNB rate for the supply date; the bank used the same rate, so there's no FX difference to book."
+        ],
+        "source": "Rule “EU SaaS”",
+        "sourceKind": "rule",
+        "title": "Google Ireland · reverse-charge posting"
+      },
+      {
+        "amount": {
+          "currency": "CZK",
+          "minor": -242000
+        },
+        "bankLineId": "s1-4",
+        "confidence": "likely",
+        "detail": "Below the fixed-asset threshold, so no depreciation schedule",
+        "dueOn": null,
+        "entry": {
+          "balanced": true,
+          "date": "2026-10-05",
+          "lines": [
+            {
+              "account": "501",
+              "accountName": "Materials consumed",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 200000
+              },
+              "vatCode": "IN21"
+            },
+            {
+              "account": "343",
+              "accountName": "Value added tax",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 42000
+              },
+              "vatCode": "IN21"
+            },
+            {
+              "account": "221",
+              "accountName": "Bank accounts",
+              "credit": {
+                "currency": "CZK",
+                "minor": 242000
+              },
+              "debit": null,
+              "vatCode": null
+            }
+          ],
+          "memo": "USB-C dock Alza",
+          "totalCredit": {
+            "currency": "CZK",
+            "minor": 242000
+          },
+          "totalDebit": {
+            "currency": "CZK",
+            "minor": 242000
+          }
+        },
+        "id": "p-alza",
+        "kind": "posting",
+        "reasons": [
+          "The receipt lists one item, a USB-C dock.",
+          "Equipment below the fixed-asset threshold is expensed directly.",
+          "Alza is VAT-registered, so the input VAT is claimable."
+        ],
+        "source": "Rule “Small equipment”",
+        "sourceKind": "rule",
+        "title": "Alza.cz · USB-C dock, expensed directly"
+      },
+      {
+        "amount": {
+          "currency": "CZK",
+          "minor": -9500
+        },
+        "bankLineId": "s1-5",
+        "confidence": "certain",
+        "detail": "Rule “Bank fees”",
+        "dueOn": null,
+        "entry": {
+          "balanced": true,
+          "date": "2026-10-06",
+          "lines": [
+            {
+              "account": "568",
+              "accountName": "Other financial expenses",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 9500
+              },
+              "vatCode": null
+            },
+            {
+              "account": "221",
+              "accountName": "Bank accounts",
+              "credit": {
+                "currency": "CZK",
+                "minor": 9500
+              },
+              "debit": null,
+              "vatCode": null
+            }
+          ],
+          "memo": "Poplatek za vedení účtu · září",
+          "totalCredit": {
+            "currency": "CZK",
+            "minor": 9500
+          },
+          "totalDebit": {
+            "currency": "CZK",
+            "minor": 9500
+          }
+        },
+        "id": "p-bank-fee",
+        "kind": "posting",
+        "reasons": [
+          "The bank's own fee line, posted the same way every month."
+        ],
+        "source": "Rule “Bank fees”",
+        "sourceKind": "rule",
+        "title": "ČSOB · account fee"
+      },
+      {
+        "amount": {
+          "currency": "CZK",
+          "minor": -600000
+        },
+        "bankLineId": "s1-3",
+        "confidence": "needs_you",
+        "detail": "Owner withdrawal, or cash for a business expense?",
+        "dueOn": null,
+        "entry": {
+          "balanced": true,
+          "date": "2026-10-04",
+          "lines": [
+            {
+              "account": "491",
+              "accountName": "Sole trader's own account",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 600000
+              },
+              "vatCode": null
+            },
+            {
+              "account": "221",
+              "accountName": "Bank accounts",
+              "credit": {
+                "currency": "CZK",
+                "minor": 600000
+              },
+              "debit": null,
+              "vatCode": null
+            }
+          ],
+          "memo": "Výběr z bankomatu",
+          "totalCredit": {
+            "currency": "CZK",
+            "minor": 600000
+          },
+          "totalDebit": {
+            "currency": "CZK",
+            "minor": 600000
+          }
+        },
+        "id": "p-atm",
+        "kind": "posting",
+        "reasons": [
+          "Your last four ATM withdrawals were owner drawings, so that's the suggestion.",
+          "It scores below the auto-accept threshold, so it waits for you.",
+          "The advisor received the amount, date and line type only."
+        ],
+        "source": "Advisor suggestion",
+        "sourceKind": "advisor",
+        "title": "ATM withdrawal, Brno · what was it for?"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "Draft for your review once September is closed",
+        "dueOn": "2026-10-26",
+        "entry": null,
+        "id": "p-dph-september",
+        "kind": "deadline",
+        "reasons": [
+          "Monthly VAT payer: the return and the control statement are due together, 25 days after the month ends.",
+          "25 October 2026 is a Sunday, so the deadline moves to the next working day (daňový řád § 33 odst. 4)."
+        ],
+        "source": "Rule pack cz-2026",
+        "sourceKind": "calendar",
+        "title": "DPH return and kontrolní hlášení · September"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "Tax advisor · a scenario for the annual return; nothing to post now",
+        "dueOn": null,
+        "entry": null,
+        "id": "p-flat-rate",
+        "kind": "advice",
+        "reasons": [
+          "A scenario, not tax advice. Open it to see the engine's figures and the assumptions."
+        ],
+        "source": "Tax advisor",
+        "sourceKind": "advisor",
+        "title": "Flat-rate expenses may beat your actual costs for 2026"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "Financial advisor · account 518 · three vendors",
+        "dueOn": null,
+        "entry": null,
+        "id": "p-subcontracting",
+        "kind": "advice",
+        "reasons": [
+          "A draft finding for your review. The figures come from the ledger."
+        ],
+        "source": "Financial advisor",
+        "sourceKind": "advisor",
+        "title": "Subcontracting rose while billed hours stayed flat"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "Tax advisor · a scenario for your review, not tax advice",
+        "dueOn": null,
+        "entry": null,
+        "id": "advisor-1",
+        "kind": "advice",
+        "reasons": [
+          "From the books so far (1 Jan – 7 Oct 2026), § 7 income is 803 622,31 Kč and actual expenses 261 220,00 Kč. With actual expenses, tax and insurance come to 166 324 Kč: income tax 50 520 Kč, social insurance 79 191 Kč and health insurance 36 613 Kč. Claiming the 60 % flat rate instead counts 482 173,38 Kč of expenses and brings the total to 86 000 Kč, which is 80 324 Kč less. The flip side: the social insurance assessment base, from which your pension is later worked out, falls by 110 477 Kč. These are figures for the year so far, not a projection, and paušální daň isn't assessed because the rule pack doesn't hold the 2026 bands yet. A scenario for your review, not tax advice.",
+          "Question: Do you expect more income or larger expenses before the year ends? These figures cover the year so far."
+        ],
+        "source": "Tax advisor",
+        "sourceKind": "advisor",
+        "title": "Tax scenario for 2026: Flat-rate expenses 60 %"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "Tax advisor · a scenario for your review, not tax advice",
+        "dueOn": null,
+        "entry": null,
+        "id": "advisor-2",
+        "kind": "advice",
+        "reasons": [
+          "For your projection of 1 571 000 Kč income and 383 200 Kč actual expenses: the 60 % flat rate counts 942 600 Kč of expenses, and tax and insurance come to 197 584 Kč whether you buy the laptop this year or next, because under the flat rate the purchase doesn't change the tax base. With actual expenses and the laptop bought this year the total is 379 116 Kč; buying it next year instead adds 21 810 Kč. Against that baseline the flat rate is 181 532 Kč lower, but your social insurance assessment base, from which your pension is later worked out, is 249 700 Kč lower too. Paušální daň isn't assessed because the rule pack doesn't hold the 2026 bands yet. A scenario for your review, not tax advice."
+        ],
+        "source": "Tax advisor",
+        "sourceKind": "advisor",
+        "title": "Tax scenario for 2026: Flat-rate expenses 60 % · Laptop bought this year"
+      }
+    ],
+    "isError": false,
+    "scenario": "tax-advisor",
+    "state": "tax-advisor/review"
+  },
+  {
+    "command": "egress_payload",
+    "args": {
+      "id": "run-2026-10-07-05"
+    },
+    "result": {
+      "bytes": 391,
+      "hash": "309b90331248daa151645bb9a98a1da4909a69ae3863aa86d73bf1d599882de8",
+      "id": "run-2026-10-07-05",
+      "text": "{\n  \"prompt\": \"Tax year 2026. The user projects § 7 income 1 571 000 and actual expenses 383 200, flat-rate group trade, planned purchase Laptop 60 000. Call run_scenario with projection {\\\"expenses\\\":\\\"383 200\\\",\\\"flatRate\\\":\\\"trade\\\",\\\"income\\\":\\\"1 571 000\\\",\\\"purchaseDescription\\\":\\\"Laptop\\\",\\\"purchasePrice\\\":\\\"60 000\\\"} and explain the scenarios.\",\n  \"task\": \"tax.scenarios\",\n  \"toolResults\": []\n}"
+    },
+    "isError": false,
+    "scenario": "tax-advisor",
+    "state": "tax-advisor/review"
+  },
+  {
     "command": "set_egress_policy",
     "args": {
       "policy": "never",

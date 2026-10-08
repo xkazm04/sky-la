@@ -910,6 +910,30 @@ pub struct PackUpdateDto {
     pub message: String,
 }
 
+/// The tax advisor's answer, checked against the engine.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct TaxAdviceDto {
+    /// `accepted`, `rejected`, `needs_confirmation`, `blocked`, or how the run failed.
+    pub status: String,
+    /// The scenario it puts first, when accepted.
+    pub recommendation: Option<String>,
+    /// Its explanation, when accepted (every figure checked).
+    pub explanation: Option<String>,
+    /// Levers it considered.
+    pub levers: Vec<String>,
+    /// Facts it needs from the user.
+    pub questions: Vec<String>,
+    /// Why it was rejected or didn't run.
+    pub problems: Vec<String>,
+    /// Figures matched to engine values.
+    pub grounded: u32,
+    /// The register entry.
+    pub run_id: Option<String>,
+    /// The engine's scenarios it explains.
+    pub scenarios: TaxScenariosDto,
+}
+
 /// Whether advisors can run, and what to do if not.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]

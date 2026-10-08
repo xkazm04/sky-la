@@ -11,6 +11,9 @@ use crate::provider::{Availability, LlmProvider, RunOutcome, RunRequest, RunStat
 #[derive(Debug, Clone)]
 pub struct Fake {
     transcripts: HashMap<String, String>,
+    /// Task → (text the prompt contains, transcript), tried in order before
+    /// the task's default.
+    matching: Vec<(String, String, String)>,
     availability: Availability,
 }
 
@@ -25,6 +28,7 @@ impl Fake {
     pub fn new() -> Self {
         Self {
             transcripts: HashMap::new(),
+            matching: Vec::new(),
             availability: Availability::Ready {
                 version: "fake".into(),
             },
@@ -36,6 +40,14 @@ impl Fake {
     pub fn with(mut self, task: &str, transcript: &str) -> Self {
         self.transcripts
             .insert(task.to_owned(), transcript.to_owned());
+        self
+    }
+
+    /// Answers `task` with `transcript` when the prompt contains `needle`.
+    #[must_use]
+    pub fn with_matching(mut self, task: &str, needle: &str, transcript: &str) -> Self {
+        self.matching
+            .push((task.to_owned(), needle.to_owned(), transcript.to_owned()));
         self
     }
 
@@ -67,7 +79,14 @@ impl LlmProvider for Fake {
             }
             Availability::Ready { .. } => {}
         }
-        let Some(text) = self.transcripts.get(&request.task) else {
+        let matched = self
+            .matching
+            .iter()
+            .find(|(task, needle, _)| {
+                task == &request.task && request.prompt.contains(needle.as_str())
+            })
+            .map(|(_, _, t)| t);
+        let Some(text) = matched.or_else(|| self.transcripts.get(&request.task)) else {
             return RunOutcome::with_status(RunStatus::Failed(format!(
                 "the fake has no transcript for {}",
                 request.task

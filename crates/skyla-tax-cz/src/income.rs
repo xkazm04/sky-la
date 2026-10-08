@@ -330,10 +330,18 @@ pub fn scenarios(pack: &Pack, facts: &ScenarioFacts) -> Result<ScenarioAnalysis,
     let mut methods = vec![Expenses::Actual];
     match facts.flat_rate {
         Some(g) => methods.push(Expenses::FlatRate(g)),
-        None => questions.push(
-            "Which flat-rate group does your activity fall in (craft 80 %, other trade 60 %, other 40 %)?"
-                .to_owned(),
-        ),
+        None => {
+            let pct = |g: FlatRate| -> Result<String, IncomeError> {
+                let p = pack.percent(&format!("income_tax.flat_rate.{}.percent", g.key()), on)?;
+                Ok(p.normalize().to_string().replace('.', ","))
+            };
+            questions.push(format!(
+                "Which flat-rate group does your activity fall in (craft {} %, other trade {} %, other {} %)?",
+                pct(FlatRate::Craft)?,
+                pct(FlatRate::Trade)?,
+                pct(FlatRate::Liberal)?
+            ));
+        }
     }
     // Timing: an expensed purchase lowers this year's actual expenses only if
     // bought this year; one above the asset threshold is depreciated instead.

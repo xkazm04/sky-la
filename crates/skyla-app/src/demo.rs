@@ -533,3 +533,20 @@ pub(crate) struct DomainVatCheck {
 pub(crate) fn demo_domain() -> Result<Domain, CoreError> {
     serde_json::from_str(DOMAIN).map_err(|e| CoreError::Demo(e.to_string()))
 }
+
+/// The demo's tax advisor answering the books so far (synthetic transcript).
+pub const TAX_BOOKS_TRANSCRIPT: &str =
+    include_str!("../../../packages/fixtures/data/advisors/tax-books.jsonl");
+/// The same for the design review's projection.
+pub const TAX_REVIEW_TRANSCRIPT: &str =
+    include_str!("../../../packages/fixtures/data/advisors/tax-review-projection.jsonl");
+
+/// The demo's provider: recorded answers, no model.
+pub fn demo_provider() -> skyla_advisor::Fake {
+    skyla_advisor::Fake::new()
+        .available(skyla_advisor::Availability::Ready {
+            version: "demo".into(),
+        })
+        .with("tax.scenarios", TAX_BOOKS_TRANSCRIPT)
+        .with_matching("tax.scenarios", "1 571 000", TAX_REVIEW_TRANSCRIPT)
+}
