@@ -238,6 +238,8 @@ impl Core {
             pack,
         )?;
         core.restore_state()?;
+        // Recurring invoices due while the books were closed.
+        core.run_recurring()?;
         Ok(core)
     }
 

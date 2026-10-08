@@ -8,8 +8,8 @@ use skyla_app::dto::{
     DunningNoticeDto, EgressPayloadDto, EgressPolicyDto, EgressRunDto, EntityDto, ExplainTargetDto,
     ExplanationDto, FindingDto, IntegrityDto, InvoiceDraftDto, InvoiceDto, InvoiceFormDto,
     JournalEntryDto, ObligationDto, PackUpdateDto, PeriodDto, ProfitAndLossDto, ProposalDto,
-    RecurringTemplateDto, RefDataDto, RulePackDto, TaxAdviceDto, TaxProjectionDto, TaxScenariosDto,
-    TrialBalanceDto, VatReturnDto,
+    RecurringDraftDto, RecurringTemplateDto, RefDataDto, RulePackDto, TaxAdviceDto,
+    TaxProjectionDto, TaxScenariosDto, TrialBalanceDto, VatReturnDto,
 };
 use skyla_app::dto::{
     BackupDto, BackupsDto, DrillDto, EntitySetupDto, ExportDto, ImportPreviewDto, PurchaseDraftDto,
@@ -302,6 +302,23 @@ fn commit_invoice_import(
 #[specta::specta]
 fn reporting_periods(core: Books) -> Answer<ReportingPeriodsDto> {
     Ok(core.reporting_periods()?)
+}
+
+/// Makes a recurring invoice template; what's due runs at once.
+#[tauri::command]
+#[specta::specta]
+fn create_recurring(
+    core: Books,
+    recurring: RecurringDraftDto,
+) -> Answer<Vec<RecurringTemplateDto>> {
+    Ok(core.create_recurring(&recurring)?)
+}
+
+/// Pauses or resumes a recurring template.
+#[tauri::command]
+#[specta::specta]
+fn set_recurring_active(core: Books, id: i64, active: bool) -> Answer<Vec<RecurringTemplateDto>> {
+    Ok(core.set_recurring_active(id, active)?)
 }
 
 /// The business details as set up.
@@ -725,6 +742,8 @@ pub fn specta_builder<R: Runtime>() -> Builder<R> {
             reporting_periods,
             profile,
             update_profile,
+            create_recurring,
+            set_recurring_active,
             purchases,
             record_purchase,
             set_update_check,

@@ -141,6 +141,10 @@ export const commands = {
 	profile: () => __TAURI_INVOKE<EntitySetupDto>("profile"),
 	/**  Corrects the business details: checked, kept, and in use at once. */
 	updateProfile: (setup: EntitySetupDto) => typedError<EntityDto, IpcFailure>(__TAURI_INVOKE("update_profile", { setup })),
+	/**  Makes a recurring invoice template; what's due runs at once. */
+	createRecurring: (recurring: RecurringDraftDto) => typedError<RecurringTemplateDto[], IpcFailure>(__TAURI_INVOKE("create_recurring", { recurring })),
+	/**  Pauses or resumes a recurring template. */
+	setRecurringActive: (id: number, active: boolean) => typedError<RecurringTemplateDto[], IpcFailure>(__TAURI_INVOKE("set_recurring_active", { id, active })),
 	/**  Every received invoice, with what's paid. */
 	purchases: () => typedError<PurchaseDto[], IpcFailure>(__TAURI_INVOKE("purchases")),
 	/**  Records a received invoice: checked, posted, the supplier kept. */
@@ -1261,6 +1265,22 @@ export type RecoveryKeyDto = {
 	key: string,
 	/**  How many groups. */
 	groups: number,
+};
+
+/**  A recurring invoice as typed in the editor. */
+export type RecurringDraftDto = {
+	/**  For people; the customer's name when empty. */
+	name: string,
+	/**  The invoice each occurrence produces; `dueDays` counts from each issue. */
+	draft: InvoiceDraftDto,
+	/**  `monthly`, `quarterly` or `yearly`. */
+	frequency: string,
+	/**  Every how many of them, 1 to 12. */
+	interval: number,
+	/**  The first occurrence; it anchors the day of the month. */
+	start: string,
+	/**  Issue each occurrence instead of leaving a draft. */
+	autoIssue: boolean,
 };
 
 /**  A recurring invoice template. */

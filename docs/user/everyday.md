@@ -9,6 +9,7 @@
 - **New invoice:** pick the client, add lines (quantity, unit, price without VAT, VAT code), and save a draft. Drafts change freely.
 - **Issue:** assigns the next number in the series and posts the invoice (receivable, revenue, VAT). From then on it can't be edited. A mistake is corrected with a credit note, which keeps the history true.
 - **Export:** a Czech PDF with a QR Platba code, or ISDOC, UBL or CII for your client's accounting software.
+- **Repeat:** in a new invoice, choose *every month*, *quarter* or *year* and the first date, and it becomes a recurring template. Each time one falls due, sky-la makes the invoice (when you open the books, or at once for dates already past): a draft for you to check, or issued straight away if you tick **Issue each one automatically**. `{month}` in a line or the note becomes that invoice's month. **Recurring** on the Invoices toolbar lists the templates and pauses or resumes them.
 - **Import…:** brings in invoices issued in Pohoda or Fakturoid (see [Your data](your-data.md#moving-in-from-pohoda-or-fakturoid)).
 
 The status column shows what each invoice needs: overdue (with days), part-paid, paid, or credited.

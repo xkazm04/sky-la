@@ -31,6 +31,7 @@ mod imports;
 mod periods;
 mod persist;
 mod purchases;
+mod recurring;
 pub mod refdata;
 mod tax;
 pub mod toolhost;
@@ -697,6 +698,23 @@ impl Core {
     /// Saves a draft typed in the editor. Amounts are parsed here, in Czech
     /// formats, and every problem is listed at once.
     pub fn create_invoice_draft(&self, draft: &InvoiceDraftDto) -> Result<InvoiceDto, CoreError> {
+        let input = self.draft_input(draft)?;
+        // A known id per draft, so the demo's recordings are reproducible.
+        let n = self
+            .drafts_created
+            .fetch_add(1, std::sync::atomic::Ordering::Relaxed)
+            + 1;
+        let uid = uuid::Uuid::new_v5(&DEMO_POSTING_NAMESPACE, format!("draft/{n}").as_bytes());
+        let id = skyla_invoicing::create_draft_as(&self.db(), &input, &uid.to_string())?;
+        self.invoice(id)
+    }
+
+    /// What the editor typed, checked and parsed into a draft; every
+    /// problem listed at once.
+    fn draft_input(
+        &self,
+        draft: &InvoiceDraftDto,
+    ) -> Result<skyla_invoicing::DraftInput, CoreError> {
         let form = self.invoice_form()?;
         let mut problems = Vec::new();
         let client = match (
@@ -789,14 +807,7 @@ impl Core {
             related_id: None,
             advances: Vec::new(),
         };
-        // A known id per draft, so the demo's recordings are reproducible.
-        let n = self
-            .drafts_created
-            .fetch_add(1, std::sync::atomic::Ordering::Relaxed)
-            + 1;
-        let uid = uuid::Uuid::new_v5(&DEMO_POSTING_NAMESPACE, format!("draft/{n}").as_bytes());
-        let id = skyla_invoicing::create_draft_as(&self.db(), &input, &uid.to_string())?;
-        self.invoice(id)
+        Ok(input)
     }
 
     /// Issues a draft on `issue_date`: assigns the next number and posts it.

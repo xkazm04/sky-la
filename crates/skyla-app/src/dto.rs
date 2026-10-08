@@ -1126,6 +1126,24 @@ pub struct ReportingPeriodsDto {
     pub year_to_date: PeriodChoiceDto,
 }
 
+/// A recurring invoice as typed in the editor.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct RecurringDraftDto {
+    /// For people; the customer's name when empty.
+    pub name: String,
+    /// The invoice each occurrence produces; `dueDays` counts from each issue.
+    pub draft: InvoiceDraftDto,
+    /// `monthly`, `quarterly` or `yearly`.
+    pub frequency: String,
+    /// Every how many of them, 1 to 12.
+    pub interval: u32,
+    /// The first occurrence; it anchors the day of the month.
+    pub start: String,
+    /// Issue each occurrence instead of leaving a draft.
+    pub auto_issue: bool,
+}
+
 /// Whether there are books to unlock.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]

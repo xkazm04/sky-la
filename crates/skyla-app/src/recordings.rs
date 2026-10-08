@@ -304,6 +304,32 @@ pub fn scenarios() -> Vec<(&'static str, Script)> {
             s.read("purchases", json!({}));
             s.read("integrity", json!({}));
         }),
+        ("recurring", |s| {
+            let mut draft = scripted_draft();
+            draft["lines"] = json!([
+                { "description": "Správa webu · {month}", "quantity": "1", "unit": "ks", "unitPrice": "6 000,00", "vatCode": "OUT21" }
+            ]);
+            let templates = s.write(
+                "create_recurring",
+                json!({ "recurring": {
+                    "name": "Správa webu", "draft": draft, "frequency": "monthly",
+                    "interval": 1, "start": "2026-11-01", "autoIssue": false
+                } }),
+                "templated",
+            );
+            s.read("recurring_templates", json!({}));
+            let id = templates
+                .as_array()
+                .and_then(|t| t.iter().find(|x| x["name"] == "Správa webu"))
+                .map(|t| t["id"].clone())
+                .unwrap_or_default();
+            s.write(
+                "set_recurring_active",
+                json!({ "id": id, "active": false }),
+                "paused",
+            );
+            s.read("recurring_templates", json!({}));
+        }),
         ("invoice-import", |s| {
             use base64::Engine as _;
             let file = json!({
@@ -542,6 +568,27 @@ pub fn dispatch(core: &Core, command: &str, args: &Value) -> Result<Value, IpcFa
         ),
         "export_books" => to_value(core.export_books()),
         "reporting_periods" => to_value(core.reporting_periods()),
+        "create_recurring" => {
+            let r = args
+                .get("recurring")
+                .cloned()
+                .and_then(|d| serde_json::from_value::<crate::dto::RecurringDraftDto>(d).ok())
+                .ok_or_else(|| IpcFailure {
+                    code: "bad_request".into(),
+                    message: "missing or malformed argument recurring".into(),
+                })?;
+            to_value(core.create_recurring(&r))
+        }
+        "set_recurring_active" => {
+            let active = args
+                .get("active")
+                .and_then(Value::as_bool)
+                .ok_or_else(|| IpcFailure {
+                    code: "bad_request".into(),
+                    message: "missing or malformed argument active".into(),
+                })?;
+            to_value(core.set_recurring_active(id_arg(args)?, active))
+        }
         "profile" => to_value(Ok(core.profile())),
         "purchase_form" => to_value(core.purchase_form()),
         "purchases" => to_value(core.purchases()),

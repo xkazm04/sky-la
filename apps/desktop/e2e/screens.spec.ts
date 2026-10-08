@@ -830,3 +830,33 @@ test("business details show in Settings, fixed for the demo", async ({ page }) =
   await page.screenshot({ path: "test-results/screens/settings-business.png" });
   await axeClean(page);
 });
+
+// Improvement wave 10: a recurring invoice is set up from the editor and
+// paused from the list (skyla_app::recordings, "recurring").
+test("a recurring invoice is set up, then paused", async ({ page }) => {
+  await page.goto("/#/invoices/new");
+  await settle(page);
+  const form = page.getByRole("form", { name: "New invoice" });
+  await form.getByRole("button", { name: /Customer/ }).click();
+  await page.getByRole("option", { name: /Northwind Traders s\.r\.o\./ }).click();
+  await form.getByLabel("Line 1 description").fill("Správa webu · {month}");
+  await form.getByLabel("Line 1 quantity").fill("1");
+  await form.getByLabel("Line 1 unit", { exact: true }).fill("ks");
+  await form.getByLabel("Line 1 unit price").fill("6 000,00");
+  await form.getByLabel("Note on the invoice").fill("Děkuji za spolupráci.");
+  await form.getByRole("button", { name: /Repeat/ }).click();
+  await page.getByRole("option", { name: "Every month" }).click();
+  await form.getByLabel("First invoice on").fill("2026-11-01");
+  await form.getByLabel("Template name").fill("Správa webu");
+  await page.screenshot({ path: "test-results/screens/invoice-recurring.png" });
+  await axeClean(page);
+  await page.getByRole("button", { name: "Save template" }).click();
+  await expect(page).toHaveURL(/#\/invoices$/);
+
+  await page.getByRole("button", { name: /Recurring · \d/ }).click();
+  const popup = page.getByRole("dialog", { name: "Recurring invoices" });
+  const row = popup.getByRole("listitem").filter({ hasText: "Správa webu" });
+  await expect(row).toContainText("next 1 Nov 2026");
+  await row.getByRole("button", { name: "Pause" }).click();
+  await expect(row).toContainText("paused");
+});

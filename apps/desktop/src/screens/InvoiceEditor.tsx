@@ -7,6 +7,7 @@ import {
 } from "@skyla/ipc";
 import {
   Button,
+  Checkbox,
   ContentGroup,
   FactList,
   Inspector,
@@ -26,6 +27,13 @@ import { Loaded } from "./common";
 interface LineDraft extends InvoiceDraftLineDto {
   readonly key: number;
 }
+
+const REPEAT = [
+  { id: "never", label: "Just this once" },
+  { id: "monthly", label: "Every month" },
+  { id: "quarterly", label: "Every quarter" },
+  { id: "yearly", label: "Every year" },
+];
 
 /** The customer list's last option: someone not invoiced before. */
 const NEW_CLIENT = "\u0000new";
@@ -64,6 +72,10 @@ function Editor({ form }: { form: InvoiceFormDto }) {
   const [lines, setLines] = useState<LineDraft[]>(() => [emptyLine(defaultVat)]);
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
+  const [repeat, setRepeat] = useState<string>("never");
+  const [start, setStart] = useState(form.today);
+  const [templateName, setTemplateName] = useState("");
+  const [autoIssue, setAutoIssue] = useState(false);
   const errorsId = useId();
 
   const update = (key: number, patch: Partial<InvoiceDraftLineDto>) =>
@@ -72,16 +84,30 @@ function Editor({ form }: { form: InvoiceFormDto }) {
   const save = async () => {
     setSaving(true);
     setErrors([]);
+    const draft = {
+      client: isNew ? "" : (client ?? ""),
+      newClient: isNew ? newClient : null,
+      dueDays: Number(dueDays),
+      note,
+      lines: lines.map(({ key: _key, ...line }) => line),
+    };
     try {
-      const saved = await unwrap(
-        commands.createInvoiceDraft({
-          client: isNew ? "" : (client ?? ""),
-          newClient: isNew ? newClient : null,
-          dueDays: Number(dueDays),
-          note,
-          lines: lines.map(({ key: _key, ...line }) => line),
-        }),
-      );
+      if (repeat !== "never") {
+        await unwrap(
+          commands.createRecurring({
+            name: templateName,
+            draft,
+            frequency: repeat,
+            interval: 1,
+            start,
+            autoIssue,
+          }),
+        );
+        invalidateAll();
+        navigate("invoices", null, true);
+        return;
+      }
+      const saved = await unwrap(commands.createInvoiceDraft(draft));
       invalidateAll();
       navigate("invoices", `draft-${saved.id}`, true);
     } catch (e) {
@@ -104,12 +130,19 @@ function Editor({ form }: { form: InvoiceFormDto }) {
 
   return (
     <>
-      <Toolbar title="New invoice" subtitle={`Draft · issued as ${form.nextNumber} or later`}>
+      <Toolbar
+        title="New invoice"
+        subtitle={
+          repeat === "never"
+            ? `Draft · issued as ${form.nextNumber} or later`
+            : `Recurring template · ${REPEAT.find((r) => r.id === repeat)?.label.toLowerCase()}, from ${day(start, true)}`
+        }
+      >
         <Button variant="plain" onPress={() => navigate("invoices", null)}>
           Cancel
         </Button>
         <Button variant="primary" onPress={() => void save()} isDisabled={saving}>
-          Save draft
+          {repeat === "never" ? "Save draft" : "Save template"}
         </Button>
       </Toolbar>
       <ContentGroup>
@@ -272,6 +305,35 @@ function Editor({ form }: { form: InvoiceFormDto }) {
           </fieldset>
 
           <TextField label="Note on the invoice" multiline value={note} onChange={setNote} />
+          <div className="grid grid-cols-3 gap-4">
+            <Select label="Repeat" options={REPEAT} value={repeat} onChange={setRepeat} />
+            {repeat !== "never" && (
+              <>
+                <TextField
+                  label="First invoice on"
+                  value={start}
+                  onChange={setStart}
+                  placeholder="YYYY-MM-DD"
+                  isInvalid={problemFor(null, "first date") !== undefined}
+                />
+                <TextField
+                  label="Template name"
+                  value={templateName}
+                  onChange={setTemplateName}
+                  placeholder="The customer's name"
+                />
+                <div className="col-span-3">
+                  <Checkbox isSelected={autoIssue} onChange={setAutoIssue}>
+                    Issue each one automatically (otherwise each waits as a draft)
+                  </Checkbox>
+                  <p className="mt-1 text-footnote text-ink-secondary">
+                    Line descriptions and the note may use {"{month}"}, {"{MM}"} and {"{YYYY}"} for
+                    each invoice's month.
+                  </p>
+                </div>
+              </>
+            )}
+          </div>
           <button type="submit" hidden aria-hidden tabIndex={-1} />
         </form>
       </ContentGroup>

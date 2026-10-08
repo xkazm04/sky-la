@@ -16,7 +16,7 @@ import {
   type Tone,
   Toolbar,
 } from "@skyla/ui";
-import { FileDown, FileUp, Plus, Trash2 } from "lucide-react";
+import { FileDown, FileUp, Plus, Repeat, Trash2 } from "lucide-react";
 import { useRef, useState } from "react";
 import { invalidateAll, problems, useQuery } from "../data";
 import { downloadBase64, downloadText, fileToBase64 } from "../download";
@@ -325,6 +325,76 @@ const needsAttention = (i: InvoiceDto) => ["overdue", "open", "partPaid"].includ
 const unposted = (i: InvoiceDto) => i.status === "draft" || i.status === "scheduled";
 
 /** Invoices: one list, sections by state, the document in the inspector. */
+const FREQUENCY: Record<string, string> = {
+  monthly: "every month",
+  quarterly: "every quarter",
+  yearly: "every year",
+  weekly: "every week",
+};
+
+/** Recurring templates, each pausable; they run when the books open. */
+function RecurringPopup() {
+  const templates = useQuery("recurring_templates", () => unwrap(commands.recurringTemplates()));
+  const [error, setError] = useState<string[]>([]);
+  const list = templates.state === "ready" ? templates.data : [];
+  return (
+    <Popup
+      label="Recurring invoices"
+      placement="bottom end"
+      trigger={
+        <Button icon={Repeat} isDisabled={templates.state !== "ready"}>
+          {`Recurring · ${list.length}`}
+        </Button>
+      }
+    >
+      <div className="w-96">
+        <p className="px-1 pb-2 font-semibold text-body">Recurring invoices</p>
+        {list.length === 0 ? (
+          <p className="px-1 text-body text-ink-secondary">
+            None yet. In a new invoice, choose how often it repeats.
+          </p>
+        ) : (
+          <ul className="overflow-hidden rounded-inner bg-surface shadow-group">
+            {list.map((t) => (
+              <li
+                key={t.id}
+                className="flex items-center gap-3 border-hairline border-t px-3 py-2 first:border-t-0"
+              >
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-medium text-body">{t.name}</p>
+                  <p className="truncate text-footnote text-ink-secondary">
+                    {t.client} · {money(t.gross)} {FREQUENCY[t.frequency] ?? t.frequency} ·{" "}
+                    {t.active ? (t.next ? `next ${day(t.next, true)}` : "finished") : "paused"}
+                    {t.autoIssue ? " · issued automatically" : " · as drafts"}
+                  </p>
+                </div>
+                <Button
+                  variant="plain"
+                  onPress={() =>
+                    void unwrap(commands.setRecurringActive(t.id, !t.active))
+                      .then(() => {
+                        setError([]);
+                        invalidateAll();
+                      })
+                      .catch((e) => setError(problems(e)))
+                  }
+                >
+                  {t.active ? "Pause" : "Resume"}
+                </Button>
+              </li>
+            ))}
+          </ul>
+        )}
+        {error.length > 0 && (
+          <p role="alert" className="mt-2 text-footnote text-negative-ink">
+            {error.join(" ")}
+          </p>
+        )}
+      </div>
+    </Popup>
+  );
+}
+
 export function InvoicesScreen({ item }: { item: string | null }) {
   if (item === "new") return <InvoiceEditor />;
   return <InvoiceList item={item} />;
@@ -402,6 +472,7 @@ function InvoiceList({ item }: { item: string | null }) {
                   e.target.value = "";
                 }}
               />
+              <RecurringPopup />
               <Button icon={FileUp} onPress={() => fileInput.current?.click()}>
                 Import…
               </Button>
