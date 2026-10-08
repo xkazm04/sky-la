@@ -9,9 +9,9 @@ const all = recordings as readonly Recording[];
 afterEach(() => clearMocks());
 
 describe("connectCore", () => {
-  it("replays the recordings outside the Tauri webview", () => {
+  it("replays the recordings outside the Tauri webview", async () => {
     expect(isTauriRuntime()).toBe(false);
-    expect(connectCore()).toBe("mock");
+    expect(await connectCore()).toBe("mock");
   });
 });
 
@@ -33,7 +33,7 @@ describe("the mock transport", () => {
     expect(groups.length).toBeGreaterThan(1);
     for (const group of groups) {
       clearMocks();
-      connectCore({ forceMock: true });
+      await connectCore({ forceMock: true });
       for (const r of group) {
         const call = invoke(r.command, r.args as Record<string, unknown>);
         if (r.isError) await expect(call).rejects.toEqual(r.result);
@@ -49,7 +49,7 @@ describe("the mock transport", () => {
       { command: "add", args: {}, result: null, isError: false, scenario: "s", leadsTo: "s/added" },
       { command: "count", args: {}, result: 2, isError: false, scenario: "s", state: "s/added" },
     ];
-    connectCore({ forceMock: true, recordings: scripted });
+    await connectCore({ forceMock: true, recordings: scripted });
     expect(await invoke("count")).toBe(1);
     await invoke("add");
     expect(await invoke("count")).toBe(2);
@@ -58,12 +58,12 @@ describe("the mock transport", () => {
     await expect(invoke("add")).rejects.toMatchObject({ code: "not_recorded" });
     // A new session starts over.
     clearMocks();
-    connectCore({ forceMock: true, recordings: scripted });
+    await connectCore({ forceMock: true, recordings: scripted });
     expect(await invoke("count")).toBe(1);
   });
 
   it("serves the generated, typed commands", async () => {
-    connectCore({ forceMock: true });
+    await connectCore({ forceMock: true });
     const q3 = await unwrap(commands.profitAndLoss("2026-07-01", "2026-09-30"));
     expect(q3.profit).toEqual({ minor: 28_035_000, currency: "CZK" });
     expect(q3.snapshot.hash).toMatch(/^[0-9a-f]{64}$/);
@@ -74,7 +74,7 @@ describe("the mock transport", () => {
   });
 
   it("refuses a request that wasn't recorded, as a typed failure", async () => {
-    connectCore({ forceMock: true });
+    await connectCore({ forceMock: true });
     const result = await commands.profitAndLoss("2026-01-01", "2026-01-31");
     expect(result.status).toBe("error");
     if (result.status === "error") expect(result.error.code).toBe("not_recorded");

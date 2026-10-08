@@ -8,7 +8,7 @@ import "./styles.css";
 // Before the first paint, so the window never flashes the wrong appearance.
 applyAppearance(storedAppearance());
 
-const core = connectCore({ forceMock: import.meta.env.VITE_IPC === "mock" });
+const core = await connectCore({ forceMock: import.meta.env.VITE_IPC === "mock" });
 const root = document.getElementById("root");
 if (!root) throw new Error("index.html is missing #root");
 

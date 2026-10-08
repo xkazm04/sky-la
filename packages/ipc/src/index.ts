@@ -1,5 +1,3 @@
-import recordings from "@skyla/fixtures/ipc-recordings.json";
-import { mockIPC } from "@tauri-apps/api/mocks";
 import type { IpcFailure } from "./bindings";
 import { type Recording, replay } from "./recordings";
 import { isTauriRuntime } from "./tauri";
@@ -17,11 +15,19 @@ export type CoreKind = "tauri" | "mock";
  * IPC layer is mocked to replay the core's recordings, so the same bindings
  * run unchanged and return exactly what the Rust core returned.
  */
-export function connectCore(
+export async function connectCore(
   options: { forceMock?: boolean; recordings?: readonly Recording[] } = {},
-): CoreKind {
+): Promise<CoreKind> {
   if (!options.forceMock && isTauriRuntime()) return "tauri";
-  const source = options.recordings ?? (recordings as readonly Recording[]);
+  // Loaded only when mocking, so the desktop app never ships them to its
+  // webview's start-up (they're the bulk of the bundle).
+  const [{ mockIPC }, source] = await Promise.all([
+    import("@tauri-apps/api/mocks"),
+    options.recordings ??
+      import("@skyla/fixtures/ipc-recordings.json").then(
+        (m) => m.default as unknown as readonly Recording[],
+      ),
+  ]);
   const session = { state: null };
   mockIPC((command, args) => replay(source, command, args, session));
   return "mock";
