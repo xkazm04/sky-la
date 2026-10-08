@@ -110,6 +110,15 @@ pub type Script = fn(&mut Scenario<'_>);
 /// Every scenario, each recorded on a fresh demo core.
 pub fn scenarios() -> Vec<(&'static str, Script)> {
     vec![
+        // The user stops the tax advisor from running at all.
+        ("egress-policy", |s| {
+            s.write(
+                "set_egress_policy",
+                json!({ "task": "tax.scenarios", "policy": "never" }),
+                "tax-never",
+            );
+            s.read("egress_policies", json!({}));
+        }),
         // The scenario form refuses what it can't read, with the reason.
         ("tax-projection", |s| {
             s.read(
@@ -241,6 +250,10 @@ pub fn canonical_requests() -> Vec<(&'static str, Value)> {
         ("bank_statement", json!({})),
         ("proposals", json!({})),
         ("egress_register", json!({})),
+        ("egress_policies", json!({})),
+        ("egress_payload", json!({ "id": "run-2026-10-04-01" })),
+        ("egress_payload", json!({ "id": "run-2026-10-04-02" })),
+        ("egress_payload", json!({ "id": "run-2026-10-06-01" })),
         ("rule_pack", json!({})),
         // The overdue invoice, for the PDF export in both languages.
         ("invoice_pdf", json!({ "id": 6, "lang": "cs" })),
@@ -320,7 +333,12 @@ pub fn dispatch(core: &Core, command: &str, args: &Value) -> Result<Value, IpcFa
         "invoices" => to_value(core.invoices()),
         "bank_statement" => to_value(core.bank_statement()),
         "proposals" => to_value(core.proposals()),
-        "egress_register" => to_value(Ok(core.egress_register())),
+        "egress_register" => to_value(core.egress_register()),
+        "egress_payload" => to_value(core.egress_payload(arg(args, "id")?)),
+        "egress_policies" => to_value(Ok(core.egress_policies())),
+        "set_egress_policy" => {
+            to_value(core.set_egress_policy(arg(args, "task")?, arg(args, "policy")?))
+        }
         "rule_pack" => to_value(Ok(core.rule_pack())),
         "recurring_templates" => to_value(core.recurring_templates()),
         "invoice_form" => to_value(core.invoice_form()),

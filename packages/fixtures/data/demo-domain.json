@@ -425,43 +425,65 @@
   ],
   "egressRuns": [
     {
-      "id": "run-2026-10-06-01",
-      "at": "2026-10-06T18:04:12Z",
-      "advisor": "Financial advisor",
-      "purpose": "Explain this · account 518, Q3",
-      "provider": "Claude Code (your installation)",
-      "model": "your default",
-      "sent": "Monthly totals for account 518 by vendor; no account numbers or personal IDs",
-      "redacted": ["Vendor IČO"],
-      "toolCalls": 3,
-      "bytesSent": 2140,
-      "outcome": "Draft finding added to the inbox"
+      "id": "run-2026-10-04-01",
+      "at": "2026-10-04T09:02:05Z",
+      "task": "tax.scenarios",
+      "purpose": "Flat-rate expense scenario, 2026",
+      "prompt": "Compare claiming actual expenses with the 60 % flat rate for 2026 so far. Use run_scenario for every figure and explain the side effects for the user's review.",
+      "toolCalls": [
+        {
+          "name": "run_scenario",
+          "arguments": {
+            "projection": null
+          }
+        },
+        {
+          "name": "get_rule_value",
+          "arguments": {
+            "key": "income_tax.flat_rate.trade.cap",
+            "on": "2026-12-31"
+          }
+        }
+      ],
+      "outcome": "Scenario drafted for your review"
     },
     {
       "id": "run-2026-10-04-02",
       "at": "2026-10-04T09:12:40Z",
-      "advisor": "Advisor suggestion",
+      "task": "bank.categorise",
       "purpose": "Classify a bank line without a reference",
-      "provider": "Claude Code (your installation)",
-      "model": "your default",
-      "sent": "Amount, date and line type of one bank line",
-      "redacted": ["Counterparty account", "Card number"],
-      "toolCalls": 1,
-      "bytesSent": 312,
+      "prompt": "Suggest an account for the bank lines the matcher couldn't place, with a reason for each.",
+      "toolCalls": [
+        {
+          "name": "list_unmatched_bank_lines",
+          "arguments": {}
+        }
+      ],
       "outcome": "Suggestion below the threshold; waiting for you"
     },
     {
-      "id": "run-2026-10-04-01",
-      "at": "2026-10-04T09:02:05Z",
-      "advisor": "Tax advisor",
-      "purpose": "Flat-rate expense scenario, 2026",
-      "provider": "Claude Code (your installation)",
-      "model": "your default",
-      "sent": "Year-to-date revenue and expense totals",
-      "redacted": [],
-      "toolCalls": 2,
-      "bytesSent": 980,
-      "outcome": "Scenario drafted for your review"
+      "id": "run-2026-10-06-01",
+      "at": "2026-10-06T18:04:12Z",
+      "task": "explain.figure",
+      "purpose": "Explain this · account 518, Q3",
+      "prompt": "Explain what makes up account 518 (other services) in Q3 2026 compared with Q2.",
+      "toolCalls": [
+        {
+          "name": "get_period_summary",
+          "arguments": {
+            "from": "2026-07-01",
+            "to": "2026-09-30"
+          }
+        },
+        {
+          "name": "get_period_summary",
+          "arguments": {
+            "from": "2026-04-01",
+            "to": "2026-06-30"
+          }
+        }
+      ],
+      "outcome": "Draft finding added to the inbox"
     }
   ]
 }

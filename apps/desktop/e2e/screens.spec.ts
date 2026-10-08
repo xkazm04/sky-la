@@ -255,6 +255,31 @@ test("the advisors say what they run on, from the core's provider status", async
   await expect(page.getByRole("grid", { name: "Advisors" })).toContainText("Demo · recorded runs");
 });
 
+test("the register shows exactly what was shared, with identifiers withheld", async ({ page }) => {
+  await page.goto("/#/register/run-2026-10-04-02");
+  const inspector = page.getByRole("complementary", {
+    name: "Classify a bank line without a reference",
+  });
+  const payload = inspector.getByTestId("payload");
+  await expect(payload).toContainText("list_unmatched_bank_lines");
+  await expect(payload).toContainText("Vendor");
+  await expect(payload).not.toContainText(/CZ\d{2}/);
+  await expect(inspector).toContainText("counterpartyAccount");
+  await expect(inspector).toContainText("Unaltered (hash chain verified)");
+  await axeClean(page);
+});
+
+test("a task can be stopped from sharing anything", async ({ page }) => {
+  await page.goto("/#/settings/advisor-sharing");
+  const inspector = page.getByRole("complementary", { name: "What advisors may send" });
+  await inspector
+    .getByRole("button", { name: /Tax scenarios and explanations: when it runs/ })
+    .click();
+  await page.getByRole("option", { name: "Never run" }).click();
+  await expect(page.getByRole("grid", { name: "Settings" })).toContainText("3 of 4 tasks allowed");
+  await axeClean(page);
+});
+
 test("an invoice exports as a PDF the core rendered, with the QR Platba code", async ({ page }) => {
   await page.goto("/#/invoices/2026-102");
   const inspector = page.getByRole("complementary", { name: "Invoice 2026-102" });

@@ -22,6 +22,7 @@ const DEMO_POSTING_NAMESPACE: uuid::Uuid = uuid::uuid!("5d2b8f61-0c7e-5a93-b4d1-
 
 mod advisor;
 mod bank;
+pub mod egress;
 pub mod refdata;
 mod tax;
 pub mod toolhost;
@@ -46,6 +47,8 @@ pub struct Core {
     provider: Mutex<Box<dyn skyla_advisor::LlmProvider>>,
     /// Proposals advisors filed through their tools (never posted).
     advisor_inbox: Mutex<Vec<ProposalDto>>,
+    /// What the user lets each advisor task do.
+    egress_policies: Mutex<egress::Policies>,
 }
 
 fn money(m: Money) -> Result<MoneyDto, CoreError> {
@@ -150,12 +153,15 @@ impl Core {
                 },
             ))),
             advisor_inbox: Mutex::new(Vec::new()),
+            egress_policies: Mutex::new(egress::Policies::new()),
         };
         // The demo's first October statement, imported but not yet booked.
         core.import_bytes(
             "csob-2026-10-06.xml",
             crate::demo::FIRST_STATEMENT.as_bytes(),
         )?;
+        // The demo's past advisor runs, through the real gate.
+        core.seed_demo_register()?;
         Ok(core)
     }
 
@@ -1058,12 +1064,5 @@ impl Core {
             values,
             holidays: u32::try_from(self.pack.holidays.len()).unwrap_or(u32::MAX),
         }
-    }
-
-    /// Every advisor run, newest first.
-    pub fn egress_register(&self) -> Vec<EgressRunDto> {
-        let mut runs = self.domain.egress_runs.clone();
-        runs.sort_by(|a, b| b.at.cmp(&a.at));
-        runs
     }
 }

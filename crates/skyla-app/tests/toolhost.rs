@@ -26,7 +26,7 @@ fn mcp(messages: &[Value], addr: &str, token: &str) -> Vec<Value> {
 fn a_run_lists_and_calls_tools_through_the_shim() {
     let core = Core::demo().unwrap();
     let (answers, calls) = core
-        .with_tool_host(|run| {
+        .with_tool_host(&core.gate_for("tax.scenarios").unwrap(), |run| {
             mcp(
                 &[
                     json!({ "jsonrpc": "2.0", "id": 1, "method": "initialize", "params": { "protocolVersion": "2025-06-18" } }),
@@ -43,7 +43,7 @@ fn a_run_lists_and_calls_tools_through_the_shim() {
     assert_eq!(answers.len(), 4, "the notification gets no answer");
     assert_eq!(answers[0]["result"]["serverInfo"]["name"], "skyla");
     let tools = answers[1]["result"]["tools"].as_array().unwrap();
-    assert_eq!(tools.len(), 10);
+    assert_eq!(tools.len(), 11);
     let rate: Value =
         serde_json::from_str(answers[2]["result"]["content"][0]["text"].as_str().unwrap()).unwrap();
     assert_eq!(rate["value"], "21");
@@ -70,12 +70,16 @@ fn raw(addr: &str, token: &str) -> Option<Value> {
 fn the_token_is_checked_and_rotates_per_run() {
     let core = Core::demo().unwrap();
     let ((first, refused), _) = core
-        .with_tool_host(|run| (run.clone(), raw(&run.addr, "not-the-token").unwrap()))
+        .with_tool_host(&core.gate_for("tax.scenarios").unwrap(), |run| {
+            (run.clone(), raw(&run.addr, "not-the-token").unwrap())
+        })
         .unwrap();
     assert_eq!(refused["ok"], false);
     assert_eq!(refused["error"], "not authorised for this run");
     let ((second, old_token_here), _) = core
-        .with_tool_host(|run| (run.clone(), raw(&run.addr, &first.token).unwrap()))
+        .with_tool_host(&core.gate_for("tax.scenarios").unwrap(), |run| {
+            (run.clone(), raw(&run.addr, &first.token).unwrap())
+        })
         .unwrap();
     assert_ne!(first.token, second.token);
     assert_eq!(first.token.len(), 64);
@@ -91,7 +95,9 @@ fn the_token_is_checked_and_rotates_per_run() {
 fn the_mcp_config_names_only_the_shim() {
     let core = Core::demo().unwrap();
     let (config, _) = core
-        .with_tool_host(|run| run.mcp_config(std::path::Path::new("/opt/skyla/skyla-mcp")))
+        .with_tool_host(&core.gate_for("tax.scenarios").unwrap(), |run| {
+            run.mcp_config(std::path::Path::new("/opt/skyla/skyla-mcp"))
+        })
         .unwrap();
     let servers = config["mcpServers"].as_object().unwrap();
     assert_eq!(servers.keys().collect::<Vec<_>>(), ["skyla"]);
@@ -101,5 +107,60 @@ fn the_mcp_config_names_only_the_shim() {
         servers["skyla"]["env"].as_object().unwrap().len(),
         1,
         "only the token"
+    );
+}
+
+#[test]
+fn tool_results_pass_the_gate_before_they_leave() {
+    let core = Core::demo().unwrap();
+    // What the books hold for the lines the matcher couldn't place.
+    let raw = core
+        .call_tool("list_unmatched_bank_lines", &json!({}))
+        .unwrap();
+    let raw_text = raw.to_string();
+    let lines = raw["lines"].as_array().unwrap();
+    assert!(!lines.is_empty());
+    let accounts: Vec<String> = lines
+        .iter()
+        .filter_map(|l| l["counterpartyAccount"].as_str().map(str::to_owned))
+        .collect();
+    assert!(
+        !accounts.is_empty(),
+        "the demo has counterparty accounts to withhold"
+    );
+    let names: Vec<String> = lines
+        .iter()
+        .map(|l| l["counterparty"].as_str().unwrap().to_owned())
+        .collect();
+
+    let gate = core.gate_for("bank.categorise").unwrap();
+    let (answers, calls) = core
+        .with_tool_host(&gate, |run| {
+            mcp(
+                &[json!({ "jsonrpc": "2.0", "id": 1, "method": "tools/call", "params": { "name": "list_unmatched_bank_lines", "arguments": {} } })],
+                &run.addr,
+                &run.token,
+            )
+        })
+        .unwrap();
+    let sent = answers[0]["result"]["content"][0]["text"].as_str().unwrap();
+    for a in &accounts {
+        assert!(raw_text.contains(a.as_str()));
+        assert!(!sent.contains(a.as_str()), "{a} left the machine");
+    }
+    for n in &names {
+        assert!(
+            !sent.contains(n.as_str()),
+            "the name {n} left without a pseudonym"
+        );
+    }
+    assert!(sent.contains("Vendor ") || sent.contains("Customer "));
+    // The log the register keeps is the gated text, with what was withheld.
+    assert_eq!(calls[0].result, sent);
+    assert!(
+        calls[0]
+            .report
+            .dropped_fields
+            .contains("counterpartyAccount")
     );
 }

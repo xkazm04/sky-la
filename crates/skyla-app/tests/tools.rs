@@ -14,6 +14,7 @@ fn args_for(name: &str) -> Value {
             json!({ "from": "2026-07-01", "to": "2026-09-30" })
         }
         "get_rule_value" => json!({ "key": "vat.rate.standard", "on": "2026-09-30" }),
+        "list_unmatched_bank_lines" => json!({}),
         "list_obligations" => json!({ "year": 2026 }),
         "run_scenario" => json!({ "projection": null }),
         "propose_entry" => json!({
@@ -78,7 +79,7 @@ fn every_tool_reads_computes_or_proposes() {
         "post", "write", "delete", "update", "set", "create", "issue", "book", "import", "install",
     ];
     let specs = tool_specs();
-    assert_eq!(specs.len(), 10);
+    assert_eq!(specs.len(), 11);
     for s in &specs {
         assert!(
             !WRITE_WORDS.iter().any(|w| s.name.starts_with(w)),

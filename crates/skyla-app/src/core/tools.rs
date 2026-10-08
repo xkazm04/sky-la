@@ -72,6 +72,12 @@ pub fn tool_specs() -> Vec<ToolSpec> {
             input_schema: range_schema(),
         },
         ToolSpec {
+            name: "list_unmatched_bank_lines",
+            kind: ToolKind::Read,
+            description: "Bank lines the matcher couldn't place: date, counterparty, payment message and amount.",
+            input_schema: json!({ "type": "object", "properties": {}, "additionalProperties": false }),
+        },
+        ToolSpec {
             name: "get_rule_value",
             kind: ToolKind::Read,
             description: "A statutory value from the rule pack in force on a date, with its citation.",
@@ -238,6 +244,25 @@ impl Core {
                     "deductibleExpenses": cb.deductible_expenses,
                     "totals": cb.totals,
                 }))
+            }
+            "list_unmatched_bank_lines" => {
+                let lines: Vec<Value> = self
+                    .bank_statement()?
+                    .lines
+                    .into_iter()
+                    .filter(|l| l.status == "needs_you")
+                    .map(|l| {
+                        json!({
+                            "line": l.id,
+                            "date": l.date,
+                            "counterparty": l.counterparty,
+                            "counterpartyAccount": l.counterparty_account,
+                            "reference": l.reference,
+                            "amount": l.amount,
+                        })
+                    })
+                    .collect();
+                Ok(json!({ "lines": lines }))
             }
             "get_rule_value" => {
                 let (key, on) = (text(args, "key")?, text(args, "on")?);

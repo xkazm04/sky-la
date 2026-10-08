@@ -5,10 +5,10 @@
 use skyla_app::dto::{
     AdvisorStatusDto, AppInfo, BalanceSheetDto, BankAllocationDto, BankRuleInputDto,
     BankStatementDto, CashBasisDto, ControlStatementDto, DocumentPdfDto, DocumentXmlDto,
-    DunningNoticeDto, EgressRunDto, EntityDto, IntegrityDto, InvoiceDraftDto, InvoiceDto,
-    InvoiceFormDto, JournalEntryDto, ObligationDto, PackUpdateDto, PeriodDto, ProfitAndLossDto,
-    ProposalDto, RecurringTemplateDto, RefDataDto, RulePackDto, TaxProjectionDto, TaxScenariosDto,
-    TrialBalanceDto, VatReturnDto,
+    DunningNoticeDto, EgressPayloadDto, EgressPolicyDto, EgressRunDto, EntityDto, IntegrityDto,
+    InvoiceDraftDto, InvoiceDto, InvoiceFormDto, JournalEntryDto, ObligationDto, PackUpdateDto,
+    PeriodDto, ProfitAndLossDto, ProposalDto, RecurringTemplateDto, RefDataDto, RulePackDto,
+    TaxProjectionDto, TaxScenariosDto, TrialBalanceDto, VatReturnDto,
 };
 use skyla_app::{Core, IpcFailure};
 use tauri::{Runtime, State};
@@ -107,8 +107,33 @@ fn proposals(core: State<'_, Core>) -> Answer<Vec<ProposalDto>> {
 /// The egress register.
 #[tauri::command]
 #[specta::specta]
-fn egress_register(core: State<'_, Core>) -> Vec<EgressRunDto> {
-    core.egress_register()
+fn egress_register(core: State<'_, Core>) -> Answer<Vec<EgressRunDto>> {
+    Ok(core.egress_register()?)
+}
+
+/// Exactly what one run sent ("What was shared").
+#[tauri::command]
+#[specta::specta]
+fn egress_payload(core: State<'_, Core>, id: String) -> Answer<EgressPayloadDto> {
+    Ok(core.egress_payload(&id)?)
+}
+
+/// Each advisor task, what it may send, and the user's policy.
+#[tauri::command]
+#[specta::specta]
+fn egress_policies(core: State<'_, Core>) -> Vec<EgressPolicyDto> {
+    core.egress_policies()
+}
+
+/// Sets a task's policy: `always`, `ask` or `never`.
+#[tauri::command]
+#[specta::specta]
+fn set_egress_policy(
+    core: State<'_, Core>,
+    task: String,
+    policy: String,
+) -> Answer<Vec<EgressPolicyDto>> {
+    Ok(core.set_egress_policy(&task, &policy)?)
 }
 
 /// The DPH return for a period, mapped by the rule pack.
@@ -317,6 +342,9 @@ pub fn specta_builder<R: Runtime>() -> Builder<R> {
             bank_statement,
             proposals,
             egress_register,
+            egress_payload,
+            egress_policies,
+            set_egress_policy,
             vat_return,
             control_statement,
             income_tax_scenarios,

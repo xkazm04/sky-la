@@ -1186,4 +1186,38 @@ pub struct EgressRunDto {
     pub bytes_sent: u32,
     /// What came of it.
     pub outcome: String,
+    /// The provider's own cost estimate, when it gave one.
+    pub cost_note: Option<String>,
+    /// The register's hash chain is unbroken up to and including this run.
+    pub intact: bool,
+}
+
+/// Exactly what one run sent.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct EgressPayloadDto {
+    /// The run.
+    pub id: String,
+    /// Bytes sent.
+    pub bytes: u32,
+    /// The run's link in the register's chain.
+    pub hash: String,
+    /// The payload, pretty-printed when it's JSON.
+    pub text: String,
+}
+
+/// A task type, what it may send, and the user's policy.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct EgressPolicyDto {
+    /// Task id.
+    pub task: String,
+    /// Which advisor.
+    pub advisor: String,
+    /// For people.
+    pub label: String,
+    /// What it may send.
+    pub scope: Vec<String>,
+    /// `always`, `ask` or `never`.
+    pub policy: String,
 }

@@ -13,6 +13,8 @@ use std::time::Duration;
 use serde::Serialize;
 use serde_json::{Value, json};
 
+use skyla_egress::{Gate, GateReport};
+
 use super::Core;
 use super::tools::tool_specs;
 use crate::error::CoreError;
@@ -43,7 +45,7 @@ impl ToolRun {
 }
 
 /// A tool call as the host served it: what came in and what went back to
-/// the model (the egress register records these).
+/// the model after the gate (the egress register records these).
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct ToolCallLog {
     /// The tool.
@@ -54,6 +56,8 @@ pub struct ToolCallLog {
     pub result: String,
     /// The core refused the call.
     pub refused: bool,
+    /// What the gate withheld from it.
+    pub report: GateReport,
 }
 
 /// 244 random bits from the OS, as hex.
@@ -79,6 +83,7 @@ impl Core {
     /// what `f` returned with every tool call served.
     pub fn with_tool_host<R>(
         &self,
+        gate: &Gate,
         f: impl FnOnce(&ToolRun) -> R,
     ) -> Result<(R, Vec<ToolCallLog>), CoreError> {
         let io = |e: std::io::Error| CoreError::BadRequest(format!("tool host: {e}"));
@@ -91,7 +96,7 @@ impl Core {
         let stop = AtomicBool::new(false);
         let log = Mutex::new(Vec::new());
         let result = std::thread::scope(|s| {
-            s.spawn(|| self.serve_tools(&listener, &run.token, &stop, &log));
+            s.spawn(|| self.serve_tools(&listener, &run.token, gate, &stop, &log));
             let r = f(&run);
             stop.store(true, Ordering::SeqCst);
             r
@@ -104,12 +109,13 @@ impl Core {
         &self,
         listener: &TcpListener,
         token: &str,
+        gate: &Gate,
         stop: &AtomicBool,
         log: &Mutex<Vec<ToolCallLog>>,
     ) {
         while !stop.load(Ordering::SeqCst) {
             match listener.accept() {
-                Ok((stream, _)) => self.serve_connection(stream, token, stop, log),
+                Ok((stream, _)) => self.serve_connection(stream, token, gate, stop, log),
                 Err(e) if e.kind() == ErrorKind::WouldBlock => {
                     std::thread::sleep(Duration::from_millis(5))
                 }
@@ -122,6 +128,7 @@ impl Core {
         &self,
         stream: TcpStream,
         token: &str,
+        gate: &Gate,
         stop: &AtomicBool,
         log: &Mutex<Vec<ToolCallLog>>,
     ) {
@@ -146,7 +153,7 @@ impl Core {
                 }
                 Err(_) => return,
             }
-            let answer = self.answer(&line, token, log);
+            let answer = self.answer(&line, token, gate, log);
             line.clear();
             if writeln!(writer, "{answer}").is_err() {
                 return;
@@ -154,7 +161,7 @@ impl Core {
         }
     }
 
-    fn answer(&self, line: &str, token: &str, log: &Mutex<Vec<ToolCallLog>>) -> Value {
+    fn answer(&self, line: &str, token: &str, gate: &Gate, log: &Mutex<Vec<ToolCallLog>>) -> Value {
         let Ok(request) = serde_json::from_str::<Value>(line) else {
             return json!({ "ok": false, "error": "unreadable request" });
         };
@@ -173,16 +180,14 @@ impl Core {
             Some("call") => {
                 let name = request["name"].as_str().unwrap_or_default();
                 let arguments = request["arguments"].clone();
-                let outcome = self.call_tool(name, &arguments);
-                let (answer, result, refused) = match outcome {
-                    Ok(v) => {
-                        let text = v.to_string();
-                        (json!({ "id": id, "ok": true, "result": v }), text, false)
-                    }
-                    Err(e) => {
-                        let text = e.to_string();
-                        (json!({ "id": id, "ok": false, "error": text }), text, true)
-                    }
+                // The result passes the gate before it goes anywhere.
+                let (result, report, refused) = self.gated_tool_call(gate, name, &arguments);
+                let answer = if refused {
+                    json!({ "id": id, "ok": false, "error": result })
+                } else {
+                    let value: Value =
+                        serde_json::from_str(&result).unwrap_or(Value::String(result.clone()));
+                    json!({ "id": id, "ok": true, "result": value })
                 };
                 if let Ok(mut l) = log.lock() {
                     l.push(ToolCallLog {
@@ -190,6 +195,7 @@ impl Core {
                         arguments,
                         result,
                         refused,
+                        report,
                     });
                 }
                 answer

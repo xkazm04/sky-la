@@ -53,7 +53,7 @@ export function Shell({
   const proposals = useQuery("proposals", () => unwrap(commands.proposals()));
   const invoices = useQuery("invoices", () => unwrap(commands.invoices()));
   const bank = useQuery("bank_statement", () => unwrap(commands.bankStatement()));
-  const register = useQuery("egress_register", () => commands.egressRegister());
+  const register = useQuery("egress_register", () => unwrap(commands.egressRegister()));
 
   const ready = <T,>(q: { state: string; data?: T }) => (q.state === "ready" ? q.data : undefined);
   const asOf = ready(entity)?.asOf;

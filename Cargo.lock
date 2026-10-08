@@ -4787,6 +4787,7 @@ dependencies = [
  "serde_json",
  "skyla-advisor",
  "skyla-bank",
+ "skyla-egress",
  "skyla-invoicing",
  "skyla-ledger",
  "skyla-mcp",
@@ -4832,6 +4833,15 @@ dependencies = [
 [[package]]
 name = "skyla-egress"
 version = "0.1.0"
+dependencies = [
+ "proptest",
+ "regex",
+ "rusqlite",
+ "serde",
+ "serde_json",
+ "sha2 0.11.0",
+ "thiserror 2.0.21",
+]
 
 [[package]]
 name = "skyla-invoicing"

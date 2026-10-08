@@ -346,8 +346,28 @@ pub(crate) struct Domain {
     /// The latest bank import.
     /// The inbox.
     pub(crate) proposals: Vec<DomainProposal>,
-    /// The egress register.
-    pub(crate) egress_runs: Vec<crate::dto::EgressRunDto>,
+    /// Past advisor runs, replayed through the gate into the register.
+    pub(crate) egress_runs: Vec<DomainEgressRun>,
+}
+
+/// A past advisor run: what was asked and which tools answered.
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub(crate) struct DomainEgressRun {
+    pub(crate) id: String,
+    pub(crate) at: String,
+    pub(crate) task: String,
+    pub(crate) purpose: String,
+    pub(crate) prompt: String,
+    pub(crate) tool_calls: Vec<DomainToolCall>,
+    pub(crate) outcome: String,
+}
+
+/// One tool call in a past run.
+#[derive(Debug, Clone, Deserialize)]
+pub(crate) struct DomainToolCall {
+    pub(crate) name: String,
+    pub(crate) arguments: serde_json::Value,
 }
 
 /// A received invoice's supplier.

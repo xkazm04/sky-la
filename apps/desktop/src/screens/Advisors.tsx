@@ -71,7 +71,7 @@ const columns = (status: { tone: Tone; label: string }): TableColumn<Advisor>[] 
 
 /** Advisors: what each one can read and propose, and what it sent. */
 export function AdvisorsScreen({ item }: { item: string | null }) {
-  const runs = useQuery("egress_register", () => commands.egressRegister());
+  const runs = useQuery("egress_register", () => unwrap(commands.egressRegister()));
   const status = useQuery("advisor_status", () => commands.advisorStatus());
   const connection = status.state === "ready" ? status.data : undefined;
   const proposals = useQuery("proposals", () => unwrap(commands.proposals()));

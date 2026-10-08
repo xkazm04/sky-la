@@ -1,4 +1,11 @@
-import { type CoreKind, commands, type RefDataDto, type RulePackDto, unwrap } from "@skyla/ipc";
+import {
+  type CoreKind,
+  commands,
+  type EgressPolicyDto,
+  type RefDataDto,
+  type RulePackDto,
+  unwrap,
+} from "@skyla/ipc";
 import {
   type Appearance,
   applyAppearance,
@@ -11,6 +18,7 @@ import {
   Inspector,
   InspectorSection,
   SegmentedControl,
+  Select,
   storeAppearance,
   storedAppearance,
   type TableColumn,
@@ -21,6 +29,7 @@ import { type ReactNode, useEffect, useRef, useState } from "react";
 import { invalidateAll, problems, useQuery } from "../data";
 import { navigate } from "../router";
 import { InspectorPane } from "../shell/Shell";
+import { connectionBadge } from "./AdvisorConnection";
 import { Reasons, TwoLine } from "./common";
 
 interface Setting {
@@ -31,6 +40,7 @@ interface Setting {
   about: string[];
   pack?: RulePackDto | undefined;
   refdata?: RefDataDto | undefined;
+  policies?: EgressPolicyDto[] | undefined;
 }
 
 const columns: TableColumn<Setting>[] = [
@@ -54,6 +64,10 @@ export function SettingsScreen({ item, core }: { item: string | null; core: Core
   const pack = useQuery("rule_pack", () => commands.rulePack());
   const refdata = useQuery("reference_data", () => unwrap(commands.referenceData()));
   const ref = refdata.state === "ready" ? refdata.data : undefined;
+  const status = useQuery("advisor_status", () => commands.advisorStatus());
+  const badge = connectionBadge(status.state === "ready" ? status.data : undefined);
+  const policies = useQuery("egress_policies", () => commands.egressPolicies());
+  const pol = policies.state === "ready" ? policies.data : undefined;
 
   const settings: Setting[] = [
     {
@@ -97,11 +111,31 @@ export function SettingsScreen({ item, core }: { item: string | null; core: Core
       id: "advisors",
       title: "Advisors",
       detail: "Your own Claude Code installation",
-      value: <Badge tone="neutral">Demo · not connected</Badge>,
+      value: <Badge tone={badge.tone}>{badge.label}</Badge>,
       about: [
         "sky-la runs the claude command you installed. Sign in from your terminal with claude auth login; sky-la never sees your credentials.",
         "Every prompt and tool result passes the egress gate and is listed in the egress register.",
       ],
+    },
+    {
+      id: "advisor-sharing",
+      title: "What advisors may send",
+      detail: "Per task: what it may share, and whether it runs",
+      value: pol ? (
+        <span className="text-ink-secondary">
+          {pol.filter((p) => p.policy === "never").length > 0
+            ? `${pol.filter((p) => p.policy !== "never").length} of ${pol.length} tasks allowed`
+            : `Ask before each run · ${pol.length} tasks`}
+        </span>
+      ) : (
+        ""
+      ),
+      about: [
+        "IBANs, account numbers, personal ID numbers and card numbers are never sent, whatever a task may share.",
+        "Customer and supplier names are replaced by stable pseudonyms (Customer A, Vendor B); sky-la puts the real names back in the answer on this machine.",
+        "Fields outside a task's scope are dropped before anything leaves.",
+      ],
+      policies: pol,
     },
     {
       id: "reference-data",
@@ -167,8 +201,8 @@ export function SettingsScreen({ item, core }: { item: string | null; core: Core
           sections={[
             { id: "general", title: "General", rows: settings.slice(0, 1) },
             { id: "security", title: "Security", rows: settings.slice(1, 3) },
-            { id: "advisors", title: "Advisors and data", rows: settings.slice(3, 6) },
-            { id: "about", title: "About", rows: settings.slice(6) },
+            { id: "advisors", title: "Advisors and data", rows: settings.slice(3, 7) },
+            { id: "about", title: "About", rows: settings.slice(7) },
           ]}
           selectedId={selected?.id ?? null}
           onSelect={(id) => navigate("settings", id, true)}
@@ -181,6 +215,7 @@ export function SettingsScreen({ item, core }: { item: string | null; core: Core
               <Reasons reasons={selected.about} />
             </InspectorSection>
             {selected.refdata && <ReferenceData data={selected.refdata} />}
+            {selected.policies && <AdvisorSharing policies={selected.policies} />}
             {selected.pack && (
               <>
                 <InspectorSection title={`Values in force · ${selected.pack.values.length}`}>
@@ -216,6 +251,51 @@ export function SettingsScreen({ item, core }: { item: string | null; core: Core
             )}
           </Inspector>
         </InspectorPane>
+      )}
+    </>
+  );
+}
+
+const POLICIES = [
+  { id: "ask", label: "Ask before each run" },
+  { id: "always", label: "Run without asking" },
+  { id: "never", label: "Never run" },
+] as const;
+
+/** Each advisor task: what it may share and whether it runs. The core keeps the policy. */
+function AdvisorSharing({ policies }: { policies: EgressPolicyDto[] }) {
+  const [error, setError] = useState<string[]>([]);
+  const change = async (task: string, policy: string) => {
+    try {
+      await unwrap(commands.setEgressPolicy(task, policy));
+      setError([]);
+      invalidateAll();
+    } catch (e) {
+      setError(problems(e));
+    }
+  };
+  return (
+    <>
+      {policies.map((p) => (
+        <InspectorSection key={p.task} title={p.label}>
+          <div className="flex flex-col gap-2">
+            <Select
+              label={`${p.label}: when it runs`}
+              labelHidden
+              options={POLICIES}
+              value={p.policy}
+              onChange={(v) => void change(p.task, v)}
+            />
+            <p className="text-footnote text-ink-secondary">
+              {p.advisor} may send: {p.scope.join("; ")}.
+            </p>
+          </div>
+        </InspectorSection>
+      ))}
+      {error.length > 0 && (
+        <p role="alert" className="mt-2 text-footnote text-negative-ink">
+          {error.join(" ")}
+        </p>
       )}
     </>
   );

@@ -1,4 +1,4 @@
-import { commands, type EgressRunDto } from "@skyla/ipc";
+import { commands, type EgressRunDto, unwrap } from "@skyla/ipc";
 import {
   ContentGroup,
   DataTable,
@@ -9,7 +9,7 @@ import {
   Toolbar,
 } from "@skyla/ui";
 import { useQuery } from "../data";
-import { moment } from "../format";
+import { moment, shortHash } from "../format";
 import { navigate } from "../router";
 import { InspectorPane } from "../shell/Shell";
 import { EmptyInspector, Loaded, Reasons, TwoLine } from "./common";
@@ -31,9 +31,38 @@ const columns: TableColumn<EgressRunDto>[] = [
   },
 ];
 
+/** Exactly what a run sent, as the register replays it. */
+function WhatWasShared({ id }: { id: string }) {
+  const payload = useQuery(`egress_payload:${id}`, () => unwrap(commands.egressPayload(id)));
+  return (
+    <InspectorSection title="What was shared">
+      <Loaded query={payload}>
+        {(p) => (
+          <>
+            <p className="mb-1.5 text-footnote text-ink-secondary">
+              {p.bytes} bytes, replayed from the register exactly as sent · link {shortHash(p.hash)}
+            </p>
+            <section
+              aria-label="Payload sent"
+              // biome-ignore lint/a11y/noNoninteractiveTabindex: a scrollable region must take focus
+              tabIndex={0}
+              data-testid="payload"
+              className="max-h-80 overflow-auto rounded-inner bg-surface p-3 shadow-group outline-none focus-visible:shadow-[inset_0_0_0_2px_var(--sk-focus)]"
+            >
+              <pre className="whitespace-pre-wrap break-words font-mono text-footnote">
+                {p.text}
+              </pre>
+            </section>
+          </>
+        )}
+      </Loaded>
+    </InspectorSection>
+  );
+}
+
 /** The egress register: every advisor run, what left the machine and what was withheld. */
 export function RegisterScreen({ item }: { item: string | null }) {
-  const runs = useQuery("egress_register", () => commands.egressRegister());
+  const runs = useQuery("egress_register", () => unwrap(commands.egressRegister()));
   return (
     <Loaded query={runs}>
       {(all) => {
@@ -61,7 +90,7 @@ export function RegisterScreen({ item }: { item: string | null }) {
                   title={selected.purpose}
                   subtitle={`${selected.advisor} · ${moment(selected.at)}`}
                 >
-                  <InspectorSection title="Sent">
+                  <InspectorSection title="Allowed to send">
                     <p className="text-body">{selected.sent}</p>
                   </InspectorSection>
                   <InspectorSection title="Withheld by the egress gate">
@@ -71,6 +100,7 @@ export function RegisterScreen({ item }: { item: string | null }) {
                       <p className="text-body text-ink-secondary">Nothing needed withholding.</p>
                     )}
                   </InspectorSection>
+                  <WhatWasShared id={selected.id} />
                   <InspectorSection title="Run">
                     <FactList
                       facts={[
@@ -79,6 +109,12 @@ export function RegisterScreen({ item }: { item: string | null }) {
                         { label: "Tool calls", value: String(selected.toolCalls) },
                         { label: "Bytes sent", value: String(selected.bytesSent) },
                         { label: "Outcome", value: selected.outcome },
+                        {
+                          label: "Register",
+                          value: selected.intact
+                            ? "Unaltered (hash chain verified)"
+                            : "Altered after recording",
+                        },
                       ]}
                     />
                   </InspectorSection>

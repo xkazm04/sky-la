@@ -31,7 +31,13 @@ export const commands = {
 	/**  The inbox. */
 	proposals: () => typedError<ProposalDto[], IpcFailure>(__TAURI_INVOKE("proposals")),
 	/**  The egress register. */
-	egressRegister: () => __TAURI_INVOKE<EgressRunDto[]>("egress_register"),
+	egressRegister: () => typedError<EgressRunDto[], IpcFailure>(__TAURI_INVOKE("egress_register")),
+	/**  Exactly what one run sent ("What was shared"). */
+	egressPayload: (id: string) => typedError<EgressPayloadDto, IpcFailure>(__TAURI_INVOKE("egress_payload", { id })),
+	/**  Each advisor task, what it may send, and the user's policy. */
+	egressPolicies: () => __TAURI_INVOKE<EgressPolicyDto[]>("egress_policies"),
+	/**  Sets a task's policy: `always`, `ask` or `never`. */
+	setEgressPolicy: (task: string, policy: string) => typedError<EgressPolicyDto[], IpcFailure>(__TAURI_INVOKE("set_egress_policy", { task, policy })),
 	/**  The DPH return for a period, mapped by the rule pack. */
 	vatReturn: (from: string, to: string) => typedError<VatReturnDto, IpcFailure>(__TAURI_INVOKE("vat_return", { from, to })),
 	/**  The kontrolní hlášení for a period, checked against the return. */
@@ -411,6 +417,32 @@ export type DunningNoticeDto = {
 	bodyEn: string,
 };
 
+/**  Exactly what one run sent. */
+export type EgressPayloadDto = {
+	/**  The run. */
+	id: string,
+	/**  Bytes sent. */
+	bytes: number,
+	/**  The run's link in the register's chain. */
+	hash: string,
+	/**  The payload, pretty-printed when it's JSON. */
+	text: string,
+};
+
+/**  A task type, what it may send, and the user's policy. */
+export type EgressPolicyDto = {
+	/**  Task id. */
+	task: string,
+	/**  Which advisor. */
+	advisor: string,
+	/**  For people. */
+	label: string,
+	/**  What it may send. */
+	scope: string[],
+	/**  `always`, `ask` or `never`. */
+	policy: string,
+};
+
 /**  One run in the egress register. */
 export type EgressRunDto = {
 	/**  Stable id. */
@@ -435,6 +467,10 @@ export type EgressRunDto = {
 	bytesSent: number,
 	/**  What came of it. */
 	outcome: string,
+	/**  The provider's own cost estimate, when it gave one. */
+	costNote: string | null,
+	/**  The register's hash chain is unbroken up to and including this run. */
+	intact: boolean,
 };
 
 /**  The open entity. */

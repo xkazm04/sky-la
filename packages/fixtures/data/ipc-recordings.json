@@ -1213,48 +1213,143 @@
       {
         "advisor": "Financial advisor",
         "at": "2026-10-06T18:04:12Z",
-        "bytesSent": 2140,
+        "bytesSent": 3444,
+        "costNote": null,
         "id": "run-2026-10-06-01",
+        "intact": true,
         "model": "your default",
         "outcome": "Draft finding added to the inbox",
         "provider": "Claude Code (your installation)",
         "purpose": "Explain this · account 518, Q3",
         "redacted": [
-          "Vendor IČO"
+          "IBAN ×3"
         ],
-        "sent": "Monthly totals for account 518 by vendor; no account numbers or personal IDs",
-        "toolCalls": 3
+        "sent": "Totals for periods; Account balances and movements; Line memos and payment messages",
+        "toolCalls": 2
       },
       {
         "advisor": "Advisor suggestion",
         "at": "2026-10-04T09:12:40Z",
-        "bytesSent": 312,
+        "bytesSent": 895,
+        "costNote": null,
         "id": "run-2026-10-04-02",
+        "intact": true,
         "model": "your default",
         "outcome": "Suggestion below the threshold; waiting for you",
         "provider": "Claude Code (your installation)",
         "purpose": "Classify a bank line without a reference",
         "redacted": [
-          "Counterparty account",
-          "Card number"
+          "Counterparty names → pseudonyms ×6",
+          "Field “counterpartyAccount” (outside the task's scope)"
         ],
-        "sent": "Amount, date and line type of one bank line",
+        "sent": "Totals for periods; Line memos and payment messages",
         "toolCalls": 1
       },
       {
         "advisor": "Tax advisor",
         "at": "2026-10-04T09:02:05Z",
-        "bytesSent": 980,
+        "bytesSent": 3706,
+        "costNote": null,
         "id": "run-2026-10-04-01",
+        "intact": true,
         "model": "your default",
         "outcome": "Scenario drafted for your review",
         "provider": "Claude Code (your installation)",
         "purpose": "Flat-rate expense scenario, 2026",
-        "redacted": [],
-        "sent": "Year-to-date revenue and expense totals",
+        "redacted": [
+          "Account number ×1"
+        ],
+        "sent": "Totals for periods; Account balances and movements",
         "toolCalls": 2
       }
     ],
+    "isError": false
+  },
+  {
+    "command": "egress_policies",
+    "args": {},
+    "result": [
+      {
+        "advisor": "Tax advisor",
+        "label": "Tax scenarios and explanations",
+        "policy": "ask",
+        "scope": [
+          "Totals for periods",
+          "Account balances and movements"
+        ],
+        "task": "tax.scenarios"
+      },
+      {
+        "advisor": "Financial advisor",
+        "label": "Findings about costs, margins and trends",
+        "policy": "ask",
+        "scope": [
+          "Totals for periods",
+          "Account balances and movements"
+        ],
+        "task": "financial.findings"
+      },
+      {
+        "advisor": "Financial advisor",
+        "label": "Explain this (a figure, account or line)",
+        "policy": "ask",
+        "scope": [
+          "Totals for periods",
+          "Account balances and movements",
+          "Line memos and payment messages"
+        ],
+        "task": "explain.figure"
+      },
+      {
+        "advisor": "Advisor suggestion",
+        "label": "Suggest an account for a bank line",
+        "policy": "ask",
+        "scope": [
+          "Totals for periods",
+          "Line memos and payment messages"
+        ],
+        "task": "bank.categorise"
+      }
+    ],
+    "isError": false
+  },
+  {
+    "command": "egress_payload",
+    "args": {
+      "id": "run-2026-10-04-01"
+    },
+    "result": {
+      "bytes": 3706,
+      "hash": "394ec8656d7e9f3ed7796ca5d9786b10c5f03dbdfc47011d9da2792f0b442f6b",
+      "id": "run-2026-10-04-01",
+      "text": "{\n  \"prompt\": \"Compare claiming actual expenses with the 60 % flat rate for 2026 so far. Use run_scenario for every figure and explain the side effects for the user's review.\",\n  \"task\": \"tax.scenarios\",\n  \"toolResults\": [\n    {\n      \"arguments\": {\n        \"projection\": null\n      },\n      \"result\": {\n        \"actualExpenses\": {\n          \"currency\": \"CZK\",\n          \"minor\": 26122000\n        },\n        \"assumptions\": [\n          \"From the books, 2026-01-01 to 2026-10-07 (cash basis), not a projection for the whole year.\",\n          \"The higher rate above the solidarity threshold isn't applied: the pack doesn't hold the threshold for this year.\",\n          \"The minimum assessment bases aren't applied: the pack doesn't hold the 2026 average wage. If either base is below its minimum, that insurance is higher.\",\n          \"Only § 7 income; no other income, deductions or credits besides the taxpayer's own.\"\n        ],\n        \"baseline\": \"actual\",\n        \"flatRate\": \"trade\",\n        \"from\": \"2026-01-01\",\n        \"income\": {\n          \"currency\": \"CZK\",\n          \"minor\": 80362231\n        },\n        \"lowestTotal\": \"flat_rate.trade\",\n        \"notEvaluated\": [\n          \"Paušální daň: the pack doesn't hold the 2026 bands, so eligibility and its amount aren't assessed.\"\n        ],\n        \"pack\": \"cz-2026@2026.1\",\n        \"questions\": [],\n        \"scenarios\": [\n          {\n            \"capped\": false,\n            \"expenses\": {\n              \"currency\": \"CZK\",\n              \"minor\": 26122000\n            },\n            \"flatRateCap\": null,\n            \"flatRatePercent\": null,\n            \"health\": {\n              \"currency\": \"CZK\",\n              \"minor\": 3661300\n            },\n            \"healthBase\": {\n              \"currency\": \"CZK\",\n              \"minor\": 27120200\n            },\n            \"healthRatePercent\": \"13,5\",\n            \"id\": \"actual\",\n            \"label\": \"Actual expenses\",\n            \"profit\": {\n              \"currency\": \"CZK\",\n              \"minor\": 54240231\n            },\n            \"social\": {\n              \"currency\": \"CZK\",\n              \"minor\": 7919100\n            },\n            \"socialBase\": {\n              \"currency\": \"CZK\",\n              \"minor\": 27120200\n            },\n            \"socialRatePercent\": \"29,2\",\n            \"tax\": {\n              \"currency\": \"CZK\",\n              \"minor\": 5052000\n            },\n            \"taxBase\": {\n              \"currency\": \"CZK\",\n              \"minor\": 54240000\n            },\n            \"taxBeforeCredits\": {\n              \"currency\": \"CZK\",\n              \"minor\": 8136000\n            },\n            \"taxRatePercent\": \"15\",\n            \"taxpayerCredit\": {\n              \"currency\": \"CZK\",\n              \"minor\": 3084000\n            },\n            \"total\": {\n              \"currency\": \"CZK\",\n              \"minor\": 16632400\n            },\n            \"vsBaselineInsurance\": {\n              \"currency\": \"CZK\",\n              \"minor\": 0\n            },\n            \"vsBaselinePensionBase\": {\n              \"currency\": \"CZK\",\n              \"minor\": 0\n            },\n            \"vsBaselineTax\": {\n              \"currency\": \"CZK\",\n              \"minor\": 0\n            },\n            \"vsBaselineTotal\": {\n              \"currency\": \"CZK\",\n              \"minor\": 0\n            }\n          },\n          {\n            \"capped\": false,\n            \"expenses\": {\n              \"currency\": \"CZK\",\n              \"minor\": 48217338\n            },\n            \"flatRateCap\": {\n              \"currency\": \"CZK\",\n              \"minor\": 120000000\n            },\n            \"flatRatePercent\": \"60\",\n            \"health\": {\n              \"currency\": \"CZK\",\n              \"minor\": 2169800\n            },\n            \"healthBase\": {\n              \"currency\": \"CZK\",\n              \"minor\": 16072500\n            },\n            \"healthRatePercent\": \"13,5\",\n            \"id\": \"flat_rate.trade\",\n            \"label\": \"Flat-rate expenses 60 %\",\n            \"profit\": {\n              \"currency\": \"CZK\",\n              \"minor\": 32144893\n            },\n            \"social\": {\n              \"currency\": \"CZK\",\n              \"minor\": 4693200\n            },\n            \"socialBase\": {\n              \"currency\": \"CZK\",\n              \"minor\": 16072500\n            },\n            \"socialRatePercent\": \"29,2\",\n            \"tax\": {\n              \"currency\": \"CZK\",\n              \"minor\": 1737000\n            },\n            \"taxBase\": {\n              \"currency\": \"CZK\",\n              \"minor\": 32140000\n            },\n            \"taxBeforeCredits\": {\n              \"currency\": \"CZK\",\n              \"minor\": 4821000\n            },\n            \"taxRatePercent\": \"15\",\n            \"taxpayerCredit\": {\n              \"currency\": \"CZK\",\n              \"minor\": 3084000\n            },\n            \"total\": {\n              \"currency\": \"CZK\",\n              \"minor\": 8600000\n            },\n            \"vsBaselineInsurance\": {\n              \"currency\": \"CZK\",\n              \"minor\": -4717400\n            },\n            \"vsBaselinePensionBase\": {\n              \"currency\": \"CZK\",\n              \"minor\": -11047700\n            },\n            \"vsBaselineTax\": {\n              \"currency\": \"CZK\",\n              \"minor\": -3315000\n            },\n            \"vsBaselineTotal\": {\n              \"currency\": \"CZK\",\n              \"minor\": -8032400\n            }\n          }\n        ],\n        \"source\": \"books\",\n        \"to\": \"2026-10-07\",\n        \"year\": \"2026\"\n      },\n      \"tool\": \"run_scenario\"\n    },\n    {\n      \"arguments\": {\n        \"key\": \"income_tax.flat_rate.trade.cap\",\n        \"on\": \"2026-12-31\"\n      },\n      \"result\": {\n        \"citation\": \"Zákon č. [account number withheld] Sb., o daních z příjmů, § 7 odst. 7 písm. b)\",\n        \"key\": \"income_tax.flat_rate.trade.cap\",\n        \"kind\": \"amount\",\n        \"pack\": \"cz-2026@2026.1\",\n        \"value\": \"1200000.00\"\n      },\n      \"tool\": \"get_rule_value\"\n    }\n  ]\n}"
+    },
+    "isError": false
+  },
+  {
+    "command": "egress_payload",
+    "args": {
+      "id": "run-2026-10-04-02"
+    },
+    "result": {
+      "bytes": 895,
+      "hash": "a8fa6d5fc1fdbd9911be1ebbde16bae924fc3747f41f2d1c670466ce1ad4dd14",
+      "id": "run-2026-10-04-02",
+      "text": "{\n  \"prompt\": \"Suggest an account for the bank lines the matcher couldn't place, with a reason for each.\",\n  \"task\": \"bank.categorise\",\n  \"toolResults\": [\n    {\n      \"arguments\": {},\n      \"result\": {\n        \"lines\": [\n          {\n            \"amount\": {\n              \"currency\": \"CZK\",\n              \"minor\": -9500\n            },\n            \"counterparty\": \"Vendor H\",\n            \"date\": \"2026-10-06\",\n            \"line\": \"s1-5\",\n            \"reference\": \"Vendor H\"\n          },\n          {\n            \"amount\": {\n              \"currency\": \"CZK\",\n              \"minor\": -242000\n            },\n            \"counterparty\": \"Vendor A\",\n            \"date\": \"2026-10-05\",\n            \"line\": \"s1-4\",\n            \"reference\": \"Objednávka 541227 USB-C dock\"\n          },\n          {\n            \"amount\": {\n              \"currency\": \"CZK\",\n              \"minor\": -600000\n            },\n            \"counterparty\": \"Vendor I\",\n            \"date\": \"2026-10-04\",\n            \"line\": \"s1-3\",\n            \"reference\": \"Vendor I\"\n          },\n          {\n            \"amount\": {\n              \"currency\": \"CZK\",\n              \"minor\": -115292\n            },\n            \"counterparty\": \"Vendor D\",\n            \"date\": \"2026-10-03\",\n            \"line\": \"s1-2\",\n            \"reference\": \"Platba kartou GOOGLE*WORKSPACE 45,86 EUR kurz 25,140\"\n          }\n        ]\n      },\n      \"tool\": \"list_unmatched_bank_lines\"\n    }\n  ]\n}"
+    },
+    "isError": false
+  },
+  {
+    "command": "egress_payload",
+    "args": {
+      "id": "run-2026-10-06-01"
+    },
+    "result": {
+      "bytes": 3444,
+      "hash": "a4b31c5e033ee63ac781fe3a7875e002d6db9376d9fc9816c84774dea2b16f46",
+      "id": "run-2026-10-06-01",
+      "text": "{\n  \"prompt\": \"Explain what makes up account 518 (other services) in Q3 2026 compared with Q2.\",\n  \"task\": \"explain.figure\",\n  \"toolResults\": [\n    {\n      \"arguments\": {\n        \"from\": \"2026-07-01\",\n        \"to\": \"2026-09-30\"\n      },\n      \"result\": {\n        \"expenses\": [\n          {\n            \"amount\": {\n              \"currency\": \"CZK\",\n              \"minor\": 4130000\n            },\n            \"code\": \"501\",\n            \"nameCs\": \"Spotřeba materiálu\",\n            \"nameEn\": \"Materials consumed\"\n          },\n          {\n            \"amount\": {\n              \"currency\": \"CZK\",\n              \"minor\": 620000\n            },\n            \"code\": \"512\",\n            \"nameCs\": \"Cestovné\",\n            \"nameEn\": \"Travel\"\n          },\n          {\n            \"amount\": {\n              \"currency\": \"CZK\",\n              \"minor\": 340000\n            },\n            \"code\": \"513\",\n            \"nameCs\": \"Náklady na reprezentaci\",\n            \"nameEn\": \"Entertainment\"\n          },\n          {\n            \"amount\": {\n              \"currency\": \"CZK\",\n              \"minor\": 12080000\n            },\n            \"code\": \"518\",\n            \"nameCs\": \"Ostatní služby\",\n            \"nameEn\": \"Other services\"\n          },\n          {\n            \"amount\": {\n              \"currency\": \"CZK\",\n              \"minor\": 120000\n            },\n            \"code\": \"538\",\n            \"nameCs\": \"Ostatní daně a poplatky\",\n            \"nameEn\": \"Other taxes and fees\"\n          },\n          {\n            \"amount\": {\n              \"currency\": \"CZK\",\n              \"minor\": 240000\n            },\n            \"code\": \"548\",\n            \"nameCs\": \"Ostatní provozní náklady\",\n            \"nameEn\": \"Other operating expenses\"\n          },\n          {\n            \"amount\": {\n              \"currency\": \"CZK\",\n              \"minor\": 85000\n            },\n            \"code\": \"568\",\n            \"nameCs\": \"Ostatní finanční náklady\",\n            \"nameEn\": \"Other financial expenses\"\n          }\n        ],\n        \"from\": \"2026-07-01\",\n        \"profit\": {\n          \"currency\": \"CZK\",\n          \"minor\": 28035000\n        },\n        \"revenue\": [\n          {\n            \"amount\": {\n              \"currency\": \"CZK\",\n              \"minor\": 45520000\n            },\n            \"code\": \"602\",\n            \"nameCs\": \"Tržby z prodeje služeb\",\n            \"nameEn\": \"Sales of services\"\n          },\n          {\n            \"amount\": {\n              \"currency\": \"CZK\",\n              \"minor\": 130000\n            },\n            \"code\": \"648\",\n            \"nameCs\": \"Ostatní provozní výnosy\",\n            \"nameEn\": \"Other operating income\"\n          }\n        ],\n        \"snapshot\": {\n          \"entries\": 30,\n          \"hash\": \"e980b015d0403c615b8f520ff9c1f92e34dda1e06[IBAN withheld]\",\n          \"lastPostedSeq\": 52\n        },\n        \"to\": \"2026-09-30\",\n        \"totalExpenses\": {\n          \"currency\": \"CZK\",\n          \"minor\": 17615000\n        },\n        \"totalRevenue\": {\n          \"currency\": \"CZK\",\n          \"minor\": 45650000\n        }\n      },\n      \"tool\": \"get_period_summary\"\n    },\n    {\n      \"arguments\": {\n        \"from\": \"2026-04-01\",\n        \"to\": \"2026-06-30\"\n      },\n      \"result\": {\n        \"expenses\": [\n          {\n            \"amount\": {\n              \"currency\": \"CZK\",\n              \"minor\": 985000\n            },\n            \"code\": \"501\",\n            \"nameCs\": \"Spotřeba materiálu\",\n            \"nameEn\": \"Materials consumed\"\n          },\n          {\n            \"amount\": {\n              \"currency\": \"CZK\",\n              \"minor\": 790000\n            },\n            \"code\": \"512\",\n            \"nameCs\": \"Cestovné\",\n            \"nameEn\": \"Travel\"\n          },\n          {\n            \"amount\": {\n              \"currency\": \"CZK\",\n              \"minor\": 215000\n            },\n            \"code\": \"513\",\n            \"nameCs\": \"Náklady na reprezentaci\",\n            \"nameEn\": \"Entertainment\"\n          },\n          {\n            \"amount\": {\n              \"currency\": \"CZK\",\n              \"minor\": 8820000\n            },\n            \"code\": \"518\",\n            \"nameCs\": \"Ostatní služby\",\n            \"nameEn\": \"Other services\"\n          },\n          {\n            \"amount\": {\n              \"currency\": \"CZK\",\n              \"minor\": 100000\n            },\n            \"code\": \"538\",\n            \"nameCs\": \"Ostatní daně a poplatky\",\n            \"nameEn\": \"Other taxes and fees\"\n          },\n          {\n            \"amount\": {\n              \"currency\": \"CZK\",\n              \"minor\": 250000\n            },\n            \"code\": \"548\",\n            \"nameCs\": \"Ostatní provozní náklady\",\n            \"nameEn\": \"Other operating expenses\"\n          },\n          {\n            \"amount\": {\n              \"currency\": \"CZK\",\n              \"minor\": 62000\n            },\n            \"code\": \"568\",\n            \"nameCs\": \"Ostatní finanční náklady\",\n            \"nameEn\": \"Other financial expenses\"\n          }\n        ],\n        \"from\": \"2026-04-01\",\n        \"profit\": {\n          \"currency\": \"CZK\",\n          \"minor\": 27878000\n        },\n        \"revenue\": [\n          {\n            \"amount\": {\n              \"currency\": \"CZK\",\n              \"minor\": 39100000\n            },\n            \"code\": \"602\",\n            \"nameCs\": \"Tržby z prodeje služeb\",\n            \"nameEn\": \"Sales of services\"\n          }\n        ],\n        \"snapshot\": {\n          \"entries\": 22,\n          \"hash\": \"fae3[IBAN withheld]24[IBAN withheld]\",\n          \"lastPostedSeq\": 24\n        },\n        \"to\": \"2026-06-30\",\n        \"totalExpenses\": {\n          \"currency\": \"CZK\",\n          \"minor\": 11222000\n        },\n        \"totalRevenue\": {\n          \"currency\": \"CZK\",\n          \"minor\": 39100000\n        }\n      },\n      \"tool\": \"get_period_summary\"\n    }\n  ]\n}"
+    },
     "isError": false
   },
   {
@@ -11052,6 +11147,109 @@
       }
     },
     "isError": false
+  },
+  {
+    "command": "set_egress_policy",
+    "args": {
+      "policy": "never",
+      "task": "tax.scenarios"
+    },
+    "result": [
+      {
+        "advisor": "Tax advisor",
+        "label": "Tax scenarios and explanations",
+        "policy": "never",
+        "scope": [
+          "Totals for periods",
+          "Account balances and movements"
+        ],
+        "task": "tax.scenarios"
+      },
+      {
+        "advisor": "Financial advisor",
+        "label": "Findings about costs, margins and trends",
+        "policy": "ask",
+        "scope": [
+          "Totals for periods",
+          "Account balances and movements"
+        ],
+        "task": "financial.findings"
+      },
+      {
+        "advisor": "Financial advisor",
+        "label": "Explain this (a figure, account or line)",
+        "policy": "ask",
+        "scope": [
+          "Totals for periods",
+          "Account balances and movements",
+          "Line memos and payment messages"
+        ],
+        "task": "explain.figure"
+      },
+      {
+        "advisor": "Advisor suggestion",
+        "label": "Suggest an account for a bank line",
+        "policy": "ask",
+        "scope": [
+          "Totals for periods",
+          "Line memos and payment messages"
+        ],
+        "task": "bank.categorise"
+      }
+    ],
+    "isError": false,
+    "scenario": "egress-policy",
+    "leadsTo": "egress-policy/tax-never"
+  },
+  {
+    "command": "egress_policies",
+    "args": {},
+    "result": [
+      {
+        "advisor": "Tax advisor",
+        "label": "Tax scenarios and explanations",
+        "policy": "never",
+        "scope": [
+          "Totals for periods",
+          "Account balances and movements"
+        ],
+        "task": "tax.scenarios"
+      },
+      {
+        "advisor": "Financial advisor",
+        "label": "Findings about costs, margins and trends",
+        "policy": "ask",
+        "scope": [
+          "Totals for periods",
+          "Account balances and movements"
+        ],
+        "task": "financial.findings"
+      },
+      {
+        "advisor": "Financial advisor",
+        "label": "Explain this (a figure, account or line)",
+        "policy": "ask",
+        "scope": [
+          "Totals for periods",
+          "Account balances and movements",
+          "Line memos and payment messages"
+        ],
+        "task": "explain.figure"
+      },
+      {
+        "advisor": "Advisor suggestion",
+        "label": "Suggest an account for a bank line",
+        "policy": "ask",
+        "scope": [
+          "Totals for periods",
+          "Line memos and payment messages"
+        ],
+        "task": "bank.categorise"
+      }
+    ],
+    "isError": false,
+    "scenario": "egress-policy",
+    "state": "egress-policy/tax-never"
   },
   {
     "command": "income_tax_scenarios",
