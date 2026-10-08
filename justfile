@@ -96,3 +96,14 @@ fuzz secs="120":
 # Supply-chain and licence policy for third-party crates.
 deny:
     cargo deny check
+
+# Builds the Linux .deb the way the release workflow does, collects it with
+# SHA256SUMS and latest.json in dist-release/, and checks the sums (WP-33).
+# Needs WebKitGTK. Unsigned: signing happens in CI with the maintainer's key.
+release-dry-run target="x86_64-unknown-linux-gnu":
+    cargo build --release --locked -p skyla-mcp --target {{target}}
+    cargo run -q --locked -p skyla-release -- stage-shim {{target}}
+    pnpm --filter @skyla/desktop tauri build --target {{target}} --bundles deb --config src-tauri/tauri.release.conf.json
+    rm -rf dist-release
+    cargo run -q --locked -p skyla-release -- collect target/{{target}}/release/bundle dist-release v$(cargo run -q --locked -p skyla-release -- version) $(date -u +%F)
+    cargo run -q --locked -p skyla-release -- verify-sums dist-release

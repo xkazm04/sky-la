@@ -5227,6 +5227,8 @@ dependencies = [
  "base64 0.22.1",
  "crc32fast",
  "flate2",
+ "minisign",
+ "minisign-verify",
  "regex",
  "rusqlite",
  "serde",
@@ -5345,6 +5347,17 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror 2.0.21",
+]
+
+[[package]]
+name = "skyla-release"
+version = "0.1.0"
+dependencies = [
+ "minisign",
+ "minisign-verify",
+ "serde_json",
+ "sha2 0.11.0",
+ "tempfile",
 ]
 
 [[package]]

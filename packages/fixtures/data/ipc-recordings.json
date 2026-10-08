@@ -1297,6 +1297,19 @@
     "isError": false
   },
   {
+    "command": "update_status",
+    "args": {},
+    "result": {
+      "available": null,
+      "checked": false,
+      "current": "0.1.0",
+      "enabled": false,
+      "source": "github.com",
+      "trustedKeys": 0
+    },
+    "isError": false
+  },
+  {
     "command": "egress_policies",
     "args": {},
     "result": [
@@ -15790,6 +15803,82 @@
     "isError": false,
     "scenario": "new-invoice",
     "state": "new-invoice/issued"
+  },
+  {
+    "command": "set_update_check",
+    "args": {
+      "enabled": true
+    },
+    "result": {
+      "available": null,
+      "checked": false,
+      "current": "0.1.0",
+      "enabled": true,
+      "source": "github.com",
+      "trustedKeys": 0
+    },
+    "isError": false,
+    "scenario": "update-check",
+    "leadsTo": "update-check/on"
+  },
+  {
+    "command": "update_status",
+    "args": {},
+    "result": {
+      "available": null,
+      "checked": false,
+      "current": "0.1.0",
+      "enabled": true,
+      "source": "github.com",
+      "trustedKeys": 0
+    },
+    "isError": false,
+    "scenario": "update-check",
+    "state": "update-check/on"
+  },
+  {
+    "command": "check_for_update",
+    "args": {},
+    "result": {
+      "code": "bad_request",
+      "message": "no release signing key is configured yet, so sky-la doesn't check for updates; nothing was fetched"
+    },
+    "isError": true,
+    "scenario": "update-check",
+    "state": "update-check/on"
+  },
+  {
+    "command": "set_update_check",
+    "args": {
+      "enabled": false
+    },
+    "result": {
+      "available": null,
+      "checked": false,
+      "current": "0.1.0",
+      "enabled": false,
+      "source": "github.com",
+      "trustedKeys": 0
+    },
+    "isError": false,
+    "scenario": "update-check",
+    "state": "update-check/on",
+    "leadsTo": "update-check/off"
+  },
+  {
+    "command": "update_status",
+    "args": {},
+    "result": {
+      "available": null,
+      "checked": false,
+      "current": "0.1.0",
+      "enabled": false,
+      "source": "github.com",
+      "trustedKeys": 0
+    },
+    "isError": false,
+    "scenario": "update-check",
+    "state": "update-check/off"
   },
   {
     "command": "preview_invoice_import",

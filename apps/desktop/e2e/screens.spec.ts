@@ -704,3 +704,24 @@ test("the books are exported as one zip", async ({ page }) => {
     "Saved sky-la-export-Jan_Novak-2026-10-07.zip",
   );
 });
+
+// WP-33 acceptance (update channel): off until turned on, and with no
+// release key in this build it refuses to check, fetching nothing.
+test("the update check is opt-in and needs a release key", async ({ page }) => {
+  await page.goto("/#/settings/updates");
+  await settle(page);
+  const inspector = page.getByRole("complementary", { name: "Updates" });
+  const toggle = inspector.getByRole("checkbox", { name: /Allow checking github.com/ });
+  await expect(toggle).not.toBeChecked();
+  await expect(inspector.getByRole("button", { name: "Check now" })).toBeDisabled();
+  await expect(inspector).toContainText("This build trusts no release key yet");
+  await inspector.getByText("Allow checking github.com").click();
+  await expect(toggle).toBeChecked();
+  await expect(page.getByRole("row", { name: /Updates/ })).toContainText("On · github.com");
+  await inspector.getByRole("button", { name: "Check now" }).click();
+  await expect(inspector.getByRole("alert")).toContainText(
+    "no release signing key is configured yet",
+  );
+  await inspector.getByText("Allow checking github.com").click();
+  await expect(toggle).not.toBeChecked();
+});

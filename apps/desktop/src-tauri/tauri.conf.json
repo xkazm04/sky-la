@@ -38,7 +38,7 @@
   },
   "bundle": {
     "active": true,
-    "targets": "all",
+    "targets": ["deb", "appimage", "app", "dmg", "nsis"],
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
@@ -46,6 +46,29 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "license": "AGPL-3.0-or-later"
+    "license": "AGPL-3.0-or-later",
+    "publisher": "sky-la contributors",
+    "category": "Finance",
+    "shortDescription": "Local-first, encrypted accounting for Czech freelancers",
+    "longDescription": "Double-entry books, invoices, bank statements and Czech tax returns for an OSVČ or a micro-company, encrypted on your computer. Advisors run through your own Claude Code and only propose; nothing posts without you.",
+    "copyright": "© 2026 sky-la contributors · AGPL-3.0-or-later",
+    "homepage": "https://github.com/xkazm04/sky-la",
+    "licenseFile": "../../../LICENSE",
+    "linux": {
+      "deb": {
+        "section": "utils"
+      }
+    },
+    "macOS": {
+      "minimumSystemVersion": "11.0",
+      "hardenedRuntime": true
+    },
+    "windows": {
+      "digestAlgorithm": "sha256",
+      "timestampUrl": "http://timestamp.digicert.com",
+      "nsis": {
+        "installMode": "currentUser"
+      }
+    }
   }
 }

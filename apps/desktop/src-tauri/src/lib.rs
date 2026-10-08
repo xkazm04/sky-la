@@ -13,7 +13,7 @@ use skyla_app::dto::{
 };
 use skyla_app::dto::{
     BackupDto, BackupsDto, DrillDto, EntitySetupDto, ExportDto, ImportPreviewDto, RecoveryKeyDto,
-    SessionStateDto,
+    SessionStateDto, UpdateStatusDto,
 };
 use skyla_app::session::Gate;
 use skyla_app::{Core, IpcFailure};
@@ -312,6 +312,27 @@ fn commit_invoice_import(
     Ok(core.commit_invoice_import(&file_name, &content_base64)?)
 }
 
+/// Whether the opt-in update check is on, and what it last found.
+#[tauri::command]
+#[specta::specta]
+fn update_status(core: State<'_, Core>) -> UpdateStatusDto {
+    core.update_status()
+}
+
+/// Turns the update check on or off.
+#[tauri::command]
+#[specta::specta]
+fn set_update_check(core: State<'_, Core>, enabled: bool) -> UpdateStatusDto {
+    core.set_update_check(enabled)
+}
+
+/// Checks the project's signed release manifest for a newer version.
+#[tauri::command]
+#[specta::specta]
+fn check_for_update(core: State<'_, Core>) -> Answer<UpdateStatusDto> {
+    Ok(core.check_for_update()?)
+}
+
 /// Everything in the books as one reproducible zip (base64). The zip isn't
 /// encrypted, so real books ask for the passphrase again first.
 #[tauri::command]
@@ -596,6 +617,9 @@ pub fn specta_builder<R: Runtime>() -> Builder<R> {
             preview_invoice_import,
             commit_invoice_import,
             export_books,
+            update_status,
+            set_update_check,
+            check_for_update,
             accept_certain_bank_lines,
             book_bank_line,
             create_bank_rule,

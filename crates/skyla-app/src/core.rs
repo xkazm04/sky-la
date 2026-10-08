@@ -32,6 +32,7 @@ pub mod refdata;
 mod tax;
 pub mod toolhost;
 pub mod tools;
+pub mod update;
 
 /// The application core: one open entity and its ledger.
 pub struct Core {
@@ -44,6 +45,8 @@ pub struct Core {
     scheduled: HashMap<i64, String>,
     /// Reference data (ČNB rates, repo history) and pack updates.
     refdata: Mutex<refdata::RefData>,
+    /// The opt-in update check.
+    updates: Mutex<update::UpdateState>,
     /// Drafts created in this session (the demo derives their ids from it).
     drafts_created: std::sync::atomic::AtomicU64,
     /// The bank workbench: imports, rules, bookings.

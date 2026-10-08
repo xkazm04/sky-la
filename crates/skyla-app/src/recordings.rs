@@ -249,6 +249,13 @@ pub fn scenarios() -> Vec<(&'static str, Script)> {
                 json!({ "id": issued["id"], "format": "isdoc" }),
             );
         }),
+        ("update-check", |s| {
+            s.write("set_update_check", json!({ "enabled": true }), "on");
+            s.read("update_status", json!({}));
+            s.read("check_for_update", json!({}));
+            s.write("set_update_check", json!({ "enabled": false }), "off");
+            s.read("update_status", json!({}));
+        }),
         ("invoice-import", |s| {
             use base64::Engine as _;
             let file = json!({
@@ -355,6 +362,7 @@ pub fn canonical_requests() -> Vec<(&'static str, Value)> {
         ("proposals", json!({})),
         ("egress_register", json!({})),
         ("export_books", json!({ "passphrase": null })),
+        ("update_status", json!({})),
         ("egress_policies", json!({})),
         ("egress_payload", json!({ "id": "run-2026-10-04-01" })),
         ("egress_payload", json!({ "id": "run-2026-10-04-02" })),
@@ -481,6 +489,18 @@ pub fn dispatch(core: &Core, command: &str, args: &Value) -> Result<Value, IpcFa
             core.commit_invoice_import(arg(args, "fileName")?, arg(args, "contentBase64")?),
         ),
         "export_books" => to_value(core.export_books()),
+        "update_status" => to_value(Ok(core.update_status())),
+        "set_update_check" => {
+            let enabled = args
+                .get("enabled")
+                .and_then(Value::as_bool)
+                .ok_or_else(|| IpcFailure {
+                    code: "bad_request".into(),
+                    message: "missing or malformed argument enabled".into(),
+                })?;
+            to_value(Ok(core.set_update_check(enabled)))
+        }
+        "check_for_update" => to_value(core.check_for_update()),
         "reference_data" => to_value(core.reference_data()),
         "import_reference_data" => to_value(core.import_reference_data(
             arg(args, "kind")?,

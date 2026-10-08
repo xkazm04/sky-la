@@ -126,6 +126,12 @@ export const commands = {
 	 *  encrypted, so real books ask for the passphrase again first.
 	 */
 	exportBooks: (passphrase: string | null) => typedError<ExportDto, IpcFailure>(__TAURI_INVOKE("export_books", { passphrase })),
+	/**  Whether the opt-in update check is on, and what it last found. */
+	updateStatus: () => __TAURI_INVOKE<UpdateStatusDto>("update_status"),
+	/**  Turns the update check on or off. */
+	setUpdateCheck: (enabled: boolean) => __TAURI_INVOKE<UpdateStatusDto>("set_update_check", { enabled }),
+	/**  Checks the project's signed release manifest for a newer version. */
+	checkForUpdate: () => typedError<UpdateStatusDto, IpcFailure>(__TAURI_INVOKE("check_for_update")),
 	/**  Accepts every line the matcher or a rule is certain about. */
 	acceptCertainBankLines: () => typedError<BankStatementDto, IpcFailure>(__TAURI_INVOKE("accept_certain_bank_lines")),
 	/**  Books a line as the user chose: invoices, or account rows (a split). */
@@ -1407,6 +1413,34 @@ export type TrialBalanceRowDto = {
 	credit: MoneyDto,
 	/**  Debit minus credit. */
 	balance: MoneyDto,
+};
+
+/**  A newer release. */
+export type UpdateDto = {
+	/**  Its version. */
+	version: string,
+	/**  When it was published. */
+	published: string,
+	/**  What changed, briefly. */
+	notes: string,
+	/**  Its release page. */
+	page: string,
+};
+
+/**  The opt-in update check. */
+export type UpdateStatusDto = {
+	/**  Whether the user turned it on. */
+	enabled: boolean,
+	/**  This build's version. */
+	current: string,
+	/**  The only host it asks. */
+	source: string,
+	/**  Release keys this build trusts; none means no check is made. */
+	trustedKeys: number,
+	/**  Whether a check ran since it was turned on. */
+	checked: boolean,
+	/**  A newer release, if the last check found one. */
+	available: UpdateDto | null,
 };
 
 /**  A VAT code the editor offers. */

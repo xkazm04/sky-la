@@ -5,6 +5,7 @@ import {
   type EgressPolicyDto,
   type RefDataDto,
   type RulePackDto,
+  type UpdateStatusDto,
   unwrap,
 } from "@skyla/ipc";
 import {
@@ -46,6 +47,7 @@ interface Setting {
   policies?: EgressPolicyDto[] | undefined;
   backups?: BackupsDto | undefined;
   exportable?: boolean;
+  updates?: UpdateStatusDto | undefined;
 }
 
 /** Which section of the list each setting sits in. */
@@ -58,6 +60,7 @@ const GROUP: Record<string, string> = {
   "advisor-sharing": "data",
   "reference-data": "data",
   export: "data",
+  updates: "about",
 };
 
 const columns: TableColumn<Setting>[] = [
@@ -85,6 +88,8 @@ export function SettingsScreen({ item, core }: { item: string | null; core: Core
   const badge = connectionBadge(status.state === "ready" ? status.data : undefined);
   const policies = useQuery("egress_policies", () => commands.egressPolicies());
   const pol = policies.state === "ready" ? policies.data : undefined;
+  const updates = useQuery("update_status", () => commands.updateStatus());
+  const up = updates.state === "ready" ? updates.data : undefined;
   const backupList = useQuery("backups", () => unwrap(commands.backups()));
   const bk = backupList.state === "ready" ? backupList.data : undefined;
 
@@ -239,6 +244,22 @@ export function SettingsScreen({ item, core }: { item: string | null; core: Core
       pack: pack.state === "ready" ? pack.data : undefined,
     },
     {
+      id: "updates",
+      title: "Updates",
+      detail: "Ask the project's releases whether a newer version is out",
+      value: up?.enabled ? (
+        <Badge tone="info">{`On · ${up.source}`}</Badge>
+      ) : (
+        <Badge tone="neutral">Off · opt-in</Badge>
+      ),
+      about: [
+        "Off by default. When on, sky-la asks only the project's release page on GitHub, and only when you press Check now.",
+        "It believes a release only when the project's release key signed it, and it never downloads or installs anything: you get the version and the page to download it from.",
+        "Nothing about you or your books is sent; there is no telemetry.",
+      ],
+      updates: up,
+    },
+    {
       id: "about",
       title: "About",
       detail: "Open source: AGPL-3.0 app, Apache-2.0 engine",
@@ -281,6 +302,7 @@ export function SettingsScreen({ item, core }: { item: string | null; core: Core
             {selected.policies && <AdvisorSharing policies={selected.policies} />}
             {selected.backups && <Backups data={selected.backups} />}
             {selected.exportable && <ExportBooks demo={bk?.demo ?? true} />}
+            {selected.updates && <UpdateCheck status={selected.updates} />}
             {selected.pack && (
               <>
                 <InspectorSection title={`Values in force · ${selected.pack.values.length}`}>
@@ -316,6 +338,79 @@ export function SettingsScreen({ item, core }: { item: string | null; core: Core
             )}
           </Inspector>
         </InspectorPane>
+      )}
+    </>
+  );
+}
+
+/** The opt-in update check: a switch, a button, and what it found. */
+function UpdateCheck({ status }: { status: UpdateStatusDto }) {
+  const [result, setResult] = useState<{ ok: boolean; lines: string[] } | null>(null);
+  const run = async (write: () => Promise<string>) => {
+    setResult(null);
+    try {
+      const text = await write();
+      invalidateAll();
+      setResult({ ok: true, lines: [text] });
+    } catch (e) {
+      setResult({ ok: false, lines: problems(e) });
+    }
+  };
+  return (
+    <>
+      <InspectorSection title={`This version · ${status.current}`}>
+        <Checkbox
+          isSelected={status.enabled}
+          onChange={(enabled) =>
+            void run(async () => {
+              await commands.setUpdateCheck(enabled);
+              return enabled
+                ? `The update check is on; sky-la may ask ${status.source} when you check.`
+                : "The update check is off.";
+            })
+          }
+        >
+          Allow checking {status.source} for a newer version
+        </Checkbox>
+        {status.trustedKeys === 0 && (
+          <p className="mt-2 text-footnote text-ink-secondary">
+            This build trusts no release key yet, so it won't check; download new versions from the
+            project page yourself.
+          </p>
+        )}
+      </InspectorSection>
+      {status.available && (
+        <InspectorSection title={`Version ${status.available.version} is out`}>
+          <p className="text-body">{status.available.notes}</p>
+          <p className="mt-1 select-all text-footnote text-ink-secondary">
+            {status.available.page}
+          </p>
+        </InspectorSection>
+      )}
+      <div className="mt-3 flex gap-2">
+        <Button
+          isDisabled={!status.enabled}
+          onPress={() =>
+            void run(async () => {
+              const s = await unwrap(commands.checkForUpdate());
+              return s.available
+                ? `Version ${s.available.version} is available.`
+                : `${s.current} is the newest version.`;
+            })
+          }
+        >
+          Check now
+        </Button>
+      </div>
+      {result && (
+        <div
+          role={result.ok ? "status" : "alert"}
+          className={`mt-2 text-footnote ${result.ok ? "text-ink-secondary" : "text-negative-ink"}`}
+        >
+          {result.lines.map((l) => (
+            <p key={l}>{l}</p>
+          ))}
+        </div>
       )}
     </>
   );

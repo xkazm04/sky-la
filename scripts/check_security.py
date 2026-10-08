@@ -6,7 +6,8 @@
 2. Capabilities: the webview gets `core:default` and nothing else, no
    remote origins; no Tauri plugin in the shell or the webview packages.
 3. Network paths (CLAUDE.md): the only HTTP client is ureq, linked by
-   skyla-app alone and called from its reference-data module alone; the
+   skyla-app alone and called only by its reference-data and update-check
+   modules (both opt-in, each with one fixed host); the
    only sockets are the advisor tool host's loopback listener and the MCP
    shim's loopback client; the only spawned process is the user's own
    `claude`. The webview code makes no network calls of its own.
@@ -32,7 +33,10 @@ HTTP_ALLOWED = {("skyla-app", "ureq"), ("ureq", "ureq-proto")}
 
 # Rust call sites that reach the network or spawn processes: file → why.
 RUST_ALLOWED = {
-    r"ureq::": {"crates/skyla-app/src/core/refdata.rs": "opt-in ČNB reference data"},
+    r"ureq::": {
+        "crates/skyla-app/src/core/refdata.rs": "opt-in ČNB reference data",
+        "crates/skyla-app/src/core/update.rs": "opt-in update check",
+    },
     r"TcpListener::bind": {"crates/skyla-app/src/core/toolhost.rs": "advisor tool host, loopback"},
     r"TcpStream::connect": {"crates/skyla-mcp/src/lib.rs": "MCP shim to the tool host, loopback"},
     r"UdpSocket": {},

@@ -19,6 +19,7 @@ pub use crate::core::Core;
 pub use crate::core::findings as core_findings;
 pub use crate::core::toolhost::{ToolCallLog, ToolRun};
 pub use crate::core::tools::{ToolError, ToolKind, ToolSpec, tool_specs};
+pub use crate::core::update;
 pub use error::{CoreError, IpcFailure};
 pub use skyla_rules::Pack;
 pub use skyla_store::KeyStore;

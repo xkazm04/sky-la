@@ -23,6 +23,7 @@ skyla-store = { version = "0.1.0", path = "../skyla-store" }
 skyla-tax-cz = { version = "0.1.0", path = "../skyla-tax-cz" }
 crc32fast = "1.5.2"
 flate2 = "1.1.10"
+minisign-verify = "0.3.0"
 regex = "1.13.1"
 rusqlite = { version = "0.40.2", features = ["bundled"] }
 serde = { version = "1.0.229", features = ["derive"] }
@@ -38,5 +39,6 @@ specta = { version = "=2.0.0-rc.25", features = ["derive"] }
 thiserror = "2.0.21"
 
 [dev-dependencies]
+minisign = "0.10.0"
 skyla-mcp = { version = "0.1.0", path = "../skyla-mcp" }
 tempfile = "3.27.0"

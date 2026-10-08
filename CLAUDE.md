@@ -46,6 +46,7 @@ just bindings       # regenerate packages/ipc/src/bindings.ts from the Tauri com
 just check-desktop  # compile + lint + test the Tauri shell (needs WebKitGTK on Linux; CI runs it)
 just deny           # cargo-deny supply-chain and licence policy (CI runs it)
 just security-check # CSP, capabilities, network paths and process spawns (part of `just ci`; see docs/design/SECURITY_REVIEW.md)
+just release-dry-run # build and check the Linux .deb the way the release workflow does (needs WebKitGTK; see docs/RELEASING.md)
 just fmt            # format Rust and TypeScript in place
 ```
 

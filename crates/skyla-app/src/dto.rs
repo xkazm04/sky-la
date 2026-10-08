@@ -968,6 +968,38 @@ pub struct ImportPreviewDto {
     pub imported: Vec<String>,
 }
 
+/// A newer release.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct UpdateDto {
+    /// Its version.
+    pub version: String,
+    /// When it was published.
+    pub published: String,
+    /// What changed, briefly.
+    pub notes: String,
+    /// Its release page.
+    pub page: String,
+}
+
+/// The opt-in update check.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct UpdateStatusDto {
+    /// Whether the user turned it on.
+    pub enabled: bool,
+    /// This build's version.
+    pub current: String,
+    /// The only host it asks.
+    pub source: String,
+    /// Release keys this build trusts; none means no check is made.
+    pub trusted_keys: u32,
+    /// Whether a check ran since it was turned on.
+    pub checked: bool,
+    /// A newer release, if the last check found one.
+    pub available: Option<UpdateDto>,
+}
+
 /// Whether there are books to unlock.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]

@@ -6,3 +6,7 @@ test-results/
 playwright-report/
 *.log
 .DS_Store
+# The MCP shim staged for bundling (`skyla-release stage-shim`).
+apps/desktop/src-tauri/binaries/
+# Release output of `just release-dry-run`.
+/dist-release/

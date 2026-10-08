@@ -10,7 +10,7 @@ use serde_json::json;
 use skyla_store::DataKey;
 use skyla_store::backup::{self, BackupPolicy, Keyed};
 
-use super::{Core, bank, egress, refdata};
+use super::{Core, bank, egress, refdata, update};
 use crate::dto::{BackupDto, BackupsDto, DrillDto, EntitySetupDto};
 use crate::error::CoreError;
 
@@ -95,6 +95,7 @@ impl Core {
             pack: skyla_rules::Pack::cz_2026()?,
             scheduled,
             refdata: Mutex::new(refdata::RefData::new(refdata::https_fetcher())),
+            updates: Mutex::new(update::UpdateState::new(update::release_fetcher())),
             drafts_created: std::sync::atomic::AtomicU64::new(0),
             bank: Mutex::new(bank::BankState::default()),
             provider: Mutex::new(provider),

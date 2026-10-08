@@ -9,6 +9,11 @@ repository.workspace = true
 authors.workspace = true
 publish = false
 
+# The installed program is called sky-la.
+[[bin]]
+name = "sky-la"
+path = "src/main.rs"
+
 [lib]
 name = "skyla_desktop_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
