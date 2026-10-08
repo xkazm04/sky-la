@@ -46,7 +46,9 @@ fn sql_err(e: rusqlite::Error) -> CoreError {
 }
 
 pub(crate) fn apply_schema(conn: &Connection) -> Result<(), CoreError> {
-    conn.execute_batch(SCHEMA).map_err(sql_err)
+    conn.execute_batch(SCHEMA).map_err(sql_err)?;
+    conn.execute_batch(super::purchases::SCHEMA)
+        .map_err(sql_err)
 }
 
 fn load(conn: &Connection, key: &str) -> Result<Option<Value>, CoreError> {

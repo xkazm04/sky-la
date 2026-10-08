@@ -150,19 +150,15 @@ impl Core {
                 },
                 KhSide::Purchase | KhSide::EuService => {
                     let reference = e.source_ref.clone().unwrap_or_default();
-                    match self
-                        .domain
-                        .purchases
-                        .iter()
-                        .find(|p| p.reference == reference)
-                    {
-                        Some(p) => (
-                            reference,
-                            p.supplier.clone(),
-                            p.vat_id.clone(),
-                            e.date.clone(),
-                            None,
-                        ),
+                    let recorded = super::purchases::supplier_of(&self.db(), e.id)?;
+                    match recorded.map(|s| (s.name, s.dic)).or_else(|| {
+                        self.domain
+                            .purchases
+                            .iter()
+                            .find(|p| p.reference == reference)
+                            .map(|p| (p.supplier.clone(), p.vat_id.clone()))
+                    }) {
+                        Some((supplier, dic)) => (reference, supplier, dic, e.date.clone(), None),
                         // A receipt with no supplier record: the statement decides
                         // whether that's fine (B.3) or a problem (above the threshold).
                         None => (

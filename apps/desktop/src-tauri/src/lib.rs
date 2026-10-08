@@ -12,8 +12,8 @@ use skyla_app::dto::{
     TrialBalanceDto, VatReturnDto,
 };
 use skyla_app::dto::{
-    BackupDto, BackupsDto, DrillDto, EntitySetupDto, ExportDto, ImportPreviewDto, RecoveryKeyDto,
-    SessionStateDto, UpdateStatusDto,
+    BackupDto, BackupsDto, DrillDto, EntitySetupDto, ExportDto, ImportPreviewDto, PurchaseDraftDto,
+    PurchaseDto, PurchaseFormDto, RecoveryKeyDto, SessionStateDto, UpdateStatusDto,
 };
 use skyla_app::session::Gate;
 use skyla_app::{Core, IpcFailure};
@@ -310,6 +310,27 @@ fn commit_invoice_import(
     content_base64: String,
 ) -> Answer<ImportPreviewDto> {
     Ok(core.commit_invoice_import(&file_name, &content_base64)?)
+}
+
+/// What the purchase editor offers.
+#[tauri::command]
+#[specta::specta]
+fn purchase_form(core: State<'_, Core>) -> Answer<PurchaseFormDto> {
+    Ok(core.purchase_form()?)
+}
+
+/// Every received invoice, with what's paid.
+#[tauri::command]
+#[specta::specta]
+fn purchases(core: State<'_, Core>) -> Answer<Vec<PurchaseDto>> {
+    Ok(core.purchases()?)
+}
+
+/// Records a received invoice: checked, posted, the supplier kept.
+#[tauri::command]
+#[specta::specta]
+fn record_purchase(core: State<'_, Core>, draft: PurchaseDraftDto) -> Answer<PurchaseDto> {
+    Ok(core.record_purchase(&draft)?)
 }
 
 /// Whether the opt-in update check is on, and what it last found.
@@ -618,6 +639,9 @@ pub fn specta_builder<R: Runtime>() -> Builder<R> {
             commit_invoice_import,
             export_books,
             update_status,
+            purchase_form,
+            purchases,
+            record_purchase,
             set_update_check,
             check_for_update,
             accept_certain_bank_lines,

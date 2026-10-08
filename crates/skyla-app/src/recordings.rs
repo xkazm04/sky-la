@@ -112,6 +112,24 @@ pub fn scripted_draft() -> Value {
     })
 }
 
+/// The received invoice the purchase e2e test types.
+pub fn scripted_purchase() -> Value {
+    json!({
+        "supplier": "Kancelářské potřeby Novotný s.r.o.",
+        "ico": "26965313",
+        "dic": "CZ26965313",
+        "number": "FP-2026-1187",
+        "issueDate": "2026-10-03",
+        "taxPointDate": "",
+        "dueDate": "2026-10-17",
+        "lines": [
+            { "description": "Monitor", "account": "501", "vatCode": "IN21", "base": "12 000,00" },
+            { "description": "Papír", "account": "501", "vatCode": "IN21", "base": "800,00" }
+        ],
+        "statedVat": "2 688,00"
+    })
+}
+
 /// A scenario's script.
 pub type Script = fn(&mut Scenario<'_>);
 
@@ -272,6 +290,20 @@ pub fn scenarios() -> Vec<(&'static str, Script)> {
             s.read("invoices", json!({}));
             s.read("invoice_form", json!({}));
         }),
+        ("purchase", |s| {
+            let mut draft = scripted_purchase();
+            draft["dic"] = json!(null);
+            draft["statedVat"] = json!("2 700,00");
+            // Every problem at once: deducting VAT without the supplier's DIČ.
+            s.read("record_purchase", json!({ "draft": draft }));
+            s.write(
+                "record_purchase",
+                json!({ "draft": scripted_purchase() }),
+                "recorded",
+            );
+            s.read("purchases", json!({}));
+            s.read("integrity", json!({}));
+        }),
         ("invoice-import", |s| {
             use base64::Engine as _;
             let file = json!({
@@ -379,6 +411,8 @@ pub fn canonical_requests() -> Vec<(&'static str, Value)> {
         ("egress_register", json!({})),
         ("export_books", json!({ "passphrase": null })),
         ("update_status", json!({})),
+        ("purchase_form", json!({})),
+        ("purchases", json!({})),
         ("egress_policies", json!({})),
         ("egress_payload", json!({ "id": "run-2026-10-04-01" })),
         ("egress_payload", json!({ "id": "run-2026-10-04-02" })),
@@ -505,6 +539,19 @@ pub fn dispatch(core: &Core, command: &str, args: &Value) -> Result<Value, IpcFa
             core.commit_invoice_import(arg(args, "fileName")?, arg(args, "contentBase64")?),
         ),
         "export_books" => to_value(core.export_books()),
+        "purchase_form" => to_value(core.purchase_form()),
+        "purchases" => to_value(core.purchases()),
+        "record_purchase" => {
+            let draft = args
+                .get("draft")
+                .cloned()
+                .and_then(|d| serde_json::from_value::<crate::dto::PurchaseDraftDto>(d).ok())
+                .ok_or_else(|| IpcFailure {
+                    code: "bad_request".into(),
+                    message: "missing or malformed argument draft".into(),
+                })?;
+            to_value(core.record_purchase(&draft))
+        }
         "update_status" => to_value(Ok(core.update_status())),
         "set_update_check" => {
             let enabled = args

@@ -23,6 +23,7 @@ const SCREENS = [
   { route: "overview", title: "Overview" },
   { route: "inbox", title: "Inbox" },
   { route: "invoices", title: "Invoices" },
+  { route: "purchases", title: "Purchases" },
   { route: "bank", title: "221 · ČSOB Business ··4412" },
   { route: "statements", title: "Profit and loss" },
   { route: "taxes", title: "Taxes" },
@@ -778,4 +779,39 @@ test("a draft adds a new customer, checked by the core", async ({ page }) => {
   await expect(page.getByRole("complementary", { name: "Draft invoice" })).toContainText(
     "Lesní ateliér s.r.o.",
   );
+});
+
+// Improvement wave 3: a received invoice is recorded, checked by the core
+// (skyla_app::recordings, "purchase").
+test("a received invoice is recorded, with every problem listed first", async ({ page }) => {
+  await page.goto("/#/purchases");
+  await settle(page);
+  await expect(page.getByRole("grid", { name: "Received invoices" })).toContainText(
+    "Kvasnička Dev s.r.o.",
+  );
+  await page.getByRole("button", { name: "Record received invoice" }).click();
+  const form = page.getByRole("form", { name: "Received invoice" });
+  await form.getByLabel("Supplier").fill("Kancelářské potřeby Novotný s.r.o.");
+  await form.getByLabel("Invoice number").fill("FP-2026-1187");
+  await form.getByLabel("IČO").fill("26965313");
+  await form.getByLabel("Issued").fill("2026-10-03");
+  await form.getByLabel("Due").fill("2026-10-17");
+  await form.getByLabel("Line 1 description").fill("Monitor");
+  await form.getByLabel("Line 1 amount without VAT").fill("12 000,00");
+  await form.getByRole("button", { name: "Add line" }).click();
+  await form.getByLabel("Line 2 description").fill("Papír");
+  await form.getByLabel("Line 2 amount without VAT").fill("800,00");
+  await form.getByLabel("VAT on the invoice, to check (optional)").fill("2 700,00");
+  await page.getByRole("button", { name: "Save and post" }).click();
+  await expect(form.getByRole("alert")).toContainText("deducting VAT needs the supplier's DIČ");
+  await page.screenshot({ path: "test-results/screens/purchase-problems.png" });
+  await axeClean(page);
+
+  await form.getByLabel("DIČ").fill("CZ26965313");
+  await form.getByLabel("VAT on the invoice, to check (optional)").fill("2 688,00");
+  await page.getByRole("button", { name: "Save and post" }).click();
+  await expect(page).toHaveURL(/#\/purchases\/\d+$/);
+  const inspector = page.getByRole("complementary", { name: "Received invoice FP-2026-1187" });
+  await expect(inspector).toContainText("15 488,00");
+  await expect(inspector).toContainText("CZ26965313");
 });

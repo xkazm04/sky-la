@@ -113,6 +113,7 @@ impl Core {
         domain: crate::demo::Domain,
         scheduled: std::collections::HashMap<i64, String>,
     ) -> Result<Self, CoreError> {
+        super::persist::apply_schema(&conn)?;
         Self::assemble(conn, domain, scheduled, None, skyla_rules::Pack::cz_2026()?)
     }
 

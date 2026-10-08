@@ -8,6 +8,7 @@ import { BankScreen } from "./screens/Bank";
 import { InboxScreen } from "./screens/Inbox";
 import { InvoicesScreen } from "./screens/Invoices";
 import { OverviewScreen } from "./screens/Overview";
+import { PurchasesScreen } from "./screens/Purchases";
 import { RegisterScreen } from "./screens/Register";
 import { RecoverScreen, SetupScreen, sessionRoute, UnlockScreen } from "./screens/Session";
 import { SettingsScreen } from "./screens/Settings";
@@ -31,6 +32,8 @@ function ScreenFor({
       return <InboxScreen item={item} />;
     case "invoices":
       return <InvoicesScreen item={item} />;
+    case "purchases":
+      return <PurchasesScreen item={item} />;
     case "bank":
       return <BankScreen item={item} />;
     case "statements":

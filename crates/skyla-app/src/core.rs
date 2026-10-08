@@ -29,6 +29,7 @@ mod export;
 pub mod findings;
 mod imports;
 mod persist;
+mod purchases;
 pub mod refdata;
 mod tax;
 pub mod toolhost;

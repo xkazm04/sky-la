@@ -128,6 +128,12 @@ export const commands = {
 	exportBooks: (passphrase: string | null) => typedError<ExportDto, IpcFailure>(__TAURI_INVOKE("export_books", { passphrase })),
 	/**  Whether the opt-in update check is on, and what it last found. */
 	updateStatus: () => __TAURI_INVOKE<UpdateStatusDto>("update_status"),
+	/**  What the purchase editor offers. */
+	purchaseForm: () => typedError<PurchaseFormDto, IpcFailure>(__TAURI_INVOKE("purchase_form")),
+	/**  Every received invoice, with what's paid. */
+	purchases: () => typedError<PurchaseDto[], IpcFailure>(__TAURI_INVOKE("purchases")),
+	/**  Records a received invoice: checked, posted, the supplier kept. */
+	recordPurchase: (draft: PurchaseDraftDto) => typedError<PurchaseDto, IpcFailure>(__TAURI_INVOKE("record_purchase", { draft })),
 	/**  Turns the update check on or off. */
 	setUpdateCheck: (enabled: boolean) => __TAURI_INVOKE<UpdateStatusDto>("set_update_check", { enabled }),
 	/**  Checks the project's signed release manifest for a newer version. */
@@ -1145,6 +1151,85 @@ export type ProposedLineDto = {
 	credit: MoneyDto | null,
 	/**  VAT code. */
 	vatCode: string | null,
+};
+
+/**
+ *  A received invoice as typed in the editor. The core checks it and
+ *  computes the VAT.
+ */
+export type PurchaseDraftDto = {
+	/**  The supplier's legal name. */
+	supplier: string,
+	/**  Their IČO. */
+	ico: string | null,
+	/**  Their DIČ; needed to deduct VAT. */
+	dic: string | null,
+	/**  The invoice's number, as the supplier printed it. */
+	number: string,
+	/**  Issued. */
+	issueDate: string,
+	/**  DUZP; the issue date when empty. */
+	taxPointDate: string | null,
+	/**  Due. */
+	dueDate: string | null,
+	/**  The lines. */
+	lines: PurchaseLineDraftDto[],
+	/**  The VAT the invoice states, to check against the computed VAT. */
+	statedVat: string | null,
+};
+
+/**  A received invoice in the books. */
+export type PurchaseDto = {
+	/**  Its journal entry. */
+	entryId: number,
+	/**  The supplier's number. */
+	number: string,
+	/**  The supplier. */
+	supplier: string,
+	/**  Their DIČ. */
+	dic: string | null,
+	/**  The entry's date (the tax point). */
+	issuedOn: string,
+	/**  Due. */
+	dueOn: string | null,
+	/**  Without VAT. */
+	base: MoneyDto,
+	/**  VAT deducted. */
+	vat: MoneyDto,
+	/**  Owed in all. */
+	gross: MoneyDto,
+	/**  Paid so far. */
+	paid: MoneyDto,
+	/**  Still owed. */
+	open: MoneyDto,
+	/**  `open`, `overdue` or `paid`. */
+	status: string,
+	/**  Days past due, when overdue. */
+	daysOverdue: number | null,
+};
+
+/**  What the purchase editor offers. */
+export type PurchaseFormDto = {
+	/**  Expense accounts. */
+	accounts: AccountChoiceDto[],
+	/**  Input-VAT codes; none when the books aren't VAT-registered. */
+	vatCodes: VatCodeChoiceDto[],
+	/**  Whether these books deduct VAT. */
+	vatPayer: boolean,
+	/**  Today. */
+	today: string,
+};
+
+/**  One line of a received invoice as typed. */
+export type PurchaseLineDraftDto = {
+	/**  What it was for. */
+	description: string,
+	/**  The expense account. */
+	account: string,
+	/**  An input-VAT code, or none when no VAT is deducted. */
+	vatCode: string | null,
+	/**  The amount without VAT, in Czech format (`1 200,00`). */
+	base: string,
 };
 
 /**  A recovery key to show once and have confirmed. */

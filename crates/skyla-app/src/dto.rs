@@ -1004,6 +1004,91 @@ pub struct UpdateStatusDto {
     pub available: Option<UpdateDto>,
 }
 
+/// One line of a received invoice as typed.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct PurchaseLineDraftDto {
+    /// What it was for.
+    pub description: String,
+    /// The expense account.
+    pub account: String,
+    /// An input-VAT code, or none when no VAT is deducted.
+    pub vat_code: Option<String>,
+    /// The amount without VAT, in Czech format (`1 200,00`).
+    pub base: String,
+}
+
+/// A received invoice as typed in the editor. The core checks it and
+/// computes the VAT.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct PurchaseDraftDto {
+    /// The supplier's legal name.
+    pub supplier: String,
+    /// Their IČO.
+    pub ico: Option<String>,
+    /// Their DIČ; needed to deduct VAT.
+    pub dic: Option<String>,
+    /// The invoice's number, as the supplier printed it.
+    pub number: String,
+    /// Issued.
+    pub issue_date: String,
+    /// DUZP; the issue date when empty.
+    pub tax_point_date: Option<String>,
+    /// Due.
+    pub due_date: Option<String>,
+    /// The lines.
+    pub lines: Vec<PurchaseLineDraftDto>,
+    /// The VAT the invoice states, to check against the computed VAT.
+    pub stated_vat: Option<String>,
+}
+
+/// What the purchase editor offers.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct PurchaseFormDto {
+    /// Expense accounts.
+    pub accounts: Vec<AccountChoiceDto>,
+    /// Input-VAT codes; none when the books aren't VAT-registered.
+    pub vat_codes: Vec<VatCodeChoiceDto>,
+    /// Whether these books deduct VAT.
+    pub vat_payer: bool,
+    /// Today.
+    pub today: String,
+}
+
+/// A received invoice in the books.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct PurchaseDto {
+    /// Its journal entry.
+    pub entry_id: i64,
+    /// The supplier's number.
+    pub number: String,
+    /// The supplier.
+    pub supplier: String,
+    /// Their DIČ.
+    pub dic: Option<String>,
+    /// The entry's date (the tax point).
+    pub issued_on: String,
+    /// Due.
+    pub due_on: Option<String>,
+    /// Without VAT.
+    pub base: MoneyDto,
+    /// VAT deducted.
+    pub vat: MoneyDto,
+    /// Owed in all.
+    pub gross: MoneyDto,
+    /// Paid so far.
+    pub paid: MoneyDto,
+    /// Still owed.
+    pub open: MoneyDto,
+    /// `open`, `overdue` or `paid`.
+    pub status: String,
+    /// Days past due, when overdue.
+    pub days_overdue: Option<i64>,
+}
+
 /// Whether there are books to unlock.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]

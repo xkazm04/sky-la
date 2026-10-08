@@ -13,6 +13,10 @@
 
 The status column shows what each invoice needs: overdue (with days), part-paid, paid, or credited.
 
+## Purchases
+
+**Purchases** lists the invoices your suppliers sent you: what's still to pay and what's paid. **Record received invoice** asks for the supplier (name, IČO, and DIČ, which you need to deduct VAT), their invoice number, the dates, and a line per expense account with its amount without VAT. sky-la works out the VAT with the rule pack's rate on the tax point. If you type the VAT printed on the invoice, it checks that the two agree. Saving posts the invoice (expenses, VAT to deduct, the amount owed) and lists it in the kontrolní hlášení with the supplier's DIČ. When you import the statement with the payment, the bank settles it.
+
 ## Bank statements
 
 **Bank → Import…** reads a statement file: camt.053 XML, MT940 or ABO/GPC, which most Czech banks export, or Fio's CSV export. sky-la checks that the statement's opening balance ties out to the previous statement (or to your books), and skips lines it has seen before.

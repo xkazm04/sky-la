@@ -119,6 +119,16 @@ impl Core {
         for p in &self.domain.purchases {
             parties.push((p.supplier.clone(), Role::Vendor));
         }
+        // Real books name their parties on documents, not in a fixture.
+        {
+            let db = self.db();
+            if let Ok(customers) = skyla_invoicing::customers(&db) {
+                parties.extend(customers.into_iter().map(|c| (c.name, Role::Customer)));
+            }
+            if let Ok(suppliers) = super::purchases::suppliers(&db) {
+                parties.extend(suppliers.into_iter().map(|s| (s, Role::Vendor)));
+            }
+        }
         if let Ok(bank) = self.bank_statement() {
             for l in bank.lines {
                 let role = if l.amount.minor >= 0 {

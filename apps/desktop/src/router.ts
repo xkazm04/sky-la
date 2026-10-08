@@ -5,6 +5,7 @@ export const SCREENS = [
   "overview",
   "inbox",
   "invoices",
+  "purchases",
   "bank",
   "statements",
   "taxes",

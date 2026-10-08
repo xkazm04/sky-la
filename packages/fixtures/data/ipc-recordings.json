@@ -1310,6 +1310,288 @@
     "isError": false
   },
   {
+    "command": "purchase_form",
+    "args": {},
+    "result": {
+      "accounts": [
+        {
+          "code": "501",
+          "name": "Materials consumed"
+        },
+        {
+          "code": "502",
+          "name": "Energy consumed"
+        },
+        {
+          "code": "504",
+          "name": "Cost of goods sold"
+        },
+        {
+          "code": "511",
+          "name": "Repairs and maintenance"
+        },
+        {
+          "code": "512",
+          "name": "Travel"
+        },
+        {
+          "code": "513",
+          "name": "Entertainment"
+        },
+        {
+          "code": "518",
+          "name": "Other services"
+        },
+        {
+          "code": "521",
+          "name": "Wages and salaries"
+        },
+        {
+          "code": "524",
+          "name": "Statutory social and health insurance"
+        },
+        {
+          "code": "538",
+          "name": "Other taxes and fees"
+        },
+        {
+          "code": "543",
+          "name": "Gifts"
+        },
+        {
+          "code": "545",
+          "name": "Other fines and penalties"
+        },
+        {
+          "code": "548",
+          "name": "Other operating expenses"
+        },
+        {
+          "code": "551",
+          "name": "Depreciation and amortisation"
+        },
+        {
+          "code": "562",
+          "name": "Interest expense"
+        },
+        {
+          "code": "563",
+          "name": "Foreign exchange losses"
+        },
+        {
+          "code": "568",
+          "name": "Other financial expenses"
+        },
+        {
+          "code": "591",
+          "name": "Income tax – current"
+        }
+      ],
+      "today": "2026-10-07",
+      "vatCodes": [
+        {
+          "code": "IN21",
+          "name": "Domestic purchase, standard rate (input VAT)",
+          "ratePercent": "21"
+        },
+        {
+          "code": "IN12",
+          "name": "Domestic purchase, reduced rate (input VAT)",
+          "ratePercent": "12"
+        }
+      ],
+      "vatPayer": true
+    },
+    "isError": false
+  },
+  {
+    "command": "purchases",
+    "args": {},
+    "result": [
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 2160000
+        },
+        "daysOverdue": null,
+        "dic": "CZ96234563",
+        "dueOn": null,
+        "entryId": 36,
+        "gross": {
+          "currency": "CZK",
+          "minor": 2613600
+        },
+        "issuedOn": "2026-09-22",
+        "number": "PF-2026-0917",
+        "open": {
+          "currency": "CZK",
+          "minor": 2613600
+        },
+        "paid": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "status": "open",
+        "supplier": "Pixelfarm s.r.o.",
+        "vat": {
+          "currency": "CZK",
+          "minor": 453600
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 3850000
+        },
+        "daysOverdue": null,
+        "dic": null,
+        "dueOn": null,
+        "entryId": 35,
+        "gross": {
+          "currency": "CZK",
+          "minor": 3850000
+        },
+        "issuedOn": "2026-09-18",
+        "number": "MH-19",
+        "open": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "paid": {
+          "currency": "CZK",
+          "minor": 3850000
+        },
+        "status": "paid",
+        "supplier": "Marek Horák",
+        "vat": {
+          "currency": "CZK",
+          "minor": 0
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 4600000
+        },
+        "daysOverdue": null,
+        "dic": "CZ95123458",
+        "dueOn": null,
+        "entryId": 34,
+        "gross": {
+          "currency": "CZK",
+          "minor": 5566000
+        },
+        "issuedOn": "2026-08-31",
+        "number": "KV-2026-08",
+        "open": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "paid": {
+          "currency": "CZK",
+          "minor": 5566000
+        },
+        "status": "paid",
+        "supplier": "Kvasnička Dev s.r.o.",
+        "vat": {
+          "currency": "CZK",
+          "minor": 966000
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 1550000
+        },
+        "daysOverdue": null,
+        "dic": "CZ96234563",
+        "dueOn": null,
+        "entryId": 10,
+        "gross": {
+          "currency": "CZK",
+          "minor": 1875500
+        },
+        "issuedOn": "2026-06-25",
+        "number": "PF-2026-0612",
+        "open": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "paid": {
+          "currency": "CZK",
+          "minor": 1875500
+        },
+        "status": "paid",
+        "supplier": "Pixelfarm s.r.o.",
+        "vat": {
+          "currency": "CZK",
+          "minor": 325500
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 3120000
+        },
+        "daysOverdue": null,
+        "dic": null,
+        "dueOn": null,
+        "entryId": 9,
+        "gross": {
+          "currency": "CZK",
+          "minor": 3120000
+        },
+        "issuedOn": "2026-06-20",
+        "number": "MH-14",
+        "open": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "paid": {
+          "currency": "CZK",
+          "minor": 3120000
+        },
+        "status": "paid",
+        "supplier": "Marek Horák",
+        "vat": {
+          "currency": "CZK",
+          "minor": 0
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 2800000
+        },
+        "daysOverdue": null,
+        "dic": "CZ95123458",
+        "dueOn": null,
+        "entryId": 8,
+        "gross": {
+          "currency": "CZK",
+          "minor": 3388000
+        },
+        "issuedOn": "2026-05-31",
+        "number": "KV-2026-05",
+        "open": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "paid": {
+          "currency": "CZK",
+          "minor": 3388000
+        },
+        "status": "paid",
+        "supplier": "Kvasnička Dev s.r.o.",
+        "vat": {
+          "currency": "CZK",
+          "minor": 588000
+        }
+      }
+    ],
+    "isError": false
+  },
+  {
     "command": "egress_policies",
     "args": {},
     "result": [
@@ -16718,6 +17000,336 @@
     "isError": false,
     "scenario": "new-customer",
     "state": "new-customer/drafted"
+  },
+  {
+    "command": "record_purchase",
+    "args": {
+      "draft": {
+        "dic": null,
+        "dueDate": "2026-10-17",
+        "ico": "26965313",
+        "issueDate": "2026-10-03",
+        "lines": [
+          {
+            "account": "501",
+            "base": "12 000,00",
+            "description": "Monitor",
+            "vatCode": "IN21"
+          },
+          {
+            "account": "501",
+            "base": "800,00",
+            "description": "Papír",
+            "vatCode": "IN21"
+          }
+        ],
+        "number": "FP-2026-1187",
+        "statedVat": "2 700,00",
+        "supplier": "Kancelářské potřeby Novotný s.r.o.",
+        "taxPointDate": ""
+      }
+    },
+    "result": {
+      "code": "invoicing",
+      "message": "deducting VAT needs the supplier's DIČ, as printed on the invoice"
+    },
+    "isError": true,
+    "scenario": "purchase"
+  },
+  {
+    "command": "record_purchase",
+    "args": {
+      "draft": {
+        "dic": "CZ26965313",
+        "dueDate": "2026-10-17",
+        "ico": "26965313",
+        "issueDate": "2026-10-03",
+        "lines": [
+          {
+            "account": "501",
+            "base": "12 000,00",
+            "description": "Monitor",
+            "vatCode": "IN21"
+          },
+          {
+            "account": "501",
+            "base": "800,00",
+            "description": "Papír",
+            "vatCode": "IN21"
+          }
+        ],
+        "number": "FP-2026-1187",
+        "statedVat": "2 688,00",
+        "supplier": "Kancelářské potřeby Novotný s.r.o.",
+        "taxPointDate": ""
+      }
+    },
+    "result": {
+      "base": {
+        "currency": "CZK",
+        "minor": 1280000
+      },
+      "daysOverdue": null,
+      "dic": "CZ26965313",
+      "dueOn": "2026-10-17",
+      "entryId": 53,
+      "gross": {
+        "currency": "CZK",
+        "minor": 1548800
+      },
+      "issuedOn": "2026-10-03",
+      "number": "FP-2026-1187",
+      "open": {
+        "currency": "CZK",
+        "minor": 1548800
+      },
+      "paid": {
+        "currency": "CZK",
+        "minor": 0
+      },
+      "status": "open",
+      "supplier": "Kancelářské potřeby Novotný s.r.o.",
+      "vat": {
+        "currency": "CZK",
+        "minor": 268800
+      }
+    },
+    "isError": false,
+    "scenario": "purchase",
+    "leadsTo": "purchase/recorded"
+  },
+  {
+    "command": "purchases",
+    "args": {},
+    "result": [
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 1280000
+        },
+        "daysOverdue": null,
+        "dic": "CZ26965313",
+        "dueOn": "2026-10-17",
+        "entryId": 53,
+        "gross": {
+          "currency": "CZK",
+          "minor": 1548800
+        },
+        "issuedOn": "2026-10-03",
+        "number": "FP-2026-1187",
+        "open": {
+          "currency": "CZK",
+          "minor": 1548800
+        },
+        "paid": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "status": "open",
+        "supplier": "Kancelářské potřeby Novotný s.r.o.",
+        "vat": {
+          "currency": "CZK",
+          "minor": 268800
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 2160000
+        },
+        "daysOverdue": null,
+        "dic": "CZ96234563",
+        "dueOn": null,
+        "entryId": 36,
+        "gross": {
+          "currency": "CZK",
+          "minor": 2613600
+        },
+        "issuedOn": "2026-09-22",
+        "number": "PF-2026-0917",
+        "open": {
+          "currency": "CZK",
+          "minor": 2613600
+        },
+        "paid": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "status": "open",
+        "supplier": "Pixelfarm s.r.o.",
+        "vat": {
+          "currency": "CZK",
+          "minor": 453600
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 3850000
+        },
+        "daysOverdue": null,
+        "dic": null,
+        "dueOn": null,
+        "entryId": 35,
+        "gross": {
+          "currency": "CZK",
+          "minor": 3850000
+        },
+        "issuedOn": "2026-09-18",
+        "number": "MH-19",
+        "open": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "paid": {
+          "currency": "CZK",
+          "minor": 3850000
+        },
+        "status": "paid",
+        "supplier": "Marek Horák",
+        "vat": {
+          "currency": "CZK",
+          "minor": 0
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 4600000
+        },
+        "daysOverdue": null,
+        "dic": "CZ95123458",
+        "dueOn": null,
+        "entryId": 34,
+        "gross": {
+          "currency": "CZK",
+          "minor": 5566000
+        },
+        "issuedOn": "2026-08-31",
+        "number": "KV-2026-08",
+        "open": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "paid": {
+          "currency": "CZK",
+          "minor": 5566000
+        },
+        "status": "paid",
+        "supplier": "Kvasnička Dev s.r.o.",
+        "vat": {
+          "currency": "CZK",
+          "minor": 966000
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 1550000
+        },
+        "daysOverdue": null,
+        "dic": "CZ96234563",
+        "dueOn": null,
+        "entryId": 10,
+        "gross": {
+          "currency": "CZK",
+          "minor": 1875500
+        },
+        "issuedOn": "2026-06-25",
+        "number": "PF-2026-0612",
+        "open": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "paid": {
+          "currency": "CZK",
+          "minor": 1875500
+        },
+        "status": "paid",
+        "supplier": "Pixelfarm s.r.o.",
+        "vat": {
+          "currency": "CZK",
+          "minor": 325500
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 3120000
+        },
+        "daysOverdue": null,
+        "dic": null,
+        "dueOn": null,
+        "entryId": 9,
+        "gross": {
+          "currency": "CZK",
+          "minor": 3120000
+        },
+        "issuedOn": "2026-06-20",
+        "number": "MH-14",
+        "open": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "paid": {
+          "currency": "CZK",
+          "minor": 3120000
+        },
+        "status": "paid",
+        "supplier": "Marek Horák",
+        "vat": {
+          "currency": "CZK",
+          "minor": 0
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 2800000
+        },
+        "daysOverdue": null,
+        "dic": "CZ95123458",
+        "dueOn": null,
+        "entryId": 8,
+        "gross": {
+          "currency": "CZK",
+          "minor": 3388000
+        },
+        "issuedOn": "2026-05-31",
+        "number": "KV-2026-05",
+        "open": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "paid": {
+          "currency": "CZK",
+          "minor": 3388000
+        },
+        "status": "paid",
+        "supplier": "Kvasnička Dev s.r.o.",
+        "vat": {
+          "currency": "CZK",
+          "minor": 588000
+        }
+      }
+    ],
+    "isError": false,
+    "scenario": "purchase",
+    "state": "purchase/recorded"
+  },
+  {
+    "command": "integrity",
+    "args": {},
+    "result": {
+      "balanced": true,
+      "chainIntact": true,
+      "entriesChecked": 53,
+      "firstBreak": null,
+      "head": "2c1d6e85e73a2f62e802cec64ecb62b885ac29781cccae56932f65fff9af8f16"
+    },
+    "isError": false,
+    "scenario": "purchase",
+    "state": "purchase/recorded"
   },
   {
     "command": "preview_invoice_import",

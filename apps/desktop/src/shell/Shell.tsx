@@ -7,8 +7,10 @@ import {
   Inbox,
   Landmark,
   LayoutGrid,
+  LockKeyhole,
   Percent,
   PlugZap,
+  ReceiptText,
   ScrollText,
   Send,
   Settings,
@@ -52,6 +54,8 @@ export function Shell({
   const integrity = useQuery("integrity", () => unwrap(commands.integrity()));
   const proposals = useQuery("proposals", () => unwrap(commands.proposals()));
   const invoices = useQuery("invoices", () => unwrap(commands.invoices()));
+  const purchases = useQuery("purchases", () => unwrap(commands.purchases()));
+  const session = useQuery("session_state", () => commands.sessionState());
   const bank = useQuery("bank_statement", () => unwrap(commands.bankStatement()));
   const register = useQuery("egress_register", () => unwrap(commands.egressRegister()));
 
@@ -79,6 +83,12 @@ export function Shell({
           ),
         },
         {
+          id: "purchases",
+          label: "Purchases",
+          icon: ReceiptText,
+          count: count(ready(purchases)?.filter((p) => p.status !== "paid").length),
+        },
+        {
           id: "bank",
           label: "Bank",
           icon: Landmark,
@@ -103,7 +113,12 @@ export function Shell({
     },
   ];
 
-  const status: StatusItem[] = [{ id: "demo", icon: FlaskConical, label: "Demo data · in memory" }];
+  const real = session.state === "ready" && session.data.state === "open";
+  const status: StatusItem[] = [
+    real
+      ? { id: "books", icon: LockKeyhole, label: "Encrypted on this computer" }
+      : { id: "demo", icon: FlaskConical, label: "Demo data · in memory" },
+  ];
   if (integrity.state === "ready") {
     const i = integrity.data;
     status.push(
