@@ -337,6 +337,49 @@ function LineInspector({
                 </Popup>
               )}
             </>
+          ) : line.status === "certain" ? (
+            <Button
+              variant="primary"
+              isDisabled={write.busy}
+              onPress={() =>
+                void write.run(async () => {
+                  await unwrap(commands.acceptBankLine(line.id));
+                  return `${line.counterparty} is booked: ${line.proposal ?? "accepted"}.`;
+                })
+              }
+            >
+              Accept
+            </Button>
+          ) : line.status === "booked" ? (
+            <Popup
+              label="Undo booking"
+              placement="top end"
+              trigger={<Button variant="plain">Undo booking…</Button>}
+            >
+              {(close) => (
+                <div className="flex w-72 flex-col gap-3 text-body">
+                  <p>
+                    Posts a reversal of entry #{line.entryId}. The booking stays in the journal,
+                    cancelled by the reversal, and the line waits for a decision again.
+                  </p>
+                  <div className="flex justify-end">
+                    <Button
+                      variant="destructive"
+                      isDisabled={write.busy}
+                      onPress={() => {
+                        close();
+                        void write.run(async () => {
+                          await unwrap(commands.unbookBankLine(line.id));
+                          return `The booking of ${line.counterparty} is reversed.`;
+                        });
+                      }}
+                    >
+                      Post reversal
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </Popup>
           ) : undefined
         }
       >

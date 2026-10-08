@@ -24,11 +24,11 @@ The status column shows what each invoice needs: overdue (with days), part-paid,
 
 Each line then gets a suggestion, with the reasons spelled out (variable symbol, amount, counterparty):
 
-- **Certain** lines settle an invoice exactly, or match a rule you made. **Accept** books them all at once.
+- **Certain** lines settle an invoice exactly, or match a rule you made. **Accept N certain** books them all at once; **Accept** in a line's panel books just that one.
 - **Needs you** lines get candidates to choose from, or **Book…** to split a line across accounts with VAT.
 - **Create a rule from this line** makes the next similar line certain.
 
-Every accepted line is one journal entry approved by you.
+Every accepted line is one journal entry approved by you. If a booking was wrong, **Undo booking…** posts a reversal: the original entry stays in the journal, cancelled by the reversal (dated like the booking, or today if that period is closed), any invoice it settled is open again, and the line waits for a decision.
 
 ## Statements and "explain this"
 

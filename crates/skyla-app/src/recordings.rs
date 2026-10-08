@@ -347,6 +347,20 @@ pub fn scenarios() -> Vec<(&'static str, Script)> {
             s.read("bank_statement", json!({}));
             s.read("integrity", json!({}));
         }),
+        // One certain line accepted, then its booking undone by a reversal.
+        ("bank-undo", |s| {
+            s.write("accept_bank_line", json!({ "line": "s1-1" }), "accepted");
+            s.read("bank_statement", json!({}));
+            s.read("purchases", json!({}));
+            s.write("unbook_bank_line", json!({ "line": "s1-1" }), "undone");
+            s.read("bank_statement", json!({}));
+            s.read("purchases", json!({}));
+            s.read("integrity", json!({}));
+            s.read(
+                "journal",
+                json!({ "from": "2026-10-01", "to": "2026-10-31" }),
+            );
+        }),
         // Dismissing a finding that's been read.
         ("inbox-dismiss", |s| {
             s.write(
@@ -586,6 +600,8 @@ pub fn dispatch(core: &Core, command: &str, args: &Value) -> Result<Value, IpcFa
             core.import_bank_statement(arg(args, "fileName")?, arg(args, "contentBase64")?),
         ),
         "accept_certain_bank_lines" => to_value(core.accept_certain_bank_lines()),
+        "accept_bank_line" => to_value(core.accept_bank_line(arg(args, "line")?)),
+        "unbook_bank_line" => to_value(core.unbook_bank_line(arg(args, "line")?)),
         "approve_proposals" => {
             let ids = args
                 .get("ids")

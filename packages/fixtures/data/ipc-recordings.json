@@ -19255,6 +19255,1641 @@
     "state": "inbox-approve/certain"
   },
   {
+    "command": "accept_bank_line",
+    "args": {
+      "line": "s1-1"
+    },
+    "result": {
+      "accountName": "221 · ČSOB Business ··4412",
+      "accounts": [
+        {
+          "code": "211",
+          "name": "Cash"
+        },
+        {
+          "code": "321",
+          "name": "Trade payables"
+        },
+        {
+          "code": "501",
+          "name": "Materials consumed"
+        },
+        {
+          "code": "502",
+          "name": "Energy consumed"
+        },
+        {
+          "code": "504",
+          "name": "Cost of goods sold"
+        },
+        {
+          "code": "511",
+          "name": "Repairs and maintenance"
+        },
+        {
+          "code": "512",
+          "name": "Travel"
+        },
+        {
+          "code": "513",
+          "name": "Entertainment"
+        },
+        {
+          "code": "518",
+          "name": "Other services"
+        },
+        {
+          "code": "521",
+          "name": "Wages and salaries"
+        },
+        {
+          "code": "524",
+          "name": "Statutory social and health insurance"
+        },
+        {
+          "code": "538",
+          "name": "Other taxes and fees"
+        },
+        {
+          "code": "543",
+          "name": "Gifts"
+        },
+        {
+          "code": "545",
+          "name": "Other fines and penalties"
+        },
+        {
+          "code": "548",
+          "name": "Other operating expenses"
+        },
+        {
+          "code": "551",
+          "name": "Depreciation and amortisation"
+        },
+        {
+          "code": "562",
+          "name": "Interest expense"
+        },
+        {
+          "code": "563",
+          "name": "Foreign exchange losses"
+        },
+        {
+          "code": "568",
+          "name": "Other financial expenses"
+        },
+        {
+          "code": "591",
+          "name": "Income tax – current"
+        },
+        {
+          "code": "601",
+          "name": "Sales of own products"
+        },
+        {
+          "code": "602",
+          "name": "Sales of services"
+        },
+        {
+          "code": "604",
+          "name": "Sales of goods"
+        },
+        {
+          "code": "641",
+          "name": "Proceeds from sale of long-term assets"
+        },
+        {
+          "code": "644",
+          "name": "Contractual penalties and late-payment interest"
+        },
+        {
+          "code": "648",
+          "name": "Other operating income"
+        },
+        {
+          "code": "662",
+          "name": "Interest income"
+        },
+        {
+          "code": "663",
+          "name": "Foreign exchange gains"
+        },
+        {
+          "code": "668",
+          "name": "Other financial income"
+        }
+      ],
+      "closing": {
+        "currency": "CZK",
+        "minor": 84964958
+      },
+      "credits": {
+        "currency": "CZK",
+        "minor": 0
+      },
+      "debits": {
+        "currency": "CZK",
+        "minor": -3580392
+      },
+      "file": "csob-2026-10-06.xml",
+      "format": "CAMT.053",
+      "from": "2026-10-01",
+      "imports": [
+        {
+          "closing": {
+            "currency": "CZK",
+            "minor": 84964958
+          },
+          "file": "csob-2026-10-06.xml",
+          "from": "2026-10-01",
+          "lines": 5,
+          "to": "2026-10-06"
+        }
+      ],
+      "lines": [
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -9500
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Poplatek za vedení účtu",
+          "counterpartyAccount": null,
+          "date": "2026-10-06",
+          "entryId": null,
+          "heldBecause": "money out with no rule; choose an account or create a rule",
+          "id": "s1-5",
+          "proposal": null,
+          "proposalId": "p-bank-fee",
+          "reference": "Poplatek za vedení účtu",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -242000
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Alza.cz a.s.",
+          "counterpartyAccount": "2700000001/2700",
+          "date": "2026-10-05",
+          "entryId": null,
+          "heldBecause": "money out with no rule; choose an account or create a rule",
+          "id": "s1-4",
+          "proposal": null,
+          "proposalId": "p-alza",
+          "reference": "Objednávka 541227 USB-C dock",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -600000
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Výběr z bankomatu Brno, Masarykova",
+          "counterpartyAccount": null,
+          "date": "2026-10-04",
+          "entryId": null,
+          "heldBecause": "money out with no rule; choose an account or create a rule",
+          "id": "s1-3",
+          "proposal": null,
+          "proposalId": "p-atm",
+          "reference": "Výběr z bankomatu Brno, Masarykova",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -115292
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Google Ireland Ltd",
+          "counterpartyAccount": null,
+          "date": "2026-10-03",
+          "entryId": null,
+          "heldBecause": "money out with no rule; choose an account or create a rule",
+          "id": "s1-2",
+          "proposal": null,
+          "proposalId": "p-google",
+          "reference": "Platba kartou GOOGLE*WORKSPACE 45,86 EUR kurz 25,140",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -2613600
+          },
+          "bookedAs": "Pays PF-2026-0917",
+          "candidates": [],
+          "counterparty": "Pixelfarm s.r.o.",
+          "counterpartyAccount": "2900887766/2010",
+          "date": "2026-10-01",
+          "entryId": 53,
+          "heldBecause": null,
+          "id": "s1-1",
+          "proposal": null,
+          "proposalId": null,
+          "reference": "VS 20260917 · Faktura PF-2026-0917",
+          "status": "booked"
+        }
+      ],
+      "opening": {
+        "currency": "CZK",
+        "minor": 88545350
+      },
+      "reportedClosing": {
+        "currency": "CZK",
+        "minor": 84964958
+      },
+      "rules": [],
+      "tiesOut": true,
+      "to": "2026-10-06",
+      "vatCodes": [
+        {
+          "code": "IN21",
+          "name": "Domestic purchase, standard rate (input VAT)",
+          "ratePercent": "21"
+        },
+        {
+          "code": "IN12",
+          "name": "Domestic purchase, reduced rate (input VAT)",
+          "ratePercent": "12"
+        }
+      ]
+    },
+    "isError": false,
+    "scenario": "bank-undo",
+    "leadsTo": "bank-undo/accepted"
+  },
+  {
+    "command": "bank_statement",
+    "args": {},
+    "result": {
+      "accountName": "221 · ČSOB Business ··4412",
+      "accounts": [
+        {
+          "code": "211",
+          "name": "Cash"
+        },
+        {
+          "code": "321",
+          "name": "Trade payables"
+        },
+        {
+          "code": "501",
+          "name": "Materials consumed"
+        },
+        {
+          "code": "502",
+          "name": "Energy consumed"
+        },
+        {
+          "code": "504",
+          "name": "Cost of goods sold"
+        },
+        {
+          "code": "511",
+          "name": "Repairs and maintenance"
+        },
+        {
+          "code": "512",
+          "name": "Travel"
+        },
+        {
+          "code": "513",
+          "name": "Entertainment"
+        },
+        {
+          "code": "518",
+          "name": "Other services"
+        },
+        {
+          "code": "521",
+          "name": "Wages and salaries"
+        },
+        {
+          "code": "524",
+          "name": "Statutory social and health insurance"
+        },
+        {
+          "code": "538",
+          "name": "Other taxes and fees"
+        },
+        {
+          "code": "543",
+          "name": "Gifts"
+        },
+        {
+          "code": "545",
+          "name": "Other fines and penalties"
+        },
+        {
+          "code": "548",
+          "name": "Other operating expenses"
+        },
+        {
+          "code": "551",
+          "name": "Depreciation and amortisation"
+        },
+        {
+          "code": "562",
+          "name": "Interest expense"
+        },
+        {
+          "code": "563",
+          "name": "Foreign exchange losses"
+        },
+        {
+          "code": "568",
+          "name": "Other financial expenses"
+        },
+        {
+          "code": "591",
+          "name": "Income tax – current"
+        },
+        {
+          "code": "601",
+          "name": "Sales of own products"
+        },
+        {
+          "code": "602",
+          "name": "Sales of services"
+        },
+        {
+          "code": "604",
+          "name": "Sales of goods"
+        },
+        {
+          "code": "641",
+          "name": "Proceeds from sale of long-term assets"
+        },
+        {
+          "code": "644",
+          "name": "Contractual penalties and late-payment interest"
+        },
+        {
+          "code": "648",
+          "name": "Other operating income"
+        },
+        {
+          "code": "662",
+          "name": "Interest income"
+        },
+        {
+          "code": "663",
+          "name": "Foreign exchange gains"
+        },
+        {
+          "code": "668",
+          "name": "Other financial income"
+        }
+      ],
+      "closing": {
+        "currency": "CZK",
+        "minor": 84964958
+      },
+      "credits": {
+        "currency": "CZK",
+        "minor": 0
+      },
+      "debits": {
+        "currency": "CZK",
+        "minor": -3580392
+      },
+      "file": "csob-2026-10-06.xml",
+      "format": "CAMT.053",
+      "from": "2026-10-01",
+      "imports": [
+        {
+          "closing": {
+            "currency": "CZK",
+            "minor": 84964958
+          },
+          "file": "csob-2026-10-06.xml",
+          "from": "2026-10-01",
+          "lines": 5,
+          "to": "2026-10-06"
+        }
+      ],
+      "lines": [
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -9500
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Poplatek za vedení účtu",
+          "counterpartyAccount": null,
+          "date": "2026-10-06",
+          "entryId": null,
+          "heldBecause": "money out with no rule; choose an account or create a rule",
+          "id": "s1-5",
+          "proposal": null,
+          "proposalId": "p-bank-fee",
+          "reference": "Poplatek za vedení účtu",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -242000
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Alza.cz a.s.",
+          "counterpartyAccount": "2700000001/2700",
+          "date": "2026-10-05",
+          "entryId": null,
+          "heldBecause": "money out with no rule; choose an account or create a rule",
+          "id": "s1-4",
+          "proposal": null,
+          "proposalId": "p-alza",
+          "reference": "Objednávka 541227 USB-C dock",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -600000
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Výběr z bankomatu Brno, Masarykova",
+          "counterpartyAccount": null,
+          "date": "2026-10-04",
+          "entryId": null,
+          "heldBecause": "money out with no rule; choose an account or create a rule",
+          "id": "s1-3",
+          "proposal": null,
+          "proposalId": "p-atm",
+          "reference": "Výběr z bankomatu Brno, Masarykova",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -115292
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Google Ireland Ltd",
+          "counterpartyAccount": null,
+          "date": "2026-10-03",
+          "entryId": null,
+          "heldBecause": "money out with no rule; choose an account or create a rule",
+          "id": "s1-2",
+          "proposal": null,
+          "proposalId": "p-google",
+          "reference": "Platba kartou GOOGLE*WORKSPACE 45,86 EUR kurz 25,140",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -2613600
+          },
+          "bookedAs": "Pays PF-2026-0917",
+          "candidates": [],
+          "counterparty": "Pixelfarm s.r.o.",
+          "counterpartyAccount": "2900887766/2010",
+          "date": "2026-10-01",
+          "entryId": 53,
+          "heldBecause": null,
+          "id": "s1-1",
+          "proposal": null,
+          "proposalId": null,
+          "reference": "VS 20260917 · Faktura PF-2026-0917",
+          "status": "booked"
+        }
+      ],
+      "opening": {
+        "currency": "CZK",
+        "minor": 88545350
+      },
+      "reportedClosing": {
+        "currency": "CZK",
+        "minor": 84964958
+      },
+      "rules": [],
+      "tiesOut": true,
+      "to": "2026-10-06",
+      "vatCodes": [
+        {
+          "code": "IN21",
+          "name": "Domestic purchase, standard rate (input VAT)",
+          "ratePercent": "21"
+        },
+        {
+          "code": "IN12",
+          "name": "Domestic purchase, reduced rate (input VAT)",
+          "ratePercent": "12"
+        }
+      ]
+    },
+    "isError": false,
+    "scenario": "bank-undo",
+    "state": "bank-undo/accepted"
+  },
+  {
+    "command": "purchases",
+    "args": {},
+    "result": [
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 2160000
+        },
+        "daysOverdue": null,
+        "dic": "CZ96234563",
+        "dueOn": null,
+        "entryId": 36,
+        "gross": {
+          "currency": "CZK",
+          "minor": 2613600
+        },
+        "issuedOn": "2026-09-22",
+        "number": "PF-2026-0917",
+        "open": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "paid": {
+          "currency": "CZK",
+          "minor": 2613600
+        },
+        "status": "paid",
+        "supplier": "Pixelfarm s.r.o.",
+        "vat": {
+          "currency": "CZK",
+          "minor": 453600
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 3850000
+        },
+        "daysOverdue": null,
+        "dic": null,
+        "dueOn": null,
+        "entryId": 35,
+        "gross": {
+          "currency": "CZK",
+          "minor": 3850000
+        },
+        "issuedOn": "2026-09-18",
+        "number": "MH-19",
+        "open": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "paid": {
+          "currency": "CZK",
+          "minor": 3850000
+        },
+        "status": "paid",
+        "supplier": "Marek Horák",
+        "vat": {
+          "currency": "CZK",
+          "minor": 0
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 4600000
+        },
+        "daysOverdue": null,
+        "dic": "CZ95123458",
+        "dueOn": null,
+        "entryId": 34,
+        "gross": {
+          "currency": "CZK",
+          "minor": 5566000
+        },
+        "issuedOn": "2026-08-31",
+        "number": "KV-2026-08",
+        "open": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "paid": {
+          "currency": "CZK",
+          "minor": 5566000
+        },
+        "status": "paid",
+        "supplier": "Kvasnička Dev s.r.o.",
+        "vat": {
+          "currency": "CZK",
+          "minor": 966000
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 1550000
+        },
+        "daysOverdue": null,
+        "dic": "CZ96234563",
+        "dueOn": null,
+        "entryId": 10,
+        "gross": {
+          "currency": "CZK",
+          "minor": 1875500
+        },
+        "issuedOn": "2026-06-25",
+        "number": "PF-2026-0612",
+        "open": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "paid": {
+          "currency": "CZK",
+          "minor": 1875500
+        },
+        "status": "paid",
+        "supplier": "Pixelfarm s.r.o.",
+        "vat": {
+          "currency": "CZK",
+          "minor": 325500
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 3120000
+        },
+        "daysOverdue": null,
+        "dic": null,
+        "dueOn": null,
+        "entryId": 9,
+        "gross": {
+          "currency": "CZK",
+          "minor": 3120000
+        },
+        "issuedOn": "2026-06-20",
+        "number": "MH-14",
+        "open": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "paid": {
+          "currency": "CZK",
+          "minor": 3120000
+        },
+        "status": "paid",
+        "supplier": "Marek Horák",
+        "vat": {
+          "currency": "CZK",
+          "minor": 0
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 2800000
+        },
+        "daysOverdue": null,
+        "dic": "CZ95123458",
+        "dueOn": null,
+        "entryId": 8,
+        "gross": {
+          "currency": "CZK",
+          "minor": 3388000
+        },
+        "issuedOn": "2026-05-31",
+        "number": "KV-2026-05",
+        "open": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "paid": {
+          "currency": "CZK",
+          "minor": 3388000
+        },
+        "status": "paid",
+        "supplier": "Kvasnička Dev s.r.o.",
+        "vat": {
+          "currency": "CZK",
+          "minor": 588000
+        }
+      }
+    ],
+    "isError": false,
+    "scenario": "bank-undo",
+    "state": "bank-undo/accepted"
+  },
+  {
+    "command": "unbook_bank_line",
+    "args": {
+      "line": "s1-1"
+    },
+    "result": {
+      "accountName": "221 · ČSOB Business ··4412",
+      "accounts": [
+        {
+          "code": "211",
+          "name": "Cash"
+        },
+        {
+          "code": "321",
+          "name": "Trade payables"
+        },
+        {
+          "code": "501",
+          "name": "Materials consumed"
+        },
+        {
+          "code": "502",
+          "name": "Energy consumed"
+        },
+        {
+          "code": "504",
+          "name": "Cost of goods sold"
+        },
+        {
+          "code": "511",
+          "name": "Repairs and maintenance"
+        },
+        {
+          "code": "512",
+          "name": "Travel"
+        },
+        {
+          "code": "513",
+          "name": "Entertainment"
+        },
+        {
+          "code": "518",
+          "name": "Other services"
+        },
+        {
+          "code": "521",
+          "name": "Wages and salaries"
+        },
+        {
+          "code": "524",
+          "name": "Statutory social and health insurance"
+        },
+        {
+          "code": "538",
+          "name": "Other taxes and fees"
+        },
+        {
+          "code": "543",
+          "name": "Gifts"
+        },
+        {
+          "code": "545",
+          "name": "Other fines and penalties"
+        },
+        {
+          "code": "548",
+          "name": "Other operating expenses"
+        },
+        {
+          "code": "551",
+          "name": "Depreciation and amortisation"
+        },
+        {
+          "code": "562",
+          "name": "Interest expense"
+        },
+        {
+          "code": "563",
+          "name": "Foreign exchange losses"
+        },
+        {
+          "code": "568",
+          "name": "Other financial expenses"
+        },
+        {
+          "code": "591",
+          "name": "Income tax – current"
+        },
+        {
+          "code": "601",
+          "name": "Sales of own products"
+        },
+        {
+          "code": "602",
+          "name": "Sales of services"
+        },
+        {
+          "code": "604",
+          "name": "Sales of goods"
+        },
+        {
+          "code": "641",
+          "name": "Proceeds from sale of long-term assets"
+        },
+        {
+          "code": "644",
+          "name": "Contractual penalties and late-payment interest"
+        },
+        {
+          "code": "648",
+          "name": "Other operating income"
+        },
+        {
+          "code": "662",
+          "name": "Interest income"
+        },
+        {
+          "code": "663",
+          "name": "Foreign exchange gains"
+        },
+        {
+          "code": "668",
+          "name": "Other financial income"
+        }
+      ],
+      "closing": {
+        "currency": "CZK",
+        "minor": 84964958
+      },
+      "credits": {
+        "currency": "CZK",
+        "minor": 0
+      },
+      "debits": {
+        "currency": "CZK",
+        "minor": -3580392
+      },
+      "file": "csob-2026-10-06.xml",
+      "format": "CAMT.053",
+      "from": "2026-10-01",
+      "imports": [
+        {
+          "closing": {
+            "currency": "CZK",
+            "minor": 84964958
+          },
+          "file": "csob-2026-10-06.xml",
+          "from": "2026-10-01",
+          "lines": 5,
+          "to": "2026-10-06"
+        }
+      ],
+      "lines": [
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -9500
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Poplatek za vedení účtu",
+          "counterpartyAccount": null,
+          "date": "2026-10-06",
+          "entryId": null,
+          "heldBecause": "no received invoice or rule fits; book it to an account or create a rule",
+          "id": "s1-5",
+          "proposal": null,
+          "proposalId": "p-bank-fee",
+          "reference": "Poplatek za vedení účtu",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -242000
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Alza.cz a.s.",
+          "counterpartyAccount": "2700000001/2700",
+          "date": "2026-10-05",
+          "entryId": null,
+          "heldBecause": "no received invoice or rule fits; book it to an account or create a rule",
+          "id": "s1-4",
+          "proposal": null,
+          "proposalId": "p-alza",
+          "reference": "Objednávka 541227 USB-C dock",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -600000
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Výběr z bankomatu Brno, Masarykova",
+          "counterpartyAccount": null,
+          "date": "2026-10-04",
+          "entryId": null,
+          "heldBecause": "no received invoice or rule fits; book it to an account or create a rule",
+          "id": "s1-3",
+          "proposal": null,
+          "proposalId": "p-atm",
+          "reference": "Výběr z bankomatu Brno, Masarykova",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -115292
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Google Ireland Ltd",
+          "counterpartyAccount": null,
+          "date": "2026-10-03",
+          "entryId": null,
+          "heldBecause": "no received invoice or rule fits; book it to an account or create a rule",
+          "id": "s1-2",
+          "proposal": null,
+          "proposalId": "p-google",
+          "reference": "Platba kartou GOOGLE*WORKSPACE 45,86 EUR kurz 25,140",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -2613600
+          },
+          "bookedAs": null,
+          "candidates": [
+            {
+              "confidence": "likely",
+              "contributions": [
+                {
+                  "reason": "VS 20260917 is PF-2026-0917's",
+                  "weight": "+45"
+                },
+                {
+                  "reason": "the amount equals what's open, 26 136,00 Kč",
+                  "weight": "+30"
+                },
+                {
+                  "reason": "Pixelfarm s.r.o. has paid from this account before",
+                  "weight": "+20"
+                },
+                {
+                  "reason": "the payer's name is 100 % like Pixelfarm s.r.o.",
+                  "weight": "+15"
+                },
+                {
+                  "reason": "paid between issue and the due date (or soon after)",
+                  "weight": "+5"
+                }
+              ],
+              "detail": "26 136,00 Kč",
+              "label": "PF-2026-0917",
+              "score": "115"
+            }
+          ],
+          "counterparty": "Pixelfarm s.r.o.",
+          "counterpartyAccount": "2900887766/2010",
+          "date": "2026-10-01",
+          "entryId": null,
+          "heldBecause": null,
+          "id": "s1-1",
+          "proposal": "Pay PF-2026-0917",
+          "proposalId": null,
+          "reference": "VS 20260917 · Faktura PF-2026-0917",
+          "status": "certain"
+        }
+      ],
+      "opening": {
+        "currency": "CZK",
+        "minor": 88545350
+      },
+      "reportedClosing": {
+        "currency": "CZK",
+        "minor": 84964958
+      },
+      "rules": [],
+      "tiesOut": true,
+      "to": "2026-10-06",
+      "vatCodes": [
+        {
+          "code": "IN21",
+          "name": "Domestic purchase, standard rate (input VAT)",
+          "ratePercent": "21"
+        },
+        {
+          "code": "IN12",
+          "name": "Domestic purchase, reduced rate (input VAT)",
+          "ratePercent": "12"
+        }
+      ]
+    },
+    "isError": false,
+    "scenario": "bank-undo",
+    "state": "bank-undo/accepted",
+    "leadsTo": "bank-undo/undone"
+  },
+  {
+    "command": "bank_statement",
+    "args": {},
+    "result": {
+      "accountName": "221 · ČSOB Business ··4412",
+      "accounts": [
+        {
+          "code": "211",
+          "name": "Cash"
+        },
+        {
+          "code": "321",
+          "name": "Trade payables"
+        },
+        {
+          "code": "501",
+          "name": "Materials consumed"
+        },
+        {
+          "code": "502",
+          "name": "Energy consumed"
+        },
+        {
+          "code": "504",
+          "name": "Cost of goods sold"
+        },
+        {
+          "code": "511",
+          "name": "Repairs and maintenance"
+        },
+        {
+          "code": "512",
+          "name": "Travel"
+        },
+        {
+          "code": "513",
+          "name": "Entertainment"
+        },
+        {
+          "code": "518",
+          "name": "Other services"
+        },
+        {
+          "code": "521",
+          "name": "Wages and salaries"
+        },
+        {
+          "code": "524",
+          "name": "Statutory social and health insurance"
+        },
+        {
+          "code": "538",
+          "name": "Other taxes and fees"
+        },
+        {
+          "code": "543",
+          "name": "Gifts"
+        },
+        {
+          "code": "545",
+          "name": "Other fines and penalties"
+        },
+        {
+          "code": "548",
+          "name": "Other operating expenses"
+        },
+        {
+          "code": "551",
+          "name": "Depreciation and amortisation"
+        },
+        {
+          "code": "562",
+          "name": "Interest expense"
+        },
+        {
+          "code": "563",
+          "name": "Foreign exchange losses"
+        },
+        {
+          "code": "568",
+          "name": "Other financial expenses"
+        },
+        {
+          "code": "591",
+          "name": "Income tax – current"
+        },
+        {
+          "code": "601",
+          "name": "Sales of own products"
+        },
+        {
+          "code": "602",
+          "name": "Sales of services"
+        },
+        {
+          "code": "604",
+          "name": "Sales of goods"
+        },
+        {
+          "code": "641",
+          "name": "Proceeds from sale of long-term assets"
+        },
+        {
+          "code": "644",
+          "name": "Contractual penalties and late-payment interest"
+        },
+        {
+          "code": "648",
+          "name": "Other operating income"
+        },
+        {
+          "code": "662",
+          "name": "Interest income"
+        },
+        {
+          "code": "663",
+          "name": "Foreign exchange gains"
+        },
+        {
+          "code": "668",
+          "name": "Other financial income"
+        }
+      ],
+      "closing": {
+        "currency": "CZK",
+        "minor": 84964958
+      },
+      "credits": {
+        "currency": "CZK",
+        "minor": 0
+      },
+      "debits": {
+        "currency": "CZK",
+        "minor": -3580392
+      },
+      "file": "csob-2026-10-06.xml",
+      "format": "CAMT.053",
+      "from": "2026-10-01",
+      "imports": [
+        {
+          "closing": {
+            "currency": "CZK",
+            "minor": 84964958
+          },
+          "file": "csob-2026-10-06.xml",
+          "from": "2026-10-01",
+          "lines": 5,
+          "to": "2026-10-06"
+        }
+      ],
+      "lines": [
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -9500
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Poplatek za vedení účtu",
+          "counterpartyAccount": null,
+          "date": "2026-10-06",
+          "entryId": null,
+          "heldBecause": "no received invoice or rule fits; book it to an account or create a rule",
+          "id": "s1-5",
+          "proposal": null,
+          "proposalId": "p-bank-fee",
+          "reference": "Poplatek za vedení účtu",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -242000
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Alza.cz a.s.",
+          "counterpartyAccount": "2700000001/2700",
+          "date": "2026-10-05",
+          "entryId": null,
+          "heldBecause": "no received invoice or rule fits; book it to an account or create a rule",
+          "id": "s1-4",
+          "proposal": null,
+          "proposalId": "p-alza",
+          "reference": "Objednávka 541227 USB-C dock",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -600000
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Výběr z bankomatu Brno, Masarykova",
+          "counterpartyAccount": null,
+          "date": "2026-10-04",
+          "entryId": null,
+          "heldBecause": "no received invoice or rule fits; book it to an account or create a rule",
+          "id": "s1-3",
+          "proposal": null,
+          "proposalId": "p-atm",
+          "reference": "Výběr z bankomatu Brno, Masarykova",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -115292
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Google Ireland Ltd",
+          "counterpartyAccount": null,
+          "date": "2026-10-03",
+          "entryId": null,
+          "heldBecause": "no received invoice or rule fits; book it to an account or create a rule",
+          "id": "s1-2",
+          "proposal": null,
+          "proposalId": "p-google",
+          "reference": "Platba kartou GOOGLE*WORKSPACE 45,86 EUR kurz 25,140",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -2613600
+          },
+          "bookedAs": null,
+          "candidates": [
+            {
+              "confidence": "likely",
+              "contributions": [
+                {
+                  "reason": "VS 20260917 is PF-2026-0917's",
+                  "weight": "+45"
+                },
+                {
+                  "reason": "the amount equals what's open, 26 136,00 Kč",
+                  "weight": "+30"
+                },
+                {
+                  "reason": "Pixelfarm s.r.o. has paid from this account before",
+                  "weight": "+20"
+                },
+                {
+                  "reason": "the payer's name is 100 % like Pixelfarm s.r.o.",
+                  "weight": "+15"
+                },
+                {
+                  "reason": "paid between issue and the due date (or soon after)",
+                  "weight": "+5"
+                }
+              ],
+              "detail": "26 136,00 Kč",
+              "label": "PF-2026-0917",
+              "score": "115"
+            }
+          ],
+          "counterparty": "Pixelfarm s.r.o.",
+          "counterpartyAccount": "2900887766/2010",
+          "date": "2026-10-01",
+          "entryId": null,
+          "heldBecause": null,
+          "id": "s1-1",
+          "proposal": "Pay PF-2026-0917",
+          "proposalId": null,
+          "reference": "VS 20260917 · Faktura PF-2026-0917",
+          "status": "certain"
+        }
+      ],
+      "opening": {
+        "currency": "CZK",
+        "minor": 88545350
+      },
+      "reportedClosing": {
+        "currency": "CZK",
+        "minor": 84964958
+      },
+      "rules": [],
+      "tiesOut": true,
+      "to": "2026-10-06",
+      "vatCodes": [
+        {
+          "code": "IN21",
+          "name": "Domestic purchase, standard rate (input VAT)",
+          "ratePercent": "21"
+        },
+        {
+          "code": "IN12",
+          "name": "Domestic purchase, reduced rate (input VAT)",
+          "ratePercent": "12"
+        }
+      ]
+    },
+    "isError": false,
+    "scenario": "bank-undo",
+    "state": "bank-undo/undone"
+  },
+  {
+    "command": "purchases",
+    "args": {},
+    "result": [
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 2160000
+        },
+        "daysOverdue": null,
+        "dic": "CZ96234563",
+        "dueOn": null,
+        "entryId": 36,
+        "gross": {
+          "currency": "CZK",
+          "minor": 2613600
+        },
+        "issuedOn": "2026-09-22",
+        "number": "PF-2026-0917",
+        "open": {
+          "currency": "CZK",
+          "minor": 2613600
+        },
+        "paid": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "status": "open",
+        "supplier": "Pixelfarm s.r.o.",
+        "vat": {
+          "currency": "CZK",
+          "minor": 453600
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 3850000
+        },
+        "daysOverdue": null,
+        "dic": null,
+        "dueOn": null,
+        "entryId": 35,
+        "gross": {
+          "currency": "CZK",
+          "minor": 3850000
+        },
+        "issuedOn": "2026-09-18",
+        "number": "MH-19",
+        "open": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "paid": {
+          "currency": "CZK",
+          "minor": 3850000
+        },
+        "status": "paid",
+        "supplier": "Marek Horák",
+        "vat": {
+          "currency": "CZK",
+          "minor": 0
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 4600000
+        },
+        "daysOverdue": null,
+        "dic": "CZ95123458",
+        "dueOn": null,
+        "entryId": 34,
+        "gross": {
+          "currency": "CZK",
+          "minor": 5566000
+        },
+        "issuedOn": "2026-08-31",
+        "number": "KV-2026-08",
+        "open": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "paid": {
+          "currency": "CZK",
+          "minor": 5566000
+        },
+        "status": "paid",
+        "supplier": "Kvasnička Dev s.r.o.",
+        "vat": {
+          "currency": "CZK",
+          "minor": 966000
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 1550000
+        },
+        "daysOverdue": null,
+        "dic": "CZ96234563",
+        "dueOn": null,
+        "entryId": 10,
+        "gross": {
+          "currency": "CZK",
+          "minor": 1875500
+        },
+        "issuedOn": "2026-06-25",
+        "number": "PF-2026-0612",
+        "open": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "paid": {
+          "currency": "CZK",
+          "minor": 1875500
+        },
+        "status": "paid",
+        "supplier": "Pixelfarm s.r.o.",
+        "vat": {
+          "currency": "CZK",
+          "minor": 325500
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 3120000
+        },
+        "daysOverdue": null,
+        "dic": null,
+        "dueOn": null,
+        "entryId": 9,
+        "gross": {
+          "currency": "CZK",
+          "minor": 3120000
+        },
+        "issuedOn": "2026-06-20",
+        "number": "MH-14",
+        "open": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "paid": {
+          "currency": "CZK",
+          "minor": 3120000
+        },
+        "status": "paid",
+        "supplier": "Marek Horák",
+        "vat": {
+          "currency": "CZK",
+          "minor": 0
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 2800000
+        },
+        "daysOverdue": null,
+        "dic": "CZ95123458",
+        "dueOn": null,
+        "entryId": 8,
+        "gross": {
+          "currency": "CZK",
+          "minor": 3388000
+        },
+        "issuedOn": "2026-05-31",
+        "number": "KV-2026-05",
+        "open": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "paid": {
+          "currency": "CZK",
+          "minor": 3388000
+        },
+        "status": "paid",
+        "supplier": "Kvasnička Dev s.r.o.",
+        "vat": {
+          "currency": "CZK",
+          "minor": 588000
+        }
+      }
+    ],
+    "isError": false,
+    "scenario": "bank-undo",
+    "state": "bank-undo/undone"
+  },
+  {
+    "command": "integrity",
+    "args": {},
+    "result": {
+      "balanced": true,
+      "chainIntact": true,
+      "entriesChecked": 54,
+      "firstBreak": null,
+      "head": "111da8b53a724d3ed34759b9c64c1ad1203befe12d3b91ceaab8b3880fa477d8"
+    },
+    "isError": false,
+    "scenario": "bank-undo",
+    "state": "bank-undo/undone"
+  },
+  {
+    "command": "journal",
+    "args": {
+      "from": "2026-10-01",
+      "to": "2026-10-31"
+    },
+    "result": [
+      {
+        "approvedBy": "user",
+        "date": "2026-10-01",
+        "id": 53,
+        "lines": [
+          {
+            "account": "221",
+            "accountName": "Bank accounts",
+            "amount": {
+              "currency": "CZK",
+              "minor": -2613600
+            },
+            "functional": {
+              "currency": "CZK",
+              "minor": -2613600
+            },
+            "fxRate": null,
+            "lineNo": 1,
+            "memo": "",
+            "vatCode": null
+          },
+          {
+            "account": "321",
+            "accountName": "Trade payables",
+            "amount": {
+              "currency": "CZK",
+              "minor": 2613600
+            },
+            "functional": {
+              "currency": "CZK",
+              "minor": 2613600
+            },
+            "fxRate": null,
+            "lineNo": 2,
+            "memo": "",
+            "vatCode": null
+          }
+        ],
+        "memo": "Pixelfarm s.r.o. · Faktura PF-2026-0917",
+        "postedSeq": 53,
+        "reversesId": null,
+        "sourceKind": "bank",
+        "sourceRef": "CSOB-90001"
+      },
+      {
+        "approvedBy": null,
+        "date": "2026-10-01",
+        "id": 54,
+        "lines": [
+          {
+            "account": "221",
+            "accountName": "Bank accounts",
+            "amount": {
+              "currency": "CZK",
+              "minor": 2613600
+            },
+            "functional": {
+              "currency": "CZK",
+              "minor": 2613600
+            },
+            "fxRate": null,
+            "lineNo": 1,
+            "memo": "",
+            "vatCode": null
+          },
+          {
+            "account": "321",
+            "accountName": "Trade payables",
+            "amount": {
+              "currency": "CZK",
+              "minor": -2613600
+            },
+            "functional": {
+              "currency": "CZK",
+              "minor": -2613600
+            },
+            "fxRate": null,
+            "lineNo": 2,
+            "memo": "",
+            "vatCode": null
+          }
+        ],
+        "memo": "Reversal of entry 53: Pixelfarm s.r.o. · Faktura PF-2026-0917",
+        "postedSeq": 54,
+        "reversesId": 53,
+        "sourceKind": "reversal",
+        "sourceRef": "4728db81-193c-5453-95ff-99ac93e2e544"
+      }
+    ],
+    "isError": false,
+    "scenario": "bank-undo",
+    "state": "bank-undo/undone"
+  },
+  {
     "command": "dismiss_proposal",
     "args": {
       "id": "finding-duplicate:figma:42"

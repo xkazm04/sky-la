@@ -159,6 +159,10 @@ export const commands = {
 	dismissProposal: (id: string) => typedError<ProposalDto[], IpcFailure>(__TAURI_INVOKE("dismiss_proposal", { id })),
 	/**  Accepts every line the matcher or a rule is certain about. */
 	acceptCertainBankLines: () => typedError<BankStatementDto, IpcFailure>(__TAURI_INVOKE("accept_certain_bank_lines")),
+	/**  Accepts one line the matcher or a rule is certain about. */
+	acceptBankLine: (line: string) => typedError<BankStatementDto, IpcFailure>(__TAURI_INVOKE("accept_bank_line", { line })),
+	/**  Undoes a line's booking with a reversal entry. */
+	unbookBankLine: (line: string) => typedError<BankStatementDto, IpcFailure>(__TAURI_INVOKE("unbook_bank_line", { line })),
 	/**  Books a line as the user chose: invoices, or account rows (a split). */
 	bookBankLine: (line: string, allocations: BankAllocationDto[]) => typedError<BankStatementDto, IpcFailure>(__TAURI_INVOKE("book_bank_line", { line, allocations })),
 	/**  Makes a rule from a line and books the line by it. */

@@ -166,3 +166,61 @@ fn import_accept_split_and_rule() {
         "nothing left in the inbox from the import"
     );
 }
+
+fn pixelfarm_open(core: &Core) -> i64 {
+    core.purchases()
+        .unwrap()
+        .into_iter()
+        .find(|p| p.number == "PF-2026-0917")
+        .unwrap()
+        .open
+        .minor
+}
+
+#[test]
+fn one_certain_line_is_accepted_then_undone_by_a_reversal_and_booked_again() {
+    let core = Core::demo().unwrap();
+    let owed = pixelfarm_open(&core);
+    assert!(owed > 0);
+    assert!(core.accept_bank_line("s1-4").is_err(), "not certain");
+
+    let s = core.accept_bank_line("s1-1").unwrap();
+    let line = s.lines.iter().find(|l| l.id == "s1-1").unwrap();
+    assert_eq!(line.status, "booked");
+    let booking = line.entry_id.unwrap();
+    assert_eq!(pixelfarm_open(&core), 0);
+    assert_eq!(
+        s.lines.iter().filter(|l| l.status == "booked").count(),
+        1,
+        "only that line"
+    );
+    assert!(core.accept_bank_line("s1-1").is_err(), "booked already");
+
+    let s = core.unbook_bank_line("s1-1").unwrap();
+    assert_eq!(
+        s.lines.iter().find(|l| l.id == "s1-1").unwrap().status,
+        "certain"
+    );
+    assert_eq!(pixelfarm_open(&core), owed, "the payable is open again");
+    let journal = core.journal("2000-01-01", "2100-12-31").unwrap();
+    let reversal = journal
+        .iter()
+        .find(|e| e.reverses_id == Some(booking))
+        .unwrap();
+    assert_eq!(reversal.source_kind, "reversal");
+    assert!(
+        journal
+            .iter()
+            .any(|e| e.id == booking && e.posted_seq.is_some()),
+        "the booking stays posted"
+    );
+    assert!(core.unbook_bank_line("s1-1").is_err(), "not booked now");
+
+    // Booked again, under a new identity.
+    core.accept_bank_line("s1-1").unwrap();
+    assert_eq!(status(&core, "s1-1"), "booked");
+    assert_eq!(pixelfarm_open(&core), 0);
+    assert!(core.integrity().unwrap().chain_intact);
+    let tb = core.trial_balance(None, "2026-12-31").unwrap();
+    assert_eq!(tb.total_debit, tb.total_credit);
+}

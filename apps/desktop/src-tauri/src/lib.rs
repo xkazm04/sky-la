@@ -423,6 +423,20 @@ fn accept_certain_bank_lines(core: Books) -> Answer<BankStatementDto> {
     Ok(core.accept_certain_bank_lines()?)
 }
 
+/// Accepts one line the matcher or a rule is certain about.
+#[tauri::command]
+#[specta::specta]
+fn accept_bank_line(core: Books, line: String) -> Answer<BankStatementDto> {
+    Ok(core.accept_bank_line(&line)?)
+}
+
+/// Undoes a line's booking with a reversal entry.
+#[tauri::command]
+#[specta::specta]
+fn unbook_bank_line(core: Books, line: String) -> Answer<BankStatementDto> {
+    Ok(core.unbook_bank_line(&line)?)
+}
+
 /// Books a line as the user chose: invoices, or account rows (a split).
 #[tauri::command]
 #[specta::specta]
@@ -765,6 +779,8 @@ pub fn specta_builder<R: Runtime>() -> Builder<R> {
             approve_proposals,
             dismiss_proposal,
             accept_certain_bank_lines,
+            accept_bank_line,
+            unbook_bank_line,
             book_bank_line,
             create_bank_rule,
             reference_data,

@@ -897,3 +897,20 @@ test("advice that has been read is dismissed from the inbox", async ({ page }) =
   await expect(page.getByRole("status")).toContainText("Dismissed.");
   await expect(page.getByRole("grid", { name: "Inbox" })).not.toContainText("Figma");
 });
+
+test("one certain line is accepted, and its booking undone by a reversal", async ({ page }) => {
+  await page.goto("/#/bank/s1-1");
+  await settle(page);
+  const pixelfarm = page.getByRole("complementary", { name: /Pixelfarm/ });
+  await pixelfarm.getByRole("button", { name: "Accept", exact: true }).click();
+  await expect(page.getByRole("status")).toContainText("is booked: Pay PF-2026-0917");
+  await expect(pixelfarm).toContainText("Booked");
+
+  await pixelfarm.getByRole("button", { name: "Undo booking…" }).click();
+  const undo = page.getByRole("dialog", { name: "Undo booking" });
+  await expect(undo).toContainText("Posts a reversal of entry");
+  await axeClean(page);
+  await undo.getByRole("button", { name: "Post reversal" }).click();
+  await expect(page.getByRole("status")).toContainText("is reversed");
+  await expect(pixelfarm.getByRole("button", { name: "Accept", exact: true })).toBeVisible();
+});

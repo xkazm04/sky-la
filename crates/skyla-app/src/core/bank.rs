@@ -15,7 +15,8 @@ use skyla_bank::{
     Suggestion, normalise, suggest, tie_out,
 };
 use skyla_ledger::{
-    NewEntry, NewLine, SourceKind, create_draft_as, link_settlement, list_posted, post_entry_at,
+    NewEntry, NewLine, PeriodState, Replay, SourceKind, create_draft_as, get_entry,
+    link_settlement, list_periods, list_posted, post_entry_at, reverse_entry_at,
 };
 use skyla_money::{Money, vat};
 
@@ -56,6 +57,10 @@ pub(crate) struct BankState {
     known: HashSet<String>,
     /// Accounts each customer or supplier has paid from or to.
     payers: HashMap<String, Vec<String>>,
+    /// How many times each line's booking was undone (so a new booking
+    /// gets a new identity).
+    #[serde(default)]
+    undone: HashMap<String, u32>,
 }
 
 /// Who proposed a line's entry, what it says, and how the line reads once booked.
@@ -319,7 +324,11 @@ impl Core {
             created_by: how.created_by.to_owned(),
             lines,
         };
-        let uid = uuid::Uuid::new_v5(&BANK_NAMESPACE, id.as_bytes()).to_string();
+        let uid = match state.undone.get(id) {
+            None => uuid::Uuid::new_v5(&BANK_NAMESPACE, id.as_bytes()),
+            Some(n) => uuid::Uuid::new_v5(&BANK_NAMESPACE, format!("{id}/{n}").as_bytes()),
+        }
+        .to_string();
         let posted_at = format!("{}T12:00:00.000Z", line.line.booking_date);
         let db = self.db();
         db.execute_batch("SAVEPOINT bank_line")
@@ -518,6 +527,70 @@ impl Core {
                     self.apply(&mut state, id, s)?;
                 }
             }
+        }
+        self.persist_bank()?;
+        self.bank_statement()
+    }
+
+    /// Accepts one line the matcher or a rule is certain about.
+    pub fn accept_bank_line(&self, line: &str) -> Result<BankStatementDto, CoreError> {
+        {
+            let mut state = self.bank_state();
+            let suggestions = self.suggestions(&state)?;
+            match suggestions.get(line) {
+                Some(s) if s.auto => self.apply(&mut state, line, s)?,
+                Some(_) => return Err(bad(format!("bank line {line} isn't certain; book it"))),
+                None => return Err(bad(format!("bank line {line} is booked already"))),
+            }
+        }
+        self.persist_bank()?;
+        self.bank_statement()
+    }
+
+    /// Undoes a line's booking with a reversal entry (posted entries never
+    /// change), dated like the booking unless that period is closed, then
+    /// today. Settlements are reversed with it, so the invoices are open
+    /// again, and the line waits for a decision.
+    pub fn unbook_bank_line(&self, line: &str) -> Result<BankStatementDto, CoreError> {
+        {
+            let mut state = self.bank_state();
+            let entry_id = state
+                .booked
+                .get(line)
+                .map(|b| b.entry_id)
+                .ok_or_else(|| bad(format!("bank line {line} isn't booked")))?;
+            let db = self.db();
+            let original = get_entry(&db, entry_id)?;
+            let open = list_periods(&db)?.into_iter().any(|p| {
+                p.starts_on <= original.date
+                    && p.ends_on >= original.date
+                    && p.state != PeriodState::Closed
+            });
+            let date = if open {
+                original.date.clone()
+            } else {
+                std::cmp::max(original.date.clone(), self.domain.entity.as_of.clone())
+            };
+            let n = state.undone.get(line).copied().unwrap_or(0) + 1;
+            let uid = uuid::Uuid::new_v5(&BANK_NAMESPACE, format!("{line}/undo/{n}").as_bytes())
+                .to_string();
+            let posted_at = format!(
+                "{}T12:00:00.000Z",
+                std::cmp::max(date.as_str(), self.domain.entity.as_of.as_str())
+            );
+            reverse_entry_at(
+                &db,
+                entry_id,
+                &date,
+                "user",
+                None,
+                Some(Replay {
+                    uid: &uid,
+                    posted_at: &posted_at,
+                }),
+            )?;
+            state.booked.remove(line);
+            state.undone.insert(line.to_owned(), n);
         }
         self.persist_bank()?;
         self.bank_statement()
