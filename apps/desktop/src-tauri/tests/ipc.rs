@@ -159,3 +159,24 @@ fn the_generated_bindings_are_current() {
         "packages/ipc/src/bindings.ts is stale; regenerate it with `just bindings`"
     );
 }
+
+#[test]
+fn the_window_shows_only_the_apps_own_pages() {
+    use skyla_desktop_lib::navigation_allowed;
+    let ok = |u: &str| navigation_allowed(&u.parse().unwrap());
+    assert!(ok("tauri://localhost/index.html#/invoices"));
+    assert!(ok("http://tauri.localhost/#/settings"));
+    assert!(ok("https://tauri.localhost/"));
+    for remote in [
+        "https://www.zakonyprolidi.cz/cs/1992-586",
+        "https://tauri.localhost.evil.example/",
+        "http://localhost:8080/",
+        "file:///etc/passwd",
+        "javascript:alert(1)",
+        "data:text/html,<h1>Unlock</h1>",
+    ] {
+        assert!(!ok(remote), "{remote}");
+    }
+    // The dev server, in debug builds only.
+    assert_eq!(ok("http://localhost:1420/"), cfg!(debug_assertions));
+}

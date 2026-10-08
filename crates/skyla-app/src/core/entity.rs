@@ -303,7 +303,13 @@ impl Core {
         let newest = list
             .first()
             .ok_or_else(|| CoreError::BadRequest("there's no backup to check yet".into()))?;
-        let scratch = std::env::temp_dir().join("skyla-drill");
+        // Beside the books, in the user's own folder: a shared temp folder
+        // could be pre-created or swapped by another account to fake a pass.
+        let scratch = real
+            .backups
+            .parent()
+            .unwrap_or(&real.backups)
+            .join(".restore-drill");
         let r = backup::drill(newest, &real.key, &scratch, |conn| {
             skyla_ledger::verify_chain(conn).ok().and_then(|c| c.head)
         })

@@ -312,10 +312,20 @@ fn commit_invoice_import(
     Ok(core.commit_invoice_import(&file_name, &content_base64)?)
 }
 
-/// Everything in the books as one reproducible zip (base64).
+/// Everything in the books as one reproducible zip (base64). The zip isn't
+/// encrypted, so real books ask for the passphrase again first.
 #[tauri::command]
 #[specta::specta]
-fn export_books(core: State<'_, Core>) -> Answer<ExportDto> {
+fn export_books(
+    session: State<'_, Session>,
+    core: State<'_, Core>,
+    passphrase: Option<String>,
+) -> Answer<ExportDto> {
+    if !core.is_demo() {
+        session
+            .gate
+            .confirm_passphrase(passphrase.as_deref().unwrap_or_default())?;
+    }
     Ok(core.export_books()?)
 }
 
@@ -614,6 +624,19 @@ pub fn export_bindings(path: &std::path::Path) -> Result<(), specta_typescript::
     )
 }
 
+/// Whether the app's window may show `url`: only the app's own pages (and
+/// the Vite dev server in debug builds). A link to a statute or anything
+/// remote never replaces the app, so no remote page can sit in its window
+/// looking like an unlock screen.
+pub fn navigation_allowed(url: &tauri::Url) -> bool {
+    match (url.scheme(), url.host_str()) {
+        ("tauri", Some("localhost")) => true,
+        ("http" | "https", Some("tauri.localhost")) => true,
+        ("http", Some("localhost")) => cfg!(debug_assertions) && url.port() == Some(1420),
+        _ => false,
+    }
+}
+
 /// Starts the desktop application: the session gate first (set up or
 /// unlock the books, or explore the demo), then the core.
 ///
@@ -622,7 +645,11 @@ pub fn export_bindings(path: &std::path::Path) -> Result<(), specta_typescript::
 #[allow(clippy::expect_used)]
 pub fn run() {
     let builder = specta_builder::<tauri::Wry>();
+    let navigation_guard = tauri::plugin::Builder::<tauri::Wry>::new("navigation-guard")
+        .on_navigation(|_, url| navigation_allowed(url))
+        .build();
     tauri::Builder::default()
+        .plugin(navigation_guard)
         .setup(|app| {
             let dir = app.path().app_data_dir()?.join("books");
             let keystore: Box<dyn skyla_app::KeyStore> = if skyla_store::OsKeyStore::available() {

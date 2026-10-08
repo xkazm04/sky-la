@@ -241,6 +241,14 @@ impl Gate {
         Ok(core)
     }
 
+    /// Checks the passphrase again before something that leaves the
+    /// encryption behind (the full export). Opens nothing.
+    pub fn confirm_passphrase(&self, passphrase: &str) -> Result<(), CoreError> {
+        let vault = Vault::load(&self.vault_path()).map_err(store)?;
+        vault.unlock_with_passphrase(passphrase).map_err(store)?;
+        Ok(())
+    }
+
     /// Unlocks with the key kept in the OS keychain, if there is one.
     pub fn unlock_remembered(&self) -> Result<Option<Core>, CoreError> {
         let Some(key) = self.keystore.load(ACCOUNT).map_err(store)? else {

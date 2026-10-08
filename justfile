@@ -5,7 +5,7 @@ set shell := ["bash", "-euo", "pipefail", "-c"]
 default: ci
 
 # Everything a session or CI must keep green. Builds without WebKitGTK.
-ci: fmt-check lint licence-check test e2e
+ci: fmt-check lint licence-check security-check test e2e
 
 # Format Rust and TypeScript in place.
 fmt:
@@ -23,6 +23,10 @@ lint:
 
 licence-check:
     python3 scripts/check_licence_boundary.py
+
+# CSP, capabilities, network paths and process spawns (WP-32).
+security-check:
+    python3 scripts/check_security.py
 
 test:
     cargo test --locked

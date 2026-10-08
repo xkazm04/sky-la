@@ -35,7 +35,7 @@ Open-source, local-first, encrypted desktop accounting for Czech freelancers (OS
 ## Commands
 
 ```
-just ci             # the gate: fmt check, clippy -D warnings, biome, typecheck, licence boundary, tests, Playwright e2e
+just ci             # the gate: fmt check, clippy -D warnings, biome, typecheck, licence boundary, security audit, tests, Playwright e2e
 just test           # Rust + web unit tests
 just dev-web        # UI in a plain browser on the fixture-backed mock transport (http://localhost:1420)
 just e2e            # Playwright against dev-web; screenshots land in apps/desktop/test-results/
@@ -45,6 +45,7 @@ just recordings     # re-record the core's IPC answers that the mock transport r
 just bindings       # regenerate packages/ipc/src/bindings.ts from the Tauri commands (needs WebKitGTK)
 just check-desktop  # compile + lint + test the Tauri shell (needs WebKitGTK on Linux; CI runs it)
 just deny           # cargo-deny supply-chain and licence policy (CI runs it)
+just security-check # CSP, capabilities, network paths and process spawns (part of `just ci`; see docs/design/SECURITY_REVIEW.md)
 just fmt            # format Rust and TypeScript in place
 ```
 

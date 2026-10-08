@@ -121,8 +121,11 @@ export const commands = {
 	previewInvoiceImport: (fileName: string, contentBase64: string) => typedError<ImportPreviewDto, IpcFailure>(__TAURI_INVOKE("preview_invoice_import", { fileName, contentBase64 })),
 	/**  Posts the new invoices in a Pohoda or Fakturoid export. */
 	commitInvoiceImport: (fileName: string, contentBase64: string) => typedError<ImportPreviewDto, IpcFailure>(__TAURI_INVOKE("commit_invoice_import", { fileName, contentBase64 })),
-	/**  Everything in the books as one reproducible zip (base64). */
-	exportBooks: () => typedError<ExportDto, IpcFailure>(__TAURI_INVOKE("export_books")),
+	/**
+	 *  Everything in the books as one reproducible zip (base64). The zip isn't
+	 *  encrypted, so real books ask for the passphrase again first.
+	 */
+	exportBooks: (passphrase: string | null) => typedError<ExportDto, IpcFailure>(__TAURI_INVOKE("export_books", { passphrase })),
 	/**  Accepts every line the matcher or a rule is certain about. */
 	acceptCertainBankLines: () => typedError<BankStatementDto, IpcFailure>(__TAURI_INVOKE("accept_certain_bank_lines")),
 	/**  Books a line as the user chose: invoices, or account rows (a split). */

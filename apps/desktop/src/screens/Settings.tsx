@@ -23,6 +23,7 @@ import {
   storeAppearance,
   storedAppearance,
   type TableColumn,
+  TextField,
   Toolbar,
 } from "@skyla/ui";
 import { FileDown, FileUp, Monitor, Moon, Sun } from "lucide-react";
@@ -279,7 +280,7 @@ export function SettingsScreen({ item, core }: { item: string | null; core: Core
             {selected.refdata && <ReferenceData data={selected.refdata} />}
             {selected.policies && <AdvisorSharing policies={selected.policies} />}
             {selected.backups && <Backups data={selected.backups} />}
-            {selected.exportable && <ExportBooks />}
+            {selected.exportable && <ExportBooks demo={bk?.demo ?? true} />}
             {selected.pack && (
               <>
                 <InspectorSection title={`Values in force · ${selected.pack.values.length}`}>
@@ -321,13 +322,15 @@ export function SettingsScreen({ item, core }: { item: string | null; core: Core
 }
 
 /** The full export, saved as a zip. */
-function ExportBooks() {
+function ExportBooks({ demo }: { demo: boolean }) {
   const [result, setResult] = useState<{ ok: boolean; text: string } | null>(null);
   const [busy, setBusy] = useState(false);
+  const [pass, setPass] = useState("");
   const run = async () => {
     setBusy(true);
     try {
-      const e = await unwrap(commands.exportBooks());
+      const e = await unwrap(commands.exportBooks(demo ? null : pass));
+      setPass("");
       downloadBase64(e.fileName, e.contentBase64, "application/zip");
       setResult({
         ok: true,
@@ -341,11 +344,28 @@ function ExportBooks() {
   };
   return (
     <>
-      <div className="mt-3 flex gap-2">
-        <Button icon={FileDown} isDisabled={busy} onPress={() => void run()}>
+      <form
+        aria-label="Export"
+        className="mt-3 flex items-end gap-2"
+        onSubmit={(e) => {
+          e.preventDefault();
+          void run();
+        }}
+      >
+        {!demo && (
+          <TextField
+            className="flex-1"
+            label="Your passphrase, to confirm"
+            type="password"
+            value={pass}
+            onChange={setPass}
+            autoComplete="current-password"
+          />
+        )}
+        <Button type="submit" icon={FileDown} isDisabled={busy || (!demo && pass === "")}>
           Export…
         </Button>
-      </div>
+      </form>
       {result && (
         <p
           role={result.ok ? "status" : "alert"}

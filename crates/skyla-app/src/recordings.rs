@@ -354,7 +354,7 @@ pub fn canonical_requests() -> Vec<(&'static str, Value)> {
         ("bank_statement", json!({})),
         ("proposals", json!({})),
         ("egress_register", json!({})),
-        ("export_books", json!({})),
+        ("export_books", json!({ "passphrase": null })),
         ("egress_policies", json!({})),
         ("egress_payload", json!({ "id": "run-2026-10-04-01" })),
         ("egress_payload", json!({ "id": "run-2026-10-04-02" })),
