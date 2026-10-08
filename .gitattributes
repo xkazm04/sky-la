@@ -1,0 +1,13 @@
+# Tests match text containing LF, so checkouts stay LF on every OS.
+* text=auto eol=lf
+# Bank samples and the fuzz corpus keep their exact bytes (some are CRLF on purpose).
+crates/skyla-bank/tests/** -text
+crates/skyla-bank/fuzz/** -text
+*.png binary
+*.ico binary
+*.icns binary
+*.pdf binary
+*.zip binary
+*.ttf binary
+*.otf binary
+*.woff2 binary

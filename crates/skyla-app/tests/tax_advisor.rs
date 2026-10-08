@@ -65,7 +65,7 @@ fn the_demo_answers_are_accepted_and_filed_for_review() {
     assert_eq!(books.recommendation.as_deref(), Some("flat_rate.trade"));
     let review = core.run_tax_advisor(Some(&review()), true).unwrap();
     assert_eq!(review.status, "accepted", "{:?}", review.problems);
-    assert!(review.explanation.unwrap().contains("197 584 Kč"));
+    assert!(review.explanation.unwrap().contains("206 759 Kč"));
     assert_eq!(core.proposals().unwrap().len(), before + 2);
     let register = core.egress_register().unwrap();
     assert_eq!(register.len(), runs + 2, "every run is recorded");
@@ -79,7 +79,7 @@ fn an_injected_wrong_number_is_rejected() {
     let text = answer["explanation"]
         .as_str()
         .unwrap()
-        .replace("197 584 Kč", "197 585 Kč");
+        .replace("206 759 Kč", "206 760 Kč");
     answer["explanation"] = json!(text);
     core.replace_provider(Box::new(Fake::new().with(
         "tax.scenarios",
@@ -89,7 +89,7 @@ fn an_injected_wrong_number_is_rejected() {
     let advice = core.run_tax_advisor(Some(&review()), true).unwrap();
     assert_eq!(advice.status, "rejected");
     assert!(
-        advice.problems[0].starts_with("197 585 Kč"),
+        advice.problems[0].starts_with("206 760 Kč"),
         "{:?}",
         advice.problems
     );

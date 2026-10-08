@@ -31,12 +31,15 @@ pub(crate) struct PreparedLine {
     pub(crate) gross: Money,
     pub(crate) rate: Rate,
     pub(crate) outside_vat: bool,
+    /// A supply to a VAT payer in another member state: no Czech VAT.
+    pub(crate) eu_supply: bool,
 }
 
 #[derive(Debug, Clone)]
 pub(crate) struct PreparedRecap {
     pub(crate) rate: Rate,
     pub(crate) outside_vat: bool,
+    pub(crate) eu_supply: bool,
     pub(crate) base: Money,
     pub(crate) vat: Money,
     pub(crate) claimed_base: Money,
@@ -102,6 +105,7 @@ pub(crate) fn prepare(pack: &Pack, input: ExportInput<'_>) -> Result<Prepared, I
             gross: amount.base.checked_add(amount.vat)?,
             rate,
             outside_vat: code.outside_vat,
+            eu_supply: code.eu_supply.is_some(),
         });
     }
 
@@ -118,6 +122,7 @@ pub(crate) fn prepare(pack: &Pack, input: ExportInput<'_>) -> Result<Prepared, I
         recap.push(PreparedRecap {
             rate: pack.vat_rate(&r.vat_code, &on)?,
             outside_vat: code.outside_vat,
+            eu_supply: code.eu_supply.is_some(),
             base: r.base,
             vat: r.vat,
             claimed_base,

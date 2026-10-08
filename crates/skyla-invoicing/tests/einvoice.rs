@@ -134,3 +134,39 @@ fn a_supplier_outside_vat_goes_out_as_cii() {
     );
     insta::assert_snapshot!("non_payer_cii", cii);
 }
+
+fn to_germany(code: &str, quantity: &str, unit: &str, price: i64) -> skyla_invoicing::DraftInput {
+    skyla_invoicing::DraftInput {
+        customer: skyla_invoicing::Customer {
+            name: "Beispiel GmbH".into(),
+            ico: None,
+            dic: Some("DE123456789".into()),
+            address: Some("Hauptstraße 5\n10115 Berlin".into()),
+        },
+        ..draft(
+            DocKind::Invoice,
+            "FV",
+            vec![line("Konzultace", quantity, unit, price, code)],
+        )
+    }
+}
+
+#[test]
+fn a_service_to_another_member_state_is_reverse_charge() {
+    let b = books(true);
+    // 40 h × 1 500,00 = 60 000,00, no VAT.
+    let doc = b.issue(&to_germany("EUSVC", "40", "h", 150_000), "2026-09-15");
+    let (ubl, cii) = golden(&b, "eu_service", input(&doc, None, &[]));
+    assert!(ubl.contains("<cbc:ID>AE</cbc:ID>"));
+    assert!(cii.contains("<ram:CategoryCode>AE</ram:CategoryCode>"));
+}
+
+#[test]
+fn goods_to_another_member_state_are_an_intra_community_supply() {
+    let b = books(true);
+    // 2 ks × 25 000,00 = 50 000,00, no VAT.
+    let doc = b.issue(&to_germany("EUGDS", "2", "ks", 2_500_000), "2026-09-15");
+    let (ubl, cii) = golden(&b, "eu_goods", input(&doc, None, &[]));
+    assert!(ubl.contains("<cbc:ID>K</cbc:ID>"));
+    assert!(cii.contains("<ram:CategoryCode>K</ram:CategoryCode>"));
+}

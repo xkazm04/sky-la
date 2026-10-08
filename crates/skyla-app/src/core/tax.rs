@@ -10,13 +10,14 @@ use skyla_ledger::{cash_basis, list_posted};
 use skyla_money::Money;
 use skyla_tax_cz::{
     Expenses, FlatRate, KhDocument, KhItem, KhPart, KhSide, KhTotals, PlannedPurchase,
-    ScenarioFacts, Section7, control_statement, scenarios,
+    ScenarioFacts, Section7, ShDocument, ShPart, control_statement, recapitulative_statement,
+    scenarios,
 };
 
 use super::{Core, money};
 use crate::dto::{
-    ControlStatementDto, KhCRowDto, KhItemDto, KhTotalsDto, ObligationDto, TaxProjectionDto,
-    TaxScenarioDto, TaxScenariosDto,
+    ControlStatementDto, KhCRowDto, KhItemDto, KhTotalsDto, ObligationDto, RecapitulativeLineDto,
+    RecapitulativeStatementDto, TaxProjectionDto, TaxScenarioDto, TaxScenariosDto,
 };
 use crate::error::CoreError;
 
@@ -219,6 +220,95 @@ impl Core {
                 .deadline_after("vat.control_statement.due_days_after_period", to)?,
             pack: self.pack.provenance(),
         })
+    }
+}
+
+impl Core {
+    /// The souhrnné hlášení for `from..=to`: the supplies to VAT payers in
+    /// other member states, from the issued documents. A credit note counts
+    /// in the period of the invoice it corrects.
+    pub fn recapitulative_statement(
+        &self,
+        from: &str,
+        to: &str,
+    ) -> Result<RecapitulativeStatementDto, CoreError> {
+        for date in [from, to] {
+            if !skyla_ledger::is_iso_date(date) {
+                return Err(CoreError::BadRequest(format!("invalid date {date:?}")));
+            }
+        }
+        let db = self.db();
+        let ids: Vec<i64> = db
+            .prepare("SELECT id FROM document WHERE entry_id IS NOT NULL AND status = 'issued' ORDER BY id")
+            .map_err(skyla_ledger::LedgerError::from)?
+            .query_map([], |r| r.get(0))
+            .map_err(skyla_ledger::LedgerError::from)?
+            .collect::<Result<_, _>>()
+            .map_err(skyla_ledger::LedgerError::from)?;
+        let supply_date = |d: &skyla_invoicing::Document| {
+            d.tax_point_date
+                .clone()
+                .or_else(|| d.issue_date.clone())
+                .unwrap_or_default()
+        };
+        let mut docs = Vec::new();
+        for id in ids {
+            let d = skyla_invoicing::get(&db, &self.pack, id)?;
+            let corrects_date = match (d.kind, d.related_id) {
+                (skyla_invoicing::DocKind::Invoice, _) => None,
+                (skyla_invoicing::DocKind::CreditNote, Some(r)) => {
+                    Some(supply_date(&skyla_invoicing::get(&db, &self.pack, r)?))
+                }
+                _ => continue,
+            };
+            docs.push(ShDocument {
+                number: d.number.clone().unwrap_or_default(),
+                counterparty: d.customer.name.clone(),
+                vat_id: d.customer.dic.clone(),
+                date: supply_date(&d),
+                corrects_date,
+                parts: d
+                    .totals
+                    .recap
+                    .iter()
+                    .map(|r| ShPart {
+                        vat_code: r.vat_code.clone(),
+                        base: r.base,
+                    })
+                    .collect(),
+            });
+        }
+        let st = recapitulative_statement(&self.pack, from, to, self.currency, &docs)?;
+        Ok(RecapitulativeStatementDto {
+            from: st.from,
+            to: st.to,
+            lines: st
+                .lines
+                .into_iter()
+                .map(|l| {
+                    Ok(RecapitulativeLineDto {
+                        base: money(l.base)?,
+                        country: l.country,
+                        vat_number: l.vat_number,
+                        sh_code: l.sh_code,
+                        counterparty: l.counterparty,
+                        supplies: l.supplies,
+                    })
+                })
+                .collect::<Result<_, CoreError>>()?,
+            total: money(st.total)?,
+            problems: st.problems,
+            pack: self.pack.provenance(),
+        })
+    }
+}
+
+impl From<skyla_tax_cz::ShError> for CoreError {
+    fn from(e: skyla_tax_cz::ShError) -> Self {
+        match e {
+            skyla_tax_cz::ShError::Rules(r) => Self::Rules(r),
+            skyla_tax_cz::ShError::Money(m) => Self::Money(m),
+        }
     }
 }
 

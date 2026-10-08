@@ -218,6 +218,35 @@ pub struct VatCode {
     /// codes that never go on a sales document (purchases).
     #[serde(default)]
     pub einvoice: Option<EinvoiceTax>,
+    /// Set for a supply to a VAT payer in another member state: the
+    /// customer's VAT number is required and the supply goes into the
+    /// souhrnné hlášení (EC Sales List).
+    #[serde(default)]
+    pub eu_supply: Option<EuSupply>,
+    /// What the printed invoice must say under this code, in both languages.
+    #[serde(default)]
+    pub invoice_note: Option<InvoiceNote>,
+}
+
+/// An EU supply's place in the souhrnné hlášení.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct EuSupply {
+    /// The statement's supply code (kód plnění): `0` goods, `1` transfer of
+    /// own assets, `2` triangular trade, `3` services.
+    pub sh_code: String,
+    /// Where the code comes from.
+    pub cite: Cite,
+}
+
+/// The statement an invoice prints for a VAT code.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct InvoiceNote {
+    /// In Czech.
+    pub cs: String,
+    /// In English.
+    pub en: String,
 }
 
 /// The EN 16931 view of a VAT code.
@@ -449,6 +478,34 @@ impl Pack {
                     problems.push(format!("{what}: is outside VAT but maps to return rows"));
                 }
                 _ => {}
+            }
+            if let Some(eu) = &code.eu_supply {
+                check_cite(&format!("{what} (eu_supply)"), &eu.cite, &mut problems);
+                if !matches!(eu.sh_code.as_str(), "0" | "1" | "2" | "3") {
+                    problems.push(format!(
+                        "{what}: souhrnné hlášení code {:?} isn't 0, 1, 2 or 3",
+                        eu.sh_code
+                    ));
+                }
+                if code.outside_vat {
+                    problems.push(format!("{what}: an EU supply can't be outside VAT"));
+                }
+                // The customer accounts for the tax or the supply is exempt;
+                // either way the invoice charges none and says why.
+                match code.einvoice.as_ref().map(|e| e.category.as_str()) {
+                    Some("K" | "AE") => {}
+                    _ => problems.push(format!(
+                        "{what}: an EU supply is e-invoice category K or AE"
+                    )),
+                }
+                if code.invoice_note.is_none() {
+                    problems.push(format!("{what}: an EU supply needs an invoice_note"));
+                }
+            }
+            if let Some(note) = &code.invoice_note
+                && (note.cs.trim().is_empty() || note.en.trim().is_empty())
+            {
+                problems.push(format!("{what}: invoice_note needs both languages"));
             }
         }
 

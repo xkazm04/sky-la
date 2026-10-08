@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Synthetic sample, written by hand for tests and the demo. Not exported from a real Pohoda installation and not anyone's real data. Credit notes against the demo's invoice 2026-102 and an invoice in this same file. -->
+<dat:dataPack xmlns:dat="http://www.stormware.cz/schema/version_2/data.xsd" xmlns:inv="http://www.stormware.cz/schema/version_2/invoice.xsd" xmlns:typ="http://www.stormware.cz/schema/version_2/type.xsd" id="synthetic" application="synthetic sample" version="2.0" note="Synthetic sample">
+  <dat:dataPackItem id="1" version="2.0">
+    <inv:invoice version="2.0">
+      <inv:invoiceHeader>
+        <inv:invoiceType>issuedCreditNotice</inv:invoiceType>
+        <inv:number><typ:numberRequested>OD2026-001</typ:numberRequested></inv:number>
+        <inv:sourceDocument><typ:number>2026-102</typ:number></inv:sourceDocument>
+        <inv:date>2026-10-02</inv:date>
+        <inv:dateTax>2026-10-02</inv:dateTax>
+        <inv:text>Sleva k 2026-102, část</inv:text>
+        <inv:partnerIdentity><typ:address><typ:company>Studio Brno s.r.o.</typ:company><typ:city>Brno</typ:city><typ:street>Masarykova 12</typ:street><typ:zip>602 00</typ:zip><typ:ico>94722188</typ:ico><typ:dic>CZ94722188</typ:dic></typ:address></inv:partnerIdentity>
+      </inv:invoiceHeader>
+      <inv:invoiceSummary><inv:homeCurrency><typ:priceNone>0</typ:priceNone><typ:priceLow>0</typ:priceLow><typ:priceLowVAT>0</typ:priceLowVAT><typ:priceHigh>-10000</typ:priceHigh><typ:priceHighVAT>-2100</typ:priceHighVAT></inv:homeCurrency></inv:invoiceSummary>
+    </inv:invoice>
+  </dat:dataPackItem>
+  <dat:dataPackItem id="2" version="2.0">
+    <inv:invoice version="2.0">
+      <inv:invoiceHeader>
+        <inv:invoiceType>issuedCreditNotice</inv:invoiceType>
+        <inv:number><typ:numberRequested>OD2026-002</typ:numberRequested></inv:number>
+        <inv:sourceDocument><typ:number><typ:numberRequested>2026-102</typ:numberRequested></typ:number></inv:sourceDocument>
+        <inv:date>2026-10-05</inv:date>
+        <inv:dateTax>2026-10-05</inv:dateTax>
+        <inv:text>Sleva k 2026-102, zbytek</inv:text>
+        <inv:partnerIdentity><typ:address><typ:company>Studio Brno s.r.o.</typ:company><typ:city>Brno</typ:city><typ:street>Masarykova 12</typ:street><typ:zip>602 00</typ:zip><typ:ico>94722188</typ:ico><typ:dic>CZ94722188</typ:dic></typ:address></inv:partnerIdentity>
+      </inv:invoiceHeader>
+      <inv:invoiceSummary><inv:homeCurrency><typ:priceNone>0</typ:priceNone><typ:priceLow>0</typ:priceLow><typ:priceLowVAT>0</typ:priceLowVAT><typ:priceHigh>40000</typ:priceHigh><typ:priceHighVAT>8400</typ:priceHighVAT></inv:homeCurrency></inv:invoiceSummary>
+    </inv:invoice>
+  </dat:dataPackItem>
+  <dat:dataPackItem id="3" version="2.0">
+    <inv:invoice version="2.0">
+      <inv:invoiceHeader>
+        <inv:invoiceType>issuedCreditNotice</inv:invoiceType>
+        <inv:number><typ:numberRequested>OD2026-003</typ:numberRequested></inv:number>
+        <inv:sourceDocument><typ:number>2026-114</typ:number></inv:sourceDocument>
+        <inv:date>2026-10-05</inv:date>
+        <inv:dateTax>2026-10-05</inv:dateTax>
+        <inv:text>Oprava 2026-114</inv:text>
+        <inv:partnerIdentity><typ:address><typ:company>Studio Brno s.r.o.</typ:company><typ:city>Brno</typ:city><typ:street>Masarykova 12</typ:street><typ:zip>602 00</typ:zip><typ:ico>94722188</typ:ico><typ:dic>CZ94722188</typ:dic></typ:address></inv:partnerIdentity>
+      </inv:invoiceHeader>
+      <inv:invoiceSummary><inv:homeCurrency><typ:priceNone>0</typ:priceNone><typ:priceLow>0</typ:priceLow><typ:priceLowVAT>0</typ:priceLowVAT><typ:priceHigh>-1000</typ:priceHigh><typ:priceHighVAT>-210</typ:priceHighVAT></inv:homeCurrency></inv:invoiceSummary>
+    </inv:invoice>
+  </dat:dataPackItem>
+  <dat:dataPackItem id="4" version="2.0">
+    <inv:invoice version="2.0">
+      <inv:invoiceHeader>
+        <inv:invoiceType>issuedCreditNotice</inv:invoiceType>
+        <inv:number><typ:numberRequested>OD2026-004</typ:numberRequested></inv:number>
+        <inv:sourceDocument><typ:number>2026-999</typ:number></inv:sourceDocument>
+        <inv:date>2026-10-06</inv:date>
+        <inv:dateTax>2026-10-06</inv:dateTax>
+        <inv:text>Oprava neexistující faktury</inv:text>
+        <inv:partnerIdentity><typ:address><typ:company>Studio Brno s.r.o.</typ:company><typ:city>Brno</typ:city><typ:street>Masarykova 12</typ:street><typ:zip>602 00</typ:zip><typ:ico>94722188</typ:ico><typ:dic>CZ94722188</typ:dic></typ:address></inv:partnerIdentity>
+      </inv:invoiceHeader>
+      <inv:invoiceSummary><inv:homeCurrency><typ:priceNone>0</typ:priceNone><typ:priceLow>0</typ:priceLow><typ:priceLowVAT>0</typ:priceLowVAT><typ:priceHigh>-1000</typ:priceHigh><typ:priceHighVAT>-210</typ:priceHighVAT></inv:homeCurrency></inv:invoiceSummary>
+    </inv:invoice>
+  </dat:dataPackItem>
+  <dat:dataPackItem id="5" version="2.0">
+    <inv:invoice version="2.0">
+      <inv:invoiceHeader>
+        <inv:invoiceType>issuedCreditNotice</inv:invoiceType>
+        <inv:number><typ:numberRequested>DB26-001</typ:numberRequested></inv:number>
+        <inv:sourceDocument><typ:ids>2026-130</typ:ids></inv:sourceDocument>
+        <inv:date>2026-09-28</inv:date>
+        <inv:dateTax>2026-09-28</inv:dateTax>
+        <inv:text>Sleva k 2026-130</inv:text>
+        <inv:partnerIdentity><typ:address><typ:company>Studio Brno s.r.o.</typ:company><typ:city>Brno</typ:city><typ:street>Masarykova 12</typ:street><typ:zip>602 00</typ:zip><typ:ico>94722188</typ:ico><typ:dic>CZ94722188</typ:dic></typ:address></inv:partnerIdentity>
+      </inv:invoiceHeader>
+      <inv:invoiceSummary><inv:homeCurrency><typ:priceNone>0</typ:priceNone><typ:priceLow>0</typ:priceLow><typ:priceLowVAT>0</typ:priceLowVAT><typ:priceHigh>-4000</typ:priceHigh><typ:priceHighVAT>-840</typ:priceHighVAT></inv:homeCurrency></inv:invoiceSummary>
+    </inv:invoice>
+  </dat:dataPackItem>
+  <dat:dataPackItem id="6" version="2.0">
+    <inv:invoice version="2.0">
+      <inv:invoiceHeader>
+        <inv:invoiceType>issuedInvoice</inv:invoiceType>
+        <inv:number><typ:numberRequested>2026-130</typ:numberRequested></inv:number>
+        <inv:date>2026-09-20</inv:date>
+        <inv:dateTax>2026-09-20</inv:dateTax>
+        <inv:dateDue>2026-10-04</inv:dateDue>
+        <inv:text>Workshop, září</inv:text>
+        <inv:partnerIdentity><typ:address><typ:company>Studio Brno s.r.o.</typ:company><typ:city>Brno</typ:city><typ:street>Masarykova 12</typ:street><typ:zip>602 00</typ:zip><typ:ico>94722188</typ:ico><typ:dic>CZ94722188</typ:dic></typ:address></inv:partnerIdentity>
+      </inv:invoiceHeader>
+      <inv:invoiceSummary><inv:homeCurrency><typ:priceNone>0</typ:priceNone><typ:priceLow>0</typ:priceLow><typ:priceLowVAT>0</typ:priceLowVAT><typ:priceHigh>10000</typ:priceHigh><typ:priceHighVAT>2100</typ:priceHighVAT></inv:homeCurrency></inv:invoiceSummary>
+    </inv:invoice>
+  </dat:dataPackItem>
+</dat:dataPack>

@@ -1522,6 +1522,42 @@ pub struct ControlStatementDto {
     pub pack: String,
 }
 
+/// The souhrnné hlášení (EC Sales List) for a period.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct RecapitulativeStatementDto {
+    /// First day.
+    pub from: String,
+    /// Last day.
+    pub to: String,
+    /// Per customer VAT number and supply code.
+    pub lines: Vec<RecapitulativeLineDto>,
+    /// Sum of the lines' bases.
+    pub total: MoneyDto,
+    /// Documents that couldn't be placed.
+    pub problems: Vec<String>,
+    /// Pack provenance.
+    pub pack: String,
+}
+
+/// One customer and supply code on the souhrnné hlášení.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct RecapitulativeLineDto {
+    /// The customer's country prefix.
+    pub country: String,
+    /// Their VAT number without the prefix.
+    pub vat_number: String,
+    /// The supply code (kód plnění): `0` goods, `3` services.
+    pub sh_code: String,
+    /// The customer's name.
+    pub counterparty: String,
+    /// The supplies' base.
+    pub base: MoneyDto,
+    /// How many supplies.
+    pub supplies: u32,
+}
+
 /// An itemised line.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]

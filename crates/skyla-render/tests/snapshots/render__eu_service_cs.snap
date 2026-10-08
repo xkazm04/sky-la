@@ -1,0 +1,32 @@
+---
+source: crates/skyla-render/tests/render.rs
+expression: cs_text
+---
+Faktura – daňový doklad  2026-001
+Dodavatel  Odběratel
+Jana Nováková  Beispiel GmbH
+Dlouhá 12  Hauptstraße 5
+110 00 Praha 1  10115 Berlin
+IČO 92588034  Německo
+DIČ CZ8051234567  DIČ DE123456789
+jana@example.cz
+Fyzická osoba zapsaná v živnostenském rejstříku
+Datum vystavení  Datum zdanitelného plnění  Datum splatnosti
+15. 9. 2026  15. 9. 2026  29. 9. 2026
+Popis  Množství  Cena za j.  DPH  Základ
+Konzultace  40 h  1 500,00  0 %  60 000,00
+Rekapitulace DPH
+Základ  60 000,00 Kč
+DPH  0,00 Kč
+Sazba  Základ  DPH  Celkem
+Celkem  60 000,00 Kč
+0 %  60 000,00  0,00  60 000,00
+K úhradě  60 000,00 Kč
+Služba s místem plnění v jiném členském státě (§ 9 odst. 1 zákona o DPH). Daň odvede zákazník (čl. 196 směrnice
+2006/112/ES).
+Bankovní účet
+CZ65 0800 0000 1920 0014 5399 · BIC GIBACZPX
+Variabilní symbol
+2026001
+QR Platba
+Vystaveno v aplikaci sky-la · výpočet podle cz-2026@2026.1  Strana 1

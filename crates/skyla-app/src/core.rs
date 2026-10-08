@@ -1233,13 +1233,22 @@ impl Core {
             })
             .collect();
         let ledger = skyla_ledger::vat_ledger(&self.db(), from, to, VAT_ACCOUNTS, &rules)?;
-        // A row is on the output side when its tax is shown credit-positive.
+        // A row is on the output side when its tax is shown credit-positive;
+        // a row with no tax part (ř. 20 and 21, supplies to other member
+        // states) when its base is.
         let output_side = |row: &str| {
-            self.pack
-                .vat_codes
-                .iter()
-                .flat_map(|c| &c.rows)
-                .any(|m| m.row == row && m.part != RowPart::Base && m.credit_positive)
+            let mappings = || {
+                self.pack
+                    .vat_codes
+                    .iter()
+                    .flat_map(|c| &c.rows)
+                    .filter(move |m| m.row == row)
+            };
+            if mappings().any(|m| m.part != RowPart::Base) {
+                mappings().any(|m| m.part != RowPart::Base && m.credit_positive)
+            } else {
+                mappings().any(|m| m.credit_positive)
+            }
         };
         let label = |row: &str| {
             self.pack

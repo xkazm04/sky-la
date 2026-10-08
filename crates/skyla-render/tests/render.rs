@@ -142,6 +142,50 @@ fn renders_a_credit_note_without_a_qr_code() {
 }
 
 #[test]
+fn prints_the_packs_wording_for_a_supply_to_another_member_state() {
+    let b = books(true);
+    let id = create_draft(
+        &b.conn,
+        &DraftInput {
+            kind: DocKind::Invoice,
+            series: "FV".into(),
+            customer: Customer {
+                name: "Beispiel GmbH".into(),
+                ico: None,
+                dic: Some("DE123456789".into()),
+                address: Some("Hauptstraße 5, 10115 Berlin, Německo".into()),
+            },
+            due_date: Some("2026-09-29".into()),
+            tax_point_date: None,
+            note: String::new(),
+            // 40 h × 1 500,00 = 60 000,00 Kč, and no Czech VAT.
+            lines: vec![line("Konzultace", "40", "h", 150_000, "EUSVC")],
+            related_id: None,
+            advances: Vec::new(),
+        },
+    )
+    .expect("draft");
+    issue(&b.conn, &b.pack, &Accounts::cz(), id, "2026-09-15", None).expect("issue");
+    // The note wraps; compare it as one line.
+    let one_line = |r: skyla_render::Rendered| r.text.join(" ").replace('\n', " ");
+    let cs = render(&b, id, None, Lang::Cs);
+    let cs_text = cs.text.join("\n");
+    let cs = one_line(cs);
+    assert!(
+        cs.contains("Daň odvede zákazník (čl. 196 směrnice 2006/112/ES)"),
+        "{cs}"
+    );
+    assert!(cs.contains("DIČ DE123456789"));
+    let en = one_line(render(&b, id, None, Lang::En));
+    assert!(
+        en.contains("Reverse charge: VAT to be accounted for by the customer (Article 196"),
+        "{en}"
+    );
+    assert!(!en.contains("Daň odvede"));
+    insta::assert_snapshot!("eu_service_cs", cs_text);
+}
+
+#[test]
 fn renders_identically_twice() {
     let b = books(true);
     let id = issued_invoice(&b, vec![line("Workshop", "1", "ks", 1_200_000, "OUT21")]);

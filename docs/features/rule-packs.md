@@ -6,7 +6,7 @@ All statutory data lives in versioned, effective-dated packs with a citation for
 
 ## What the CZ 2026 pack holds
 
-- VAT rates (including the 2024 merger of 15 % and 10 % into 12 %), document rounding, the registration threshold and VAT codes with their DPH rows. Each code also has its EN 16931 category and any exemption reason.
+- VAT rates (including the 2024 merger of 15 % and 10 % into 12 %), document rounding, the registration threshold and VAT codes with their DPH rows. Each code also has its EN 16931 category and any exemption reason. The EU-supply codes (`EUSVC`, `EUGDS`) also carry the souhrnné hlášení code (`eu_supply`) and the wording an invoice prints (`invoice_note`, Czech and English).
 - The kontrolní hlášení itemisation threshold.
 - Income tax rate, the taxpayer credit, flat-rate expense percentages and caps, and the fixed-asset threshold.
 - Social and health insurance: assessment share and rates.
@@ -22,13 +22,13 @@ The pack's status is `draft` until a second person verifies it. Values that were
 
 ## Golden cases
 
-- `rules/cz/2026/golden.toml` has 60 cases worked out by hand from the provisions and a calendar.
+- `rules/cz/2026/golden.toml` has 65 cases worked out by hand from the provisions and a calendar.
 - `skyla_rules::golden` runs them and requires every value key, VAT code, obligation and holiday to be covered.
 - An `open` case records a known disagreement without failing, and fails once the pack agrees (so a stale note can't linger).
 - `skyla-pack check <dir>` (`just pack-check`) prints validation problems, golden failures, gaps and open findings.
 - `rules/_template/` is a fictional, valid pack for a jurisdiction "XX". CI tests it, so it stays in step with the format.
 
-**Open finding:** `insurance.social.share` is 50 % in the pack, but § 5b odst. 1 ZOS (as amended by 349/2023 Sb.) sets 55 % from 2024. The fix changes the worked example and the advisor transcripts, so it's recorded as `open` for the maintainer.
+The social-insurance share was an open finding until 2026-10-08: the pack held 50 %, but § 5b odst. 1 ZOS (as amended by 349/2023 Sb.) sets 55 % from 2024. The 50 % entry now ends on 2023-12-31, a 55 % entry starts on 2024-01-01, and golden cases cover both sides of the change. Health insurance stays at 50 %.
 
 ## Signed pack updates
 

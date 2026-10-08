@@ -64,6 +64,9 @@ pub struct InvoiceView {
     pub spayd: Option<String>,
     /// Reverse-charge wording is needed.
     pub reverse_charge: bool,
+    /// What the pack says an invoice must state under the VAT codes used
+    /// (a service or goods to another member state), in the document's language.
+    pub tax_notes: Vec<String>,
     /// Free text from the document.
     pub note: String,
     /// `cz-2026@2026.1`: the rule pack the totals came from.
@@ -255,6 +258,14 @@ pub fn invoice_view(
         payment,
         spayd,
         reverse_charge: doc.lines.iter().any(|l| l.input.vat_code.starts_with("RC")),
+        tax_notes: doc
+            .tax_notes
+            .iter()
+            .map(|n| match lang {
+                Lang::Cs => n.cs.clone(),
+                Lang::En => n.en.clone(),
+            })
+            .collect(),
         note: doc.note.clone(),
         pack: doc.pack.clone(),
     })

@@ -2,7 +2,7 @@
 
 Czech returns computed from the books, the income-tax scenarios and the obligations calendar. Every rate, row and threshold comes from the rule pack. The UI calls the results drafts and scenarios for the user's review, not tax advice.
 
-**Code:** `crates/skyla-tax-cz` (`kh.rs`, `income.rs`), `crates/skyla-app/src/core/{tax,periods}.rs`, `skyla_rules::calendar` · **UI:** `apps/desktop/src/screens/{Taxes,TaxScenarios,Calendar}.tsx` · **Tests:** `crates/skyla-app/tests/{control_statement,tax_scenarios,periods}.rs`, `crates/skyla-tax-cz/tests`
+**Code:** `crates/skyla-tax-cz` (`kh.rs`, `sh.rs`, `income.rs`), `crates/skyla-app/src/core/{tax,periods}.rs`, `skyla_rules::calendar` · **UI:** `apps/desktop/src/screens/{Taxes,TaxScenarios,Calendar}.tsx` · **Tests:** `crates/skyla-app/tests/{control_statement,recapitulative,tax_scenarios,periods}.rs`, `crates/skyla-tax-cz/tests`
 
 ## DPH return
 
@@ -21,6 +21,17 @@ Czech returns computed from the books, the income-tax scenarios and the obligati
 | C | Totals of the return's rows, checked against the DPH return. |
 
 A correction follows the section of the document it corrects.
+
+## Souhrnné hlášení
+
+`recapitulative_statement` (`skyla_tax_cz`; `Core::recapitulative_statement`) lists a period's supplies to VAT payers in other member states from the issued documents:
+
+- one line per customer VAT number and supply code, with the total base and the number of supplies;
+- which VAT codes count, and the statement's code for each (`0` goods, `3` services), come from the pack's `eu_supply`;
+- a credit note follows the invoice it corrects into that invoice's period, so the statement shows what the books now say about it; a customer whose supplies net to nothing drops out;
+- a document without a usable customer VAT number is listed under problems, not guessed.
+
+The kontrolní hlášení leaves these supplies out. They feed ř. 20 and ř. 21 of the DPH return, which carry a base and no tax.
 
 ## Income tax: the § 7 worksheet and scenarios
 
@@ -56,7 +67,6 @@ No screen assumes the demo's dates.
 
 ## Not yet
 
-- **Souhrnné hlášení:** needs an EU-supply VAT code in invoicing first.
+- **Souhrnné hlášení:** no screen or Tauri command yet; its filing period and deadline and the EPO form's rounding aren't in the pack, so it isn't in the calendar.
 - **EPO XML writers** (DPHDP3, DPHKH1, DPHSHV): the official schemas couldn't be fetched to prove the output XSD-valid.
 - Minimum assessment bases, the solidarity threshold and insurance-overview deadlines (pack data missing).
-- **Review needed:** the social-insurance share (50 % in the pack, 55 % in law since 2024). See [Rule packs](rule-packs.md).

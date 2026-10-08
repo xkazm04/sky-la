@@ -256,6 +256,10 @@
   v(8pt)
   text(weight: "medium", L.reverse-charge)
 }
+#for note in d.tax_notes {
+  v(8pt)
+  text(weight: "medium", note)
+}
 #if d.kind == "advance" {
   v(8pt)
   text(fill: muted, L.advance-note)

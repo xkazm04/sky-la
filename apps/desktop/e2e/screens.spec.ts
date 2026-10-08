@@ -238,7 +238,7 @@ test("the scenario engine compares actual and flat-rate expenses, side effects i
     })
     .last();
   await expect(flat).toContainText("942 600,00 Kč");
-  await expect(flat).toContainText("197 584,00 Kč");
+  await expect(flat).toContainText("206 759,00 Kč");
   await expect(flat).toContainText("Lowest total");
   await expect(inspector).toContainText("Paušální daň");
   await axeClean(page);
@@ -304,7 +304,7 @@ test("the tax advisor explains the scenarios, and every figure was checked", asy
   await page.getByRole("button", { name: "Send and explain" }).click();
   const advice = inspector.getByTestId("tax-advice");
   await expect(advice).toContainText("Draft for your review");
-  await expect(advice).toContainText("80 324 Kč less");
+  await expect(advice).toContainText("83 551 Kč less");
   await expect(advice).toContainText("figures checked against the engine");
   await axeClean(page);
 
@@ -317,7 +317,7 @@ test("the tax advisor explains the scenarios, and every figure was checked", asy
   await form.getByRole("button", { name: "Compare" }).click();
   await inspector.getByRole("button", { name: "Explain with the tax advisor…" }).click();
   await page.getByRole("button", { name: "Send and explain" }).click();
-  await expect(inspector.getByTestId("tax-advice")).toContainText("197 584 Kč");
+  await expect(inspector.getByTestId("tax-advice")).toContainText("206 759 Kč");
   await inspector.getByRole("button", { name: "What was shared" }).click();
   await expect(
     page.getByRole("complementary", { name: "Explain the tax scenarios" }),

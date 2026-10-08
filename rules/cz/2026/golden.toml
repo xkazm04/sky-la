@@ -29,6 +29,11 @@ on = "2026-06-30"
 expect = "0"
 
 [[value]]
+key = "vat.rate.zero"
+on = "2026-06-30"
+expect = "0"
+
+[[value]]
 key = "vat.rounding.document"
 on = "2026-06-30"
 expect = "half_up"
@@ -110,9 +115,18 @@ expect = "80000.00"
 
 [[value]]
 key = "insurance.social.share"
+on = "2023-12-31"
+expect = "50"
+
+[[value]]
+key = "insurance.social.share"
+on = "2024-01-01"
+expect = "55"
+
+[[value]]
+key = "insurance.social.share"
 on = "2026-06-30"
 expect = "55"
-open = "§ 5b odst. 1 ZOS as amended by zákon č. 349/2023 Sb.: from 2024 the OSVČ assessment base is 55 % of the profit, not 50 %; fixing it changes the WP-22 example and its tests, so the maintainer decides"
 
 [[value]]
 key = "insurance.social.rate"
@@ -180,6 +194,16 @@ expect = "21"
 code = "RC12S"
 on = "2026-06-30"
 expect = "12"
+
+[[vat_code]]
+code = "EUSVC"
+on = "2026-06-30"
+expect = "0"
+
+[[vat_code]]
+code = "EUGDS"
+on = "2026-06-30"
+expect = "0"
 
 [[vat_code]]
 code = "IN21"

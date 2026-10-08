@@ -1,6 +1,7 @@
 //! Czech tax computations, scenario-engine levers and EPO XML writers.
 //!
-//! WP-21 adds the kontrolní hlášení ([`control_statement`]); WP-22 the
+//! WP-21 adds the kontrolní hlášení ([`control_statement`]) and the
+//! souhrnné hlášení ([`recapitulative_statement`]); WP-22 the
 //! § 7 [`worksheet`] and the scenario engine ([`scenarios`]). Rates,
 //! rows and the itemisation threshold come from the rule pack. The EPO XML
 //! writers wait for the official schemas (see `docs/plan/STATUS.md`).
@@ -9,6 +10,7 @@
 
 mod income;
 mod kh;
+mod sh;
 
 pub use income::{
     Difference, Expenses, FlatRate, IncomeError, Insurance, PlannedPurchase, Scenario,
@@ -16,4 +18,7 @@ pub use income::{
 };
 pub use kh::{
     ControlStatement, KhDocument, KhError, KhItem, KhPart, KhSide, KhTotals, control_statement,
+};
+pub use sh::{
+    RecapitulativeStatement, ShDocument, ShError, ShLine, ShPart, recapitulative_statement,
 };

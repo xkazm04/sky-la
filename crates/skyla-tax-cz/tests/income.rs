@@ -4,13 +4,14 @@
 //! Hand workings (pack cz-2026, 2026 values):
 //! - Actual expenses: 1 571 000 − 383 200 = 1 187 800 profit; tax base
 //!   1 187 800 (already whole hundreds); 15 % = 178 170; − 30 840 credit =
-//!   147 330. Social: 50 % = 593 900 base; × 29,2 % = 173 418,80 → 173 419.
-//!   Health: 593 900 × 13,5 % = 80 176,50 → 80 177. Total 400 926.
+//!   147 330. Social: 55 % = 653 290 base; × 29,2 % = 190 760,68 → 190 761.
+//!   Health: 50 % = 593 900 base; × 13,5 % = 80 176,50 → 80 177. Total 418 268.
 //! - Flat rate 60 %: 942 600 expenses (below the 1 200 000 cap); profit
-//!   628 400; 15 % = 94 260; − 30 840 = 63 420. Social: 314 200 × 29,2 % =
-//!   91 746,40 → 91 747. Health: 314 200 × 13,5 % = 42 417. Total 197 584.
-//! - The difference: −83 910 tax, −81 672 social, −37 760 health,
-//!   −203 342 in all, and a pension assessment base 279 700 lower.
+//!   628 400; 15 % = 94 260; − 30 840 = 63 420. Social: 55 % = 345 620 base;
+//!   × 29,2 % = 100 921,04 → 100 922. Health: 314 200 × 13,5 % = 42 417.
+//!   Total 206 759.
+//! - The difference: −83 910 tax, −89 839 social, −37 760 health,
+//!   −211 509 in all, and a pension assessment base 307 670 lower.
 
 #![allow(clippy::unwrap_used)]
 
@@ -42,13 +43,13 @@ fn actual_expenses() {
     );
     assert_eq!(
         (w.social.assessment_base, w.social.amount),
-        (czk(593_900), czk(173_419))
+        (czk(653_290), czk(190_761))
     );
     assert_eq!(
         (w.health.assessment_base, w.health.amount),
         (czk(593_900), czk(80_177))
     );
-    assert_eq!(w.total, czk(400_926));
+    assert_eq!(w.total, czk(418_268));
 }
 
 #[test]
@@ -61,16 +62,16 @@ fn the_review_flat_rate_example_reproduces_exactly() {
     assert_eq!((w.profit, w.tax), (czk(628_400), czk(63_420)));
     assert_eq!(
         (w.social.assessment_base, w.social.amount),
-        (czk(314_200), czk(91_747))
+        (czk(345_620), czk(100_922))
     );
     assert_eq!(w.health.amount, czk(42_417));
-    assert_eq!(w.total, czk(197_584));
+    assert_eq!(w.total, czk(206_759));
     let actual = worksheet(&pack, &ex, Expenses::Actual).unwrap();
     assert_eq!(actual.expenses, czk(383_200));
     assert_eq!(
         w.total.checked_sub(actual.total).unwrap(),
-        czk(-203_342),
-        "−83 910 tax, −81 672 social, −37 760 health"
+        czk(-211_509),
+        "−83 910 tax, −89 839 social, −37 760 health"
     );
     assert_eq!(
         actual
@@ -78,7 +79,7 @@ fn the_review_flat_rate_example_reproduces_exactly() {
             .assessment_base
             .checked_sub(w.social.assessment_base)
             .unwrap(),
-        czk(279_700),
+        czk(307_670),
         "the pension assessment base is lower by this much"
     );
 }
@@ -108,11 +109,11 @@ fn bases_round_down_to_hundreds_and_tax_up_to_crowns() {
     let w = worksheet(&pack, &s7, Expenses::Actual).unwrap();
     // Profit 400 123,45 → base 400 100; 15 % = 60 015; − 30 840 = 29 175.
     assert_eq!((w.tax_base, w.tax), (czk(400_100), czk(29_175)));
-    // Social: 50 % of 400 123,45 = 200 061,725 → 200 062; × 29,2 % =
-    // 58 418,104 → 58 419.
+    // Social: 55 % of 400 123,45 = 220 067,9475 → 220 068; × 29,2 % =
+    // 64 259,856 → 64 260. Health: 50 % = 200 061,725 → 200 062.
     assert_eq!(
         (w.social.assessment_base, w.social.amount),
-        (czk(200_062), czk(58_419))
+        (czk(220_068), czk(64_260))
     );
 }
 
@@ -168,18 +169,19 @@ fn the_engine_compares_levers_with_side_effects() {
     // Under the flat rate the purchase changes nothing this year.
     let flat = &a.scenarios[2].worksheet;
     assert_eq!(flat.total, a.scenarios[3].worksheet.total);
-    assert_eq!(flat.total, czk(197_584));
+    assert_eq!(flat.total, czk(206_759));
     assert_eq!(a.lowest_total, "flat_rate.trade+purchase.this_year");
     // Buying next year under actual expenses: 60 000 more profit this year.
-    // Tax +9 000; social 30 000 × 29,2 % = +8 760; health 30 000 × 13,5 % = +4 050.
+    // Tax +9 000; social: 190 761 against 181 125 (620 290 × 29,2 % =
+    // 181 124,68) = +9 636; health 30 000 × 13,5 % = +4 050.
     let next = &a.differences[1];
     assert_eq!(
         (next.tax, next.social, next.health),
-        (czk(9_000), czk(8_760), czk(4_050))
+        (czk(9_000), czk(9_636), czk(4_050))
     );
     // The flat rate against actual expenses with the laptop this year
-    // (443 200 actual, 1 127 800 profit, 563 900 base): 249 700 lower.
-    assert_eq!(a.differences[2].pension_base, czk(-249_700));
+    // (443 200 actual, 1 127 800 profit, 620 290 pension base): 274 670 lower.
+    assert_eq!(a.differences[2].pension_base, czk(-274_670));
     assert!(a.questions.is_empty());
     assert!(a.not_evaluated.iter().any(|n| n.contains("Paušální daň")));
 }

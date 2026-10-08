@@ -24,7 +24,7 @@ omitted = [
   "sickness insurance for OSVČ: rate and base not verified",
   "depreciation groups and first-year rates (§ 30–31 ZDP): not yet in the pack",
   "insurance overviews (přehledy) for ČSSZ and the health insurer: their deadline depends on when the tax return was filed",
-  "souhrnné hlášení: needs an EU-supply VAT code first",
+  "souhrnné hlášení: the filing period and deadline (§ 102 odst. 4 ZDPH) and the EPO form's value rounding aren't verified; triangular trade (code 2) and transfers of own assets (code 1) have no VAT code",
   "paušální daň bands for 2026: need the 2026 amounts",
   "ČNB repo rate: reference data (imported or fetched), not statutory pack data",
 ]
@@ -69,6 +69,16 @@ id = "dphdp3"
 name = "Pokyny k vyplnění přiznání k dani z přidané hodnoty (tiskopis 25 5401, EPO DPHDP3)"
 url = "https://adisspr.mfcr.cz/dpr/adis/idpr_pub/epo2_info/popis_struktury_detail.faces?zkratka=DPHDP3"
 
+[[act]]
+id = "dphshv"
+name = "Pokyny k vyplnění souhrnného hlášení (tiskopis 25 5405, EPO DPHSHV)"
+url = "https://adisspr.mfcr.cz/dpr/adis/idpr_pub/epo2_info/popis_struktury_detail.faces?zkratka=DPHSHV"
+
+[[act]]
+id = "vatdir"
+name = "Směrnice Rady 2006/112/ES o společném systému daně z přidané hodnoty"
+url = "https://eur-lex.europa.eu/legal-content/CS/TXT/?uri=CELEX:32006L0112"
+
 # ── VAT ────────────────────────────────────────────────────────────────────
 
 [[value]]
@@ -84,6 +94,14 @@ kind = "percent"
 value = "0"
 effective_from = "2004-05-01"
 cite = { act = "zdph", section = "§ 6 (osoba, která není plátcem, daň neuplatňuje)" }
+
+[[value]]
+key = "vat.rate.zero"
+kind = "percent"
+value = "0"
+effective_from = "2004-05-01"
+cite = { act = "zdph", section = "§ 64 (osvobozené dodání zboží do jiného členského státu) a § 9 odst. 1 (služba s místem plnění v jiném členském státě)" }
+note = "Not a rate the law sets: Czech VAT isn't charged on a supply to a VAT payer in another member state. The goods are exempt with the right to deduct input VAT (§ 64); for a service the place of supply is the customer's state, where the customer accounts for the tax (Article 196 of Directive 2006/112/EC)."
 
 [[value]]
 key = "vat.rate.reduced"
@@ -230,8 +248,17 @@ key = "insurance.social.share"
 kind = "percent"
 value = "50"
 effective_from = "2018-01-01"
-cite = { act = "zos", section = "§ 5b odst. 1" }
-note = "The annual assessment base is this share of the profit (income minus expenses claimed)."
+effective_to = "2023-12-31"
+cite = { act = "zos", section = "§ 5b odst. 1, ve znění do 31. 12. 2023" }
+note = "Until 2023 the annual assessment base was half of the profit; zákon č. 349/2023 Sb. raised the share from 2024."
+
+[[value]]
+key = "insurance.social.share"
+kind = "percent"
+value = "55"
+effective_from = "2024-01-01"
+cite = { act = "zos", section = "§ 5b odst. 1, ve znění zákona č. 349/2023 Sb." }
+note = "The annual assessment base is this share of the profit (income minus expenses claimed). Health insurance stays at 50 %."
 
 [[value]]
 key = "insurance.social.rate"
@@ -420,6 +447,43 @@ rows = [
   { row = "44", part = "base", credit_positive = false },
   { row = "44", part = "tax_debit", credit_positive = false },
 ]
+
+# A supply to a VAT payer in another member state: no Czech VAT, the base goes
+# on the DPH return (ř. 20 goods, ř. 21 services) and into the souhrnné
+# hlášení. The customer's VAT number is required. The codes don't begin with
+# OUT, so the kontrolní hlášení leaves them out (§ 101c ZDPH covers domestic
+# supplies).
+#
+# EN 16931 category: a service whose place of supply is the customer's state
+# is reverse-charged there, which EN 16931 calls AE (Article 196 of the
+# Directive; BR-AE-* need both VAT numbers and rate 0). Goods are an
+# intra-Community supply, category K (Article 138; BR-IC-* need the buyer's
+# VAT number, the delivery date and the delivery country). Both need an
+# exemption text.
+
+[[vat_code]]
+code = "EUSVC"
+name = "Service to a VAT payer in another member state (place of supply abroad)"
+rate = "vat.rate.zero"
+cite = { act = "zdph", section = "§ 9 odst. 1; ř. 21 přiznání k DPH (DPHDP3)" }
+rows = [
+  { row = "21", part = "base", credit_positive = true },
+]
+einvoice = { category = "AE", exemption_reason = "Služba s místem plnění v jiném členském státě; daň odvede zákazník (čl. 196 směrnice 2006/112/ES)." }
+eu_supply = { sh_code = "3", cite = { act = "dphshv", section = "kód plnění 3: poskytnutí služby s místem plnění v jiném členském státě (§ 9 odst. 1 ZDPH)" } }
+invoice_note = { cs = "Služba s místem plnění v jiném členském státě (§ 9 odst. 1 zákona o DPH). Daň odvede zákazník (čl. 196 směrnice 2006/112/ES).", en = "Service with the place of supply in another member state (§ 9(1) of the Czech VAT Act). Reverse charge: VAT to be accounted for by the customer (Article 196 of Directive 2006/112/EC)." }
+
+[[vat_code]]
+code = "EUGDS"
+name = "Goods to a VAT payer in another member state (exempt supply)"
+rate = "vat.rate.zero"
+cite = { act = "zdph", section = "§ 64; ř. 20 přiznání k DPH (DPHDP3)" }
+rows = [
+  { row = "20", part = "base", credit_positive = true },
+]
+einvoice = { category = "K", exemption_reason = "Osvobozené dodání zboží do jiného členského státu (§ 64 zákona o DPH; čl. 138 směrnice 2006/112/ES)." }
+eu_supply = { sh_code = "0", cite = { act = "dphshv", section = "kód plnění 0: dodání zboží do jiného členského státu (§ 64 ZDPH)" } }
+invoice_note = { cs = "Osvobozené dodání zboží do jiného členského státu (§ 64 zákona o DPH). Zákazník přiznává daň v členském státě určení.", en = "VAT-exempt intra-Community supply of goods (§ 64 of the Czech VAT Act; Article 138 of Directive 2006/112/EC). The customer accounts for acquisition VAT in the member state of arrival." }
 
 [[vat_code]]
 code = "IN21"

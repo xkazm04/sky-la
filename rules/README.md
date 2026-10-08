@@ -39,7 +39,7 @@ rules/
 | `[[act]]` | `id`, `name`, `url` |
 | `[[value]]` | `key`, `kind` (`percent`, `amount`, `days`, `rounding`, `flag`), `value`, `effective_from`, `effective_to`, `cite`, `note` |
 | `[[obligation]]` | `id`, `name`, `action` (`file`, `pay`, `file_and_pay`), `applies_to` (entity facts: `osvc`, `vat_monthly`, `vat_quarterly`), `frequency` (`monthly`, `quarterly`, `yearly`), `due` (`days_after_period` = a days key, or `month_offset` + `day`), `cite`, `note` |
-| `[[vat_code]]` | `code`, `name`, `rate` (a percent key), `cite`, `rows` (return rows its `base` and `tax` feed), `outside_vat`, `einvoice` (EN 16931 category and exemption reason) |
+| `[[vat_code]]` | `code`, `name`, `rate` (a percent key), `cite`, `rows` (return rows its `base` and `tax` feed), `outside_vat`, `einvoice` (EN 16931 category and exemption reason), `eu_supply` (a supply to another member state: the souhrnné hlášení code and its citation), `invoice_note` (`cs` and `en` wording the invoice prints) |
 | `[[holiday]]` | `name`, `date` (`MM-DD`) or `easter_offset` (days from Easter Sunday), `cite` |
 
 Amounts are written in the pack's currency with a decimal point (`2000000.00`) and are integer minor units inside the engine. Rounding is `half_up`, `half_even`, `toward_zero` or `away_from_zero`. The template shows each section with comments.

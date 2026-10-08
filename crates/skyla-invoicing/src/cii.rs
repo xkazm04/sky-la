@@ -6,7 +6,7 @@
 use skyla_money::Money;
 use skyla_rules::Pack;
 
-use crate::address::split_address;
+use crate::address::split_address_for;
 use crate::exchange::{ExportInput, compact_date, en16931};
 use crate::spayd::variable_symbol;
 use crate::xml::{Xml, decimal};
@@ -131,6 +131,20 @@ pub fn to_cii(pack: &Pack, input: ExportInput<'_>) -> Result<String, InvoicingEr
     x.close();
 
     x.open("ram:ApplicableHeaderTradeDelivery");
+    // An intra-Community supply of goods (category K) names the country the
+    // goods went to (BR-IC-12); the delivery date is the tax point below.
+    if en.taxes.iter().any(|t| t.category == "K") {
+        let country = split_address_for(
+            doc.customer.address.as_deref().unwrap_or_default(),
+            doc.customer.dic.as_deref(),
+        )
+        .country;
+        x.open("ram:ShipToTradeParty");
+        x.open("ram:PostalTradeAddress");
+        x.leaf("ram:CountryID", &country);
+        x.close();
+        x.close();
+    }
     if let Some(tp) = &doc.tax_point_date {
         x.open("ram:ActualDeliverySupplyChainEvent");
         date(&mut x, "ram:OccurrenceDateTime", tp);
@@ -213,7 +227,7 @@ struct Party<'a> {
 }
 
 fn party(x: &mut Xml, element: &str, p: &Party<'_>) {
-    let a = split_address(p.address);
+    let a = split_address_for(p.address, p.vat_id);
     x.open(element);
     x.leaf("ram:Name", p.name);
     if let Some(id) = p.company_id {

@@ -165,6 +165,19 @@ pub struct VatRecap {
     pub vat: Money,
 }
 
+/// A statement an invoice must print because of a VAT code on it, such as
+/// the reverse-charge wording on a service to another member state. The
+/// words come from the rule pack.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+pub struct TaxNote {
+    /// The code that asks for it.
+    pub vat_code: String,
+    /// In Czech.
+    pub cs: String,
+    /// In English.
+    pub en: String,
+}
+
 /// Document totals.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct Totals {
@@ -217,6 +230,9 @@ pub struct Document {
     pub lines: Vec<Line>,
     /// Totals: stored at issue, computed live for drafts.
     pub totals: Totals,
+    /// What the printed document must say about its VAT codes, one per
+    /// code that asks for it.
+    pub tax_notes: Vec<TaxNote>,
     /// The supplier: snapshotted at issue, the current profile for drafts.
     pub supplier: Option<Supplier>,
 }
@@ -715,6 +731,16 @@ pub fn get(conn: &Connection, pack: &Pack, id: i64) -> Result<Document, Invoicin
         None if !issued => supplier::supplier(conn)?,
         None => None,
     };
+    let mut tax_notes = Vec::new();
+    for r in &totals.recap {
+        if let Some(note) = &pack.vat_code(&r.vat_code)?.invoice_note {
+            tax_notes.push(TaxNote {
+                vat_code: r.vat_code.clone(),
+                cs: note.cs.clone(),
+                en: note.en.clone(),
+            });
+        }
+    }
     Ok(Document {
         id,
         uid,
@@ -734,6 +760,7 @@ pub fn get(conn: &Connection, pack: &Pack, id: i64) -> Result<Document, Invoicin
         pack: pack_id,
         lines,
         totals,
+        tax_notes,
         supplier,
     })
 }
@@ -865,6 +892,52 @@ fn posting_lines(
     Ok(lines)
 }
 
+/// What stops a document with EU-supply lines (a VAT code with `eu_supply`
+/// in the pack) from being issued: the supplier must be registered for VAT
+/// (the lines' VAT-code check says so for a profile that exists), the
+/// customer must give a VAT number of another member state, and advance
+/// documents don't take these codes.
+fn eu_supply_problems(pack: &Pack, doc: &Document) -> Result<Vec<String>, InvoicingError> {
+    let mut eu_lines = Vec::new();
+    for l in &doc.lines {
+        if pack.vat_code(&l.input.vat_code)?.eu_supply.is_some() {
+            eu_lines.push(l);
+        }
+    }
+    let Some(first) = eu_lines.first() else {
+        return Ok(Vec::new());
+    };
+    let mut problems = Vec::new();
+    let numbers = eu_lines
+        .iter()
+        .map(|l| l.line_no.to_string())
+        .collect::<Vec<_>>()
+        .join(", ");
+    if doc.supplier.is_none() {
+        problems.push(format!(
+            "line {numbers}: a supply to another member state needs the supplier's VAT registration"
+        ));
+    }
+    match doc.customer.dic.as_deref() {
+        Some(dic) if supplier::eu_vat_id(dic).is_some() => {}
+        Some(dic) if !dic.trim().is_empty() => problems.push(format!(
+            "line {numbers}: {} is for customers with a VAT number in another member state, like DE123456789; {dic} isn't one",
+            first.input.vat_code
+        )),
+        _ => problems.push(format!(
+            "line {numbers}: {} is for customers with a VAT number in another member state, like DE123456789; the customer has none",
+            first.input.vat_code
+        )),
+    }
+    if matches!(doc.kind, DocKind::Advance | DocKind::AdvanceTax) {
+        problems.push(format!(
+            "line {numbers}: advance documents can't carry {} yet",
+            first.input.vat_code
+        ));
+    }
+    Ok(problems)
+}
+
 /// Issues a draft: assigns the next number in its series and year, fixes
 /// its totals with the pack, and posts it to the ledger, all in one
 /// transaction. From then on it is immutable.
@@ -911,6 +984,7 @@ pub fn issue(
                 }
             }
         }
+        problems.extend(eu_supply_problems(pack, &doc)?);
         if !problems.is_empty() {
             return Err(invalid(problems));
         }

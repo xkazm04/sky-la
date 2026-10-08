@@ -9,7 +9,7 @@
 use skyla_money::Money;
 use skyla_rules::Pack;
 
-use crate::address::{country_name_cs, split_address};
+use crate::address::{country_name_cs, split_address_for};
 use crate::exchange::{ExportInput, PreparedLine, czech_account, prepare};
 use crate::spayd::variable_symbol;
 use crate::xml::{Xml, decimal};
@@ -54,8 +54,16 @@ pub fn to_isdoc(pack: &Pack, input: ExportInput<'_>) -> Result<String, Invoicing
     }
     x.leaf("VATApplicable", bool_text(p.vat_payer));
     x.leaf("ElectronicPossibilityAgreementReference", "");
-    if !doc.note.trim().is_empty() {
-        x.leaf("Note", doc.note.trim());
+    // ISDOC has no field for why no Czech VAT is charged on a supply to
+    // another member state, so the statement goes in the note.
+    let statements: Vec<&str> = doc.tax_notes.iter().map(|n| n.cs.as_str()).collect();
+    let note = std::iter::once(doc.note.trim())
+        .chain(statements)
+        .filter(|n| !n.is_empty())
+        .collect::<Vec<_>>()
+        .join("\n");
+    if !note.is_empty() {
+        x.leaf("Note", &note);
     }
     x.leaf("LocalCurrencyCode", currency);
     x.leaf("CurrRate", "1");
@@ -161,7 +169,10 @@ pub fn to_isdoc(pack: &Pack, input: ExportInput<'_>) -> Result<String, Invoicing
         );
         x.open("TaxCategory");
         x.leaf("Percent", &r.rate.normalize().to_string());
-        x.leaf("VATApplicable", bool_text(p.vat_payer && !r.outside_vat));
+        x.leaf(
+            "VATApplicable",
+            bool_text(p.vat_payer && !r.outside_vat && !r.eu_supply),
+        );
         x.close();
         x.close();
     }
@@ -221,7 +232,7 @@ struct Party<'a> {
 }
 
 fn party(x: &mut Xml, p: &Party<'_>) {
-    let a = split_address(p.address);
+    let a = split_address_for(p.address, p.dic);
     x.open("Party");
     x.open("PartyIdentification");
     x.leaf("ID", p.id.unwrap_or_default());
@@ -275,7 +286,10 @@ fn line(x: &mut Xml, l: &PreparedLine, vat_payer: bool, has_original: bool) {
     x.leaf("Percent", &l.rate.normalize().to_string());
     // 0: VAT computed from the base ("zdola"), as the books do.
     x.leaf("VATCalculationMethod", "0");
-    x.leaf("VATApplicable", bool_text(vat_payer && !l.outside_vat));
+    x.leaf(
+        "VATApplicable",
+        bool_text(vat_payer && !l.outside_vat && !l.eu_supply),
+    );
     x.close();
     x.open("Item");
     x.leaf("Description", &l.description);

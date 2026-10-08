@@ -11,3 +11,11 @@ file was exported from a real installation.
 - `fakturoid-faktury.csv`: totals only (the importer finds the rate from
   the pack), semicolon-separated with decimal commas, UTF-8 with a BOM; the
   last row is a credit note.
+- `pohoda-dobropisy.xml`: credit notes against the demo's open invoice
+  2026-102 (one partial, one that exceeds what is then still open, stated
+  with positive amounts), against the paid 2026-114 (nothing open), against
+  a missing invoice, and one listed before its own invoice 2026-130 in the
+  same file.
+- `fakturoid-dobropisy.csv`: a "Typ" and a "Původní doklad" column; an
+  invoice, a partial credit note of it, one over what is left, and one
+  against the paid 2026-041 dated before the books begin.

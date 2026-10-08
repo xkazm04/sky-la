@@ -28,7 +28,7 @@ fn the_review_projection_reproduces_in_the_core() {
         .unwrap();
     assert_eq!(flat.expenses.minor, 94_260_000);
     assert_eq!(flat.flat_rate_percent.as_deref(), Some("60"));
-    assert_eq!((flat.tax.minor, flat.total.minor), (6_342_000, 19_758_400));
+    assert_eq!((flat.tax.minor, flat.total.minor), (6_342_000, 20_675_900));
     let actual = t
         .scenarios
         .iter()

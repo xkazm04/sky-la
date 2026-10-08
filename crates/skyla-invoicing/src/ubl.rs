@@ -8,7 +8,7 @@
 
 use skyla_rules::Pack;
 
-use crate::address::split_address;
+use crate::address::split_address_for;
 use crate::exchange::{En16931, EnTax, ExportInput, en16931, vat_endpoint_scheme};
 use crate::spayd::variable_symbol;
 use crate::xml::Xml;
@@ -139,6 +139,28 @@ pub fn to_ubl(pack: &Pack, input: ExportInput<'_>) -> Result<String, InvoicingEr
     );
     x.close();
 
+    // An intra-Community supply of goods (category K) names the delivery
+    // date and the country the goods went to (BR-IC-11, BR-IC-12).
+    if en.taxes.iter().any(|t| t.category == "K") {
+        let country = split_address_for(
+            doc.customer.address.as_deref().unwrap_or_default(),
+            doc.customer.dic.as_deref(),
+        )
+        .country;
+        x.open("cac:Delivery");
+        if let Some(tp) = &doc.tax_point_date {
+            x.leaf("cbc:ActualDeliveryDate", tp);
+        }
+        x.open("cac:DeliveryLocation");
+        x.open("cac:Address");
+        x.open("cac:Country");
+        x.leaf("cbc:IdentificationCode", &country);
+        x.close();
+        x.close();
+        x.close();
+        x.close();
+    }
+
     if !credit
         && en.payable.minor() > 0
         && let Some(iban) = &supplier.iban
@@ -240,7 +262,7 @@ fn endpoint(vat_id: Option<&str>) -> Option<(&'static str, &str)> {
 }
 
 fn party(x: &mut Xml, p: &Party<'_>) {
-    let a = split_address(p.address);
+    let a = split_address_for(p.address, p.vat_id);
     x.open("cac:Party");
     if let Some((scheme, id)) = p.endpoint {
         x.leaf_with("cbc:EndpointID", &[("schemeID", scheme)], id);

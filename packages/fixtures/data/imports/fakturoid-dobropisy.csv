@@ -1,0 +1,5 @@
+﻿Číslo;Typ;Vystaveno;DUZP;Splatnost;Odběratel;IČO;DIČ;Ulice;Město;PSČ;Měna;Předmět;Původní doklad;Bez DPH;DPH;Celkem
+2026-140;Faktura;22.09.2026;22.09.2026;06.10.2026;Northwind Traders s.r.o.;91341272;CZ91341272;Vinohradská 1;Praha 2;120 00;CZK;Workshop, září;;20 000,00;4 200,00;24 200,00
+OD2026-010;Dobropis;30.09.2026;30.09.2026;;Northwind Traders s.r.o.;91341272;CZ91341272;Vinohradská 1;Praha 2;120 00;CZK;Část workshopu odpadla;2026-140;5 000,00;1 050,00;6 050,00
+OD2026-011;Dobropis;02.10.2026;02.10.2026;;Northwind Traders s.r.o.;91341272;CZ91341272;Vinohradská 1;Praha 2;120 00;CZK;Zbytek workshopu;2026-140;-20 000,00;-4 200,00;-24 200,00
+OD2026-012;Dobropis;15.03.2026;15.03.2026;;Northwind Traders s.r.o.;91341272;CZ91341272;Vinohradská 1;Praha 2;120 00;CZK;Oprava dubnové faktury;2026-041;-1 000,00;-210,00;-1 210,00

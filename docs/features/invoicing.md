@@ -16,6 +16,11 @@ Issued invoices, credit notes and advance documents, from draft to PDF and e-inv
   - posts receivables, revenue and VAT through the kernel.
 - **Issued documents are frozen** (triggers too). Corrections are credit notes, which settle the invoice they correct, so open amounts and the cash basis stay right. Over-crediting is refused.
 - **Advances:** advance invoices, the tax document on a received advance and the final invoice's deduction follow Czech practice. The VAT return shows each part in its own month.
+- **Supplies to other member states:**
+  - Two pack codes cover a service (`EUSVC`) and goods (`EUGDS`) supplied to a VAT payer in another member state. Both charge 0 % (the pack's `vat.rate.zero`); the base lands on the DPH return's ř. 21 and ř. 20 and in the [souhrnné hlášení](taxes.md).
+  - Issuing accepts them only for a VAT-registered supplier and a customer whose DIČ has another member state's shape (`DE123456789`; a Czech DIČ, a missing one or advance documents are refused). The check is of the shape only; nothing is looked up in VIES.
+  - The invoice prints the pack's wording in Czech or English: "Daň odvede zákazník" with the reference to Article 196 of the VAT Directive for a service, the § 64 exemption for goods.
+  - E-invoices: a service is EN 16931 category `AE` (the customer reverse-charges), goods are `K` (intra-Community supply) with the delivery date and country. Both validate against the EN 16931 and Peppol rules. ISDOC has no field for the reason, so it goes in the note. The customer's country comes from the address, or else from the VAT number's prefix.
 - **Supplier snapshot:** the supplier profile (IČO checksum, DIČ, IBAN) is snapshotted onto each document at issue, so a later change never rewrites an issued invoice.
 
 ## Output formats
@@ -49,4 +54,5 @@ Issued invoices, credit notes and advance documents, from draft to PDF and e-inv
 - Refunds for credit notes against a paid invoice.
 - Multi-currency invoices.
 - Saving PDFs through a native save dialog (the desktop uses a blob download).
-- An EU-supply VAT code; the souhrnné hlášení needs it first.
+- Goods supplied under triangular trade (SH code 2), transfers of own assets (SH code 1) and EU supplies on advance documents.
+- Peppol electronic addresses for customers outside CZ, SK, DE, AT, PL and HU (export CII instead).

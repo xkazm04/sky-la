@@ -193,3 +193,72 @@ fn the_calendar_round_trips_every_day_for_three_centuries() {
         Some("2024-02-29")
     );
 }
+
+#[test]
+fn the_eu_supply_codes_are_cited_and_feed_the_vat_return_rows() {
+    let pack = Pack::cz_2026().unwrap();
+    for (code, row, sh, category) in [("EUSVC", "21", "3", "AE"), ("EUGDS", "20", "0", "K")] {
+        let c = pack.vat_code(code).unwrap();
+        // No Czech VAT: the base alone feeds one row, credit-positive like a sale.
+        assert_eq!(
+            pack.vat_rate(code, "2026-06-30").unwrap().to_string(),
+            "0",
+            "{code}"
+        );
+        assert_eq!(c.rows.len(), 1, "{code}");
+        assert_eq!(
+            (c.rows[0].row.as_str(), c.rows[0].credit_positive),
+            (row, true)
+        );
+        let eu = c.eu_supply.as_ref().unwrap();
+        assert_eq!(eu.sh_code, sh, "{code}");
+        assert!(
+            pack.citation(&eu.cite).contains("Pokyny"),
+            "{}",
+            pack.citation(&eu.cite)
+        );
+        assert_eq!(c.einvoice.as_ref().unwrap().category, category, "{code}");
+        let note = c.invoice_note.as_ref().unwrap();
+        assert!(!note.cs.is_empty() && !note.en.is_empty());
+        assert!(!c.outside_vat);
+    }
+    // Domestic codes are not EU supplies.
+    assert!(pack.vat_code("OUT21").unwrap().eu_supply.is_none());
+}
+
+#[test]
+fn a_bad_eu_supply_code_is_refused() {
+    let broken = CZ_2026
+        .replace("{ sh_code = \"3\",", "{ sh_code = \"7\",")
+        .replace(
+            "einvoice = { category = \"K\", exemption_reason",
+            "einvoice = { category = \"S\", exemption_reason",
+        );
+    let Err(RulesError::Invalid(problems)) = Pack::from_toml(&broken) else {
+        panic!("the broken pack loaded");
+    };
+    let all = problems.join("\n");
+    assert!(
+        all.contains("VAT code EUSVC: souhrnné hlášení code \"7\" isn't 0, 1, 2 or 3"),
+        "{all}"
+    );
+    assert!(
+        all.contains("VAT code EUGDS: an EU supply is e-invoice category K or AE"),
+        "{all}"
+    );
+
+    // A blank Czech text, the original line turned into a comment.
+    let no_note = CZ_2026.replace(
+        "invoice_note = { cs = \"Služba",
+        "invoice_note = { cs = \" \", en = \"Service\" }\n# Služba",
+    );
+    let Err(RulesError::Invalid(problems)) = Pack::from_toml(&no_note) else {
+        panic!("the broken pack loaded");
+    };
+    assert!(
+        problems
+            .iter()
+            .any(|p| p.contains("VAT code EUSVC: invoice_note needs both languages")),
+        "{problems:?}"
+    );
+}

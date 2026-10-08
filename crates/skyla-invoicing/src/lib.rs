@@ -36,14 +36,14 @@ mod xml;
 pub use cii::to_cii;
 pub use documents::{
     Accounts, Customer, DocKind, DocState, Document, DraftInput, IssueReplay, Issued, Line,
-    LineInput, Settlement, Totals, VatRecap, compute_totals, create_draft, create_draft_as,
-    customers, define_series, delete_draft, draft_credit_note, format_number, get, import_issued,
-    issue, next_number, reductions, series_gaps, state, update_draft,
+    LineInput, Settlement, TaxNote, Totals, VatRecap, compute_totals, create_draft,
+    create_draft_as, customers, define_series, delete_draft, draft_credit_note, format_number, get,
+    import_issued, issue, next_number, reductions, series_gaps, state, update_draft,
 };
 pub use error::InvoicingError;
 pub use exchange::ExportInput;
 pub use isdoc::to_isdoc;
 pub use late_interest::{InterestPeriod, LateInterest, RepoRate, late_interest};
 pub use schema::{SCHEMA, apply_schema};
-pub use supplier::{Supplier, set_supplier, supplier, valid_ico};
+pub use supplier::{EuVatId, Supplier, eu_vat_id, set_supplier, supplier, valid_ico};
 pub use ubl::to_ubl;

@@ -1758,9 +1758,9 @@
     },
     "result": {
       "bytes": 3706,
-      "hash": "394ec8656d7e9f3ed7796ca5d9786b10c5f03dbdfc47011d9da2792f0b442f6b",
+      "hash": "9cb205c0560267a98f9ac2570c358900975dd4bb6c20030b7e3c2dbbaad78668",
       "id": "run-2026-10-04-01",
-      "text": "{\n  \"prompt\": \"Compare claiming actual expenses with the 60 % flat rate for 2026 so far. Use run_scenario for every figure and explain the side effects for the user's review.\",\n  \"task\": \"tax.scenarios\",\n  \"toolResults\": [\n    {\n      \"arguments\": {\n        \"projection\": null\n      },\n      \"result\": {\n        \"actualExpenses\": {\n          \"currency\": \"CZK\",\n          \"minor\": 26122000\n        },\n        \"assumptions\": [\n          \"From the books, 2026-01-01 to 2026-10-07 (cash basis), not a projection for the whole year.\",\n          \"The higher rate above the solidarity threshold isn't applied: the pack doesn't hold the threshold for this year.\",\n          \"The minimum assessment bases aren't applied: the pack doesn't hold the 2026 average wage. If either base is below its minimum, that insurance is higher.\",\n          \"Only § 7 income; no other income, deductions or credits besides the taxpayer's own.\"\n        ],\n        \"baseline\": \"actual\",\n        \"flatRate\": \"trade\",\n        \"from\": \"2026-01-01\",\n        \"income\": {\n          \"currency\": \"CZK\",\n          \"minor\": 80362231\n        },\n        \"lowestTotal\": \"flat_rate.trade\",\n        \"notEvaluated\": [\n          \"Paušální daň: the pack doesn't hold the 2026 bands, so eligibility and its amount aren't assessed.\"\n        ],\n        \"pack\": \"cz-2026@2026.1\",\n        \"questions\": [],\n        \"scenarios\": [\n          {\n            \"capped\": false,\n            \"expenses\": {\n              \"currency\": \"CZK\",\n              \"minor\": 26122000\n            },\n            \"flatRateCap\": null,\n            \"flatRatePercent\": null,\n            \"health\": {\n              \"currency\": \"CZK\",\n              \"minor\": 3661300\n            },\n            \"healthBase\": {\n              \"currency\": \"CZK\",\n              \"minor\": 27120200\n            },\n            \"healthRatePercent\": \"13,5\",\n            \"id\": \"actual\",\n            \"label\": \"Actual expenses\",\n            \"profit\": {\n              \"currency\": \"CZK\",\n              \"minor\": 54240231\n            },\n            \"social\": {\n              \"currency\": \"CZK\",\n              \"minor\": 7919100\n            },\n            \"socialBase\": {\n              \"currency\": \"CZK\",\n              \"minor\": 27120200\n            },\n            \"socialRatePercent\": \"29,2\",\n            \"tax\": {\n              \"currency\": \"CZK\",\n              \"minor\": 5052000\n            },\n            \"taxBase\": {\n              \"currency\": \"CZK\",\n              \"minor\": 54240000\n            },\n            \"taxBeforeCredits\": {\n              \"currency\": \"CZK\",\n              \"minor\": 8136000\n            },\n            \"taxRatePercent\": \"15\",\n            \"taxpayerCredit\": {\n              \"currency\": \"CZK\",\n              \"minor\": 3084000\n            },\n            \"total\": {\n              \"currency\": \"CZK\",\n              \"minor\": 16632400\n            },\n            \"vsBaselineInsurance\": {\n              \"currency\": \"CZK\",\n              \"minor\": 0\n            },\n            \"vsBaselinePensionBase\": {\n              \"currency\": \"CZK\",\n              \"minor\": 0\n            },\n            \"vsBaselineTax\": {\n              \"currency\": \"CZK\",\n              \"minor\": 0\n            },\n            \"vsBaselineTotal\": {\n              \"currency\": \"CZK\",\n              \"minor\": 0\n            }\n          },\n          {\n            \"capped\": false,\n            \"expenses\": {\n              \"currency\": \"CZK\",\n              \"minor\": 48217338\n            },\n            \"flatRateCap\": {\n              \"currency\": \"CZK\",\n              \"minor\": 120000000\n            },\n            \"flatRatePercent\": \"60\",\n            \"health\": {\n              \"currency\": \"CZK\",\n              \"minor\": 2169800\n            },\n            \"healthBase\": {\n              \"currency\": \"CZK\",\n              \"minor\": 16072500\n            },\n            \"healthRatePercent\": \"13,5\",\n            \"id\": \"flat_rate.trade\",\n            \"label\": \"Flat-rate expenses 60 %\",\n            \"profit\": {\n              \"currency\": \"CZK\",\n              \"minor\": 32144893\n            },\n            \"social\": {\n              \"currency\": \"CZK\",\n              \"minor\": 4693200\n            },\n            \"socialBase\": {\n              \"currency\": \"CZK\",\n              \"minor\": 16072500\n            },\n            \"socialRatePercent\": \"29,2\",\n            \"tax\": {\n              \"currency\": \"CZK\",\n              \"minor\": 1737000\n            },\n            \"taxBase\": {\n              \"currency\": \"CZK\",\n              \"minor\": 32140000\n            },\n            \"taxBeforeCredits\": {\n              \"currency\": \"CZK\",\n              \"minor\": 4821000\n            },\n            \"taxRatePercent\": \"15\",\n            \"taxpayerCredit\": {\n              \"currency\": \"CZK\",\n              \"minor\": 3084000\n            },\n            \"total\": {\n              \"currency\": \"CZK\",\n              \"minor\": 8600000\n            },\n            \"vsBaselineInsurance\": {\n              \"currency\": \"CZK\",\n              \"minor\": -4717400\n            },\n            \"vsBaselinePensionBase\": {\n              \"currency\": \"CZK\",\n              \"minor\": -11047700\n            },\n            \"vsBaselineTax\": {\n              \"currency\": \"CZK\",\n              \"minor\": -3315000\n            },\n            \"vsBaselineTotal\": {\n              \"currency\": \"CZK\",\n              \"minor\": -8032400\n            }\n          }\n        ],\n        \"source\": \"books\",\n        \"to\": \"2026-10-07\",\n        \"year\": \"2026\"\n      },\n      \"tool\": \"run_scenario\"\n    },\n    {\n      \"arguments\": {\n        \"key\": \"income_tax.flat_rate.trade.cap\",\n        \"on\": \"2026-12-31\"\n      },\n      \"result\": {\n        \"citation\": \"Zákon č. [account number withheld] Sb., o daních z příjmů, § 7 odst. 7 písm. b)\",\n        \"key\": \"income_tax.flat_rate.trade.cap\",\n        \"kind\": \"amount\",\n        \"pack\": \"cz-2026@2026.1\",\n        \"value\": \"1200000.00\"\n      },\n      \"tool\": \"get_rule_value\"\n    }\n  ]\n}"
+      "text": "{\n  \"prompt\": \"Compare claiming actual expenses with the 60 % flat rate for 2026 so far. Use run_scenario for every figure and explain the side effects for the user's review.\",\n  \"task\": \"tax.scenarios\",\n  \"toolResults\": [\n    {\n      \"arguments\": {\n        \"projection\": null\n      },\n      \"result\": {\n        \"actualExpenses\": {\n          \"currency\": \"CZK\",\n          \"minor\": 26122000\n        },\n        \"assumptions\": [\n          \"From the books, 2026-01-01 to 2026-10-07 (cash basis), not a projection for the whole year.\",\n          \"The higher rate above the solidarity threshold isn't applied: the pack doesn't hold the threshold for this year.\",\n          \"The minimum assessment bases aren't applied: the pack doesn't hold the 2026 average wage. If either base is below its minimum, that insurance is higher.\",\n          \"Only § 7 income; no other income, deductions or credits besides the taxpayer's own.\"\n        ],\n        \"baseline\": \"actual\",\n        \"flatRate\": \"trade\",\n        \"from\": \"2026-01-01\",\n        \"income\": {\n          \"currency\": \"CZK\",\n          \"minor\": 80362231\n        },\n        \"lowestTotal\": \"flat_rate.trade\",\n        \"notEvaluated\": [\n          \"Paušální daň: the pack doesn't hold the 2026 bands, so eligibility and its amount aren't assessed.\"\n        ],\n        \"pack\": \"cz-2026@2026.1\",\n        \"questions\": [],\n        \"scenarios\": [\n          {\n            \"capped\": false,\n            \"expenses\": {\n              \"currency\": \"CZK\",\n              \"minor\": 26122000\n            },\n            \"flatRateCap\": null,\n            \"flatRatePercent\": null,\n            \"health\": {\n              \"currency\": \"CZK\",\n              \"minor\": 3661300\n            },\n            \"healthBase\": {\n              \"currency\": \"CZK\",\n              \"minor\": 27120200\n            },\n            \"healthRatePercent\": \"13,5\",\n            \"id\": \"actual\",\n            \"label\": \"Actual expenses\",\n            \"profit\": {\n              \"currency\": \"CZK\",\n              \"minor\": 54240231\n            },\n            \"social\": {\n              \"currency\": \"CZK\",\n              \"minor\": 8711100\n            },\n            \"socialBase\": {\n              \"currency\": \"CZK\",\n              \"minor\": 29832200\n            },\n            \"socialRatePercent\": \"29,2\",\n            \"tax\": {\n              \"currency\": \"CZK\",\n              \"minor\": 5052000\n            },\n            \"taxBase\": {\n              \"currency\": \"CZK\",\n              \"minor\": 54240000\n            },\n            \"taxBeforeCredits\": {\n              \"currency\": \"CZK\",\n              \"minor\": 8136000\n            },\n            \"taxRatePercent\": \"15\",\n            \"taxpayerCredit\": {\n              \"currency\": \"CZK\",\n              \"minor\": 3084000\n            },\n            \"total\": {\n              \"currency\": \"CZK\",\n              \"minor\": 17424400\n            },\n            \"vsBaselineInsurance\": {\n              \"currency\": \"CZK\",\n              \"minor\": 0\n            },\n            \"vsBaselinePensionBase\": {\n              \"currency\": \"CZK\",\n              \"minor\": 0\n            },\n            \"vsBaselineTax\": {\n              \"currency\": \"CZK\",\n              \"minor\": 0\n            },\n            \"vsBaselineTotal\": {\n              \"currency\": \"CZK\",\n              \"minor\": 0\n            }\n          },\n          {\n            \"capped\": false,\n            \"expenses\": {\n              \"currency\": \"CZK\",\n              \"minor\": 48217338\n            },\n            \"flatRateCap\": {\n              \"currency\": \"CZK\",\n              \"minor\": 120000000\n            },\n            \"flatRatePercent\": \"60\",\n            \"health\": {\n              \"currency\": \"CZK\",\n              \"minor\": 2169800\n            },\n            \"healthBase\": {\n              \"currency\": \"CZK\",\n              \"minor\": 16072500\n            },\n            \"healthRatePercent\": \"13,5\",\n            \"id\": \"flat_rate.trade\",\n            \"label\": \"Flat-rate expenses 60 %\",\n            \"profit\": {\n              \"currency\": \"CZK\",\n              \"minor\": 32144893\n            },\n            \"social\": {\n              \"currency\": \"CZK\",\n              \"minor\": 5162500\n            },\n            \"socialBase\": {\n              \"currency\": \"CZK\",\n              \"minor\": 17679700\n            },\n            \"socialRatePercent\": \"29,2\",\n            \"tax\": {\n              \"currency\": \"CZK\",\n              \"minor\": 1737000\n            },\n            \"taxBase\": {\n              \"currency\": \"CZK\",\n              \"minor\": 32140000\n            },\n            \"taxBeforeCredits\": {\n              \"currency\": \"CZK\",\n              \"minor\": 4821000\n            },\n            \"taxRatePercent\": \"15\",\n            \"taxpayerCredit\": {\n              \"currency\": \"CZK\",\n              \"minor\": 3084000\n            },\n            \"total\": {\n              \"currency\": \"CZK\",\n              \"minor\": 9069300\n            },\n            \"vsBaselineInsurance\": {\n              \"currency\": \"CZK\",\n              \"minor\": -5040100\n            },\n            \"vsBaselinePensionBase\": {\n              \"currency\": \"CZK\",\n              \"minor\": -12152500\n            },\n            \"vsBaselineTax\": {\n              \"currency\": \"CZK\",\n              \"minor\": -3315000\n            },\n            \"vsBaselineTotal\": {\n              \"currency\": \"CZK\",\n              \"minor\": -8355100\n            }\n          }\n        ],\n        \"source\": \"books\",\n        \"to\": \"2026-10-07\",\n        \"year\": \"2026\"\n      },\n      \"tool\": \"run_scenario\"\n    },\n    {\n      \"arguments\": {\n        \"key\": \"income_tax.flat_rate.trade.cap\",\n        \"on\": \"2026-12-31\"\n      },\n      \"result\": {\n        \"citation\": \"Zákon č. [account number withheld] Sb., o daních z příjmů, § 7 odst. 7 písm. b)\",\n        \"key\": \"income_tax.flat_rate.trade.cap\",\n        \"kind\": \"amount\",\n        \"pack\": \"cz-2026@2026.1\",\n        \"value\": \"1200000.00\"\n      },\n      \"tool\": \"get_rule_value\"\n    }\n  ]\n}"
     },
     "isError": false
   },
@@ -1771,7 +1771,7 @@
     },
     "result": {
       "bytes": 895,
-      "hash": "a8fa6d5fc1fdbd9911be1ebbde16bae924fc3747f41f2d1c670466ce1ad4dd14",
+      "hash": "641bf9e2a85b87faaea68887280002a8e27dec8dd3003ec3d423797d2160a40c",
       "id": "run-2026-10-04-02",
       "text": "{\n  \"prompt\": \"Suggest an account for the bank lines the matcher couldn't place, with a reason for each.\",\n  \"task\": \"bank.categorise\",\n  \"toolResults\": [\n    {\n      \"arguments\": {},\n      \"result\": {\n        \"lines\": [\n          {\n            \"amount\": {\n              \"currency\": \"CZK\",\n              \"minor\": -9500\n            },\n            \"counterparty\": \"Vendor H\",\n            \"date\": \"2026-10-06\",\n            \"line\": \"s1-5\",\n            \"reference\": \"Vendor H\"\n          },\n          {\n            \"amount\": {\n              \"currency\": \"CZK\",\n              \"minor\": -242000\n            },\n            \"counterparty\": \"Vendor A\",\n            \"date\": \"2026-10-05\",\n            \"line\": \"s1-4\",\n            \"reference\": \"Objednávka 541227 USB-C dock\"\n          },\n          {\n            \"amount\": {\n              \"currency\": \"CZK\",\n              \"minor\": -600000\n            },\n            \"counterparty\": \"Vendor I\",\n            \"date\": \"2026-10-04\",\n            \"line\": \"s1-3\",\n            \"reference\": \"Vendor I\"\n          },\n          {\n            \"amount\": {\n              \"currency\": \"CZK\",\n              \"minor\": -115292\n            },\n            \"counterparty\": \"Vendor D\",\n            \"date\": \"2026-10-03\",\n            \"line\": \"s1-2\",\n            \"reference\": \"Platba kartou GOOGLE*WORKSPACE 45,86 EUR kurz 25,140\"\n          }\n        ]\n      },\n      \"tool\": \"list_unmatched_bank_lines\"\n    }\n  ]\n}"
     },
@@ -1784,7 +1784,7 @@
     },
     "result": {
       "bytes": 3444,
-      "hash": "a4b31c5e033ee63ac781fe3a7875e002d6db9376d9fc9816c84774dea2b16f46",
+      "hash": "c0318449735f8c68511a2b05c9d00d8fb7a6d2f4ca9758037bea1eb2e28b118f",
       "id": "run-2026-10-06-01",
       "text": "{\n  \"prompt\": \"Explain what makes up account 518 (other services) in Q3 2026 compared with Q2.\",\n  \"task\": \"explain.figure\",\n  \"toolResults\": [\n    {\n      \"arguments\": {\n        \"from\": \"2026-07-01\",\n        \"to\": \"2026-09-30\"\n      },\n      \"result\": {\n        \"expenses\": [\n          {\n            \"amount\": {\n              \"currency\": \"CZK\",\n              \"minor\": 4130000\n            },\n            \"code\": \"501\",\n            \"nameCs\": \"Spotřeba materiálu\",\n            \"nameEn\": \"Materials consumed\"\n          },\n          {\n            \"amount\": {\n              \"currency\": \"CZK\",\n              \"minor\": 620000\n            },\n            \"code\": \"512\",\n            \"nameCs\": \"Cestovné\",\n            \"nameEn\": \"Travel\"\n          },\n          {\n            \"amount\": {\n              \"currency\": \"CZK\",\n              \"minor\": 340000\n            },\n            \"code\": \"513\",\n            \"nameCs\": \"Náklady na reprezentaci\",\n            \"nameEn\": \"Entertainment\"\n          },\n          {\n            \"amount\": {\n              \"currency\": \"CZK\",\n              \"minor\": 12080000\n            },\n            \"code\": \"518\",\n            \"nameCs\": \"Ostatní služby\",\n            \"nameEn\": \"Other services\"\n          },\n          {\n            \"amount\": {\n              \"currency\": \"CZK\",\n              \"minor\": 120000\n            },\n            \"code\": \"538\",\n            \"nameCs\": \"Ostatní daně a poplatky\",\n            \"nameEn\": \"Other taxes and fees\"\n          },\n          {\n            \"amount\": {\n              \"currency\": \"CZK\",\n              \"minor\": 240000\n            },\n            \"code\": \"548\",\n            \"nameCs\": \"Ostatní provozní náklady\",\n            \"nameEn\": \"Other operating expenses\"\n          },\n          {\n            \"amount\": {\n              \"currency\": \"CZK\",\n              \"minor\": 85000\n            },\n            \"code\": \"568\",\n            \"nameCs\": \"Ostatní finanční náklady\",\n            \"nameEn\": \"Other financial expenses\"\n          }\n        ],\n        \"from\": \"2026-07-01\",\n        \"profit\": {\n          \"currency\": \"CZK\",\n          \"minor\": 28035000\n        },\n        \"revenue\": [\n          {\n            \"amount\": {\n              \"currency\": \"CZK\",\n              \"minor\": 45520000\n            },\n            \"code\": \"602\",\n            \"nameCs\": \"Tržby z prodeje služeb\",\n            \"nameEn\": \"Sales of services\"\n          },\n          {\n            \"amount\": {\n              \"currency\": \"CZK\",\n              \"minor\": 130000\n            },\n            \"code\": \"648\",\n            \"nameCs\": \"Ostatní provozní výnosy\",\n            \"nameEn\": \"Other operating income\"\n          }\n        ],\n        \"snapshot\": {\n          \"entries\": 30,\n          \"hash\": \"e980b015d0403c615b8f520ff9c1f92e34dda1e06[IBAN withheld]\",\n          \"lastPostedSeq\": 52\n        },\n        \"to\": \"2026-09-30\",\n        \"totalExpenses\": {\n          \"currency\": \"CZK\",\n          \"minor\": 17615000\n        },\n        \"totalRevenue\": {\n          \"currency\": \"CZK\",\n          \"minor\": 45650000\n        }\n      },\n      \"tool\": \"get_period_summary\"\n    },\n    {\n      \"arguments\": {\n        \"from\": \"2026-04-01\",\n        \"to\": \"2026-06-30\"\n      },\n      \"result\": {\n        \"expenses\": [\n          {\n            \"amount\": {\n              \"currency\": \"CZK\",\n              \"minor\": 985000\n            },\n            \"code\": \"501\",\n            \"nameCs\": \"Spotřeba materiálu\",\n            \"nameEn\": \"Materials consumed\"\n          },\n          {\n            \"amount\": {\n              \"currency\": \"CZK\",\n              \"minor\": 790000\n            },\n            \"code\": \"512\",\n            \"nameCs\": \"Cestovné\",\n            \"nameEn\": \"Travel\"\n          },\n          {\n            \"amount\": {\n              \"currency\": \"CZK\",\n              \"minor\": 215000\n            },\n            \"code\": \"513\",\n            \"nameCs\": \"Náklady na reprezentaci\",\n            \"nameEn\": \"Entertainment\"\n          },\n          {\n            \"amount\": {\n              \"currency\": \"CZK\",\n              \"minor\": 8820000\n            },\n            \"code\": \"518\",\n            \"nameCs\": \"Ostatní služby\",\n            \"nameEn\": \"Other services\"\n          },\n          {\n            \"amount\": {\n              \"currency\": \"CZK\",\n              \"minor\": 100000\n            },\n            \"code\": \"538\",\n            \"nameCs\": \"Ostatní daně a poplatky\",\n            \"nameEn\": \"Other taxes and fees\"\n          },\n          {\n            \"amount\": {\n              \"currency\": \"CZK\",\n              \"minor\": 250000\n            },\n            \"code\": \"548\",\n            \"nameCs\": \"Ostatní provozní náklady\",\n            \"nameEn\": \"Other operating expenses\"\n          },\n          {\n            \"amount\": {\n              \"currency\": \"CZK\",\n              \"minor\": 62000\n            },\n            \"code\": \"568\",\n            \"nameCs\": \"Ostatní finanční náklady\",\n            \"nameEn\": \"Other financial expenses\"\n          }\n        ],\n        \"from\": \"2026-04-01\",\n        \"profit\": {\n          \"currency\": \"CZK\",\n          \"minor\": 27878000\n        },\n        \"revenue\": [\n          {\n            \"amount\": {\n              \"currency\": \"CZK\",\n              \"minor\": 39100000\n            },\n            \"code\": \"602\",\n            \"nameCs\": \"Tržby z prodeje služeb\",\n            \"nameEn\": \"Sales of services\"\n          }\n        ],\n        \"snapshot\": {\n          \"entries\": 22,\n          \"hash\": \"fae3[IBAN withheld]24[IBAN withheld]\",\n          \"lastPostedSeq\": 24\n        },\n        \"to\": \"2026-06-30\",\n        \"totalExpenses\": {\n          \"currency\": \"CZK\",\n          \"minor\": 11222000\n        },\n        \"totalRevenue\": {\n          \"currency\": \"CZK\",\n          \"minor\": 39100000\n        }\n      },\n      \"tool\": \"get_period_summary\"\n    }\n  ]\n}"
     },
@@ -1801,7 +1801,7 @@
         "sickness insurance for OSVČ: rate and base not verified",
         "depreciation groups and first-year rates (§ 30–31 ZDP): not yet in the pack",
         "insurance overviews (přehledy) for ČSSZ and the health insurer: their deadline depends on when the tax return was filed",
-        "souhrnné hlášení: needs an EU-supply VAT code first",
+        "souhrnné hlášení: the filing period and deadline (§ 102 odst. 4 ZDPH) and the EPO form's value rounding aren't verified; triangular trade (code 2) and transfers of own assets (code 1) have no VAT code",
         "paušální daň bands for 2026: need the 2026 amounts",
         "ČNB repo rate: reference data (imported or fetched), not statutory pack data"
       ],
@@ -1970,14 +1970,14 @@
           "value": "1.00"
         },
         {
-          "citation": "Zákon č. 589/1992 Sb., o pojistném na sociální zabezpečení a příspěvku na státní politiku zaměstnanosti, § 5b odst. 1",
-          "effectiveFrom": "2018-01-01",
+          "citation": "Zákon č. 589/1992 Sb., o pojistném na sociální zabezpečení a příspěvku na státní politiku zaměstnanosti, § 5b odst. 1, ve znění zákona č. 349/2023 Sb.",
+          "effectiveFrom": "2024-01-01",
           "effectiveTo": null,
           "key": "insurance.social.share",
           "kind": "percent",
-          "note": "The annual assessment base is this share of the profit (income minus expenses claimed).",
+          "note": "The annual assessment base is this share of the profit (income minus expenses claimed). Health insurance stays at 50 %.",
           "url": "https://www.zakonyprolidi.cz/cs/1992-589",
-          "value": "50"
+          "value": "55"
         },
         {
           "citation": "Nařízení vlády č. 351/2013 Sb., kterým se určuje výše úroků z prodlení a nákladů spojených s uplatněním každé pohledávky, § 2",
@@ -2058,6 +2058,16 @@
           "note": null,
           "url": "https://www.zakonyprolidi.cz/cs/2004-235",
           "value": "21"
+        },
+        {
+          "citation": "Zákon č. 235/2004 Sb., o dani z přidané hodnoty, § 64 (osvobozené dodání zboží do jiného členského státu) a § 9 odst. 1 (služba s místem plnění v jiném členském státě)",
+          "effectiveFrom": "2004-05-01",
+          "effectiveTo": null,
+          "key": "vat.rate.zero",
+          "kind": "percent",
+          "note": "Not a rate the law sets: Czech VAT isn't charged on a supply to a VAT payer in another member state. The goods are exempt with the right to deduct input VAT (§ 64); for a service the place of supply is the customer's state, where the customer accounts for the tax (Article 196 of Directive 2006/112/EC).",
+          "url": "https://www.zakonyprolidi.cz/cs/2004-235",
+          "value": "0"
         },
         {
           "citation": "Zákon č. 235/2004 Sb., o dani z přidané hodnoty, § 6 odst. 1, ve znění zákona č. 471/2024 Sb.",
@@ -2313,11 +2323,11 @@
           },
           "social": {
             "currency": "CZK",
-            "minor": 7919100
+            "minor": 8711100
           },
           "socialBase": {
             "currency": "CZK",
-            "minor": 27120200
+            "minor": 29832200
           },
           "socialRatePercent": "29,2",
           "tax": {
@@ -2339,7 +2349,7 @@
           },
           "total": {
             "currency": "CZK",
-            "minor": 16632400
+            "minor": 17424400
           },
           "vsBaselineInsurance": {
             "currency": "CZK",
@@ -2386,11 +2396,11 @@
           },
           "social": {
             "currency": "CZK",
-            "minor": 4693200
+            "minor": 5162500
           },
           "socialBase": {
             "currency": "CZK",
-            "minor": 16072500
+            "minor": 17679700
           },
           "socialRatePercent": "29,2",
           "tax": {
@@ -2412,15 +2422,15 @@
           },
           "total": {
             "currency": "CZK",
-            "minor": 8600000
+            "minor": 9069300
           },
           "vsBaselineInsurance": {
             "currency": "CZK",
-            "minor": -4717400
+            "minor": -5040100
           },
           "vsBaselinePensionBase": {
             "currency": "CZK",
-            "minor": -11047700
+            "minor": -12152500
           },
           "vsBaselineTax": {
             "currency": "CZK",
@@ -2428,7 +2438,7 @@
           },
           "vsBaselineTotal": {
             "currency": "CZK",
-            "minor": -8032400
+            "minor": -8355100
           }
         }
       ],
@@ -3557,11 +3567,11 @@
           },
           "social": {
             "currency": "CZK",
-            "minor": 16465900
+            "minor": 18112500
           },
           "socialBase": {
             "currency": "CZK",
-            "minor": 56390000
+            "minor": 62029000
           },
           "socialRatePercent": "29,2",
           "tax": {
@@ -3583,7 +3593,7 @@
           },
           "total": {
             "currency": "CZK",
-            "minor": 37911600
+            "minor": 39558200
           },
           "vsBaselineInsurance": {
             "currency": "CZK",
@@ -3627,11 +3637,11 @@
           },
           "social": {
             "currency": "CZK",
-            "minor": 17341900
+            "minor": 19076100
           },
           "socialBase": {
             "currency": "CZK",
-            "minor": 59390000
+            "minor": 65329000
           },
           "socialRatePercent": "29,2",
           "tax": {
@@ -3653,15 +3663,15 @@
           },
           "total": {
             "currency": "CZK",
-            "minor": 40092600
+            "minor": 41826800
           },
           "vsBaselineInsurance": {
             "currency": "CZK",
-            "minor": 1281000
+            "minor": 1368600
           },
           "vsBaselinePensionBase": {
             "currency": "CZK",
-            "minor": 3000000
+            "minor": 3300000
           },
           "vsBaselineTax": {
             "currency": "CZK",
@@ -3669,7 +3679,7 @@
           },
           "vsBaselineTotal": {
             "currency": "CZK",
-            "minor": 2181000
+            "minor": 2268600
           }
         },
         {
@@ -3700,11 +3710,11 @@
           },
           "social": {
             "currency": "CZK",
-            "minor": 9174700
+            "minor": 10092200
           },
           "socialBase": {
             "currency": "CZK",
-            "minor": 31420000
+            "minor": 34562000
           },
           "socialRatePercent": "29,2",
           "tax": {
@@ -3726,15 +3736,15 @@
           },
           "total": {
             "currency": "CZK",
-            "minor": 19758400
+            "minor": 20675900
           },
           "vsBaselineInsurance": {
             "currency": "CZK",
-            "minor": -10662200
+            "minor": -11391300
           },
           "vsBaselinePensionBase": {
             "currency": "CZK",
-            "minor": -24970000
+            "minor": -27467000
           },
           "vsBaselineTax": {
             "currency": "CZK",
@@ -3742,7 +3752,7 @@
           },
           "vsBaselineTotal": {
             "currency": "CZK",
-            "minor": -18153200
+            "minor": -18882300
           }
         },
         {
@@ -3773,11 +3783,11 @@
           },
           "social": {
             "currency": "CZK",
-            "minor": 9174700
+            "minor": 10092200
           },
           "socialBase": {
             "currency": "CZK",
-            "minor": 31420000
+            "minor": 34562000
           },
           "socialRatePercent": "29,2",
           "tax": {
@@ -3799,15 +3809,15 @@
           },
           "total": {
             "currency": "CZK",
-            "minor": 19758400
+            "minor": 20675900
           },
           "vsBaselineInsurance": {
             "currency": "CZK",
-            "minor": -10662200
+            "minor": -11391300
           },
           "vsBaselinePensionBase": {
             "currency": "CZK",
-            "minor": -24970000
+            "minor": -27467000
           },
           "vsBaselineTax": {
             "currency": "CZK",
@@ -3815,7 +3825,7 @@
           },
           "vsBaselineTotal": {
             "currency": "CZK",
-            "minor": -18153200
+            "minor": -18882300
           }
         }
       ],
@@ -3878,7 +3888,7 @@
       ],
       "snapshot": {
         "entries": 5,
-        "hash": "7bfb0df9941ba4e1986bd35b43c4ced39f517c2e96550ab35c74d5a4284f5309",
+        "hash": "aaeb92dfe835694a314362ba6400fe7c67d81b4aa6f7e6fc1d713402f734d996",
         "lastPostedSeq": 51
       },
       "to": "2026-07-31",
@@ -4088,7 +4098,7 @@
       ],
       "snapshot": {
         "entries": 9,
-        "hash": "25f055c623c1518c1ad5e2bd32ee30e398cf30db21a488deec4ba17b6058ac7c",
+        "hash": "8ca9f1474eba2ed014205204b786620d9951cbf445b8ea1bb377bd7ceffdcf40",
         "lastPostedSeq": 52
       },
       "to": "2026-08-31",
@@ -4384,7 +4394,7 @@
       ],
       "snapshot": {
         "entries": 16,
-        "hash": "3fb732059b417b2ce12f867e05a7cd5fd0ea014b93211f38c43b7214039f6a5d",
+        "hash": "d9883fafa849628ccfc90d8967e35d465d89e5bcf40b485802214b7d8256bebe",
         "lastPostedSeq": 50
       },
       "to": "2026-09-30",
@@ -12167,11 +12177,11 @@
             },
             "social": {
               "currency": "CZK",
-              "minor": 7919100
+              "minor": 8711100
             },
             "socialBase": {
               "currency": "CZK",
-              "minor": 27120200
+              "minor": 29832200
             },
             "socialRatePercent": "29,2",
             "tax": {
@@ -12193,7 +12203,7 @@
             },
             "total": {
               "currency": "CZK",
-              "minor": 16632400
+              "minor": 17424400
             },
             "vsBaselineInsurance": {
               "currency": "CZK",
@@ -12240,11 +12250,11 @@
             },
             "social": {
               "currency": "CZK",
-              "minor": 4693200
+              "minor": 5162500
             },
             "socialBase": {
               "currency": "CZK",
-              "minor": 16072500
+              "minor": 17679700
             },
             "socialRatePercent": "29,2",
             "tax": {
@@ -12266,15 +12276,15 @@
             },
             "total": {
               "currency": "CZK",
-              "minor": 8600000
+              "minor": 9069300
             },
             "vsBaselineInsurance": {
               "currency": "CZK",
-              "minor": -4717400
+              "minor": -5040100
             },
             "vsBaselinePensionBase": {
               "currency": "CZK",
-              "minor": -11047700
+              "minor": -12152500
             },
             "vsBaselineTax": {
               "currency": "CZK",
@@ -12282,7 +12292,7 @@
             },
             "vsBaselineTotal": {
               "currency": "CZK",
-              "minor": -8032400
+              "minor": -8355100
             }
           }
         ],
@@ -12302,7 +12312,7 @@
       "projection": null
     },
     "result": {
-      "explanation": "From the books so far (1 Jan – 7 Oct 2026), § 7 income is 803 622,31 Kč and actual expenses 261 220,00 Kč. With actual expenses, tax and insurance come to 166 324 Kč: income tax 50 520 Kč, social insurance 79 191 Kč and health insurance 36 613 Kč. Claiming the 60 % flat rate instead counts 482 173,38 Kč of expenses and brings the total to 86 000 Kč, which is 80 324 Kč less. The flip side: the social insurance assessment base, from which your pension is later worked out, falls by 110 477 Kč. These are figures for the year so far, not a projection, and paušální daň isn't assessed because the rule pack doesn't hold the 2026 bands yet. A scenario for your review, not tax advice.",
+      "explanation": "From the books so far (1 Jan – 7 Oct 2026), § 7 income is 803 622,31 Kč and actual expenses 261 220,00 Kč. With actual expenses, tax and insurance come to 174 244 Kč: income tax 50 520 Kč, social insurance 87 111 Kč and health insurance 36 613 Kč. Claiming the 60 % flat rate instead counts 482 173,38 Kč of expenses and brings the total to 90 693 Kč, which is 83 551 Kč less. The flip side: the social insurance assessment base, from which your pension is later worked out, falls by 121 525 Kč. These are figures for the year so far, not a projection, and paušální daň isn't assessed because the rule pack doesn't hold the 2026 bands yet. A scenario for your review, not tax advice.",
       "grounded": 11,
       "levers": [
         "Expenses: actual or the 60 % flat rate"
@@ -12363,11 +12373,11 @@
             },
             "social": {
               "currency": "CZK",
-              "minor": 7919100
+              "minor": 8711100
             },
             "socialBase": {
               "currency": "CZK",
-              "minor": 27120200
+              "minor": 29832200
             },
             "socialRatePercent": "29,2",
             "tax": {
@@ -12389,7 +12399,7 @@
             },
             "total": {
               "currency": "CZK",
-              "minor": 16632400
+              "minor": 17424400
             },
             "vsBaselineInsurance": {
               "currency": "CZK",
@@ -12436,11 +12446,11 @@
             },
             "social": {
               "currency": "CZK",
-              "minor": 4693200
+              "minor": 5162500
             },
             "socialBase": {
               "currency": "CZK",
-              "minor": 16072500
+              "minor": 17679700
             },
             "socialRatePercent": "29,2",
             "tax": {
@@ -12462,15 +12472,15 @@
             },
             "total": {
               "currency": "CZK",
-              "minor": 8600000
+              "minor": 9069300
             },
             "vsBaselineInsurance": {
               "currency": "CZK",
-              "minor": -4717400
+              "minor": -5040100
             },
             "vsBaselinePensionBase": {
               "currency": "CZK",
-              "minor": -11047700
+              "minor": -12152500
             },
             "vsBaselineTax": {
               "currency": "CZK",
@@ -12478,7 +12488,7 @@
             },
             "vsBaselineTotal": {
               "currency": "CZK",
-              "minor": -8032400
+              "minor": -8355100
             }
           }
         ],
@@ -12930,7 +12940,7 @@
         "id": "advisor-1",
         "kind": "advice",
         "reasons": [
-          "From the books so far (1 Jan – 7 Oct 2026), § 7 income is 803 622,31 Kč and actual expenses 261 220,00 Kč. With actual expenses, tax and insurance come to 166 324 Kč: income tax 50 520 Kč, social insurance 79 191 Kč and health insurance 36 613 Kč. Claiming the 60 % flat rate instead counts 482 173,38 Kč of expenses and brings the total to 86 000 Kč, which is 80 324 Kč less. The flip side: the social insurance assessment base, from which your pension is later worked out, falls by 110 477 Kč. These are figures for the year so far, not a projection, and paušální daň isn't assessed because the rule pack doesn't hold the 2026 bands yet. A scenario for your review, not tax advice.",
+          "From the books so far (1 Jan – 7 Oct 2026), § 7 income is 803 622,31 Kč and actual expenses 261 220,00 Kč. With actual expenses, tax and insurance come to 174 244 Kč: income tax 50 520 Kč, social insurance 87 111 Kč and health insurance 36 613 Kč. Claiming the 60 % flat rate instead counts 482 173,38 Kč of expenses and brings the total to 90 693 Kč, which is 83 551 Kč less. The flip side: the social insurance assessment base, from which your pension is later worked out, falls by 121 525 Kč. These are figures for the year so far, not a projection, and paušální daň isn't assessed because the rule pack doesn't hold the 2026 bands yet. A scenario for your review, not tax advice.",
           "Question: Do you expect more income or larger expenses before the year ends? These figures cover the year so far."
         ],
         "source": "Tax advisor",
@@ -13011,11 +13021,11 @@
             },
             "social": {
               "currency": "CZK",
-              "minor": 16465900
+              "minor": 18112500
             },
             "socialBase": {
               "currency": "CZK",
-              "minor": 56390000
+              "minor": 62029000
             },
             "socialRatePercent": "29,2",
             "tax": {
@@ -13037,7 +13047,7 @@
             },
             "total": {
               "currency": "CZK",
-              "minor": 37911600
+              "minor": 39558200
             },
             "vsBaselineInsurance": {
               "currency": "CZK",
@@ -13081,11 +13091,11 @@
             },
             "social": {
               "currency": "CZK",
-              "minor": 17341900
+              "minor": 19076100
             },
             "socialBase": {
               "currency": "CZK",
-              "minor": 59390000
+              "minor": 65329000
             },
             "socialRatePercent": "29,2",
             "tax": {
@@ -13107,15 +13117,15 @@
             },
             "total": {
               "currency": "CZK",
-              "minor": 40092600
+              "minor": 41826800
             },
             "vsBaselineInsurance": {
               "currency": "CZK",
-              "minor": 1281000
+              "minor": 1368600
             },
             "vsBaselinePensionBase": {
               "currency": "CZK",
-              "minor": 3000000
+              "minor": 3300000
             },
             "vsBaselineTax": {
               "currency": "CZK",
@@ -13123,7 +13133,7 @@
             },
             "vsBaselineTotal": {
               "currency": "CZK",
-              "minor": 2181000
+              "minor": 2268600
             }
           },
           {
@@ -13154,11 +13164,11 @@
             },
             "social": {
               "currency": "CZK",
-              "minor": 9174700
+              "minor": 10092200
             },
             "socialBase": {
               "currency": "CZK",
-              "minor": 31420000
+              "minor": 34562000
             },
             "socialRatePercent": "29,2",
             "tax": {
@@ -13180,15 +13190,15 @@
             },
             "total": {
               "currency": "CZK",
-              "minor": 19758400
+              "minor": 20675900
             },
             "vsBaselineInsurance": {
               "currency": "CZK",
-              "minor": -10662200
+              "minor": -11391300
             },
             "vsBaselinePensionBase": {
               "currency": "CZK",
-              "minor": -24970000
+              "minor": -27467000
             },
             "vsBaselineTax": {
               "currency": "CZK",
@@ -13196,7 +13206,7 @@
             },
             "vsBaselineTotal": {
               "currency": "CZK",
-              "minor": -18153200
+              "minor": -18882300
             }
           },
           {
@@ -13227,11 +13237,11 @@
             },
             "social": {
               "currency": "CZK",
-              "minor": 9174700
+              "minor": 10092200
             },
             "socialBase": {
               "currency": "CZK",
-              "minor": 31420000
+              "minor": 34562000
             },
             "socialRatePercent": "29,2",
             "tax": {
@@ -13253,15 +13263,15 @@
             },
             "total": {
               "currency": "CZK",
-              "minor": 19758400
+              "minor": 20675900
             },
             "vsBaselineInsurance": {
               "currency": "CZK",
-              "minor": -10662200
+              "minor": -11391300
             },
             "vsBaselinePensionBase": {
               "currency": "CZK",
-              "minor": -24970000
+              "minor": -27467000
             },
             "vsBaselineTax": {
               "currency": "CZK",
@@ -13269,7 +13279,7 @@
             },
             "vsBaselineTotal": {
               "currency": "CZK",
-              "minor": -18153200
+              "minor": -18882300
             }
           }
         ],
@@ -13296,7 +13306,7 @@
       }
     },
     "result": {
-      "explanation": "For your projection of 1 571 000 Kč income and 383 200 Kč actual expenses: the 60 % flat rate counts 942 600 Kč of expenses, and tax and insurance come to 197 584 Kč whether you buy the laptop this year or next, because under the flat rate the purchase doesn't change the tax base. With actual expenses and the laptop bought this year the total is 379 116 Kč; buying it next year instead adds 21 810 Kč. Against that baseline the flat rate is 181 532 Kč lower, but your social insurance assessment base, from which your pension is later worked out, is 249 700 Kč lower too. Paušální daň isn't assessed because the rule pack doesn't hold the 2026 bands yet. A scenario for your review, not tax advice.",
+      "explanation": "For your projection of 1 571 000 Kč income and 383 200 Kč actual expenses: the 60 % flat rate counts 942 600 Kč of expenses, and tax and insurance come to 206 759 Kč whether you buy the laptop this year or next, because under the flat rate the purchase doesn't change the tax base. With actual expenses and the laptop bought this year the total is 395 582 Kč; buying it next year instead adds 22 686 Kč. Against that baseline the flat rate is 188 823 Kč lower, but your social insurance assessment base, from which your pension is later worked out, is 274 670 Kč lower too. Paušální daň isn't assessed because the rule pack doesn't hold the 2026 bands yet. A scenario for your review, not tax advice.",
       "grounded": 9,
       "levers": [
         "Expenses: actual or the 60 % flat rate",
@@ -13355,11 +13365,11 @@
             },
             "social": {
               "currency": "CZK",
-              "minor": 16465900
+              "minor": 18112500
             },
             "socialBase": {
               "currency": "CZK",
-              "minor": 56390000
+              "minor": 62029000
             },
             "socialRatePercent": "29,2",
             "tax": {
@@ -13381,7 +13391,7 @@
             },
             "total": {
               "currency": "CZK",
-              "minor": 37911600
+              "minor": 39558200
             },
             "vsBaselineInsurance": {
               "currency": "CZK",
@@ -13425,11 +13435,11 @@
             },
             "social": {
               "currency": "CZK",
-              "minor": 17341900
+              "minor": 19076100
             },
             "socialBase": {
               "currency": "CZK",
-              "minor": 59390000
+              "minor": 65329000
             },
             "socialRatePercent": "29,2",
             "tax": {
@@ -13451,15 +13461,15 @@
             },
             "total": {
               "currency": "CZK",
-              "minor": 40092600
+              "minor": 41826800
             },
             "vsBaselineInsurance": {
               "currency": "CZK",
-              "minor": 1281000
+              "minor": 1368600
             },
             "vsBaselinePensionBase": {
               "currency": "CZK",
-              "minor": 3000000
+              "minor": 3300000
             },
             "vsBaselineTax": {
               "currency": "CZK",
@@ -13467,7 +13477,7 @@
             },
             "vsBaselineTotal": {
               "currency": "CZK",
-              "minor": 2181000
+              "minor": 2268600
             }
           },
           {
@@ -13498,11 +13508,11 @@
             },
             "social": {
               "currency": "CZK",
-              "minor": 9174700
+              "minor": 10092200
             },
             "socialBase": {
               "currency": "CZK",
-              "minor": 31420000
+              "minor": 34562000
             },
             "socialRatePercent": "29,2",
             "tax": {
@@ -13524,15 +13534,15 @@
             },
             "total": {
               "currency": "CZK",
-              "minor": 19758400
+              "minor": 20675900
             },
             "vsBaselineInsurance": {
               "currency": "CZK",
-              "minor": -10662200
+              "minor": -11391300
             },
             "vsBaselinePensionBase": {
               "currency": "CZK",
-              "minor": -24970000
+              "minor": -27467000
             },
             "vsBaselineTax": {
               "currency": "CZK",
@@ -13540,7 +13550,7 @@
             },
             "vsBaselineTotal": {
               "currency": "CZK",
-              "minor": -18153200
+              "minor": -18882300
             }
           },
           {
@@ -13571,11 +13581,11 @@
             },
             "social": {
               "currency": "CZK",
-              "minor": 9174700
+              "minor": 10092200
             },
             "socialBase": {
               "currency": "CZK",
-              "minor": 31420000
+              "minor": 34562000
             },
             "socialRatePercent": "29,2",
             "tax": {
@@ -13597,15 +13607,15 @@
             },
             "total": {
               "currency": "CZK",
-              "minor": 19758400
+              "minor": 20675900
             },
             "vsBaselineInsurance": {
               "currency": "CZK",
-              "minor": -10662200
+              "minor": -11391300
             },
             "vsBaselinePensionBase": {
               "currency": "CZK",
-              "minor": -24970000
+              "minor": -27467000
             },
             "vsBaselineTax": {
               "currency": "CZK",
@@ -13613,7 +13623,7 @@
             },
             "vsBaselineTotal": {
               "currency": "CZK",
-              "minor": -18153200
+              "minor": -18882300
             }
           }
         ],
@@ -14081,7 +14091,7 @@
         "id": "advisor-1",
         "kind": "advice",
         "reasons": [
-          "From the books so far (1 Jan – 7 Oct 2026), § 7 income is 803 622,31 Kč and actual expenses 261 220,00 Kč. With actual expenses, tax and insurance come to 166 324 Kč: income tax 50 520 Kč, social insurance 79 191 Kč and health insurance 36 613 Kč. Claiming the 60 % flat rate instead counts 482 173,38 Kč of expenses and brings the total to 86 000 Kč, which is 80 324 Kč less. The flip side: the social insurance assessment base, from which your pension is later worked out, falls by 110 477 Kč. These are figures for the year so far, not a projection, and paušální daň isn't assessed because the rule pack doesn't hold the 2026 bands yet. A scenario for your review, not tax advice.",
+          "From the books so far (1 Jan – 7 Oct 2026), § 7 income is 803 622,31 Kč and actual expenses 261 220,00 Kč. With actual expenses, tax and insurance come to 174 244 Kč: income tax 50 520 Kč, social insurance 87 111 Kč and health insurance 36 613 Kč. Claiming the 60 % flat rate instead counts 482 173,38 Kč of expenses and brings the total to 90 693 Kč, which is 83 551 Kč less. The flip side: the social insurance assessment base, from which your pension is later worked out, falls by 121 525 Kč. These are figures for the year so far, not a projection, and paušální daň isn't assessed because the rule pack doesn't hold the 2026 bands yet. A scenario for your review, not tax advice.",
           "Question: Do you expect more income or larger expenses before the year ends? These figures cover the year so far."
         ],
         "source": "Tax advisor",
@@ -14098,7 +14108,7 @@
         "id": "advisor-2",
         "kind": "advice",
         "reasons": [
-          "For your projection of 1 571 000 Kč income and 383 200 Kč actual expenses: the 60 % flat rate counts 942 600 Kč of expenses, and tax and insurance come to 197 584 Kč whether you buy the laptop this year or next, because under the flat rate the purchase doesn't change the tax base. With actual expenses and the laptop bought this year the total is 379 116 Kč; buying it next year instead adds 21 810 Kč. Against that baseline the flat rate is 181 532 Kč lower, but your social insurance assessment base, from which your pension is later worked out, is 249 700 Kč lower too. Paušální daň isn't assessed because the rule pack doesn't hold the 2026 bands yet. A scenario for your review, not tax advice."
+          "For your projection of 1 571 000 Kč income and 383 200 Kč actual expenses: the 60 % flat rate counts 942 600 Kč of expenses, and tax and insurance come to 206 759 Kč whether you buy the laptop this year or next, because under the flat rate the purchase doesn't change the tax base. With actual expenses and the laptop bought this year the total is 395 582 Kč; buying it next year instead adds 22 686 Kč. Against that baseline the flat rate is 188 823 Kč lower, but your social insurance assessment base, from which your pension is later worked out, is 274 670 Kč lower too. Paušální daň isn't assessed because the rule pack doesn't hold the 2026 bands yet. A scenario for your review, not tax advice."
         ],
         "source": "Tax advisor",
         "sourceKind": "advisor",
@@ -14116,7 +14126,7 @@
     },
     "result": {
       "bytes": 391,
-      "hash": "309b90331248daa151645bb9a98a1da4909a69ae3863aa86d73bf1d599882de8",
+      "hash": "5d8f17d8b081e28cf2730c9d1c040e545b984eddbe8a47b0e96413c31625432f",
       "id": "run-2026-10-07-05",
       "text": "{\n  \"prompt\": \"Tax year 2026. The user projects § 7 income 1 571 000 and actual expenses 383 200, flat-rate group trade, planned purchase Laptop 60 000. Call run_scenario with projection {\\\"expenses\\\":\\\"383 200\\\",\\\"flatRate\\\":\\\"trade\\\",\\\"income\\\":\\\"1 571 000\\\",\\\"purchaseDescription\\\":\\\"Laptop\\\",\\\"purchasePrice\\\":\\\"60 000\\\"} and explain the scenarios.\",\n  \"task\": \"tax.scenarios\",\n  \"toolResults\": []\n}"
     },
@@ -14316,7 +14326,7 @@
     },
     "result": {
       "bytes": 1548,
-      "hash": "4c5f69ee7a5e70e0a5200f1152015cb5192f7a7a13b4a21d1139d53982d30f99",
+      "hash": "40bfac25e35c213ad8991ee4c39af080325791e8feba9c16a2b9fc74f33b1902",
       "id": "run-2026-10-07-04",
       "text": "{\n  \"prompt\": \"Explain account 518 for 2026-07-01 to 2026-09-30 against the previous period.\\nContext:\\n{\\\"account\\\":\\\"518\\\",\\\"change\\\":{\\\"currency\\\":\\\"CZK\\\",\\\"minor\\\":3260000},\\\"changePercent\\\":\\\"37\\\",\\\"entries\\\":[{\\\"amount\\\":{\\\"currency\\\":\\\"CZK\\\",\\\"minor\\\":4600000},\\\"date\\\":\\\"2026-08-31\\\",\\\"id\\\":34,\\\"memo\\\":\\\"Přijatá faktura KV-2026-08 Vendor E\\\"},{\\\"amount\\\":{\\\"currency\\\":\\\"CZK\\\",\\\"minor\\\":3850000},\\\"date\\\":\\\"2026-09-18\\\",\\\"id\\\":35,\\\"memo\\\":\\\"Přijatá faktura MH-19 Vendor F\\\"},{\\\"amount\\\":{\\\"currency\\\":\\\"CZK\\\",\\\"minor\\\":2160000},\\\"date\\\":\\\"2026-09-22\\\",\\\"id\\\":36,\\\"memo\\\":\\\"Přijatá faktura PF-2026-0917 Vendor G\\\"},{\\\"amount\\\":{\\\"currency\\\":\\\"CZK\\\",\\\"minor\\\":1231860},\\\"date\\\":\\\"2026-09-03\\\",\\\"id\\\":39,\\\"memo\\\":\\\"AWS září (490 EUR, přenesená daňová povinnost)\\\"},{\\\"amount\\\":{\\\"currency\\\":\\\"CZK\\\",\\\"minor\\\":158140},\\\"date\\\":\\\"2026-08-03\\\",\\\"id\\\":40,\\\"memo\\\":\\\"Google Workspace\\\"},{\\\"amount\\\":{\\\"currency\\\":\\\"CZK\\\",\\\"minor\\\":80000},\\\"date\\\":\\\"2026-09-03\\\",\\\"id\\\":41,\\\"memo\\\":\\\"Figma\\\"},{\\\"amount\\\":{\\\"currency\\\":\\\"CZK\\\",\\\"minor\\\":80000},\\\"date\\\":\\\"2026-09-04\\\",\\\"id\\\":42,\\\"memo\\\":\\\"Figma (duplicitně)\\\"},{\\\"amount\\\":{\\\"currency\\\":\\\"CZK\\\",\\\"minor\\\":-80000},\\\"date\\\":\\\"2026-09-05\\\",\\\"id\\\":43,\\\"memo\\\":\\\"Storno duplicitní platby Figma\\\"}],\\\"name\\\":\\\"Other services\\\",\\\"period\\\":{\\\"from\\\":\\\"2026-07-01\\\",\\\"to\\\":\\\"2026-09-30\\\",\\\"total\\\":{\\\"currency\\\":\\\"CZK\\\",\\\"minor\\\":12080000}},\\\"previous\\\":{\\\"from\\\":\\\"2026-03-31\\\",\\\"to\\\":\\\"2026-06-30\\\",\\\"total\\\":{\\\"currency\\\":\\\"CZK\\\",\\\"minor\\\":8820000}}}\",\n  \"task\": \"explain.figure\",\n  \"toolResults\": []\n}"
     },
@@ -14620,6 +14630,16 @@
           "code": "OUT12",
           "name": "Domestic supply, reduced rate",
           "ratePercent": "12"
+        },
+        {
+          "code": "EUSVC",
+          "name": "Service to a VAT payer in another member state (place of supply abroad)",
+          "ratePercent": "0"
+        },
+        {
+          "code": "EUGDS",
+          "name": "Goods to a VAT payer in another member state (exempt supply)",
+          "ratePercent": "0"
         }
       ]
     },
@@ -15433,6 +15453,16 @@
           "code": "OUT12",
           "name": "Domestic supply, reduced rate",
           "ratePercent": "12"
+        },
+        {
+          "code": "EUSVC",
+          "name": "Service to a VAT payer in another member state (place of supply abroad)",
+          "ratePercent": "0"
+        },
+        {
+          "code": "EUGDS",
+          "name": "Goods to a VAT payer in another member state (exempt supply)",
+          "ratePercent": "0"
         }
       ]
     },
@@ -17202,6 +17232,16 @@
           "code": "OUT12",
           "name": "Domestic supply, reduced rate",
           "ratePercent": "12"
+        },
+        {
+          "code": "EUSVC",
+          "name": "Service to a VAT payer in another member state (place of supply abroad)",
+          "ratePercent": "0"
+        },
+        {
+          "code": "EUGDS",
+          "name": "Goods to a VAT payer in another member state (exempt supply)",
+          "ratePercent": "0"
         }
       ]
     },

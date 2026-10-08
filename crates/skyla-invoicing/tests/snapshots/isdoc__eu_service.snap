@@ -1,0 +1,133 @@
+---
+source: crates/skyla-invoicing/tests/isdoc.rs
+expression: xml
+---
+<?xml version="1.0" encoding="UTF-8"?>
+<Invoice xmlns="http://isdoc.cz/namespace/2013" version="6.0.2">
+  <DocumentType>1</DocumentType>
+  <ID>2026-001</ID>
+  <UUID>00000000-0000-0000-0000-000000000001</UUID>
+  <IssuingSystem>sky-la</IssuingSystem>
+  <IssueDate>2026-09-15</IssueDate>
+  <TaxPointDate>2026-09-15</TaxPointDate>
+  <VATApplicable>true</VATApplicable>
+  <ElectronicPossibilityAgreementReference/>
+  <Note>Děkuji za spolupráci &amp; těším se na další &lt;projekt&gt;.
+Služba s místem plnění v jiném členském státě (§ 9 odst. 1 zákona o DPH). Daň odvede zákazník (čl. 196 směrnice 2006/112/ES).</Note>
+  <LocalCurrencyCode>CZK</LocalCurrencyCode>
+  <CurrRate>1</CurrRate>
+  <RefCurrRate>1</RefCurrRate>
+  <AccountingSupplierParty>
+    <Party>
+      <PartyIdentification>
+        <ID>92588034</ID>
+      </PartyIdentification>
+      <PartyName>
+        <Name>Jana Nováková</Name>
+      </PartyName>
+      <PostalAddress>
+        <StreetName>Korunní</StreetName>
+        <BuildingNumber>2569/108</BuildingNumber>
+        <CityName>Praha 10</CityName>
+        <PostalZone>10100</PostalZone>
+        <Country>
+          <IdentificationCode>CZ</IdentificationCode>
+          <Name>Česká republika</Name>
+        </Country>
+      </PostalAddress>
+      <PartyTaxScheme>
+        <CompanyID>CZ92588034</CompanyID>
+        <TaxScheme>VAT</TaxScheme>
+      </PartyTaxScheme>
+      <Contact>
+        <ElectronicMail>jana@example.cz</ElectronicMail>
+      </Contact>
+    </Party>
+  </AccountingSupplierParty>
+  <AccountingCustomerParty>
+    <Party>
+      <PartyIdentification>
+        <ID/>
+      </PartyIdentification>
+      <PartyName>
+        <Name>Beispiel GmbH</Name>
+      </PartyName>
+      <PostalAddress>
+        <StreetName>Hauptstraße</StreetName>
+        <BuildingNumber>5</BuildingNumber>
+        <CityName>Berlin</CityName>
+        <PostalZone>10115</PostalZone>
+        <Country>
+          <IdentificationCode>DE</IdentificationCode>
+          <Name>Německo</Name>
+        </Country>
+      </PostalAddress>
+      <PartyTaxScheme>
+        <CompanyID>DE123456789</CompanyID>
+        <TaxScheme>VAT</TaxScheme>
+      </PartyTaxScheme>
+    </Party>
+  </AccountingCustomerParty>
+  <InvoiceLines>
+    <InvoiceLine>
+      <ID>1</ID>
+      <InvoicedQuantity unitCode="HUR">40</InvoicedQuantity>
+      <LineExtensionAmount>60000.00</LineExtensionAmount>
+      <LineExtensionAmountTaxInclusive>60000.00</LineExtensionAmountTaxInclusive>
+      <LineExtensionTaxAmount>0.00</LineExtensionTaxAmount>
+      <UnitPrice>1500.00</UnitPrice>
+      <UnitPriceTaxInclusive>1500.00</UnitPriceTaxInclusive>
+      <ClassifiedTaxCategory>
+        <Percent>0</Percent>
+        <VATCalculationMethod>0</VATCalculationMethod>
+        <VATApplicable>false</VATApplicable>
+      </ClassifiedTaxCategory>
+      <Item>
+        <Description>Konzultace</Description>
+      </Item>
+    </InvoiceLine>
+  </InvoiceLines>
+  <TaxTotal>
+    <TaxSubTotal>
+      <TaxableAmount>60000.00</TaxableAmount>
+      <TaxAmount>0.00</TaxAmount>
+      <TaxInclusiveAmount>60000.00</TaxInclusiveAmount>
+      <AlreadyClaimedTaxableAmount>0.00</AlreadyClaimedTaxableAmount>
+      <AlreadyClaimedTaxAmount>0.00</AlreadyClaimedTaxAmount>
+      <AlreadyClaimedTaxInclusiveAmount>0.00</AlreadyClaimedTaxInclusiveAmount>
+      <DifferenceTaxableAmount>60000.00</DifferenceTaxableAmount>
+      <DifferenceTaxAmount>0.00</DifferenceTaxAmount>
+      <DifferenceTaxInclusiveAmount>60000.00</DifferenceTaxInclusiveAmount>
+      <TaxCategory>
+        <Percent>0</Percent>
+        <VATApplicable>false</VATApplicable>
+      </TaxCategory>
+    </TaxSubTotal>
+    <TaxAmount>0.00</TaxAmount>
+  </TaxTotal>
+  <LegalMonetaryTotal>
+    <TaxExclusiveAmount>60000.00</TaxExclusiveAmount>
+    <TaxInclusiveAmount>60000.00</TaxInclusiveAmount>
+    <AlreadyClaimedTaxExclusiveAmount>0.00</AlreadyClaimedTaxExclusiveAmount>
+    <AlreadyClaimedTaxInclusiveAmount>0.00</AlreadyClaimedTaxInclusiveAmount>
+    <DifferenceTaxExclusiveAmount>60000.00</DifferenceTaxExclusiveAmount>
+    <DifferenceTaxInclusiveAmount>60000.00</DifferenceTaxInclusiveAmount>
+    <PaidDepositsAmount>0.00</PaidDepositsAmount>
+    <PayableAmount>60000.00</PayableAmount>
+  </LegalMonetaryTotal>
+  <PaymentMeans>
+    <Payment>
+      <PaidAmount>60000.00</PaidAmount>
+      <PaymentMeansCode>42</PaymentMeansCode>
+      <Details>
+        <PaymentDueDate>2026-09-29</PaymentDueDate>
+        <ID>19-2000145399</ID>
+        <BankCode>0800</BankCode>
+        <Name/>
+        <IBAN>CZ6508000000192000145399</IBAN>
+        <BIC>GIBACZPX</BIC>
+        <VariableSymbol>2026001</VariableSymbol>
+      </Details>
+    </Payment>
+  </PaymentMeans>
+</Invoice>

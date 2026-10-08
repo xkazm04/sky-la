@@ -128,9 +128,9 @@ fn hundredths(text: &str) -> Option<i64> {
 /// Checks every figure in `text` against `allowed`. Bare whole numbers below
 /// `small` (counts like "two scenarios" written as 2) aren't figures.
 pub fn check(text: &str, allowed: &Allowed, small: i64) -> Grounding {
-    let blanked = IGNORED.replace_all(text, |c: &regex::Captures<'_>| {
-        " ".repeat(c[0].chars().count())
-    });
+    // Blank by bytes, not characters: the offsets found below index `text`,
+    // so a multibyte character (§, ř, ů) must not shift the ones after it.
+    let blanked = IGNORED.replace_all(text, |c: &regex::Captures<'_>| " ".repeat(c[0].len()));
     let mut grounded = 0;
     let mut ungrounded = Vec::new();
     for c in FIGURE.captures_iter(&blanked) {
@@ -227,5 +227,17 @@ mod tests {
             !check("That is 14 % less.", &a, 13).passes(),
             "percentages always count"
         );
+    }
+
+    #[test]
+    fn a_wrong_figure_after_a_czech_reference_is_reported_not_a_panic() {
+        // "§ 35ba odst. 1 písm. a)" is ignored and has multibyte characters;
+        // the offsets of the figure after it must still index the real text.
+        let text =
+            "Podle § 35ba odst. 1 písm. a) činí sleva 30 841 Kč, což je výhodné pro živnostníka.";
+        let g = check(text, &allowed(), 13);
+        assert_eq!(g.ungrounded.len(), 1, "{:?}", g.ungrounded);
+        assert_eq!(g.ungrounded[0].text, "30 841 Kč");
+        assert!(g.ungrounded[0].context.contains("sleva 30 841 Kč"));
     }
 }

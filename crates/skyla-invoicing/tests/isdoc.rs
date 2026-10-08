@@ -185,3 +185,37 @@ fn refuses_drafts() {
     .expect_err("draft");
     assert!(err.to_string().contains("issued"), "{err}");
 }
+
+#[test]
+fn writes_a_service_to_another_member_state() {
+    let b = books(true);
+    let id = create_draft(
+        &b.conn,
+        &skyla_invoicing::DraftInput {
+            customer: skyla_invoicing::Customer {
+                name: "Beispiel GmbH".into(),
+                ico: None,
+                dic: Some("DE123456789".into()),
+                address: Some("Hauptstraße 5\n10115 Berlin".into()),
+            },
+            ..draft(
+                DocKind::Invoice,
+                "FV",
+                // 40 h × 1 500,00 = 60 000,00, no Czech VAT.
+                vec![line("Konzultace", "40", "h", 150_000, "EUSVC")],
+            )
+        },
+    )
+    .expect("draft");
+    issue(&b.conn, &b.pack, &b.accounts, id, "2026-09-15", None).expect("issue");
+    let doc = get(&b.conn, &b.pack, id).expect("get");
+    let xml = isdoc(&b, &doc, None, &[]);
+    assert!(xml.contains("<PayableAmount>60000.00</PayableAmount>"));
+    assert!(xml.contains("<Country>\n"), "{xml}");
+    assert!(xml.contains("<IdentificationCode>DE</IdentificationCode>"));
+    assert!(
+        xml.contains("Daň odvede zákazník"),
+        "the pack's wording is in the note"
+    );
+    insta::assert_snapshot!("eu_service", xml);
+}

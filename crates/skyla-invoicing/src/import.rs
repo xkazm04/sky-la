@@ -10,6 +10,11 @@
 //! found by their header (Czech or English names), semicolon or comma,
 //! UTF-8 or Windows-1250, decimal comma or point. When a CSV gives only
 //! totals, the core finds the pack rate that reproduces its VAT.
+//!
+//! Credit notes are read too, with the number of the invoice they correct.
+//! Programs disagree on the sign of a credit note's amounts, so the reader
+//! normalises them to the way this crate issues its own: every base, VAT
+//! and total negative. A credit note whose amounts mix signs is refused.
 
 use serde::{Deserialize, Serialize};
 
@@ -82,10 +87,12 @@ pub struct Imported {
     pub description: Option<String>,
     /// Totals per band.
     pub parts: Vec<Part>,
-    /// The total as the file states it.
+    /// The total as the file states it (negative on a credit note).
     pub total_minor: i64,
     /// Currency code.
     pub currency: String,
+    /// A credit note's invoice: its number in the other program.
+    pub original_number: Option<String>,
 }
 
 /// What a file held.
@@ -152,6 +159,32 @@ fn amount(text: &str) -> Option<i64> {
     Some(if neg { -v } else { v })
 }
 
+/// Gives a credit note's amounts the sign this crate's own credit notes
+/// have: negative. Returns false when they mix signs, which no credit note
+/// does.
+fn credit_signs(parts: &mut [Part], total: &mut i64) -> bool {
+    let (mut positive, mut negative) = (false, false);
+    for v in parts
+        .iter()
+        .flat_map(|p| [p.base_minor, p.vat_minor])
+        .chain([*total])
+    {
+        positive |= v > 0;
+        negative |= v < 0;
+    }
+    if positive && negative {
+        return false;
+    }
+    if positive {
+        for p in parts.iter_mut() {
+            p.base_minor = p.base_minor.saturating_neg();
+            p.vat_minor = p.vat_minor.saturating_neg();
+        }
+        *total = total.saturating_neg();
+    }
+    true
+}
+
 /// `2026-01-15`, `15.01.2026`, `15. 1. 2026` → `2026-01-15`.
 fn date(text: &str) -> Option<String> {
     let t = text.trim();
@@ -181,6 +214,26 @@ fn opt(text: &str) -> Option<String> {
 fn child<'a, 'i>(n: roxmltree::Node<'a, 'i>, name: &str) -> Option<roxmltree::Node<'a, 'i>> {
     n.children()
         .find(|c| c.is_element() && c.tag_name().name() == name)
+}
+
+/// The document number a Pohoda reference element holds: its `number`
+/// (itself maybe wrapping `numberRequested` or `ids`), else the element's
+/// own `numberRequested`, `ids` or text.
+fn document_ref(n: roxmltree::Node<'_, '_>) -> String {
+    let named = |node: roxmltree::Node<'_, '_>| {
+        let requested = text_of(child(node, "numberRequested"));
+        if !requested.is_empty() {
+            return requested;
+        }
+        let ids = text_of(child(node, "ids"));
+        if ids.is_empty() {
+            text_of(Some(node))
+        } else {
+            ids
+        }
+    };
+    let inner = child(n, "number").map(named).unwrap_or_default();
+    if inner.is_empty() { named(n) } else { inner }
 }
 
 fn text_of(n: Option<roxmltree::Node<'_, '_>>) -> String {
@@ -287,7 +340,7 @@ pub fn parse_pohoda(bytes: &[u8]) -> ImportFile {
             ));
             continue;
         }
-        let parts: Vec<Part> = [
+        let mut parts: Vec<Part> = [
             (Band::Standard, high, high_vat),
             (Band::Reduced, low, low_vat),
             (Band::None, none, 0),
@@ -300,7 +353,24 @@ pub fn parse_pohoda(bytes: &[u8]) -> ImportFile {
             vat_minor,
         })
         .collect();
-        let total_minor = parts.iter().map(|p| p.base_minor + p.vat_minor).sum();
+        let mut total_minor = parts.iter().map(|p| p.base_minor + p.vat_minor).sum();
+        let original_number = if kind == DocKind::CreditNote {
+            // Pohoda names the source document of a credit note in the header.
+            ["sourceDocument", "originalDocument", "relatedInvoice"]
+                .into_iter()
+                .find_map(|name| {
+                    let r = document_ref(child(header, name)?);
+                    (!r.is_empty()).then_some(r)
+                })
+        } else {
+            None
+        };
+        if kind == DocKind::CreditNote && !credit_signs(&mut parts, &mut total_minor) {
+            out.problems.push(format!(
+                "credit note {position} ({number}): its amounts have mixed signs"
+            ));
+            continue;
+        }
         out.documents.push(Imported {
             position,
             kind,
@@ -318,6 +388,7 @@ pub fn parse_pohoda(bytes: &[u8]) -> ImportFile {
             parts,
             total_minor,
             currency: "CZK".into(),
+            original_number,
         });
     }
     if out.documents.is_empty() && out.problems.is_empty() {
@@ -400,6 +471,24 @@ const COLUMNS: &[(&str, &[&str])] = &[
     ("vat", &["dph", "celkem dph", "vat"]),
     ("total", &["celkem", "celkem s dph", "total"]),
     ("type", &["typ", "druh dokladu", "document type"]),
+    (
+        "original",
+        &[
+            "původní doklad",
+            "původní faktura",
+            "číslo původní faktury",
+            "číslo původního dokladu",
+            "opravovaný doklad",
+            "opravuje",
+            "k faktuře",
+            "original invoice",
+            "original invoice number",
+            "original document",
+            "corrected invoice",
+            "credited invoice",
+            "related invoice",
+        ],
+    ),
     ("subject", &["předmět", "popis", "subject", "description"]),
 ];
 
@@ -531,13 +620,26 @@ pub fn parse_fakturoid(bytes: &[u8]) -> ImportFile {
         .filter(|s| !s.is_empty())
         .collect::<Vec<_>>()
         .join(", ");
-        let total_minor = money("total")
+        let mut total_minor = money("total")
             .unwrap_or_else(|| parts.iter().map(|p| p.base_minor + p.vat_minor).sum());
-        let kind = if get("type").to_lowercase().contains("oprav") || total_minor < 0 {
+        let original_number = opt(&get("original"));
+        let kind_text = get("type").to_lowercase();
+        let kind = if ["oprav", "dobropis", "credit"]
+            .iter()
+            .any(|w| kind_text.contains(w))
+            || original_number.is_some()
+            || total_minor < 0
+        {
             DocKind::CreditNote
         } else {
             DocKind::Invoice
         };
+        if kind == DocKind::CreditNote && !credit_signs(&mut parts, &mut total_minor) {
+            out.problems.push(format!(
+                "row {row} ({number}): a credit note whose amounts have mixed signs"
+            ));
+            continue;
+        }
         out.documents.push(Imported {
             position: row,
             kind,
@@ -555,6 +657,11 @@ pub fn parse_fakturoid(bytes: &[u8]) -> ImportFile {
             parts,
             total_minor,
             currency: opt(&get("currency")).unwrap_or_else(|| "CZK".into()),
+            original_number: if kind == DocKind::CreditNote {
+                original_number
+            } else {
+                None
+            },
         });
     }
     if out.documents.is_empty() && out.problems.is_empty() {
@@ -653,6 +760,181 @@ mod tests {
         );
         assert_eq!(d.total_minor, 605_000);
         assert_eq!(f.documents[2].kind, DocKind::CreditNote);
+        // This credit note says nothing about its invoice; its amounts come
+        // out negative, as the invoicing crate's own credit notes have them.
+        assert_eq!(f.documents[2].original_number, None);
+        assert_eq!(f.documents[2].total_minor, -121_000);
+        assert_eq!(f.documents[0].original_number, None);
+    }
+
+    const POHODA_CREDIT: &[u8] =
+        include_bytes!("../../../packages/fixtures/data/imports/pohoda-dobropisy.xml");
+    const FAKTUROID_CREDIT: &[u8] =
+        include_bytes!("../../../packages/fixtures/data/imports/fakturoid-dobropisy.csv");
+
+    fn standard(base_minor: i64, vat_minor: i64) -> Vec<Part> {
+        vec![Part {
+            band: Band::Standard,
+            base_minor,
+            vat_minor,
+        }]
+    }
+
+    #[test]
+    fn reads_pohoda_credit_notes_with_their_invoice_and_negative_signs() {
+        let f = parse(POHODA_CREDIT).expect("detected");
+        assert!(f.problems.is_empty(), "{:?}", f.problems);
+        let got: Vec<(&str, DocKind, Option<&str>, i64)> = f
+            .documents
+            .iter()
+            .map(|d| {
+                (
+                    d.number.as_str(),
+                    d.kind,
+                    d.original_number.as_deref(),
+                    d.total_minor,
+                )
+            })
+            .collect();
+        // Totals are base + VAT in minor units: -(10 000 + 2 100) = -1 210 000.
+        assert_eq!(
+            got,
+            [
+                (
+                    "OD2026-001",
+                    DocKind::CreditNote,
+                    Some("2026-102"),
+                    -1_210_000
+                ),
+                // Stated positive (40 000 + 8 400 = 48 400): normalised to negative.
+                (
+                    "OD2026-002",
+                    DocKind::CreditNote,
+                    Some("2026-102"),
+                    -4_840_000
+                ),
+                (
+                    "OD2026-003",
+                    DocKind::CreditNote,
+                    Some("2026-114"),
+                    -121_000
+                ),
+                (
+                    "OD2026-004",
+                    DocKind::CreditNote,
+                    Some("2026-999"),
+                    -121_000
+                ),
+                // The reference sits in `ids` here, in `numberRequested` above.
+                ("DB26-001", DocKind::CreditNote, Some("2026-130"), -484_000),
+                ("2026-130", DocKind::Invoice, None, 1_210_000),
+            ]
+        );
+        assert_eq!(f.documents[0].parts, standard(-1_000_000, -210_000));
+        assert_eq!(f.documents[1].parts, standard(-4_000_000, -840_000));
+    }
+
+    #[test]
+    fn reads_fakturoid_credit_notes_by_type_and_original_column() {
+        let f = parse(FAKTUROID_CREDIT).expect("detected");
+        assert!(f.problems.is_empty(), "{:?}", f.problems);
+        let got: Vec<(&str, DocKind, Option<&str>, i64)> = f
+            .documents
+            .iter()
+            .map(|d| {
+                (
+                    d.number.as_str(),
+                    d.kind,
+                    d.original_number.as_deref(),
+                    d.total_minor,
+                )
+            })
+            .collect();
+        // 5 000,00 + 1 050,00 = 6 050,00, stated positive, kept negative.
+        assert_eq!(
+            got,
+            [
+                ("2026-140", DocKind::Invoice, None, 2_420_000),
+                (
+                    "OD2026-010",
+                    DocKind::CreditNote,
+                    Some("2026-140"),
+                    -605_000
+                ),
+                (
+                    "OD2026-011",
+                    DocKind::CreditNote,
+                    Some("2026-140"),
+                    -2_420_000
+                ),
+                (
+                    "OD2026-012",
+                    DocKind::CreditNote,
+                    Some("2026-041"),
+                    -121_000
+                ),
+            ]
+        );
+        assert_eq!(
+            f.documents[1].parts,
+            [Part {
+                band: Band::Unstated,
+                base_minor: -500_000,
+                vat_minor: -105_000
+            }]
+        );
+    }
+
+    #[test]
+    fn english_headers_name_a_credit_note_and_its_invoice() {
+        let csv = "Number,Document type,Issued on,Client,Original invoice,Subtotal,VAT,Total
+                   A-7,Invoice,2026-06-01,Dvořák s.r.o.,,\"1,000.00\",210.00,\"1,210.00\"
+                   CN-1,Credit note,2026-06-02,Dvořák s.r.o.,A-7,\"1,000.00\",210.00,\"1,210.00\"
+                   CN-2,Credit note,2026-06-03,Dvořák s.r.o.,A-7,\"1,000.00\",-210.00,\"790.00\"
+";
+        let f = parse_fakturoid(csv.as_bytes());
+        assert_eq!(f.documents.len(), 2, "{:?}", f.documents);
+        assert_eq!(f.documents[0].kind, DocKind::Invoice);
+        let cn = &f.documents[1];
+        assert_eq!(cn.kind, DocKind::CreditNote);
+        assert_eq!(cn.original_number.as_deref(), Some("A-7"));
+        assert_eq!(cn.parts[0].base_minor, -100_000);
+        assert_eq!(cn.parts[0].vat_minor, -21_000);
+        assert_eq!(cn.total_minor, -121_000);
+        // 1 000,00 base with -210,00 VAT: no credit note has mixed signs.
+        assert_eq!(f.problems.len(), 1, "{:?}", f.problems);
+        assert!(f.problems[0].contains("CN-2") && f.problems[0].contains("mixed signs"));
+    }
+
+    #[test]
+    fn czech_original_header_alone_makes_a_credit_note() {
+        // No type column; the invoice number column says what it is.
+        let csv = "Číslo;Vystaveno;Odběratel;Číslo původní faktury;Bez DPH;DPH;Celkem
+                   OD-9;03.06.2026;Dvořák s.r.o.;A-7;100,00;21,00;121,00
+";
+        let f = parse_fakturoid(csv.as_bytes());
+        assert!(f.problems.is_empty(), "{:?}", f.problems);
+        assert_eq!(f.documents[0].kind, DocKind::CreditNote);
+        assert_eq!(f.documents[0].original_number.as_deref(), Some("A-7"));
+        assert_eq!(f.documents[0].total_minor, -12_100);
+    }
+
+    #[test]
+    fn a_pohoda_credit_note_without_a_source_document_has_no_original() {
+        let xml = String::from_utf8_lossy(POHODA_CREDIT).replace(
+            "<inv:sourceDocument><typ:number>2026-999</typ:number></inv:sourceDocument>",
+            "",
+        );
+        let f = parse_pohoda(xml.as_bytes());
+        let d = f
+            .documents
+            .iter()
+            .find(|d| d.number == "OD2026-004")
+            .expect("read");
+        assert_eq!(
+            (d.kind, d.original_number.as_deref()),
+            (DocKind::CreditNote, None)
+        );
     }
 
     #[test]
