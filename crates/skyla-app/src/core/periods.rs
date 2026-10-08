@@ -62,6 +62,21 @@ fn quarter(y: i64, q: u32) -> PeriodChoiceDto {
     }
 }
 
+/// A calendar period for people: `2026-09` → `September 2026`, `2026-Q3`
+/// → `Q3 2026`; a year stays as it is.
+pub(crate) fn label(period: &str) -> String {
+    if let Some((y, q)) = period.split_once("-Q") {
+        return format!("Q{q} {y}");
+    }
+    match period.split_once('-') {
+        Some((y, m)) => m.parse::<u32>().map_or_else(
+            |_| period.to_owned(),
+            |m| format!("{} {y}", name(&MONTHS, m)),
+        ),
+        None => period.to_owned(),
+    }
+}
+
 impl Core {
     /// What the screens report on, as of the books' date.
     pub fn reporting_periods(&self) -> Result<ReportingPeriodsDto, CoreError> {

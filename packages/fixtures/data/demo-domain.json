@@ -399,22 +399,6 @@
       ]
     },
     {
-      "id": "p-dph-september",
-      "kind": "deadline",
-      "title": "DPH return and kontrolní hlášení · September",
-      "detail": "Draft for your review once September is closed",
-      "sourceKind": "calendar",
-      "source": "Rule pack cz-2026",
-      "reasons": [
-        "Monthly VAT payer: the return and the control statement are due together, 25 days after the month ends.",
-        "25 October 2026 is a Sunday, so the deadline moves to the next working day (daňový řád § 33 odst. 4)."
-      ],
-      "deadline": {
-        "key": "vat.return.due_days_after_period",
-        "periodEnd": "2026-09-30"
-      }
-    },
-    {
       "id": "p-flat-rate",
       "kind": "advice",
       "title": "Flat-rate expenses may beat your actual costs for 2026",

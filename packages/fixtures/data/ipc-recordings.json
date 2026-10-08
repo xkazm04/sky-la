@@ -1158,23 +1158,6 @@
         "amount": null,
         "bankLineId": null,
         "confidence": null,
-        "detail": "Draft for your review once September is closed",
-        "dueOn": "2026-10-26",
-        "entry": null,
-        "id": "p-dph-september",
-        "kind": "deadline",
-        "reasons": [
-          "Monthly VAT payer: the return and the control statement are due together, 25 days after the month ends.",
-          "25 October 2026 is a Sunday, so the deadline moves to the next working day (daňový řád § 33 odst. 4)."
-        ],
-        "source": "Rule pack cz-2026",
-        "sourceKind": "calendar",
-        "title": "DPH return and kontrolní hlášení · September"
-      },
-      {
-        "amount": null,
-        "bankLineId": null,
-        "confidence": null,
         "detail": "Tax advisor · a scenario for the annual return; nothing to post now",
         "dueOn": null,
         "entry": null,
@@ -1220,6 +1203,56 @@
         "source": "Financial advisor",
         "sourceKind": "advisor",
         "title": "Figma charged twice, and refunded"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "From the obligations calendar; a payment to make",
+        "dueOn": "2026-10-08",
+        "entry": null,
+        "id": "deadline-2026-09-2026-10-08",
+        "kind": "deadline",
+        "reasons": [
+          "Health insurance advance: Zákon č. 592/1992 Sb., o pojistném na veřejné zdravotní pojištění, § 7 odst. 1 písm. b)"
+        ],
+        "source": "Rule pack cz-2026@2026.1",
+        "sourceKind": "calendar",
+        "title": "Health insurance advance · September 2026"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "From the obligations calendar; a payment to make",
+        "dueOn": "2026-10-20",
+        "entry": null,
+        "id": "deadline-2026-09-2026-10-20",
+        "kind": "deadline",
+        "reasons": [
+          "Social insurance advance: Zákon č. 589/1992 Sb., o pojistném na sociální zabezpečení a příspěvku na státní politiku zaměstnanosti, § 14a odst. 2"
+        ],
+        "source": "Rule pack cz-2026@2026.1",
+        "sourceKind": "calendar",
+        "title": "Social insurance advance · September 2026"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "From the obligations calendar; prepare it in Taxes",
+        "dueOn": "2026-10-26",
+        "entry": null,
+        "id": "deadline-2026-09-2026-10-26",
+        "kind": "deadline",
+        "reasons": [
+          "DPH return and payment: Zákon č. 235/2004 Sb., o dani z přidané hodnoty, § 101 odst. 1",
+          "Kontrolní hlášení: Zákon č. 235/2004 Sb., o dani z přidané hodnoty, § 101e odst. 1",
+          "The nominal deadline, 2026-10-25, isn't a working day, so it moves to 2026-10-26 (daňový řád § 33 odst. 4)."
+        ],
+        "source": "Rule pack cz-2026@2026.1",
+        "sourceKind": "calendar",
+        "title": "DPH return and payment, Kontrolní hlášení · September 2026"
       }
     ],
     "isError": false
@@ -12744,23 +12777,6 @@
         "amount": null,
         "bankLineId": null,
         "confidence": null,
-        "detail": "Draft for your review once September is closed",
-        "dueOn": "2026-10-26",
-        "entry": null,
-        "id": "p-dph-september",
-        "kind": "deadline",
-        "reasons": [
-          "Monthly VAT payer: the return and the control statement are due together, 25 days after the month ends.",
-          "25 October 2026 is a Sunday, so the deadline moves to the next working day (daňový řád § 33 odst. 4)."
-        ],
-        "source": "Rule pack cz-2026",
-        "sourceKind": "calendar",
-        "title": "DPH return and kontrolní hlášení · September"
-      },
-      {
-        "amount": null,
-        "bankLineId": null,
-        "confidence": null,
         "detail": "Tax advisor · a scenario for the annual return; nothing to post now",
         "dueOn": null,
         "entry": null,
@@ -12806,6 +12822,56 @@
         "source": "Financial advisor",
         "sourceKind": "advisor",
         "title": "Figma charged twice, and refunded"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "From the obligations calendar; a payment to make",
+        "dueOn": "2026-10-08",
+        "entry": null,
+        "id": "deadline-2026-09-2026-10-08",
+        "kind": "deadline",
+        "reasons": [
+          "Health insurance advance: Zákon č. 592/1992 Sb., o pojistném na veřejné zdravotní pojištění, § 7 odst. 1 písm. b)"
+        ],
+        "source": "Rule pack cz-2026@2026.1",
+        "sourceKind": "calendar",
+        "title": "Health insurance advance · September 2026"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "From the obligations calendar; a payment to make",
+        "dueOn": "2026-10-20",
+        "entry": null,
+        "id": "deadline-2026-09-2026-10-20",
+        "kind": "deadline",
+        "reasons": [
+          "Social insurance advance: Zákon č. 589/1992 Sb., o pojistném na sociální zabezpečení a příspěvku na státní politiku zaměstnanosti, § 14a odst. 2"
+        ],
+        "source": "Rule pack cz-2026@2026.1",
+        "sourceKind": "calendar",
+        "title": "Social insurance advance · September 2026"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "From the obligations calendar; prepare it in Taxes",
+        "dueOn": "2026-10-26",
+        "entry": null,
+        "id": "deadline-2026-09-2026-10-26",
+        "kind": "deadline",
+        "reasons": [
+          "DPH return and payment: Zákon č. 235/2004 Sb., o dani z přidané hodnoty, § 101 odst. 1",
+          "Kontrolní hlášení: Zákon č. 235/2004 Sb., o dani z přidané hodnoty, § 101e odst. 1",
+          "The nominal deadline, 2026-10-25, isn't a working day, so it moves to 2026-10-26 (daňový řád § 33 odst. 4)."
+        ],
+        "source": "Rule pack cz-2026@2026.1",
+        "sourceKind": "calendar",
+        "title": "DPH return and payment, Kontrolní hlášení · September 2026"
       },
       {
         "amount": null,
@@ -13862,23 +13928,6 @@
         "amount": null,
         "bankLineId": null,
         "confidence": null,
-        "detail": "Draft for your review once September is closed",
-        "dueOn": "2026-10-26",
-        "entry": null,
-        "id": "p-dph-september",
-        "kind": "deadline",
-        "reasons": [
-          "Monthly VAT payer: the return and the control statement are due together, 25 days after the month ends.",
-          "25 October 2026 is a Sunday, so the deadline moves to the next working day (daňový řád § 33 odst. 4)."
-        ],
-        "source": "Rule pack cz-2026",
-        "sourceKind": "calendar",
-        "title": "DPH return and kontrolní hlášení · September"
-      },
-      {
-        "amount": null,
-        "bankLineId": null,
-        "confidence": null,
         "detail": "Tax advisor · a scenario for the annual return; nothing to post now",
         "dueOn": null,
         "entry": null,
@@ -13924,6 +13973,56 @@
         "source": "Financial advisor",
         "sourceKind": "advisor",
         "title": "Figma charged twice, and refunded"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "From the obligations calendar; a payment to make",
+        "dueOn": "2026-10-08",
+        "entry": null,
+        "id": "deadline-2026-09-2026-10-08",
+        "kind": "deadline",
+        "reasons": [
+          "Health insurance advance: Zákon č. 592/1992 Sb., o pojistném na veřejné zdravotní pojištění, § 7 odst. 1 písm. b)"
+        ],
+        "source": "Rule pack cz-2026@2026.1",
+        "sourceKind": "calendar",
+        "title": "Health insurance advance · September 2026"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "From the obligations calendar; a payment to make",
+        "dueOn": "2026-10-20",
+        "entry": null,
+        "id": "deadline-2026-09-2026-10-20",
+        "kind": "deadline",
+        "reasons": [
+          "Social insurance advance: Zákon č. 589/1992 Sb., o pojistném na sociální zabezpečení a příspěvku na státní politiku zaměstnanosti, § 14a odst. 2"
+        ],
+        "source": "Rule pack cz-2026@2026.1",
+        "sourceKind": "calendar",
+        "title": "Social insurance advance · September 2026"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "From the obligations calendar; prepare it in Taxes",
+        "dueOn": "2026-10-26",
+        "entry": null,
+        "id": "deadline-2026-09-2026-10-26",
+        "kind": "deadline",
+        "reasons": [
+          "DPH return and payment: Zákon č. 235/2004 Sb., o dani z přidané hodnoty, § 101 odst. 1",
+          "Kontrolní hlášení: Zákon č. 235/2004 Sb., o dani z přidané hodnoty, § 101e odst. 1",
+          "The nominal deadline, 2026-10-25, isn't a working day, so it moves to 2026-10-26 (daňový řád § 33 odst. 4)."
+        ],
+        "source": "Rule pack cz-2026@2026.1",
+        "sourceKind": "calendar",
+        "title": "DPH return and payment, Kontrolní hlášení · September 2026"
       },
       {
         "amount": null,
@@ -19464,23 +19563,6 @@
         "amount": null,
         "bankLineId": null,
         "confidence": null,
-        "detail": "Draft for your review once September is closed",
-        "dueOn": "2026-10-26",
-        "entry": null,
-        "id": "p-dph-september",
-        "kind": "deadline",
-        "reasons": [
-          "Monthly VAT payer: the return and the control statement are due together, 25 days after the month ends.",
-          "25 October 2026 is a Sunday, so the deadline moves to the next working day (daňový řád § 33 odst. 4)."
-        ],
-        "source": "Rule pack cz-2026",
-        "sourceKind": "calendar",
-        "title": "DPH return and kontrolní hlášení · September"
-      },
-      {
-        "amount": null,
-        "bankLineId": null,
-        "confidence": null,
         "detail": "Tax advisor · a scenario for the annual return; nothing to post now",
         "dueOn": null,
         "entry": null,
@@ -19564,6 +19646,56 @@
         "source": "Financial advisor",
         "sourceKind": "advisor",
         "title": "Figma charged twice, and refunded"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "From the obligations calendar; a payment to make",
+        "dueOn": "2026-10-08",
+        "entry": null,
+        "id": "deadline-2026-09-2026-10-08",
+        "kind": "deadline",
+        "reasons": [
+          "Health insurance advance: Zákon č. 592/1992 Sb., o pojistném na veřejné zdravotní pojištění, § 7 odst. 1 písm. b)"
+        ],
+        "source": "Rule pack cz-2026@2026.1",
+        "sourceKind": "calendar",
+        "title": "Health insurance advance · September 2026"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "From the obligations calendar; a payment to make",
+        "dueOn": "2026-10-20",
+        "entry": null,
+        "id": "deadline-2026-09-2026-10-20",
+        "kind": "deadline",
+        "reasons": [
+          "Social insurance advance: Zákon č. 589/1992 Sb., o pojistném na sociální zabezpečení a příspěvku na státní politiku zaměstnanosti, § 14a odst. 2"
+        ],
+        "source": "Rule pack cz-2026@2026.1",
+        "sourceKind": "calendar",
+        "title": "Social insurance advance · September 2026"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "From the obligations calendar; prepare it in Taxes",
+        "dueOn": "2026-10-26",
+        "entry": null,
+        "id": "deadline-2026-09-2026-10-26",
+        "kind": "deadline",
+        "reasons": [
+          "DPH return and payment: Zákon č. 235/2004 Sb., o dani z přidané hodnoty, § 101 odst. 1",
+          "Kontrolní hlášení: Zákon č. 235/2004 Sb., o dani z přidané hodnoty, § 101e odst. 1",
+          "The nominal deadline, 2026-10-25, isn't a working day, so it moves to 2026-10-26 (daňový řád § 33 odst. 4)."
+        ],
+        "source": "Rule pack cz-2026@2026.1",
+        "sourceKind": "calendar",
+        "title": "DPH return and payment, Kontrolní hlášení · September 2026"
       }
     ],
     "isError": false,
@@ -20495,23 +20627,6 @@
         "amount": null,
         "bankLineId": null,
         "confidence": null,
-        "detail": "Draft for your review once September is closed",
-        "dueOn": "2026-10-26",
-        "entry": null,
-        "id": "p-dph-september",
-        "kind": "deadline",
-        "reasons": [
-          "Monthly VAT payer: the return and the control statement are due together, 25 days after the month ends.",
-          "25 October 2026 is a Sunday, so the deadline moves to the next working day (daňový řád § 33 odst. 4)."
-        ],
-        "source": "Rule pack cz-2026",
-        "sourceKind": "calendar",
-        "title": "DPH return and kontrolní hlášení · September"
-      },
-      {
-        "amount": null,
-        "bankLineId": null,
-        "confidence": null,
         "detail": "Tax advisor · a scenario for the annual return; nothing to post now",
         "dueOn": null,
         "entry": null,
@@ -20595,6 +20710,56 @@
         "source": "Financial advisor",
         "sourceKind": "advisor",
         "title": "Figma charged twice, and refunded"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "From the obligations calendar; a payment to make",
+        "dueOn": "2026-10-08",
+        "entry": null,
+        "id": "deadline-2026-09-2026-10-08",
+        "kind": "deadline",
+        "reasons": [
+          "Health insurance advance: Zákon č. 592/1992 Sb., o pojistném na veřejné zdravotní pojištění, § 7 odst. 1 písm. b)"
+        ],
+        "source": "Rule pack cz-2026@2026.1",
+        "sourceKind": "calendar",
+        "title": "Health insurance advance · September 2026"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "From the obligations calendar; a payment to make",
+        "dueOn": "2026-10-20",
+        "entry": null,
+        "id": "deadline-2026-09-2026-10-20",
+        "kind": "deadline",
+        "reasons": [
+          "Social insurance advance: Zákon č. 589/1992 Sb., o pojistném na sociální zabezpečení a příspěvku na státní politiku zaměstnanosti, § 14a odst. 2"
+        ],
+        "source": "Rule pack cz-2026@2026.1",
+        "sourceKind": "calendar",
+        "title": "Social insurance advance · September 2026"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "From the obligations calendar; prepare it in Taxes",
+        "dueOn": "2026-10-26",
+        "entry": null,
+        "id": "deadline-2026-09-2026-10-26",
+        "kind": "deadline",
+        "reasons": [
+          "DPH return and payment: Zákon č. 235/2004 Sb., o dani z přidané hodnoty, § 101 odst. 1",
+          "Kontrolní hlášení: Zákon č. 235/2004 Sb., o dani z přidané hodnoty, § 101e odst. 1",
+          "The nominal deadline, 2026-10-25, isn't a working day, so it moves to 2026-10-26 (daňový řád § 33 odst. 4)."
+        ],
+        "source": "Rule pack cz-2026@2026.1",
+        "sourceKind": "calendar",
+        "title": "DPH return and payment, Kontrolní hlášení · September 2026"
       }
     ],
     "isError": false,
@@ -22182,23 +22347,6 @@
         "amount": null,
         "bankLineId": null,
         "confidence": null,
-        "detail": "Draft for your review once September is closed",
-        "dueOn": "2026-10-26",
-        "entry": null,
-        "id": "p-dph-september",
-        "kind": "deadline",
-        "reasons": [
-          "Monthly VAT payer: the return and the control statement are due together, 25 days after the month ends.",
-          "25 October 2026 is a Sunday, so the deadline moves to the next working day (daňový řád § 33 odst. 4)."
-        ],
-        "source": "Rule pack cz-2026",
-        "sourceKind": "calendar",
-        "title": "DPH return and kontrolní hlášení · September"
-      },
-      {
-        "amount": null,
-        "bankLineId": null,
-        "confidence": null,
         "detail": "Tax advisor · a scenario for the annual return; nothing to post now",
         "dueOn": null,
         "entry": null,
@@ -22263,6 +22411,56 @@
         "source": "Financial advisor",
         "sourceKind": "advisor",
         "title": "Figma charged twice, and refunded"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "From the obligations calendar; a payment to make",
+        "dueOn": "2026-10-08",
+        "entry": null,
+        "id": "deadline-2026-09-2026-10-08",
+        "kind": "deadline",
+        "reasons": [
+          "Health insurance advance: Zákon č. 592/1992 Sb., o pojistném na veřejné zdravotní pojištění, § 7 odst. 1 písm. b)"
+        ],
+        "source": "Rule pack cz-2026@2026.1",
+        "sourceKind": "calendar",
+        "title": "Health insurance advance · September 2026"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "From the obligations calendar; a payment to make",
+        "dueOn": "2026-10-20",
+        "entry": null,
+        "id": "deadline-2026-09-2026-10-20",
+        "kind": "deadline",
+        "reasons": [
+          "Social insurance advance: Zákon č. 589/1992 Sb., o pojistném na sociální zabezpečení a příspěvku na státní politiku zaměstnanosti, § 14a odst. 2"
+        ],
+        "source": "Rule pack cz-2026@2026.1",
+        "sourceKind": "calendar",
+        "title": "Social insurance advance · September 2026"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "From the obligations calendar; prepare it in Taxes",
+        "dueOn": "2026-10-26",
+        "entry": null,
+        "id": "deadline-2026-09-2026-10-26",
+        "kind": "deadline",
+        "reasons": [
+          "DPH return and payment: Zákon č. 235/2004 Sb., o dani z přidané hodnoty, § 101 odst. 1",
+          "Kontrolní hlášení: Zákon č. 235/2004 Sb., o dani z přidané hodnoty, § 101e odst. 1",
+          "The nominal deadline, 2026-10-25, isn't a working day, so it moves to 2026-10-26 (daňový řád § 33 odst. 4)."
+        ],
+        "source": "Rule pack cz-2026@2026.1",
+        "sourceKind": "calendar",
+        "title": "DPH return and payment, Kontrolní hlášení · September 2026"
       }
     ],
     "isError": false,
@@ -23230,23 +23428,6 @@
         "amount": null,
         "bankLineId": null,
         "confidence": null,
-        "detail": "Draft for your review once September is closed",
-        "dueOn": "2026-10-26",
-        "entry": null,
-        "id": "p-dph-september",
-        "kind": "deadline",
-        "reasons": [
-          "Monthly VAT payer: the return and the control statement are due together, 25 days after the month ends.",
-          "25 October 2026 is a Sunday, so the deadline moves to the next working day (daňový řád § 33 odst. 4)."
-        ],
-        "source": "Rule pack cz-2026",
-        "sourceKind": "calendar",
-        "title": "DPH return and kontrolní hlášení · September"
-      },
-      {
-        "amount": null,
-        "bankLineId": null,
-        "confidence": null,
         "detail": "Tax advisor · a scenario for the annual return; nothing to post now",
         "dueOn": null,
         "entry": null,
@@ -23292,6 +23473,56 @@
         "source": "Financial advisor",
         "sourceKind": "advisor",
         "title": "Figma charged twice, and refunded"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "From the obligations calendar; a payment to make",
+        "dueOn": "2026-10-08",
+        "entry": null,
+        "id": "deadline-2026-09-2026-10-08",
+        "kind": "deadline",
+        "reasons": [
+          "Health insurance advance: Zákon č. 592/1992 Sb., o pojistném na veřejné zdravotní pojištění, § 7 odst. 1 písm. b)"
+        ],
+        "source": "Rule pack cz-2026@2026.1",
+        "sourceKind": "calendar",
+        "title": "Health insurance advance · September 2026"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "From the obligations calendar; a payment to make",
+        "dueOn": "2026-10-20",
+        "entry": null,
+        "id": "deadline-2026-09-2026-10-20",
+        "kind": "deadline",
+        "reasons": [
+          "Social insurance advance: Zákon č. 589/1992 Sb., o pojistném na sociální zabezpečení a příspěvku na státní politiku zaměstnanosti, § 14a odst. 2"
+        ],
+        "source": "Rule pack cz-2026@2026.1",
+        "sourceKind": "calendar",
+        "title": "Social insurance advance · September 2026"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "From the obligations calendar; prepare it in Taxes",
+        "dueOn": "2026-10-26",
+        "entry": null,
+        "id": "deadline-2026-09-2026-10-26",
+        "kind": "deadline",
+        "reasons": [
+          "DPH return and payment: Zákon č. 235/2004 Sb., o dani z přidané hodnoty, § 101 odst. 1",
+          "Kontrolní hlášení: Zákon č. 235/2004 Sb., o dani z přidané hodnoty, § 101e odst. 1",
+          "The nominal deadline, 2026-10-25, isn't a working day, so it moves to 2026-10-26 (daňový řád § 33 odst. 4)."
+        ],
+        "source": "Rule pack cz-2026@2026.1",
+        "sourceKind": "calendar",
+        "title": "DPH return and payment, Kontrolní hlášení · September 2026"
       }
     ],
     "isError": false,

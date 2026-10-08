@@ -1027,9 +1027,82 @@ impl Core {
                 ],
             });
         }
+        items.extend(self.upcoming_deadlines()?);
         // What advisors filed through their tools, waiting for review.
         if let Ok(inbox) = self.advisor_inbox.lock() {
             items.extend(inbox.iter().cloned());
+        }
+        Ok(items)
+    }
+
+    /// The calendar's deadlines in the next month, one item per period and
+    /// due date (a return and its control statement due together are one).
+    fn upcoming_deadlines(&self) -> Result<Vec<ProposalDto>, CoreError> {
+        let as_of = self.domain.entity.as_of.clone();
+        let Some(today) = skyla_rules::date::parse(&as_of) else {
+            return Ok(Vec::new());
+        };
+        let horizon = skyla_rules::date::format(today + 31);
+        let Some(year) = as_of.get(..4).and_then(|y| y.parse::<i32>().ok()) else {
+            return Ok(Vec::new());
+        };
+        let mut due: Vec<ObligationDto> = Vec::new();
+        for y in [year - 1, year, year + 1] {
+            for o in self.obligations(y)? {
+                if o.due >= as_of
+                    && o.due <= horizon
+                    && !due
+                        .iter()
+                        .any(|d| d.obligation == o.obligation && d.period == o.period)
+                {
+                    due.push(o);
+                }
+            }
+        }
+        due.sort_by(|a, b| a.due.cmp(&b.due).then(a.name.cmp(&b.name)));
+        let mut items: Vec<ProposalDto> = Vec::new();
+        let mut groups: Vec<Vec<ObligationDto>> = Vec::new();
+        for o in due {
+            match groups
+                .iter_mut()
+                .find(|g| g[0].due == o.due && g[0].period == o.period)
+            {
+                Some(g) => g.push(o),
+                None => groups.push(vec![o]),
+            }
+        }
+        for g in groups {
+            let first = &g[0];
+            let names: Vec<&str> = g.iter().map(|o| o.name.as_str()).collect();
+            let mut reasons: Vec<String> = g
+                .iter()
+                .map(|o| format!("{}: {}", o.name, o.citation))
+                .collect();
+            if first.shifted {
+                reasons.push(format!(
+                    "The nominal deadline, {}, isn't a working day, so it moves to {} (daňový řád § 33 odst. 4).",
+                    first.nominal, first.due
+                ));
+            }
+            items.push(ProposalDto {
+                id: format!("deadline-{}-{}", first.period, first.due),
+                kind: "deadline".into(),
+                title: format!("{} · {}", names.join(", "), periods::label(&first.period)),
+                detail: if g.iter().any(|o| o.action != "pay") {
+                    "From the obligations calendar; prepare it in Taxes"
+                } else {
+                    "From the obligations calendar; a payment to make"
+                }
+                .into(),
+                confidence: None,
+                source_kind: "calendar".into(),
+                source: format!("Rule pack {}", self.pack.provenance()),
+                bank_line_id: None,
+                due_on: Some(first.due.clone()),
+                amount: None,
+                entry: None,
+                reasons,
+            });
         }
         Ok(items)
     }

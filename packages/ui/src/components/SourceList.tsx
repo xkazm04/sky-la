@@ -79,7 +79,12 @@ export function SourceList({ label, sections, selectedId, onSelect, className }:
                   <span className="min-w-0 flex-1 truncate">{text}</span>
                   {trailing ??
                     (count !== undefined && (
-                      <span className="text-footnote text-ink-secondary">{count}</span>
+                      // On the selected row's tint, secondary ink falls short of 4.5:1.
+                      <span
+                        className={`text-footnote ${isSelected ? "text-accent-ink" : "text-ink-secondary"}`}
+                      >
+                        {count}
+                      </span>
                     ))}
                 </>
               )}

@@ -88,8 +88,10 @@ fn the_bank_import_ties_out_against_the_ledger() {
 fn every_proposed_entry_balances_and_its_vat_is_the_engines() {
     let proposals = core().proposals().unwrap();
     // Studio Brno's payment is the workbench's certain match now, not a proposal;
-    // the financial advisor's two actionable findings come from its detectors.
-    assert_eq!(proposals.len(), 8);
+    // the financial advisor's two actionable findings come from its detectors;
+    // the calendar adds the month's three deadlines (the DPH return and the
+    // kontrolní hlášení due together are one).
+    assert_eq!(proposals.len(), 10);
     for p in proposals
         .iter()
         .filter_map(|p| p.entry.as_ref().map(|e| (p, e)))
@@ -186,9 +188,17 @@ fn rates_rounding_and_deadlines_come_from_the_rule_pack() {
         .proposals()
         .unwrap()
         .into_iter()
-        .find(|p| p.id == "p-dph-september")
+        .find(|p| p.kind == "deadline" && p.title.starts_with("DPH return"))
         .unwrap();
+    assert_eq!(
+        dph.title,
+        "DPH return and payment, Kontrolní hlášení · September 2026"
+    );
     assert_eq!(dph.due_on.as_deref(), Some("2026-10-26"));
+    assert!(
+        dph.reasons.iter().any(|r| r.contains("2026-10-25")),
+        "the shift is explained"
+    );
 
     let pack = core.rule_pack();
     assert_eq!(pack.provenance, "cz-2026@2026.1");
