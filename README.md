@@ -1,16 +1,27 @@
 # sky-la
 
-**Accounting that stays on your machine.** Open-source, encrypted, desktop-native books for Czech freelancers and micro-companies, with AI advisors that explain and suggest, but never touch your ledger without you.
+**Accounting that stays on your machine.** Open-source, encrypted, desktop-native books for Czech freelancers (OSVČ) and micro-companies, with AI advisors that explain and suggest, but never touch your ledger without you.
 
-> Status: **design phase.** No code yet. Start with the documents below.
+> Status: **preview (0.1).** Every work packet of the v1 plan is built and tested; the first signed release waits on the maintainer's signing keys. The Czech rule pack is a *draft*: check every figure before you file. Not tax advice.
 
-| Document | What it covers |
+## What it does
+
+- Double-entry books with integer money, immutable posted entries and a verified hash chain, in one SQLCipher-encrypted file
+- Invoices and credit notes: Czech PDF with QR Platba, ISDOC, UBL and CII
+- Bank statements (camt.053, MT940, ABO/GPC, CSV) with tie-out, deduplication and explained matches
+- The DPH return, the kontrolní hlášení, the § 7 income-tax worksheet with insurance scenarios, and an obligations calendar
+- Scheduled encrypted backups with a restore check; a full export in open formats; import from Pohoda and Fakturoid
+- Tax and financial advisors through your own Claude Code, which only propose, cite and calculate with the engine's figures
+
+## Documents
+
+| For | Read |
 |---|---|
-| [`docs/design/DESIGN.md`](docs/design/DESIGN.md) | Product, scope, architecture, security, advisors |
-| [`docs/design/REVIEW.md`](docs/design/REVIEW.md) | Critical review of the concept, stack and plan, and the corrections made |
-| [`docs/design/DECISIONS.md`](docs/design/DECISIONS.md) | Every decision so far and the open questions |
-| [`docs/plan/IMPLEMENTATION_PLAN.md`](docs/plan/IMPLEMENTATION_PLAN.md) | Work packets, milestones, acceptance criteria |
-| [`docs/plan/STATUS.md`](docs/plan/STATUS.md) | Progress tracker |
+| Users | [`docs/user/`](docs/user/README.md): getting started, everyday work, taxes, advisors, your data, troubleshooting |
+| Rule-pack contributors | [`rules/README.md`](rules/README.md): the format, citation rules, golden cases |
+| Developers | [`CLAUDE.md`](CLAUDE.md) (commands and invariants), [`docs/design/DESIGN.md`](docs/design/DESIGN.md) (architecture), [`docs/design/DECISIONS.md`](docs/design/DECISIONS.md) |
+| Reviewers | [`docs/design/REVIEW.md`](docs/design/REVIEW.md) (the concept's review), [`docs/design/SECURITY_REVIEW.md`](docs/design/SECURITY_REVIEW.md) (threat model and audit) |
+| Maintainers | [`docs/RELEASING.md`](docs/RELEASING.md), [`docs/plan/STATUS.md`](docs/plan/STATUS.md), [`docs/plan/IMPLEMENTATION_PLAN.md`](docs/plan/IMPLEMENTATION_PLAN.md) |
 
 ## Principles
 
@@ -22,7 +33,18 @@
 
 ## AI advisors
 
-sky-la can use **your own Claude Code installation** for its tax and financial advisors. You sign in to Claude Code yourself, and sky-la never sees your credentials. An Anthropic API key is the alternative. Advisors run without any network access of their own: they read through a narrow, audited interface and can only *propose*.
+sky-la uses **your own Claude Code installation** for its tax and financial advisors. You sign in to Claude Code yourself, and sky-la never sees your credentials. Advisors have no network access of their own: they read through a narrow, audited interface and can only *propose*. Everything sent passes the egress gate, which withholds account and personal ID numbers and pseudonymises names, and is recorded in the register.
+
+## Building from source
+
+Rust (pinned in `rust-toolchain.toml`), Node 22 and pnpm 10; on Linux, WebKitGTK 4.1 for the desktop shell.
+
+```
+pnpm install
+just dev-web       # the UI in a browser, on the recorded demo core (http://localhost:1420)
+just ci            # the full gate: formatting, lints, licence and security audits, tests, e2e
+pnpm --filter @skyla/desktop tauri dev   # the desktop app
+```
 
 ## Licence
 

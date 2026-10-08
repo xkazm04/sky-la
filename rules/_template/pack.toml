@@ -1,0 +1,151 @@
+# Template rule pack. Copy this folder to rules/<cc>/<year>/ and replace
+# every value with the one in force, citing where it comes from. See
+# rules/README.md for the rules a pack must follow.
+#
+# The jurisdiction here, "XX", is fictional and so is every number: the
+# template must parse and pass its golden file, so CI keeps it in step with
+# the format, but nothing in it is law anywhere.
+
+[pack]
+id = "xx-2026"                 # <cc>-<year>
+version = "2026.1"             # <year>.<n>; an update must have a higher n
+jurisdiction = "XX"            # ISO 3166-1 alpha-2
+valid_from = "2026-01-01"
+valid_to = "2026-12-31"
+review = "draft"               # "draft" until a second person re-derived the golden cases
+currency = "EUR"               # ISO 4217; amounts are written in this currency
+summary = "What the pack covers, in one sentence."
+# Leave out what you aren't sure of, and say so here. Never guess.
+omitted = [
+  "income tax: not in the template",
+]
+
+# Every source a value cites. https only, ideally the consolidated text.
+[[act]]
+id = "vat-act"
+name = "Value Added Tax Act (fictional)"
+url = "https://example.org/vat-act"
+
+[[act]]
+id = "holidays-act"
+name = "Public Holidays Act (fictional)"
+url = "https://example.org/holidays-act"
+
+# ── Values ─────────────────────────────────────────────────────────────────
+# kind: percent ("21", "12.5"), amount ("1000.00" in the pack currency),
+# days ("25"), rounding ("half_up", "half_even", "toward_zero",
+# "away_from_zero"), flag
+# ("true"/"false"). A key that changes gets one entry per period, the earlier
+# one closed with effective_to; periods must not overlap.
+
+[[value]]
+key = "vat.rate.standard"
+kind = "percent"
+value = "20"
+effective_from = "2020-01-01"
+cite = { act = "vat-act", section = "§ 10 (1)" }
+
+[[value]]
+key = "vat.rate.reduced"
+kind = "percent"
+value = "9"
+effective_from = "2020-01-01"
+effective_to = "2025-12-31"
+cite = { act = "vat-act", section = "§ 10 (2), as in force until 31 December 2025" }
+
+[[value]]
+key = "vat.rate.reduced"
+kind = "percent"
+value = "10"
+effective_from = "2026-01-01"
+cite = { act = "vat-act", section = "§ 10 (2)" }
+note = "A note explains a value to people; the app shows it with the citation."
+
+[[value]]
+key = "vat.rate.none"
+kind = "percent"
+value = "0"
+effective_from = "2020-01-01"
+cite = { act = "vat-act", section = "§ 4" }
+
+[[value]]
+key = "vat.rounding.document"
+kind = "rounding"
+value = "half_up"
+effective_from = "2020-01-01"
+cite = { act = "vat-act", section = "§ 12" }
+
+[[value]]
+key = "vat.return.due_days_after_period"
+kind = "days"
+value = "20"
+effective_from = "2020-01-01"
+cite = { act = "vat-act", section = "§ 30 (1)" }
+
+[[value]]
+key = "deadline.shift_to_next_working_day"
+kind = "flag"
+value = "true"
+effective_from = "2020-01-01"
+cite = { act = "vat-act", section = "§ 31" }
+
+# ── Obligations (the calendar) ─────────────────────────────────────────────
+# applies_to names entity facts (osvc, vat_monthly, vat_quarterly); due is
+# either days_after_period (a days value) or month_offset + day.
+
+[[obligation]]
+id = "vat.return.monthly"
+name = "VAT return"
+action = "file_and_pay"        # file, pay or file_and_pay
+applies_to = ["vat_monthly"]
+frequency = "monthly"          # monthly, quarterly or yearly
+due = { days_after_period = "vat.return.due_days_after_period" }
+cite = { act = "vat-act", section = "§ 30 (1)" }
+
+# ── VAT codes ──────────────────────────────────────────────────────────────
+# A posting's vat_code names one of these; rows map its base and tax onto
+# the VAT return.
+
+[[vat_code]]
+code = "OUT20"
+name = "Domestic supply, standard rate"
+rate = "vat.rate.standard"
+cite = { act = "vat-act", section = "§ 10 (1)" }
+rows = [
+  { row = "1", part = "base", credit_positive = true },
+  { row = "1", part = "tax", credit_positive = true },
+]
+einvoice = { category = "S" }
+
+[[vat_code]]
+code = "OUT10"
+name = "Domestic supply, reduced rate"
+rate = "vat.rate.reduced"
+cite = { act = "vat-act", section = "§ 10 (2)" }
+rows = [
+  { row = "2", part = "base", credit_positive = true },
+  { row = "2", part = "tax", credit_positive = true },
+]
+einvoice = { category = "S" }
+
+[[vat_code]]
+code = "NOVAT"
+name = "Supply by a person not registered for VAT"
+rate = "vat.rate.none"
+cite = { act = "vat-act", section = "§ 4" }
+rows = []
+outside_vat = true
+einvoice = { category = "O", exemption_reason = "The supplier isn't registered for VAT." }
+
+# ── Public holidays ────────────────────────────────────────────────────────
+# Fixed dates are MM-DD; movable ones count days from Easter Sunday.
+
+[[holiday]]
+name = "New Year's Day"
+date = "01-01"
+cite = { act = "holidays-act", section = "§ 1 (a)" }
+
+[[holiday]]
+name = "Easter Monday"
+easter_offset = 1
+cite = { act = "holidays-act", section = "§ 1 (b)" }

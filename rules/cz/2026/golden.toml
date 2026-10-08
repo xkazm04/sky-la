@@ -1,0 +1,300 @@
+# Golden cases for the CZ 2026 pack: what it must answer, worked out by
+# hand from the cited provisions (see rules/README.md). Run with
+# `just pack-check rules/cz/2026`. Every value, VAT code, obligation and
+# holiday needs a case.
+#
+# Written by the pack's author, so they confirm the pack rather than
+# review it independently; the pack stays "draft" until a second person
+# re-derives these cases from the official texts.
+
+# ── Values ────────────────────────────────────────────────────────────────
+[[value]]
+key = "vat.rate.standard"
+on = "2026-06-30"
+expect = "21"
+
+[[value]]
+key = "vat.rate.reduced"
+on = "2026-06-30"
+expect = "12"
+
+[[value]]
+key = "vat.rate.reduced"
+on = "2023-06-30"
+expect = "15"
+
+[[value]]
+key = "vat.rate.none"
+on = "2026-06-30"
+expect = "0"
+
+[[value]]
+key = "vat.rounding.document"
+on = "2026-06-30"
+expect = "half_up"
+
+[[value]]
+key = "vat.registration.threshold"
+on = "2026-06-30"
+expect = "2000000.00"
+
+[[value]]
+key = "vat.return.due_days_after_period"
+on = "2026-06-30"
+expect = "25"
+
+[[value]]
+key = "vat.control_statement.due_days_after_period"
+on = "2026-06-30"
+expect = "25"
+
+[[value]]
+key = "vat.control_statement.itemise_above"
+on = "2026-06-30"
+expect = "10000.00"
+
+[[value]]
+key = "income_tax.rate.base"
+on = "2026-06-30"
+expect = "15"
+
+[[value]]
+key = "income_tax.base.round_down_to"
+on = "2026-06-30"
+expect = "100.00"
+
+[[value]]
+key = "tax.round_up_to"
+on = "2026-06-30"
+expect = "1.00"
+
+[[value]]
+key = "income_tax.credit.taxpayer"
+on = "2026-06-30"
+expect = "30840.00"
+
+[[value]]
+key = "income_tax.flat_rate.trade.percent"
+on = "2026-06-30"
+expect = "60"
+
+[[value]]
+key = "income_tax.flat_rate.trade.cap"
+on = "2026-06-30"
+expect = "1200000.00"
+
+[[value]]
+key = "income_tax.flat_rate.craft.percent"
+on = "2026-06-30"
+expect = "80"
+
+[[value]]
+key = "income_tax.flat_rate.craft.cap"
+on = "2026-06-30"
+expect = "1600000.00"
+
+[[value]]
+key = "income_tax.flat_rate.liberal.percent"
+on = "2026-06-30"
+expect = "40"
+
+[[value]]
+key = "income_tax.flat_rate.liberal.cap"
+on = "2026-06-30"
+expect = "800000.00"
+
+[[value]]
+key = "assets.tangible.threshold"
+on = "2026-06-30"
+expect = "80000.00"
+
+[[value]]
+key = "insurance.social.share"
+on = "2026-06-30"
+expect = "55"
+open = "§ 5b odst. 1 ZOS as amended by zákon č. 349/2023 Sb.: from 2024 the OSVČ assessment base is 55 % of the profit, not 50 %; fixing it changes the WP-22 example and its tests, so the maintainer decides"
+
+[[value]]
+key = "insurance.social.rate"
+on = "2026-06-30"
+expect = "29.2"
+
+[[value]]
+key = "insurance.social.round_up_to"
+on = "2026-06-30"
+expect = "1.00"
+
+[[value]]
+key = "insurance.health.share"
+on = "2026-06-30"
+expect = "50"
+
+[[value]]
+key = "insurance.health.rate"
+on = "2026-06-30"
+expect = "13.5"
+
+[[value]]
+key = "insurance.health.round_up_to"
+on = "2026-06-30"
+expect = "1.00"
+
+[[value]]
+key = "late_interest.margin_pp"
+on = "2026-06-30"
+expect = "8"
+
+[[value]]
+key = "late_interest.recovery_cost"
+on = "2026-06-30"
+expect = "1200"
+
+[[value]]
+key = "deadline.shift_to_next_working_day"
+on = "2026-06-30"
+expect = "true"
+
+# ── VAT codes ─────────────────────────────────────────────────────────────
+
+[[vat_code]]
+code = "OUT21"
+on = "2026-06-30"
+expect = "21"
+
+[[vat_code]]
+code = "OUT12"
+on = "2026-06-30"
+expect = "12"
+
+[[vat_code]]
+code = "NOVAT"
+on = "2026-06-30"
+expect = "0"
+
+[[vat_code]]
+code = "RC21S"
+on = "2026-06-30"
+expect = "21"
+
+[[vat_code]]
+code = "RC12S"
+on = "2026-06-30"
+expect = "12"
+
+[[vat_code]]
+code = "IN21"
+on = "2026-06-30"
+expect = "21"
+
+[[vat_code]]
+code = "IN12"
+on = "2026-06-30"
+expect = "12"
+
+[[vat_code]]
+code = "OUT12"
+on = "2023-06-30"
+expect = "15"  # before zákon č. 349/2023 Sb.
+
+# ── Working days (2026: Easter Sunday is 5 April) ─────────────────────────
+
+[[working_day]]
+date = "2026-01-01"
+expect = false  # Nový rok
+
+[[working_day]]
+date = "2026-04-03"
+expect = false  # Velký pátek
+
+[[working_day]]
+date = "2026-04-06"
+expect = false  # Velikonoční pondělí
+
+[[working_day]]
+date = "2026-04-07"
+expect = true  # Tuesday after Easter
+
+[[working_day]]
+date = "2026-05-01"
+expect = false  # Svátek práce, a Friday
+
+[[working_day]]
+date = "2026-05-08"
+expect = false  # Den vítězství, a Friday
+
+[[working_day]]
+date = "2026-07-05"
+expect = false  # Cyril a Metoděj, a Sunday
+
+[[working_day]]
+date = "2026-07-06"
+expect = false  # Jan Hus, a Monday
+
+[[working_day]]
+date = "2026-09-28"
+expect = false  # Den české státnosti
+
+[[working_day]]
+date = "2026-10-28"
+expect = false  # Den vzniku samostatného československého státu
+
+[[working_day]]
+date = "2026-11-17"
+expect = false  # Den boje za svobodu a demokracii
+
+[[working_day]]
+date = "2026-12-24"
+expect = false  # Štědrý den
+
+[[working_day]]
+date = "2026-12-25"
+expect = false  # 1. svátek vánoční
+
+[[working_day]]
+date = "2026-12-26"
+expect = false  # 2. svátek vánoční, a Saturday
+
+[[working_day]]
+date = "2026-10-07"
+expect = true  # an ordinary Wednesday
+
+[[working_day]]
+date = "2026-10-10"
+expect = false  # a Saturday
+
+# ── Deadlines ─────────────────────────────────────────────────────────────
+
+[[deadline]]
+obligation = "vat.return.monthly"
+period = "2026-03"
+due = "2026-04-27"  # 31 March + 25 days = Saturday 25 April, so Monday
+
+[[deadline]]
+obligation = "vat.return.monthly"
+period = "2026-08"
+due = "2026-09-25"  # a Friday
+
+[[deadline]]
+obligation = "vat.control_statement.monthly"
+period = "2026-03"
+due = "2026-04-27"  # as the return
+
+[[deadline]]
+obligation = "income_tax.return.paper"
+period = "2025"
+due = "2026-04-01"  # a Wednesday
+
+[[deadline]]
+obligation = "income_tax.return.electronic"
+period = "2025"
+due = "2026-05-04"  # 1 May is a holiday and a Friday, so Monday
+
+[[deadline]]
+obligation = "insurance.social.advance"
+period = "2026-09"
+due = "2026-10-20"  # a Tuesday
+
+[[deadline]]
+obligation = "insurance.health.advance"
+period = "2026-04"
+due = "2026-05-11"  # 8 May is a holiday and a Friday, so Monday

@@ -21,6 +21,10 @@ lint:
     pnpm exec biome ci .
     pnpm -r typecheck
 
+# Validates a rule pack and runs its golden cases (rules/README.md).
+pack-check dir="rules/cz/2026":
+    cargo run -q --locked -p skyla-rules --bin skyla-pack -- check {{dir}}
+
 licence-check:
     python3 scripts/check_licence_boundary.py
 

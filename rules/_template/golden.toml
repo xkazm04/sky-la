@@ -1,0 +1,75 @@
+# Golden cases for the template pack. Work each one out from the cited
+# text, not from pack.toml: these are how a reviewer checks the pack.
+# Every value, VAT code, obligation and holiday needs at least one case.
+
+[[value]]
+key = "vat.rate.standard"
+on = "2026-06-30"
+expect = "20"
+
+[[value]]
+key = "vat.rate.reduced"
+on = "2025-06-30"
+expect = "9"
+
+[[value]]
+key = "vat.rate.reduced"
+on = "2026-01-01"
+expect = "10"                  # the day the new rate starts
+
+[[value]]
+key = "vat.rate.none"
+on = "2026-06-30"
+expect = "0"
+
+[[value]]
+key = "vat.rounding.document"
+on = "2026-06-30"
+expect = "half_up"
+
+[[value]]
+key = "vat.return.due_days_after_period"
+on = "2026-06-30"
+expect = "20"
+
+[[value]]
+key = "deadline.shift_to_next_working_day"
+on = "2026-06-30"
+expect = "true"
+
+[[vat_code]]
+code = "OUT20"
+on = "2026-06-30"
+expect = "20"
+
+[[vat_code]]
+code = "OUT10"
+on = "2026-06-30"
+expect = "10"
+
+[[vat_code]]
+code = "NOVAT"
+on = "2026-06-30"
+expect = "0"
+
+[[working_day]]
+date = "2026-01-01"
+expect = false                 # New Year's Day
+
+[[working_day]]
+date = "2026-04-06"
+expect = false                 # Easter Monday (Easter Sunday is 5 April 2026)
+
+[[working_day]]
+date = "2026-04-07"
+expect = true
+
+[[deadline]]
+obligation = "vat.return.monthly"
+period = "2026-02"
+due = "2026-03-20"             # 28 February + 20 days, a Friday
+
+[[deadline]]
+obligation = "vat.return.monthly"
+period = "2026-10"
+due = "2026-11-20"             # 31 October + 20 days, a Friday

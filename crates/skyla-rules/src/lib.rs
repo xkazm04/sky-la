@@ -10,6 +10,7 @@
 
 mod calendar;
 pub mod date;
+pub mod golden;
 pub mod refdata;
 mod update;
 
