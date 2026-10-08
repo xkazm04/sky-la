@@ -27,7 +27,7 @@ import {
   TextField,
   Toolbar,
 } from "@skyla/ui";
-import { FileDown, FileUp, Monitor, Moon, Sun } from "lucide-react";
+import { FileDown, FileUp, LockKeyhole, Monitor, Moon, Sun } from "lucide-react";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import { invalidateAll, problems, useQuery } from "../data";
 import { downloadBase64 } from "../download";
@@ -47,6 +47,7 @@ interface Setting {
   policies?: EgressPolicyDto[] | undefined;
   backups?: BackupsDto | undefined;
   exportable?: boolean;
+  lockable?: boolean;
   updates?: UpdateStatusDto | undefined;
 }
 
@@ -124,8 +125,10 @@ export function SettingsScreen({ item, core }: { item: string | null; core: Core
         ),
       about: [
         "Your books live in one encrypted file, opened with your passphrase or, if you chose, the key kept in your system keychain.",
+        "They lock after 15 minutes without a key press or a pointer move, and whenever you lock them here; unlocking asks for the passphrase.",
         "The demo is built in memory and never written to disk.",
       ],
+      lockable: bk ? !bk.demo : false,
     },
     {
       id: "backups",
@@ -302,6 +305,21 @@ export function SettingsScreen({ item, core }: { item: string | null; core: Core
             {selected.policies && <AdvisorSharing policies={selected.policies} />}
             {selected.backups && <Backups data={selected.backups} />}
             {selected.exportable && <ExportBooks demo={bk?.demo ?? true} />}
+            {selected.lockable && (
+              <div className="mt-3 flex gap-2">
+                <Button
+                  icon={LockKeyhole}
+                  onPress={() =>
+                    void commands.lock().then(() => {
+                      invalidateAll();
+                      navigate("unlock", null, true);
+                    })
+                  }
+                >
+                  Lock now
+                </Button>
+              </div>
+            )}
             {selected.updates && <UpdateCheck status={selected.updates} />}
             {selected.pack && (
               <>

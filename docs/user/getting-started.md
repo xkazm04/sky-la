@@ -29,6 +29,8 @@ Your books are now one encrypted file in your user's application-data folder, wi
 
 Each start asks for your passphrase. If you tick **Remember on this computer**, the key is kept in your system keychain (macOS Keychain, Windows Credential Manager, the Secret Service on Linux), and the books open without asking.
 
+Your books lock after 15 minutes without a key press or pointer move, and whenever you choose **Lock now** in Settings → Encryption. Unlocking them again always asks for the passphrase.
+
 ## If you forget the passphrase
 
 Choose **Forgot the passphrase?** on the unlock screen, enter the recovery key, and choose a new passphrase. The recovery key you used stops working and a **new one is shown once**, so write it down again.

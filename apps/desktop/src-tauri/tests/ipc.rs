@@ -27,14 +27,11 @@ fn app() -> (tauri::App<MockRuntime>, tauri::WebviewWindow<MockRuntime>) {
     ));
     let _ = std::fs::remove_dir_all(&dir);
     let demo = Core::demo().expect("demo core");
-    let session = skyla_desktop_lib::Session::new(
-        skyla_app::session::Gate::reproducible(dir),
-        // The demo core is already managed; books opened in a scenario are dropped.
-        Box::new(|_| {}),
-    );
-    session.mark_open(demo.session_state());
+    let session = skyla_desktop_lib::Session::new(skyla_app::session::Gate::reproducible(dir));
+    // The demo, with its recorded provider; books opened in a scenario don't
+    // replace it (only one set of books is open at a time).
+    session.hold(demo);
     let app = mock_builder()
-        .manage(demo)
         .manage(session)
         .invoke_handler(skyla_desktop_lib::specta_builder::<MockRuntime>().invoke_handler())
         .build(mock_context(noop_assets()))
@@ -110,8 +107,12 @@ fn every_recording_round_trips_identically_over_tauri_ipc() {
 
 #[test]
 fn a_bad_request_comes_back_as_a_typed_failure() {
+    let session = skyla_desktop_lib::Session::new(skyla_app::session::Gate::reproducible(
+        std::env::temp_dir().join(format!("skyla-ipc-bad-{}", std::process::id())),
+    ));
+    session.hold(Core::demo().expect("demo core"));
     let app = mock_builder()
-        .manage(Core::demo().expect("demo core"))
+        .manage(session)
         .invoke_handler(skyla_desktop_lib::specta_builder::<MockRuntime>().invoke_handler())
         .build(mock_context(noop_assets()))
         .expect("app");
@@ -138,6 +139,91 @@ fn a_bad_request_comes_back_as_a_typed_failure() {
             .unwrap_or_default()
             .contains("2026-13-01")
     );
+}
+
+fn call(
+    webview: &tauri::WebviewWindow<MockRuntime>,
+    cmd: &str,
+    body: serde_json::Value,
+) -> Result<serde_json::Value, serde_json::Value> {
+    get_ipc_response(
+        webview,
+        InvokeRequest {
+            cmd: cmd.into(),
+            callback: CallbackFn(0),
+            error: CallbackFn(1),
+            url: "tauri://localhost".parse().expect("url"),
+            body: InvokeBody::Json(body),
+            headers: Default::default(),
+            invoke_key: INVOKE_KEY.to_string(),
+        },
+    )
+    .map(|r| r.deserialize::<serde_json::Value>().expect("json"))
+}
+
+#[test]
+fn locked_books_answer_nothing_until_unlocked_again() {
+    let dir = std::env::temp_dir().join(format!("skyla-ipc-lock-{}", std::process::id()));
+    let _ = std::fs::remove_dir_all(&dir);
+    let gate = skyla_app::session::Gate::reproducible(dir.clone());
+    let pass = skyla_app::recordings::FIRST_RUN_PASSPHRASE;
+    let (core, _) = gate
+        .create(
+            &serde_json::from_value(skyla_app::recordings::first_run_setup()).expect("setup"),
+            pass,
+        )
+        .expect("books");
+    drop(core);
+    let session = skyla_desktop_lib::Session::new(skyla_app::session::Gate::reproducible(dir));
+    let app = mock_builder()
+        .manage(session)
+        .invoke_handler(skyla_desktop_lib::specta_builder::<MockRuntime>().invoke_handler())
+        .build(mock_context(noop_assets()))
+        .expect("app");
+    let webview = tauri::WebviewWindowBuilder::new(&app, "main", Default::default())
+        .build()
+        .expect("webview");
+
+    let locked = call(&webview, "invoices", serde_json::json!({})).expect_err("no books yet");
+    assert_eq!(locked["code"], "locked");
+    let state = call(
+        &webview,
+        "unlock",
+        serde_json::json!({ "passphrase": pass, "remember": false }),
+    )
+    .expect("unlocks");
+    assert_eq!(state["state"], "open");
+    assert!(call(&webview, "invoices", serde_json::json!({})).is_ok());
+
+    let state = call(&webview, "lock", serde_json::json!({})).expect("locks");
+    assert_eq!(state["state"], "locked");
+    let locked = call(&webview, "invoices", serde_json::json!({})).expect_err("locked again");
+    assert_eq!(locked["code"], "locked");
+    let wrong = call(
+        &webview,
+        "unlock",
+        serde_json::json!({ "passphrase": "not it", "remember": false }),
+    );
+    assert!(wrong.is_err());
+    assert!(
+        call(
+            &webview,
+            "unlock",
+            serde_json::json!({ "passphrase": pass, "remember": false })
+        )
+        .is_ok()
+    );
+    assert!(call(&webview, "invoices", serde_json::json!({})).is_ok());
+}
+
+#[test]
+fn the_demo_doesnt_lock() {
+    let session = skyla_desktop_lib::Session::new(skyla_app::session::Gate::reproducible(
+        std::env::temp_dir().join(format!("skyla-ipc-demo-{}", std::process::id())),
+    ));
+    session.hold(Core::demo().expect("demo core"));
+    assert!(session.lock().is_err());
+    assert!(session.books().is_some());
 }
 
 #[test]

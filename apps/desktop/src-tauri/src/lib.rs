@@ -28,138 +28,126 @@ type Answer<T> = Result<T, IpcFailure>;
 /// Build information.
 #[tauri::command]
 #[specta::specta]
-fn app_info(core: State<'_, Core>) -> AppInfo {
+fn app_info(core: Books) -> AppInfo {
     core.app_info()
 }
 
 /// The open entity.
 #[tauri::command]
 #[specta::specta]
-fn entity(core: State<'_, Core>) -> EntityDto {
+fn entity(core: Books) -> EntityDto {
     core.entity()
 }
 
 /// Accounting periods.
 #[tauri::command]
 #[specta::specta]
-fn periods(core: State<'_, Core>) -> Answer<Vec<PeriodDto>> {
+fn periods(core: Books) -> Answer<Vec<PeriodDto>> {
     Ok(core.periods()?)
 }
 
 /// Profit and loss for a date range.
 #[tauri::command]
 #[specta::specta]
-fn profit_and_loss(core: State<'_, Core>, from: String, to: String) -> Answer<ProfitAndLossDto> {
+fn profit_and_loss(core: Books, from: String, to: String) -> Answer<ProfitAndLossDto> {
     Ok(core.profit_and_loss(&from, &to)?)
 }
 
 /// Balance sheet as of a date.
 #[tauri::command]
 #[specta::specta]
-fn balance_sheet(core: State<'_, Core>, as_of: String) -> Answer<BalanceSheetDto> {
+fn balance_sheet(core: Books, as_of: String) -> Answer<BalanceSheetDto> {
     Ok(core.balance_sheet(&as_of)?)
 }
 
 /// Trial balance.
 #[tauri::command]
 #[specta::specta]
-fn trial_balance(
-    core: State<'_, Core>,
-    from: Option<String>,
-    to: String,
-) -> Answer<TrialBalanceDto> {
+fn trial_balance(core: Books, from: Option<String>, to: String) -> Answer<TrialBalanceDto> {
     Ok(core.trial_balance(from.as_deref(), &to)?)
 }
 
 /// Cash basis (*daňová evidence*) for a date range.
 #[tauri::command]
 #[specta::specta]
-fn cash_basis(core: State<'_, Core>, from: String, to: String) -> Answer<CashBasisDto> {
+fn cash_basis(core: Books, from: String, to: String) -> Answer<CashBasisDto> {
     Ok(core.cash_basis(&from, &to)?)
 }
 
 /// Posted journal entries in a date range.
 #[tauri::command]
 #[specta::specta]
-fn journal(core: State<'_, Core>, from: String, to: String) -> Answer<Vec<JournalEntryDto>> {
+fn journal(core: Books, from: String, to: String) -> Answer<Vec<JournalEntryDto>> {
     Ok(core.journal(&from, &to)?)
 }
 
 /// Hash chain and balance, for the status line.
 #[tauri::command]
 #[specta::specta]
-fn integrity(core: State<'_, Core>) -> Answer<IntegrityDto> {
+fn integrity(core: Books) -> Answer<IntegrityDto> {
     Ok(core.integrity()?)
 }
 
 /// Invoices.
 #[tauri::command]
 #[specta::specta]
-fn invoices(core: State<'_, Core>) -> Answer<Vec<InvoiceDto>> {
+fn invoices(core: Books) -> Answer<Vec<InvoiceDto>> {
     Ok(core.invoices()?)
 }
 
 /// The latest bank import with its tie-out.
 #[tauri::command]
 #[specta::specta]
-fn bank_statement(core: State<'_, Core>) -> Answer<BankStatementDto> {
+fn bank_statement(core: Books) -> Answer<BankStatementDto> {
     Ok(core.bank_statement()?)
 }
 
 /// The inbox.
 #[tauri::command]
 #[specta::specta]
-fn proposals(core: State<'_, Core>) -> Answer<Vec<ProposalDto>> {
+fn proposals(core: Books) -> Answer<Vec<ProposalDto>> {
     Ok(core.proposals()?)
 }
 
 /// The egress register.
 #[tauri::command]
 #[specta::specta]
-fn egress_register(core: State<'_, Core>) -> Answer<Vec<EgressRunDto>> {
+fn egress_register(core: Books) -> Answer<Vec<EgressRunDto>> {
     Ok(core.egress_register()?)
 }
 
 /// Exactly what one run sent ("What was shared").
 #[tauri::command]
 #[specta::specta]
-fn egress_payload(core: State<'_, Core>, id: String) -> Answer<EgressPayloadDto> {
+fn egress_payload(core: Books, id: String) -> Answer<EgressPayloadDto> {
     Ok(core.egress_payload(&id)?)
 }
 
 /// Each advisor task, what it may send, and the user's policy.
 #[tauri::command]
 #[specta::specta]
-fn egress_policies(core: State<'_, Core>) -> Vec<EgressPolicyDto> {
+fn egress_policies(core: Books) -> Vec<EgressPolicyDto> {
     core.egress_policies()
 }
 
 /// Sets a task's policy: `always`, `ask` or `never`.
 #[tauri::command]
 #[specta::specta]
-fn set_egress_policy(
-    core: State<'_, Core>,
-    task: String,
-    policy: String,
-) -> Answer<Vec<EgressPolicyDto>> {
+fn set_egress_policy(core: Books, task: String, policy: String) -> Answer<Vec<EgressPolicyDto>> {
     Ok(core.set_egress_policy(&task, &policy)?)
 }
 
 /// The DPH return for a period, mapped by the rule pack.
 #[tauri::command]
 #[specta::specta]
-fn vat_return(core: State<'_, Core>, from: String, to: String) -> Answer<VatReturnDto> {
+fn vat_return(core: Books, from: String, to: String) -> Answer<VatReturnDto> {
     Ok(core.vat_return(&from, &to)?)
 }
 
 /// The kontrolní hlášení for a period, checked against the return.
 #[tauri::command]
 #[specta::specta]
-fn control_statement(
-    core: State<'_, Core>,
-    from: String,
-    to: String,
-) -> Answer<ControlStatementDto> {
+fn control_statement(core: Books, from: String, to: String) -> Answer<ControlStatementDto> {
     Ok(core.control_statement(&from, &to)?)
 }
 
@@ -167,7 +155,7 @@ fn control_statement(
 #[tauri::command]
 #[specta::specta]
 fn income_tax_scenarios(
-    core: State<'_, Core>,
+    core: Books,
     projection: Option<TaxProjectionDto>,
 ) -> Answer<TaxScenariosDto> {
     Ok(core.income_tax_scenarios(projection.as_ref())?)
@@ -178,7 +166,7 @@ fn income_tax_scenarios(
 #[tauri::command]
 #[specta::specta]
 fn run_tax_advisor(
-    core: State<'_, Core>,
+    core: Books,
     projection: Option<TaxProjectionDto>,
     confirmed: bool,
 ) -> Answer<TaxAdviceDto> {
@@ -188,95 +176,91 @@ fn run_tax_advisor(
 /// The financial advisor's findings for the last complete quarter.
 #[tauri::command]
 #[specta::specta]
-fn financial_findings(core: State<'_, Core>) -> Answer<Vec<FindingDto>> {
+fn financial_findings(core: Books) -> Answer<Vec<FindingDto>> {
     Ok(core.financial_findings()?)
 }
 
 /// "Explain this" on an account or an entry, citing the entries behind it.
 #[tauri::command]
 #[specta::specta]
-fn explain(
-    core: State<'_, Core>,
-    target: ExplainTargetDto,
-    confirmed: bool,
-) -> Answer<ExplanationDto> {
+fn explain(core: Books, target: ExplainTargetDto, confirmed: bool) -> Answer<ExplanationDto> {
     Ok(core.explain(&target, confirmed)?)
 }
 
 /// The obligations calendar for a year, from the pack.
 #[tauri::command]
 #[specta::specta]
-fn obligations(core: State<'_, Core>, year: i32) -> Answer<Vec<ObligationDto>> {
+fn obligations(core: Books, year: i32) -> Answer<Vec<ObligationDto>> {
     Ok(core.obligations(year)?)
 }
 
 /// Whether advisors can run, and what to do if not.
 #[tauri::command]
 #[specta::specta]
-fn advisor_status(core: State<'_, Core>) -> AdvisorStatusDto {
+fn advisor_status(core: Books) -> AdvisorStatusDto {
     core.advisor_status()
 }
 
 /// The rule pack in force, with citations.
 #[tauri::command]
 #[specta::specta]
-fn rule_pack(core: State<'_, Core>) -> RulePackDto {
+fn rule_pack(core: Books) -> RulePackDto {
     core.rule_pack()
 }
 
 /// A document rendered to PDF (`cs` or `en`), base64-encoded.
 #[tauri::command]
 #[specta::specta]
-fn invoice_pdf(core: State<'_, Core>, id: i64, lang: String) -> Answer<DocumentPdfDto> {
+fn invoice_pdf(core: Books, id: i64, lang: String) -> Answer<DocumentPdfDto> {
     Ok(core.invoice_pdf(id, &lang)?)
 }
 
 /// An issued document as XML: `isdoc`, `ubl` (Peppol BIS 3.0) or `cii`.
 #[tauri::command]
 #[specta::specta]
-fn invoice_xml(core: State<'_, Core>, id: i64, format: String) -> Answer<DocumentXmlDto> {
+fn invoice_xml(core: Books, id: i64, format: String) -> Answer<DocumentXmlDto> {
     Ok(core.invoice_xml(id, &format)?)
 }
 
 /// Reminders due on a date, drafted for the user to send.
 #[tauri::command]
 #[specta::specta]
-fn dunning_queue(core: State<'_, Core>, as_of: String) -> Answer<Vec<DunningNoticeDto>> {
+fn dunning_queue(core: Books, as_of: String) -> Answer<Vec<DunningNoticeDto>> {
     Ok(core.dunning_queue(&as_of)?)
 }
 
 /// Recurring invoice templates and their next runs.
 #[tauri::command]
 #[specta::specta]
-fn recurring_templates(core: State<'_, Core>) -> Answer<Vec<RecurringTemplateDto>> {
+fn recurring_templates(core: Books) -> Answer<Vec<RecurringTemplateDto>> {
     Ok(core.recurring_templates()?)
 }
 
 /// What the invoice editor offers.
 #[tauri::command]
 #[specta::specta]
-fn invoice_form(core: State<'_, Core>) -> Answer<InvoiceFormDto> {
+fn invoice_form(core: Books) -> Answer<InvoiceFormDto> {
     Ok(core.invoice_form()?)
 }
 
 /// Saves a draft typed in the editor; the core parses and checks it.
 #[tauri::command]
 #[specta::specta]
-fn create_invoice_draft(core: State<'_, Core>, draft: InvoiceDraftDto) -> Answer<InvoiceDto> {
+fn create_invoice_draft(core: Books, draft: InvoiceDraftDto) -> Answer<InvoiceDto> {
     Ok(core.create_invoice_draft(&draft)?)
 }
 
 /// Issues a draft: the next number, posted through the kernel.
 #[tauri::command]
 #[specta::specta]
-fn issue_invoice(core: State<'_, Core>, id: i64, issue_date: String) -> Answer<InvoiceDto> {
+fn issue_invoice(core: Books, id: i64, issue_date: String) -> Answer<InvoiceDto> {
     Ok(core.issue_invoice(id, &issue_date)?)
 }
 
 /// Deletes a draft.
 #[tauri::command]
 #[specta::specta]
-fn delete_invoice_draft(core: State<'_, Core>, id: i64) -> Answer<()> {
+fn delete_invoice_draft(core: Books, id: i64) -> Answer<()> {
     Ok(core.delete_invoice_draft(id)?)
 }
 
@@ -284,7 +268,7 @@ fn delete_invoice_draft(core: State<'_, Core>, id: i64) -> Answer<()> {
 #[tauri::command]
 #[specta::specta]
 fn import_bank_statement(
-    core: State<'_, Core>,
+    core: Books,
     file_name: String,
     content_base64: String,
 ) -> Answer<BankStatementDto> {
@@ -295,7 +279,7 @@ fn import_bank_statement(
 #[tauri::command]
 #[specta::specta]
 fn preview_invoice_import(
-    core: State<'_, Core>,
+    core: Books,
     file_name: String,
     content_base64: String,
 ) -> Answer<ImportPreviewDto> {
@@ -306,7 +290,7 @@ fn preview_invoice_import(
 #[tauri::command]
 #[specta::specta]
 fn commit_invoice_import(
-    core: State<'_, Core>,
+    core: Books,
     file_name: String,
     content_base64: String,
 ) -> Answer<ImportPreviewDto> {
@@ -316,49 +300,49 @@ fn commit_invoice_import(
 /// The periods the screens report on, as of the books' date.
 #[tauri::command]
 #[specta::specta]
-fn reporting_periods(core: State<'_, Core>) -> Answer<ReportingPeriodsDto> {
+fn reporting_periods(core: Books) -> Answer<ReportingPeriodsDto> {
     Ok(core.reporting_periods()?)
 }
 
 /// What the purchase editor offers.
 #[tauri::command]
 #[specta::specta]
-fn purchase_form(core: State<'_, Core>) -> Answer<PurchaseFormDto> {
+fn purchase_form(core: Books) -> Answer<PurchaseFormDto> {
     Ok(core.purchase_form()?)
 }
 
 /// Every received invoice, with what's paid.
 #[tauri::command]
 #[specta::specta]
-fn purchases(core: State<'_, Core>) -> Answer<Vec<PurchaseDto>> {
+fn purchases(core: Books) -> Answer<Vec<PurchaseDto>> {
     Ok(core.purchases()?)
 }
 
 /// Records a received invoice: checked, posted, the supplier kept.
 #[tauri::command]
 #[specta::specta]
-fn record_purchase(core: State<'_, Core>, draft: PurchaseDraftDto) -> Answer<PurchaseDto> {
+fn record_purchase(core: Books, draft: PurchaseDraftDto) -> Answer<PurchaseDto> {
     Ok(core.record_purchase(&draft)?)
 }
 
 /// Whether the opt-in update check is on, and what it last found.
 #[tauri::command]
 #[specta::specta]
-fn update_status(core: State<'_, Core>) -> UpdateStatusDto {
+fn update_status(core: Books) -> UpdateStatusDto {
     core.update_status()
 }
 
 /// Turns the update check on or off.
 #[tauri::command]
 #[specta::specta]
-fn set_update_check(core: State<'_, Core>, enabled: bool) -> UpdateStatusDto {
+fn set_update_check(core: Books, enabled: bool) -> UpdateStatusDto {
     core.set_update_check(enabled)
 }
 
 /// Checks the project's signed release manifest for a newer version.
 #[tauri::command]
 #[specta::specta]
-fn check_for_update(core: State<'_, Core>) -> Answer<UpdateStatusDto> {
+fn check_for_update(core: Books) -> Answer<UpdateStatusDto> {
     Ok(core.check_for_update()?)
 }
 
@@ -368,7 +352,7 @@ fn check_for_update(core: State<'_, Core>) -> Answer<UpdateStatusDto> {
 #[specta::specta]
 fn export_books(
     session: State<'_, Session>,
-    core: State<'_, Core>,
+    core: Books,
     passphrase: Option<String>,
 ) -> Answer<ExportDto> {
     if !core.is_demo() {
@@ -382,7 +366,7 @@ fn export_books(
 /// Accepts every line the matcher or a rule is certain about.
 #[tauri::command]
 #[specta::specta]
-fn accept_certain_bank_lines(core: State<'_, Core>) -> Answer<BankStatementDto> {
+fn accept_certain_bank_lines(core: Books) -> Answer<BankStatementDto> {
     Ok(core.accept_certain_bank_lines()?)
 }
 
@@ -390,7 +374,7 @@ fn accept_certain_bank_lines(core: State<'_, Core>) -> Answer<BankStatementDto> 
 #[tauri::command]
 #[specta::specta]
 fn book_bank_line(
-    core: State<'_, Core>,
+    core: Books,
     line: String,
     allocations: Vec<BankAllocationDto>,
 ) -> Answer<BankStatementDto> {
@@ -400,18 +384,14 @@ fn book_bank_line(
 /// Makes a rule from a line and books the line by it.
 #[tauri::command]
 #[specta::specta]
-fn create_bank_rule(
-    core: State<'_, Core>,
-    line: String,
-    rule: BankRuleInputDto,
-) -> Answer<BankStatementDto> {
+fn create_bank_rule(core: Books, line: String, rule: BankRuleInputDto) -> Answer<BankStatementDto> {
     Ok(core.create_bank_rule(&line, &rule)?)
 }
 
 /// Reference data loaded, where it came from, and whether fetching is on.
 #[tauri::command]
 #[specta::specta]
-fn reference_data(core: State<'_, Core>) -> Answer<RefDataDto> {
+fn reference_data(core: Books) -> Answer<RefDataDto> {
     Ok(core.reference_data()?)
 }
 
@@ -419,7 +399,7 @@ fn reference_data(core: State<'_, Core>) -> Answer<RefDataDto> {
 #[tauri::command]
 #[specta::specta]
 fn import_reference_data(
-    core: State<'_, Core>,
+    core: Books,
     kind: String,
     file_name: String,
     text: String,
@@ -430,25 +410,21 @@ fn import_reference_data(
 /// Turns fetching from the ČNB on or off (off by default).
 #[tauri::command]
 #[specta::specta]
-fn set_reference_fetch(core: State<'_, Core>, enabled: bool) -> Answer<RefDataDto> {
+fn set_reference_fetch(core: Books, enabled: bool) -> Answer<RefDataDto> {
     Ok(core.set_reference_fetch(enabled)?)
 }
 
 /// Fetches the ČNB's rates for a day, only when fetching is on.
 #[tauri::command]
 #[specta::specta]
-fn fetch_cnb_rates(core: State<'_, Core>, date: String) -> Answer<RefDataDto> {
+fn fetch_cnb_rates(core: Books, date: String) -> Answer<RefDataDto> {
     Ok(core.fetch_cnb_rates(&date)?)
 }
 
 /// Checks a signed rule-pack update.
 #[tauri::command]
 #[specta::specta]
-fn install_pack_update(
-    core: State<'_, Core>,
-    pack_toml: String,
-    signature: String,
-) -> Answer<PackUpdateDto> {
+fn install_pack_update(core: Books, pack_toml: String, signature: String) -> Answer<PackUpdateDto> {
     Ok(core.install_pack_update(&pack_toml, &signature)?)
 }
 
@@ -456,31 +432,82 @@ fn install_pack_update(
 /// passes a callback that makes the core the app's managed state.
 pub struct Session {
     gate: Gate,
-    open: Box<dyn Fn(Core) + Send + Sync>,
-    state: std::sync::Mutex<Option<SessionStateDto>>,
+    /// The open books; none before unlocking and after locking.
+    books: std::sync::RwLock<Option<std::sync::Arc<Core>>>,
+}
+
+/// The open books, as a command argument: refuses with `locked` when the
+/// books aren't open, so no command runs on locked books.
+pub struct Books(std::sync::Arc<Core>);
+
+impl std::ops::Deref for Books {
+    type Target = Core;
+    fn deref(&self) -> &Core {
+        &self.0
+    }
+}
+
+impl<'de, R: tauri::Runtime> tauri::ipc::CommandArg<'de, R> for Books {
+    fn from_command(
+        command: tauri::ipc::CommandItem<'de, R>,
+    ) -> Result<Self, tauri::ipc::InvokeError> {
+        let session: State<'_, Session> = tauri::ipc::CommandArg::from_command(command)?;
+        session.books().map(Books).ok_or_else(|| {
+            tauri::ipc::InvokeError::from(IpcFailure {
+                code: "locked".into(),
+                message: "the books are locked; unlock them first".into(),
+            })
+        })
+    }
+}
+
+impl specta::function::FunctionArg for Books {
+    fn to_datatype(_: &mut specta::Types) -> Option<specta::datatype::DataType> {
+        None
+    }
 }
 
 impl Session {
-    /// A session over `gate` that hands opened books to `open`.
-    pub fn new(gate: Gate, open: Box<dyn Fn(Core) + Send + Sync>) -> Self {
+    /// A session over `gate`, with no books open yet.
+    pub fn new(gate: Gate) -> Self {
         Self {
             gate,
-            open,
-            state: std::sync::Mutex::new(None),
+            books: std::sync::RwLock::new(None),
         }
     }
 
-    /// Records books that were opened another way (the IPC test manages the
-    /// demo core directly).
-    pub fn mark_open(&self, state: SessionStateDto) {
-        if let Ok(mut s) = self.state.lock() {
-            *s = Some(state);
+    /// The open books, if any.
+    pub fn books(&self) -> Option<std::sync::Arc<Core>> {
+        self.books.read().ok().and_then(|b| b.clone())
+    }
+
+    /// Holds `core` as the open books as it is (the IPC test holds the demo
+    /// with its recorded provider).
+    pub fn hold(&self, core: Core) {
+        if let Ok(mut b) = self.books.write() {
+            *b = Some(std::sync::Arc::new(core));
         }
     }
 
-    /// Gets a freshly opened core ready (the CLI driver, the shim, a backup
-    /// if one is due) and hands it over. Only the first is kept: books stay
-    /// open until the app quits.
+    /// Closes real books: the key and the connection go with the core once
+    /// the last command using it finishes. The demo doesn't lock.
+    pub fn lock(&self) -> Result<SessionStateDto, IpcFailure> {
+        let mut b = self.books.write().map_err(|_| IpcFailure {
+            code: "bad_request".into(),
+            message: "try again".into(),
+        })?;
+        if b.as_ref().is_some_and(|c| c.is_demo()) {
+            return Err(IpcFailure {
+                code: "bad_request".into(),
+                message: "the demo keeps its books in memory and doesn't lock".into(),
+            });
+        }
+        *b = None;
+        Ok(self.gate.state())
+    }
+
+    /// Gets freshly opened books ready (the CLI driver, the shim, a backup
+    /// if one is due) and holds them, unless books are open already.
     pub fn adopt(&self, core: Core) -> SessionStateDto {
         core.replace_provider(Box::new(skyla_advisor::ClaudeCodeCli::from_system()));
         if let Some(dir) = std::env::current_exe()
@@ -497,14 +524,16 @@ impl Session {
             // A failed backup mustn't keep the books closed; Settings shows the state.
             let _ = core.backup_if_due(&self.gate.now());
         }
-        let state = core.session_state();
-        if let Ok(mut s) = self.state.lock()
-            && s.is_none()
-        {
-            *s = Some(state.clone());
-            (self.open)(core);
+        // Only one set of books is open at a time; the first stays.
+        if let Ok(mut b) = self.books.write() {
+            if let Some(open) = b.as_ref() {
+                return open.session_state();
+            }
+            let state = core.session_state();
+            *b = Some(std::sync::Arc::new(core));
+            return state;
         }
-        state
+        core.session_state()
     }
 }
 
@@ -512,10 +541,18 @@ impl Session {
 #[tauri::command]
 #[specta::specta]
 fn session_state(session: State<'_, Session>) -> SessionStateDto {
-    match session.state.lock().ok().and_then(|s| s.clone()) {
-        Some(open) => open,
+    match session.books() {
+        Some(open) => open.session_state(),
         None => session.gate.state(),
     }
+}
+
+/// Locks real books (after a while idle, or on request): the next command
+/// needs the passphrase again.
+#[tauri::command]
+#[specta::specta]
+fn lock(session: State<'_, Session>) -> Answer<SessionStateDto> {
+    session.lock()
 }
 
 /// Creates new books protected by `passphrase`; returns the recovery key to show once.
@@ -569,8 +606,8 @@ fn recover(
 #[tauri::command]
 #[specta::specta]
 fn open_demo(session: State<'_, Session>) -> Answer<SessionStateDto> {
-    if let Some(open) = session.state.lock().ok().and_then(|s| s.clone()) {
-        return Ok(open);
+    if let Some(open) = session.books() {
+        return Ok(open.session_state());
     }
     Ok(session.adopt(Core::demo()?))
 }
@@ -578,21 +615,21 @@ fn open_demo(session: State<'_, Session>) -> Answer<SessionStateDto> {
 /// The backups there are, and the policy.
 #[tauri::command]
 #[specta::specta]
-fn backups(core: State<'_, Core>) -> Answer<BackupsDto> {
+fn backups(core: Books) -> Answer<BackupsDto> {
     Ok(core.backups()?)
 }
 
 /// Backs up now.
 #[tauri::command]
 #[specta::specta]
-fn backup_now(core: State<'_, Core>) -> Answer<BackupDto> {
+fn backup_now(core: Books) -> Answer<BackupDto> {
     Ok(core.backup_now(&skyla_app::session::system_now())?)
 }
 
 /// Restores the newest backup into a scratch folder and checks it.
 #[tauri::command]
 #[specta::specta]
-fn restore_drill(core: State<'_, Core>) -> Answer<DrillDto> {
+fn restore_drill(core: Books) -> Answer<DrillDto> {
     Ok(core.restore_drill()?)
 }
 
@@ -601,6 +638,7 @@ pub fn specta_builder<R: Runtime>() -> Builder<R> {
     Builder::<R>::new()
         .commands(collect_commands![
             session_state,
+            lock,
             create_entity,
             confirm_recovery_key,
             unlock,
@@ -714,13 +752,7 @@ pub fn run() {
             } else {
                 Box::new(skyla_store::MemoryKeyStore::default())
             };
-            let handle = app.handle().clone();
-            let session = Session::new(
-                Gate::new(dir, keystore),
-                Box::new(move |core| {
-                    handle.manage(core);
-                }),
-            );
+            let session = Session::new(Gate::new(dir, keystore));
             // A remembered key opens the books without asking.
             if let Ok(Some(core)) = session.gate.unlock_remembered() {
                 session.adopt(core);

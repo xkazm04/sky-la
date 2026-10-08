@@ -303,12 +303,14 @@ export function UnlockScreen() {
   const session = useQuery("session_state", () => commands.sessionState());
   const who = session.state === "ready" ? session.data.entity : null;
   const [pass, setPass] = useState("");
-  const [remember, setRemember] = useState(false);
+  // Unticked means "forget it", so start from what's remembered now.
+  const [remember, setRemember] = useState<boolean | null>(null);
+  const remembered = session.state === "ready" && session.data.remembered;
   const [errors, setErrors] = useState<string[]>([]);
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      await unwrap(commands.unlock(pass, remember));
+      await unwrap(commands.unlock(pass, remember ?? remembered));
       invalidateAll();
       navigate("overview");
     } catch (err) {
@@ -328,7 +330,7 @@ export function UnlockScreen() {
           onChange={setPass}
           autoComplete="current-password"
         />
-        <Checkbox isSelected={remember} onChange={setRemember}>
+        <Checkbox isSelected={remember ?? remembered} onChange={setRemember}>
           Remember on this computer (in the system keychain)
         </Checkbox>
         <Problems list={errors} />

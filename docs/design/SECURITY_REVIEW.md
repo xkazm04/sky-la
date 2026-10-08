@@ -36,6 +36,7 @@ October 2026, at the end of M7's feature work (WP-00 – WP-31). The review chec
 3. **The restore drill used a shared, predictable temp folder** (low). Another account on the machine could pre-create or swap `/tmp/skyla-drill` and make the drill report a pass. It now restores into `.restore-drill` beside the books, in the user's own folder, and cleans up.
 4. **CI actions weren't pinned and the token had default permissions** (medium, supply chain). Every action is now pinned to a commit with its tag in a comment, and `permissions: contents: read` applies to the whole workflow.
 5. **No gate on web-dependency advisories** (low). The `npm-audit` job fails on moderate or worse.
+6. **No auto-lock** (medium, fixed in improvement wave 6). DESIGN §3.8 calls for auto-lock on idle. The shell's commands now reach the books through the session (a `Books` argument that refuses with `locked` when none are open) rather than Tauri's managed state, which couldn't be dropped. Real books lock after 15 minutes without input, or from Settings → Encryption. Locking drops the core, and with it the data key and the connection, once the last running command finishes. Unlocking asks for the passphrase even when the key is remembered. Tested in `apps/desktop/src-tauri/tests/ipc.rs` (`locked_books_answer_nothing_until_unlocked_again`) and `apps/desktop/src/idleLock.test.tsx`.
 
 ### Checked, no change needed
 
@@ -56,7 +57,7 @@ October 2026, at the end of M7's feature work (WP-00 – WP-31). The review chec
 
 ### Open (in `STATUS.md` → Backlog notes)
 
-- **Auto-lock on idle and lock on sleep** aren't built. Locking means dropping the open books, which needs the shell's commands to reach the core through the session rather than Tauri's managed state. That refactor touches every command, so it gets its own change.
+- **Lock on sleep** isn't built: Tauri reports no sleep event, and the idle lock covers a laptop left open.
 - **Tauri's isolation pattern** isn't enabled. It needs a run on a real webview to verify, so it goes with packaging (WP-33).
 - **Statute links** in Settings no longer replace the app window. Opening them in the system browser, for rule-pack citation URLs only, needs an opener, and adding one is a decision for the maintainer.
 - **SBOM, signed and notarised releases, reproducible builds:** WP-33.

@@ -8,6 +8,11 @@ import { invoke as __TAURI_INVOKE } from "@tauri-apps/api/core";
 export const commands = {
 	/**  Whether books are open, and if not, whether to set up or unlock. */
 	sessionState: () => __TAURI_INVOKE<SessionStateDto>("session_state"),
+	/**
+	 *  Locks real books (after a while idle, or on request): the next command
+	 *  needs the passphrase again.
+	 */
+	lock: () => typedError<SessionStateDto, IpcFailure>(__TAURI_INVOKE("lock")),
 	/**  Creates new books protected by `passphrase`; returns the recovery key to show once. */
 	createEntity: (setup: EntitySetupDto, passphrase: string) => typedError<RecoveryKeyDto, IpcFailure>(__TAURI_INVOKE("create_entity", { setup, passphrase })),
 	/**  Checks the user saved the recovery key, by its last group. */

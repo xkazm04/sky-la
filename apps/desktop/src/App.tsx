@@ -2,6 +2,7 @@ import { type CoreKind, commands } from "@skyla/ipc";
 import { useEffect } from "react";
 import { useQuery } from "./data";
 import { Gallery } from "./gallery/Gallery";
+import { useIdleLock } from "./idleLock";
 import { navigate, type Screen, useRoute } from "./router";
 import { AdvisorsScreen } from "./screens/Advisors";
 import { BankScreen } from "./screens/Bank";
@@ -60,6 +61,7 @@ export function App({ core }: { core: CoreKind }) {
   useEffect(() => {
     if (core === "tauri" && needed && !before) navigate(needed, null, true);
   }, [core, needed, before]);
+  useIdleLock(core === "tauri" && session.state === "ready" && session.data.state === "open");
   if (route.screen === "gallery") return <Gallery />;
   if (route.screen === "setup") return <SetupScreen />;
   if (route.screen === "unlock") return <UnlockScreen />;
