@@ -183,6 +183,26 @@ test("the September DPH return comes from the ledger, mapped by the rule pack", 
   await expect(pack).toContainText("Left out on purpose");
 });
 
+test("the September kontrolní hlášení itemises above the pack's threshold and agrees with the return", async ({
+  page,
+}) => {
+  await page.goto("/#/taxes/kh-2026-09");
+  const inspector = page.getByRole("complementary", {
+    name: "Kontrolní hlášení · September 2026",
+  });
+  await expect(inspector).toContainText("10 000,00 Kč including VAT are itemised");
+  await expect(inspector.getByRole("table", { name: "A.4 supplies" })).toContainText("2026-114");
+  await expect(inspector.getByRole("table", { name: "A.2 services from the EU" })).toContainText(
+    "AWS-2026-09",
+  );
+  await expect(inspector.getByRole("table", { name: "B.2 purchases" })).toContainText(
+    "PF-2026-0917",
+  );
+  await expect(inspector).toContainText("Section C agrees with the DPH return");
+  await expect(inspector).toContainText("26 Oct 2026");
+  await axeClean(page);
+});
+
 test("an invoice exports as a PDF the core rendered, with the QR Platba code", async ({ page }) => {
   await page.goto("/#/invoices/2026-102");
   const inspector = page.getByRole("complementary", { name: "Invoice 2026-102" });

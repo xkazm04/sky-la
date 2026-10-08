@@ -38,7 +38,15 @@ export function Inspector({
         </div>
         {accessory}
       </header>
-      <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-4">{children}</div>
+      {/* Focusable so a keyboard can scroll a long inspector (WCAG 2.1.1). */}
+      <section
+        aria-label={`${label} details`}
+        // biome-ignore lint/a11y/noNoninteractiveTabindex: a scrollable region must take focus
+        tabIndex={0}
+        className="min-h-0 flex-1 overflow-y-auto px-4 pb-4 outline-none focus-visible:shadow-[inset_0_0_0_2px_var(--sk-focus)]"
+      >
+        {children}
+      </section>
       {actions && (
         <footer className="flex items-center justify-end gap-2 border-hairline-strong border-t px-4 py-3">
           {actions}

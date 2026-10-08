@@ -788,6 +788,7 @@
       "date": "2026-09-03",
       "source": "bank",
       "memo": "AWS září (490 EUR, přenesená daňová povinnost)",
+      "ref": "AWS-2026-09",
       "lines": [
         {
           "account": "518",
@@ -884,7 +885,8 @@
       "key": "alza-07",
       "date": "2026-07-14",
       "source": "bank",
-      "memo": "Notebook Alza",
+      "memo": "Notebook Elektro Prokeš",
+      "ref": "EP-2026-07114",
       "lines": [
         {
           "account": "501",
@@ -907,6 +909,7 @@
       "date": "2026-08-19",
       "source": "bank",
       "memo": "Monitor",
+      "ref": "EP-2026-08190",
       "lines": [
         {
           "account": "501",

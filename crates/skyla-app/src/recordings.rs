@@ -251,6 +251,7 @@ pub fn canonical_requests() -> Vec<(&'static str, Value)> {
         ("2026-09-01", "2026-09-30"),
     ] {
         requests.push(("vat_return", json!({ "from": from, "to": to })));
+        requests.push(("control_statement", json!({ "from": from, "to": to })));
     }
     for (from, to) in quarters {
         requests.push(("profit_and_loss", json!({ "from": from, "to": to })));
@@ -392,6 +393,9 @@ pub fn dispatch(core: &Core, command: &str, args: &Value) -> Result<Value, IpcFa
             to_value(core.invoice_xml(id, arg(args, "format")?))
         }
         "vat_return" => to_value(core.vat_return(arg(args, "from")?, arg(args, "to")?)),
+        "control_statement" => {
+            to_value(core.control_statement(arg(args, "from")?, arg(args, "to")?))
+        }
         "profit_and_loss" => to_value(core.profit_and_loss(arg(args, "from")?, arg(args, "to")?)),
         "cash_basis" => to_value(core.cash_basis(arg(args, "from")?, arg(args, "to")?)),
         "journal" => to_value(core.journal(arg(args, "from")?, arg(args, "to")?)),

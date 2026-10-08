@@ -22,6 +22,7 @@ const DEMO_POSTING_NAMESPACE: uuid::Uuid = uuid::uuid!("5d2b8f61-0c7e-5a93-b4d1-
 
 mod bank;
 pub mod refdata;
+mod tax;
 
 /// The application core: one open entity and its ledger.
 pub struct Core {

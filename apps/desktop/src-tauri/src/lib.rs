@@ -4,10 +4,10 @@
 
 use skyla_app::dto::{
     AppInfo, BalanceSheetDto, BankAllocationDto, BankRuleInputDto, BankStatementDto, CashBasisDto,
-    DocumentPdfDto, DocumentXmlDto, DunningNoticeDto, EgressRunDto, EntityDto, IntegrityDto,
-    InvoiceDraftDto, InvoiceDto, InvoiceFormDto, JournalEntryDto, PackUpdateDto, PeriodDto,
-    ProfitAndLossDto, ProposalDto, RecurringTemplateDto, RefDataDto, RulePackDto, TrialBalanceDto,
-    VatReturnDto,
+    ControlStatementDto, DocumentPdfDto, DocumentXmlDto, DunningNoticeDto, EgressRunDto, EntityDto,
+    IntegrityDto, InvoiceDraftDto, InvoiceDto, InvoiceFormDto, JournalEntryDto, PackUpdateDto,
+    PeriodDto, ProfitAndLossDto, ProposalDto, RecurringTemplateDto, RefDataDto, RulePackDto,
+    TrialBalanceDto, VatReturnDto,
 };
 use skyla_app::{Core, IpcFailure};
 use tauri::{Runtime, State};
@@ -115,6 +115,17 @@ fn egress_register(core: State<'_, Core>) -> Vec<EgressRunDto> {
 #[specta::specta]
 fn vat_return(core: State<'_, Core>, from: String, to: String) -> Answer<VatReturnDto> {
     Ok(core.vat_return(&from, &to)?)
+}
+
+/// The kontrolní hlášení for a period, checked against the return.
+#[tauri::command]
+#[specta::specta]
+fn control_statement(
+    core: State<'_, Core>,
+    from: String,
+    to: String,
+) -> Answer<ControlStatementDto> {
+    Ok(core.control_statement(&from, &to)?)
 }
 
 /// The rule pack in force, with citations.
@@ -282,6 +293,7 @@ pub fn specta_builder<R: Runtime>() -> Builder<R> {
             proposals,
             egress_register,
             vat_return,
+            control_statement,
             rule_pack,
             invoice_pdf,
             invoice_xml,

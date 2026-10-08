@@ -57,7 +57,7 @@
       "chainIntact": true,
       "entriesChecked": 52,
       "firstBreak": null,
-      "head": "eb469bc7fa10af76e5483fe2e1f780a19a82431faf36cfdac1f7bd7231dd71fa"
+      "head": "8800fa1748bda667c7c3cc949bd40a5e88117032906c7d9f24453c58c6a8685b"
     },
     "isError": false
   },
@@ -1664,11 +1664,160 @@
       ],
       "snapshot": {
         "entries": 5,
-        "hash": "7b6d9653bf0948abb079be84701f24fb2f3b17f8078e09d2f5a3ae6fb5f6da33",
+        "hash": "7bfb0df9941ba4e1986bd35b43c4ced39f517c2e96550ab35c74d5a4284f5309",
         "lastPostedSeq": 51
       },
       "to": "2026-07-31",
       "unmapped": []
+    },
+    "isError": false
+  },
+  {
+    "command": "control_statement",
+    "args": {
+      "from": "2026-07-01",
+      "to": "2026-07-31"
+    },
+    "result": {
+      "a2": [],
+      "a4": [
+        {
+          "base": {
+            "currency": "CZK",
+            "minor": 14000000
+          },
+          "baseReduced": {
+            "currency": "CZK",
+            "minor": 0
+          },
+          "baseStandard": {
+            "currency": "CZK",
+            "minor": 14000000
+          },
+          "counterparty": "Northwind Traders s.r.o.",
+          "date": "2026-07-14",
+          "number": "2026-089",
+          "tax": {
+            "currency": "CZK",
+            "minor": 2940000
+          },
+          "taxReduced": {
+            "currency": "CZK",
+            "minor": 0
+          },
+          "taxStandard": {
+            "currency": "CZK",
+            "minor": 2940000
+          },
+          "vatId": "CZ91341272"
+        }
+      ],
+      "a5": {
+        "baseReduced": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "baseStandard": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "documents": 0,
+        "taxReduced": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "taxStandard": {
+          "currency": "CZK",
+          "minor": 0
+        }
+      },
+      "b2": [
+        {
+          "base": {
+            "currency": "CZK",
+            "minor": 2891700
+          },
+          "baseReduced": {
+            "currency": "CZK",
+            "minor": 0
+          },
+          "baseStandard": {
+            "currency": "CZK",
+            "minor": 2891700
+          },
+          "counterparty": "Elektro Prokeš s.r.o.",
+          "date": "2026-07-14",
+          "number": "EP-2026-07114",
+          "tax": {
+            "currency": "CZK",
+            "minor": 607257
+          },
+          "taxReduced": {
+            "currency": "CZK",
+            "minor": 0
+          },
+          "taxStandard": {
+            "currency": "CZK",
+            "minor": 607257
+          },
+          "vatId": "CZ27415830"
+        }
+      ],
+      "b3": {
+        "baseReduced": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "baseStandard": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "documents": 0,
+        "taxReduced": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "taxStandard": {
+          "currency": "CZK",
+          "minor": 0
+        }
+      },
+      "c": [
+        {
+          "base": {
+            "currency": "CZK",
+            "minor": 14000000
+          },
+          "matches": true,
+          "returnBase": {
+            "currency": "CZK",
+            "minor": 14000000
+          },
+          "row": "1"
+        },
+        {
+          "base": {
+            "currency": "CZK",
+            "minor": 2891700
+          },
+          "matches": true,
+          "returnBase": {
+            "currency": "CZK",
+            "minor": 2891700
+          },
+          "row": "40"
+        }
+      ],
+      "dueOn": "2026-08-25",
+      "from": "2026-07-01",
+      "matchesReturn": true,
+      "pack": "cz-2026@2026.1",
+      "problems": [],
+      "threshold": {
+        "currency": "CZK",
+        "minor": 1000000
+      },
+      "to": "2026-07-31"
     },
     "isError": false
   },
@@ -1725,11 +1874,220 @@
       ],
       "snapshot": {
         "entries": 9,
-        "hash": "82f952a01920aaef610c823bafbb0323e7af17bde1ba161f4a0f0e19d0f75af4",
+        "hash": "25f055c623c1518c1ad5e2bd32ee30e398cf30db21a488deec4ba17b6058ac7c",
         "lastPostedSeq": 52
       },
       "to": "2026-08-31",
       "unmapped": []
+    },
+    "isError": false
+  },
+  {
+    "command": "control_statement",
+    "args": {
+      "from": "2026-08-01",
+      "to": "2026-08-31"
+    },
+    "result": {
+      "a2": [],
+      "a4": [
+        {
+          "base": {
+            "currency": "CZK",
+            "minor": 16000000
+          },
+          "baseReduced": {
+            "currency": "CZK",
+            "minor": 0
+          },
+          "baseStandard": {
+            "currency": "CZK",
+            "minor": 16000000
+          },
+          "counterparty": "Acme Analytics a.s.",
+          "date": "2026-08-11",
+          "number": "2026-097",
+          "tax": {
+            "currency": "CZK",
+            "minor": 3360000
+          },
+          "taxReduced": {
+            "currency": "CZK",
+            "minor": 0
+          },
+          "taxStandard": {
+            "currency": "CZK",
+            "minor": 3360000
+          },
+          "vatId": "CZ93617453"
+        },
+        {
+          "base": {
+            "currency": "CZK",
+            "minor": 8520000
+          },
+          "baseReduced": {
+            "currency": "CZK",
+            "minor": 0
+          },
+          "baseStandard": {
+            "currency": "CZK",
+            "minor": 8520000
+          },
+          "counterparty": "Studio Brno s.r.o.",
+          "date": "2026-08-25",
+          "number": "2026-102",
+          "tax": {
+            "currency": "CZK",
+            "minor": 1789200
+          },
+          "taxReduced": {
+            "currency": "CZK",
+            "minor": 0
+          },
+          "taxStandard": {
+            "currency": "CZK",
+            "minor": 1789200
+          },
+          "vatId": "CZ94722188"
+        }
+      ],
+      "a5": {
+        "baseReduced": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "baseStandard": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "documents": 0,
+        "taxReduced": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "taxStandard": {
+          "currency": "CZK",
+          "minor": 0
+        }
+      },
+      "b2": [
+        {
+          "base": {
+            "currency": "CZK",
+            "minor": 990000
+          },
+          "baseReduced": {
+            "currency": "CZK",
+            "minor": 0
+          },
+          "baseStandard": {
+            "currency": "CZK",
+            "minor": 990000
+          },
+          "counterparty": "Elektro Prokeš s.r.o.",
+          "date": "2026-08-19",
+          "number": "EP-2026-08190",
+          "tax": {
+            "currency": "CZK",
+            "minor": 207900
+          },
+          "taxReduced": {
+            "currency": "CZK",
+            "minor": 0
+          },
+          "taxStandard": {
+            "currency": "CZK",
+            "minor": 207900
+          },
+          "vatId": "CZ27415830"
+        },
+        {
+          "base": {
+            "currency": "CZK",
+            "minor": 4600000
+          },
+          "baseReduced": {
+            "currency": "CZK",
+            "minor": 0
+          },
+          "baseStandard": {
+            "currency": "CZK",
+            "minor": 4600000
+          },
+          "counterparty": "Kvasnička Dev s.r.o.",
+          "date": "2026-08-31",
+          "number": "KV-2026-08",
+          "tax": {
+            "currency": "CZK",
+            "minor": 966000
+          },
+          "taxReduced": {
+            "currency": "CZK",
+            "minor": 0
+          },
+          "taxStandard": {
+            "currency": "CZK",
+            "minor": 966000
+          },
+          "vatId": "CZ95123458"
+        }
+      ],
+      "b3": {
+        "baseReduced": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "baseStandard": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "documents": 0,
+        "taxReduced": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "taxStandard": {
+          "currency": "CZK",
+          "minor": 0
+        }
+      },
+      "c": [
+        {
+          "base": {
+            "currency": "CZK",
+            "minor": 24520000
+          },
+          "matches": true,
+          "returnBase": {
+            "currency": "CZK",
+            "minor": 24520000
+          },
+          "row": "1"
+        },
+        {
+          "base": {
+            "currency": "CZK",
+            "minor": 5590000
+          },
+          "matches": true,
+          "returnBase": {
+            "currency": "CZK",
+            "minor": 5590000
+          },
+          "row": "40"
+        }
+      ],
+      "dueOn": "2026-09-25",
+      "from": "2026-08-01",
+      "matchesReturn": true,
+      "pack": "cz-2026@2026.1",
+      "problems": [],
+      "threshold": {
+        "currency": "CZK",
+        "minor": 1000000
+      },
+      "to": "2026-08-31"
     },
     "isError": false
   },
@@ -1812,11 +2170,191 @@
       ],
       "snapshot": {
         "entries": 16,
-        "hash": "9bb575e6ab9c42c916727b410e1659fb7189bbc846e2098298c72043a113c501",
+        "hash": "3fb732059b417b2ce12f867e05a7cd5fd0ea014b93211f38c43b7214039f6a5d",
         "lastPostedSeq": 50
       },
       "to": "2026-09-30",
       "unmapped": []
+    },
+    "isError": false
+  },
+  {
+    "command": "control_statement",
+    "args": {
+      "from": "2026-09-01",
+      "to": "2026-09-30"
+    },
+    "result": {
+      "a2": [
+        {
+          "base": {
+            "currency": "CZK",
+            "minor": 1231860
+          },
+          "baseReduced": {
+            "currency": "CZK",
+            "minor": 0
+          },
+          "baseStandard": {
+            "currency": "CZK",
+            "minor": 1231860
+          },
+          "counterparty": "Amazon Web Services EMEA SARL",
+          "date": "2026-09-03",
+          "number": "AWS-2026-09",
+          "tax": {
+            "currency": "CZK",
+            "minor": 258691
+          },
+          "taxReduced": {
+            "currency": "CZK",
+            "minor": 0
+          },
+          "taxStandard": {
+            "currency": "CZK",
+            "minor": 258691
+          },
+          "vatId": "LU00000000"
+        }
+      ],
+      "a4": [
+        {
+          "base": {
+            "currency": "CZK",
+            "minor": 7000000
+          },
+          "baseReduced": {
+            "currency": "CZK",
+            "minor": 0
+          },
+          "baseStandard": {
+            "currency": "CZK",
+            "minor": 7000000
+          },
+          "counterparty": "Northwind Traders s.r.o.",
+          "date": "2026-09-15",
+          "number": "2026-114",
+          "tax": {
+            "currency": "CZK",
+            "minor": 1470000
+          },
+          "taxReduced": {
+            "currency": "CZK",
+            "minor": 0
+          },
+          "taxStandard": {
+            "currency": "CZK",
+            "minor": 1470000
+          },
+          "vatId": "CZ91341272"
+        }
+      ],
+      "a5": {
+        "baseReduced": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "baseStandard": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "documents": 0,
+        "taxReduced": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "taxStandard": {
+          "currency": "CZK",
+          "minor": 0
+        }
+      },
+      "b2": [
+        {
+          "base": {
+            "currency": "CZK",
+            "minor": 2160000
+          },
+          "baseReduced": {
+            "currency": "CZK",
+            "minor": 0
+          },
+          "baseStandard": {
+            "currency": "CZK",
+            "minor": 2160000
+          },
+          "counterparty": "Pixelfarm s.r.o.",
+          "date": "2026-09-22",
+          "number": "PF-2026-0917",
+          "tax": {
+            "currency": "CZK",
+            "minor": 453600
+          },
+          "taxReduced": {
+            "currency": "CZK",
+            "minor": 0
+          },
+          "taxStandard": {
+            "currency": "CZK",
+            "minor": 453600
+          },
+          "vatId": "CZ96234563"
+        }
+      ],
+      "b3": {
+        "baseReduced": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "baseStandard": {
+          "currency": "CZK",
+          "minor": 248300
+        },
+        "documents": 1,
+        "taxReduced": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "taxStandard": {
+          "currency": "CZK",
+          "minor": 52143
+        }
+      },
+      "c": [
+        {
+          "base": {
+            "currency": "CZK",
+            "minor": 7000000
+          },
+          "matches": true,
+          "returnBase": {
+            "currency": "CZK",
+            "minor": 7000000
+          },
+          "row": "1"
+        },
+        {
+          "base": {
+            "currency": "CZK",
+            "minor": 2408300
+          },
+          "matches": true,
+          "returnBase": {
+            "currency": "CZK",
+            "minor": 2408300
+          },
+          "row": "40"
+        }
+      ],
+      "dueOn": "2026-10-26",
+      "from": "2026-09-01",
+      "matchesReturn": true,
+      "pack": "cz-2026@2026.1",
+      "problems": [],
+      "threshold": {
+        "currency": "CZK",
+        "minor": 1000000
+      },
+      "to": "2026-09-30"
     },
     "isError": false
   },
@@ -3363,7 +3901,7 @@
       ],
       "snapshot": {
         "entries": 30,
-        "hash": "2b01996afa782235242a20ec311bdf6cbc2b27c0d9428418f3fff0b6d766fea5",
+        "hash": "e980b015d0403c615b8f520ff9c1f92e34dda1e06ec60ac178964acf74673ddc",
         "lastPostedSeq": 52
       },
       "to": "2026-09-30",
@@ -3658,7 +4196,7 @@
       ],
       "snapshot": {
         "entries": 52,
-        "hash": "cb2400e30ca1546aaf1f11fe77304c4401e0387b398c3bd30164f4516afeba14",
+        "hash": "ed33ff51f4545cc51ca491aefd21c4cbfb318c2c2f3fff1d0a77153d819c0656",
         "lastPostedSeq": 52
       },
       "taxableIncome": {
@@ -4576,7 +5114,7 @@
         "postedSeq": 39,
         "reversesId": null,
         "sourceKind": "bank",
-        "sourceRef": null
+        "sourceRef": "AWS-2026-09"
       },
       {
         "approvedBy": null,
@@ -4808,11 +5346,11 @@
             "vatCode": null
           }
         ],
-        "memo": "Notebook Alza",
+        "memo": "Notebook Elektro Prokeš",
         "postedSeq": 44,
         "reversesId": null,
         "sourceKind": "bank",
-        "sourceRef": null
+        "sourceRef": "EP-2026-07114"
       },
       {
         "approvedBy": null,
@@ -4872,7 +5410,7 @@
         "postedSeq": 45,
         "reversesId": null,
         "sourceKind": "bank",
-        "sourceRef": null
+        "sourceRef": "EP-2026-08190"
       },
       {
         "approvedBy": null,
@@ -5247,7 +5785,7 @@
       "lines": [],
       "snapshot": {
         "entries": 52,
-        "hash": "16e182e6523d0b71c4febb77807bb6d8836866878ba78da045ffe8877f853b74",
+        "hash": "5681c4fb97fbf6acdbdd994a3de0c0ff9fa93b651d22b907436ad5677e9aa555",
         "lastPostedSeq": 52
       },
       "taxableIncome": {
@@ -5367,7 +5905,7 @@
       ],
       "snapshot": {
         "entries": 52,
-        "hash": "1253abfd70bd13db85df1debf292dc7818df81e3513199ec11ffa7c78059b4ce",
+        "hash": "e34c0ea9cc6beafd78130990e8422503f2b38e6a01c9050da8efba9db48a66da",
         "lastPostedSeq": 52
       },
       "to": "2026-09-30",
@@ -5842,7 +6380,7 @@
       ],
       "snapshot": {
         "entries": 52,
-        "hash": "543dfc73e02fa31fbecf7e2c8f6e2d76e470a33ce6bfb5296f014293706e1da3",
+        "hash": "bfe8c08821527fc57930ec4dcc32a2fd3d45c611fe33647f5b00acd97fefb0e5",
         "lastPostedSeq": 52
       },
       "taxableIncome": {
@@ -7856,7 +8394,7 @@
         "postedSeq": 39,
         "reversesId": null,
         "sourceKind": "bank",
-        "sourceRef": null
+        "sourceRef": "AWS-2026-09"
       },
       {
         "approvedBy": null,
@@ -8088,11 +8626,11 @@
             "vatCode": null
           }
         ],
-        "memo": "Notebook Alza",
+        "memo": "Notebook Elektro Prokeš",
         "postedSeq": 44,
         "reversesId": null,
         "sourceKind": "bank",
-        "sourceRef": null
+        "sourceRef": "EP-2026-07114"
       },
       {
         "approvedBy": null,
@@ -8152,7 +8690,7 @@
         "postedSeq": 45,
         "reversesId": null,
         "sourceKind": "bank",
-        "sourceRef": null
+        "sourceRef": "EP-2026-08190"
       },
       {
         "approvedBy": null,
@@ -8643,7 +9181,7 @@
       ],
       "snapshot": {
         "entries": 52,
-        "hash": "13f49c6f090d06048fc34e051c532fd9f5595ebc2007d5793478b7e4afe90962",
+        "hash": "0c7b6667e3eedb471bb4044c6b197b2331565e6efe67158187293909b2f267f5",
         "lastPostedSeq": 52
       },
       "totalAssets": {
@@ -8735,7 +9273,7 @@
       ],
       "snapshot": {
         "entries": 52,
-        "hash": "ac1cb262ff60298196c26a2b1c16db91b7e975d4076b4f86743f7730a8a07698",
+        "hash": "c65ee5b4a367660324035f7c6dc5b04c915aa28a2e4cf9b7621a098ba38c029e",
         "lastPostedSeq": 52
       },
       "totalAssets": {
@@ -9039,7 +9577,7 @@
       ],
       "snapshot": {
         "entries": 52,
-        "hash": "d468d6ea2f72c377772bdb248c6fd86af0ee9054adb1a29dda5c4ace3ed73718",
+        "hash": "0331ee6cfa53fcf334d452abde94a581683e14d97337f0abf9345cb328ccf985",
         "lastPostedSeq": 52
       },
       "to": "2026-09-30",
@@ -9336,7 +9874,7 @@
       ],
       "snapshot": {
         "entries": 30,
-        "hash": "517078ed3c1a5b2eb272c6db8ce27cf625557380415da0640b2fa2ec835ce7fb",
+        "hash": "5e98a8f04a3ae3a51e6b14dd97c0a1d851b26ae92c2f337afc6ccba1ba3670fc",
         "lastPostedSeq": 52
       },
       "to": "2026-09-30",
@@ -11005,7 +11543,7 @@
       ],
       "snapshot": {
         "entries": 53,
-        "hash": "3287cc26052b681f7e50ece875b4fcae2442c6d2d3fdc416ec29c30773863656",
+        "hash": "f7c5bf07c0b3d61bd8eca133422a17975b2cbdbec62648c9fb2f69ca6a4a369f",
         "lastPostedSeq": 53
       },
       "totalAssets": {
@@ -11037,7 +11575,7 @@
       "chainIntact": true,
       "entriesChecked": 53,
       "firstBreak": null,
-      "head": "22e20416e248c499b1a0025d901f42a7b403ded61a8238ca3623c21557ae011d"
+      "head": "8e0b87c32abfa1d76173c7aab7b52831471a7e3a24853d24b4424dc05efdb4fa"
     },
     "isError": false,
     "scenario": "new-invoice",
@@ -13760,7 +14298,7 @@
       "chainIntact": true,
       "entriesChecked": 54,
       "firstBreak": null,
-      "head": "a052c6aa9ace6d71984a76f7e17375f0d39992d9764cb93712e5dcafca017d5f"
+      "head": "572eb4d656403112e4a5dc1dd73fefe13c4c4e3fa6ba4f5e9425bbe7c402f050"
     },
     "isError": false,
     "scenario": "bank-workbench",
@@ -13818,7 +14356,7 @@
       ],
       "snapshot": {
         "entries": 54,
-        "hash": "11c6357b21883c14ded80dcd0bae1a27d2372268e66dccfcc5a3cae4114372c7",
+        "hash": "b7e1eef40c93daa449b306a3b935ae0dc0f6a9bb0c7fe726fc7263ae378fe9d5",
         "lastPostedSeq": 54
       },
       "totalAssets": {
@@ -14860,7 +15398,7 @@
       "chainIntact": true,
       "entriesChecked": 55,
       "firstBreak": null,
-      "head": "8c9a0f8f538d4f6ca6a561d95c65e112bf209c7fa9a52595380740387ea0dfb6"
+      "head": "3ec245f00053bf5dbbfc090487ad04bac0f78f6344183dd85d7acac2acb442e7"
     },
     "isError": false,
     "scenario": "bank-workbench",
@@ -15871,7 +16409,7 @@
       "chainIntact": true,
       "entriesChecked": 56,
       "firstBreak": null,
-      "head": "515e45abb9f8f329b003a4103fc94a4d2fe52a2e3c059cf842895589e604a24d"
+      "head": "4cff316d91cef86299b9ed742056c448cf38d6793f10cdfb6093c07ffdc1c78b"
     },
     "isError": false,
     "scenario": "bank-workbench",

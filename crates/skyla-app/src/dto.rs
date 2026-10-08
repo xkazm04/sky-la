@@ -910,6 +910,94 @@ pub struct PackUpdateDto {
     pub message: String,
 }
 
+/// The kontrolní hlášení for a period.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct ControlStatementDto {
+    /// First day.
+    pub from: String,
+    /// Last day.
+    pub to: String,
+    /// Documents above this (VAT included) are itemised.
+    pub threshold: MoneyDto,
+    /// Services received from the EU.
+    pub a2: Vec<KhItemDto>,
+    /// Supplies to VAT payers above the threshold.
+    pub a4: Vec<KhItemDto>,
+    /// Every other supply.
+    pub a5: KhTotalsDto,
+    /// Purchases from VAT payers above the threshold.
+    pub b2: Vec<KhItemDto>,
+    /// Every other purchase.
+    pub b3: KhTotalsDto,
+    /// Section C against the DPH return's rows.
+    pub c: Vec<KhCRowDto>,
+    /// Every section C row equals the return's.
+    pub matches_return: bool,
+    /// Documents that couldn't be placed.
+    pub problems: Vec<String>,
+    /// The filing deadline from the pack.
+    pub due_on: String,
+    /// Pack provenance.
+    pub pack: String,
+}
+
+/// An itemised line.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct KhItemDto {
+    /// Document number.
+    pub number: String,
+    /// The other party.
+    pub counterparty: String,
+    /// Their VAT id.
+    pub vat_id: String,
+    /// DUZP or DPPD.
+    pub date: String,
+    /// Base, standard rate.
+    pub base_standard: MoneyDto,
+    /// Tax, standard rate.
+    pub tax_standard: MoneyDto,
+    /// Base, reduced rate.
+    pub base_reduced: MoneyDto,
+    /// Tax, reduced rate.
+    pub tax_reduced: MoneyDto,
+    /// Base at both rates.
+    pub base: MoneyDto,
+    /// Tax at both rates.
+    pub tax: MoneyDto,
+}
+
+/// A summary section.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct KhTotalsDto {
+    /// Base, standard rate.
+    pub base_standard: MoneyDto,
+    /// Tax, standard rate.
+    pub tax_standard: MoneyDto,
+    /// Base, reduced rate.
+    pub base_reduced: MoneyDto,
+    /// Tax, reduced rate.
+    pub tax_reduced: MoneyDto,
+    /// Documents counted.
+    pub documents: u32,
+}
+
+/// One section C row.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct KhCRowDto {
+    /// The return row.
+    pub row: String,
+    /// What the statement totals.
+    pub base: MoneyDto,
+    /// What the return says.
+    pub return_base: MoneyDto,
+    /// They agree.
+    pub matches: bool,
+}
+
 /// The rule pack in force.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]

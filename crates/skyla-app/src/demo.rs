@@ -337,6 +337,8 @@ pub(crate) struct Domain {
     pub(crate) supplier: DomainSupplier,
     /// Customers, by the name invoices use.
     pub(crate) clients: Vec<DomainClient>,
+    /// Who sent each received invoice (by its reference in the journal).
+    pub(crate) purchases: Vec<DomainPurchase>,
     /// Recurring invoice templates.
     pub(crate) recurring: Vec<DomainRecurring>,
     /// Invoice documents (issued ones link to the ledger by number).
@@ -346,6 +348,16 @@ pub(crate) struct Domain {
     pub(crate) proposals: Vec<DomainProposal>,
     /// The egress register.
     pub(crate) egress_runs: Vec<crate::dto::EgressRunDto>,
+}
+
+/// A received invoice's supplier.
+#[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub(crate) struct DomainPurchase {
+    #[serde(rename = "ref")]
+    pub(crate) reference: String,
+    pub(crate) supplier: String,
+    pub(crate) vat_id: Option<String>,
 }
 
 /// A recurring invoice template.

@@ -43,6 +43,53 @@
       "address": "Masarykova 12\n602 00 Brno"
     }
   ],
+  "purchases": [
+    {
+      "ref": "KV-2026-05",
+      "supplier": "Kvasnička Dev s.r.o.",
+      "vatId": "CZ95123458"
+    },
+    {
+      "ref": "KV-2026-08",
+      "supplier": "Kvasnička Dev s.r.o.",
+      "vatId": "CZ95123458"
+    },
+    {
+      "ref": "PF-2026-0612",
+      "supplier": "Pixelfarm s.r.o.",
+      "vatId": "CZ96234563"
+    },
+    {
+      "ref": "PF-2026-0917",
+      "supplier": "Pixelfarm s.r.o.",
+      "vatId": "CZ96234563"
+    },
+    {
+      "ref": "MH-14",
+      "supplier": "Marek Horák",
+      "vatId": null
+    },
+    {
+      "ref": "MH-19",
+      "supplier": "Marek Horák",
+      "vatId": null
+    },
+    {
+      "ref": "AWS-2026-09",
+      "supplier": "Amazon Web Services EMEA SARL",
+      "vatId": "LU00000000"
+    },
+    {
+      "ref": "EP-2026-07114",
+      "supplier": "Elektro Prokeš s.r.o.",
+      "vatId": "CZ27415830"
+    },
+    {
+      "ref": "EP-2026-08190",
+      "supplier": "Elektro Prokeš s.r.o.",
+      "vatId": "CZ27415830"
+    }
+  ],
   "invoices": [
     {
       "number": "2026-041",

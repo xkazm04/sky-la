@@ -4790,6 +4790,7 @@ dependencies = [
  "skyla-money",
  "skyla-render",
  "skyla-rules",
+ "skyla-tax-cz",
  "specta",
  "thiserror 2.0.21",
  "ureq",
@@ -4927,6 +4928,11 @@ dependencies = [
 [[package]]
 name = "skyla-tax-cz"
 version = "0.1.0"
+dependencies = [
+ "serde",
+ "skyla-money",
+ "skyla-rules",
+]
 
 [[package]]
 name = "slab"

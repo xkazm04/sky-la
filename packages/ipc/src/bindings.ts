@@ -34,6 +34,8 @@ export const commands = {
 	egressRegister: () => __TAURI_INVOKE<EgressRunDto[]>("egress_register"),
 	/**  The DPH return for a period, mapped by the rule pack. */
 	vatReturn: (from: string, to: string) => typedError<VatReturnDto, IpcFailure>(__TAURI_INVOKE("vat_return", { from, to })),
+	/**  The kontrolní hlášení for a period, checked against the return. */
+	controlStatement: (from: string, to: string) => typedError<ControlStatementDto, IpcFailure>(__TAURI_INVOKE("control_statement", { from, to })),
 	/**  The rule pack in force, with citations. */
 	rulePack: () => __TAURI_INVOKE<RulePackDto>("rule_pack"),
 	/**  A document rendered to PDF (`cs` or `en`), base64-encoded. */
@@ -288,6 +290,36 @@ export type ClientDto = {
 	dic: string | null,
 	/**  Postal address. */
 	address: string | null,
+};
+
+/**  The kontrolní hlášení for a period. */
+export type ControlStatementDto = {
+	/**  First day. */
+	from: string,
+	/**  Last day. */
+	to: string,
+	/**  Documents above this (VAT included) are itemised. */
+	threshold: MoneyDto,
+	/**  Services received from the EU. */
+	a2: KhItemDto[],
+	/**  Supplies to VAT payers above the threshold. */
+	a4: KhItemDto[],
+	/**  Every other supply. */
+	a5: KhTotalsDto,
+	/**  Purchases from VAT payers above the threshold. */
+	b2: KhItemDto[],
+	/**  Every other purchase. */
+	b3: KhTotalsDto,
+	/**  Section C against the DPH return's rows. */
+	c: KhCRowDto[],
+	/**  Every section C row equals the return's. */
+	matchesReturn: boolean,
+	/**  Documents that couldn't be placed. */
+	problems: string[],
+	/**  The filing deadline from the pack. */
+	dueOn: string,
+	/**  Pack provenance. */
+	pack: string,
 };
 
 /**  A rendered document, ready to save or open. */
@@ -569,6 +601,56 @@ export type JournalLineDto = {
 	vatCode: string | null,
 	/**  Free text. */
 	memo: string,
+};
+
+/**  One section C row. */
+export type KhCRowDto = {
+	/**  The return row. */
+	row: string,
+	/**  What the statement totals. */
+	base: MoneyDto,
+	/**  What the return says. */
+	returnBase: MoneyDto,
+	/**  They agree. */
+	matches: boolean,
+};
+
+/**  An itemised line. */
+export type KhItemDto = {
+	/**  Document number. */
+	number: string,
+	/**  The other party. */
+	counterparty: string,
+	/**  Their VAT id. */
+	vatId: string,
+	/**  DUZP or DPPD. */
+	date: string,
+	/**  Base, standard rate. */
+	baseStandard: MoneyDto,
+	/**  Tax, standard rate. */
+	taxStandard: MoneyDto,
+	/**  Base, reduced rate. */
+	baseReduced: MoneyDto,
+	/**  Tax, reduced rate. */
+	taxReduced: MoneyDto,
+	/**  Base at both rates. */
+	base: MoneyDto,
+	/**  Tax at both rates. */
+	tax: MoneyDto,
+};
+
+/**  A summary section. */
+export type KhTotalsDto = {
+	/**  Base, standard rate. */
+	baseStandard: MoneyDto,
+	/**  Tax, standard rate. */
+	taxStandard: MoneyDto,
+	/**  Base, reduced rate. */
+	baseReduced: MoneyDto,
+	/**  Tax, reduced rate. */
+	taxReduced: MoneyDto,
+	/**  Documents counted. */
+	documents: number,
 };
 
 /**  Statutory late interest on one receivable. */
