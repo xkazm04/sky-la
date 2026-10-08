@@ -393,70 +393,143 @@ pub struct MatchCandidateDto {
     pub contributions: Vec<ScoreContributionDto>,
 }
 
-/// A foreign-currency amount behind a bank line.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
-#[serde(rename_all = "camelCase")]
-pub struct ForeignAmountDto {
-    /// The original amount.
-    pub amount: MoneyDto,
-    /// The conversion rate.
-    pub rate: String,
-}
-
-/// A bank statement line.
+/// A bank statement line in the workbench.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct BankLineDto {
-    /// Stable id.
+    /// Stable id: `s<import>-<line>`.
     pub id: String,
     /// Booking date.
     pub date: String,
-    /// Who.
+    /// Who (or the bank's text when no party is named).
     pub counterparty: String,
-    /// VS, card or other reference.
+    /// The other party's account, canonical.
+    pub counterparty_account: Option<String>,
+    /// Symbols and message.
     pub reference: String,
-    /// Signed amount in the account currency.
+    /// Signed amount.
     pub amount: MoneyDto,
-    /// The original foreign amount, for card payments abroad.
-    pub foreign: Option<ForeignAmountDto>,
-    /// `open` or `matched`.
+    /// `certain` (accepted with one press), `needs_you`, or `booked`.
     pub status: String,
-    /// What it was matched to.
-    pub matched_to: Option<String>,
-    /// The proposal for this line.
+    /// What it was booked as.
+    pub booked_as: Option<String>,
+    /// The entry it was booked as.
+    pub entry_id: Option<i64>,
+    /// What the workbench proposes, e.g. `Settle 2026-102`.
+    pub proposal: Option<String>,
+    /// Why it isn't accepted with one press.
+    pub held_because: Option<String>,
+    /// An inbox proposal about the line.
     pub proposal_id: Option<String>,
-    /// Ranked candidates.
+    /// Scored candidates.
     pub candidates: Vec<MatchCandidateDto>,
 }
 
-/// An imported statement with its tie-out.
+/// One imported file.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct BankImportDto {
+    /// File name.
+    pub file: String,
+    /// First day.
+    pub from: String,
+    /// Last day.
+    pub to: String,
+    /// New lines it brought.
+    pub lines: u32,
+    /// Its closing balance.
+    pub closing: Option<MoneyDto>,
+}
+
+/// A bank rule.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct BankRuleDto {
+    /// Id.
+    pub id: u32,
+    /// Name.
+    pub name: String,
+    /// When and what, in words.
+    pub summary: String,
+    /// Accepted with the certain ones.
+    pub auto_accept: bool,
+}
+
+/// A rule as the user creates it from a line.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct BankRuleInputDto {
+    /// Name.
+    pub name: String,
+    /// The account to book to.
+    pub account: String,
+    /// An input VAT code, when the payments carry VAT.
+    pub vat_code: Option<String>,
+    /// Accept future lines it fits with the certain ones.
+    pub auto_accept: bool,
+}
+
+/// One part of how a line is booked: an invoice to settle (by its ledger
+/// entry) or an account row with an optional VAT code. Amounts as typed.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct BankAllocationDto {
+    /// The invoice's ledger entry.
+    pub entry_id: Option<i64>,
+    /// Or an account.
+    pub account: Option<String>,
+    /// Input VAT code for an account row.
+    pub vat_code: Option<String>,
+    /// Gross amount, e.g. `3 630,00`.
+    pub amount: String,
+}
+
+/// The bank workbench.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct BankStatementDto {
-    /// Bank account label.
+    /// `221 · ČSOB Business ··4412`.
     pub account_name: String,
-    /// Imported file.
+    /// The latest file.
     pub file: String,
-    /// `CAMT.053`, `MT940`, `ABO`, `CSV`.
+    /// Its format.
     pub format: String,
-    /// First booking day.
+    /// Its first day.
     pub from: String,
-    /// Last booking day.
+    /// Its last day.
     pub to: String,
-    /// The ledger's balance before the statement.
+    /// Its opening balance.
     pub opening: MoneyDto,
-    /// Sum of incoming lines.
+    /// Money in.
     pub credits: MoneyDto,
-    /// Sum of outgoing lines (negative).
+    /// Money out.
     pub debits: MoneyDto,
-    /// Opening plus every line.
+    /// Opening + lines.
     pub closing: MoneyDto,
-    /// The closing balance the bank reported.
+    /// What the bank reports.
     pub reported_closing: MoneyDto,
-    /// `closing == reported_closing`.
+    /// Always true: a statement that doesn't tie out is refused at import.
     pub ties_out: bool,
-    /// The lines, newest first.
+    /// Every import, oldest first.
+    pub imports: Vec<BankImportDto>,
+    /// Every line, newest first.
     pub lines: Vec<BankLineDto>,
+    /// The user's rules.
+    pub rules: Vec<BankRuleDto>,
+    /// Accounts a line can be booked to.
+    pub accounts: Vec<AccountChoiceDto>,
+    /// Input VAT codes a purchase can carry.
+    pub vat_codes: Vec<VatCodeChoiceDto>,
+}
+
+/// An account the user can pick.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct AccountChoiceDto {
+    /// Code.
+    pub code: String,
+    /// Name.
+    pub name: String,
 }
 
 /// One line of a proposed entry, split into debit and credit for display.

@@ -16,6 +16,8 @@ export {
 export { Badge, type BadgeProps, type Tone, toneClasses, toneIcon } from "./components/Badge";
 export { Button, type ButtonProps, type ButtonVariant, buttonClasses } from "./components/Button";
 export {
+  Checkbox,
+  type CheckboxProps,
   Select,
   type SelectOption,
   type SelectProps,

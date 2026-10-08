@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- sky-la demo: a synthetic ČSOB-style camt.053 statement for the demo entity. -->
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:camt.053.001.02">
+  <BkToCstmrStmt>
+    <GrpHdr><MsgId>CSOB-2026-10-06</MsgId><CreDtTm>2026-10-06T22:00:00</CreDtTm></GrpHdr>
+    <Stmt>
+      <Id>20261006-0123454412</Id>
+      <ElctrncSeqNb>41</ElctrncSeqNb>
+      <FrToDt><FrDtTm>2026-10-01T00:00:00</FrDtTm><ToDtTm>2026-10-06T23:59:59</ToDtTm></FrToDt>
+      <Acct><Id><IBAN>CZ2703000000000123454412</IBAN></Id><Ccy>CZK</Ccy></Acct>
+      <Bal><Tp><CdOrPrtry><Cd>OPBD</Cd></CdOrPrtry></Tp><Amt Ccy="CZK">885453.50</Amt><CdtDbtInd>CRDT</CdtDbtInd><Dt><Dt>2026-10-01</Dt></Dt></Bal>
+      <Bal><Tp><CdOrPrtry><Cd>CLBD</Cd></CdOrPrtry></Tp><Amt Ccy="CZK">849649.58</Amt><CdtDbtInd>CRDT</CdtDbtInd><Dt><Dt>2026-10-06</Dt></Dt></Bal>
+      <Ntry>
+        <NtryRef>1</NtryRef>
+        <Amt Ccy="CZK">26136.00</Amt><CdtDbtInd>DBIT</CdtDbtInd><RvslInd>false</RvslInd>
+        <Sts>BOOK</Sts>
+        <BookgDt><Dt>2026-10-01</Dt></BookgDt><ValDt><Dt>2026-10-01</Dt></ValDt>
+        <AcctSvcrRef>CSOB-90001</AcctSvcrRef>
+        <NtryDtls><TxDtls><Refs><EndToEndId>/VS20260917</EndToEndId></Refs><RltdPties><Cdtr><Nm>Pixelfarm s.r.o.</Nm></Cdtr><CdtrAcct><Id><Othr><Id>2900887766/2010</Id></Othr></Id></CdtrAcct></RltdPties><RmtInf><Ustrd>Faktura PF-2026-0917</Ustrd></RmtInf></TxDtls></NtryDtls>
+      </Ntry>
+      <Ntry>
+        <NtryRef>2</NtryRef>
+        <Amt Ccy="CZK">1152.92</Amt><CdtDbtInd>DBIT</CdtDbtInd><RvslInd>false</RvslInd>
+        <Sts>BOOK</Sts>
+        <BookgDt><Dt>2026-10-03</Dt></BookgDt><ValDt><Dt>2026-10-03</Dt></ValDt>
+        <AcctSvcrRef>CSOB-90002</AcctSvcrRef>
+        <NtryDtls><TxDtls><RltdPties><Cdtr><Nm>Google Ireland Ltd</Nm></Cdtr></RltdPties></TxDtls></NtryDtls><AddtlNtryInf>Platba kartou GOOGLE*WORKSPACE 45,86 EUR kurz 25,140</AddtlNtryInf>
+      </Ntry>
+      <Ntry>
+        <NtryRef>3</NtryRef>
+        <Amt Ccy="CZK">6000.00</Amt><CdtDbtInd>DBIT</CdtDbtInd><RvslInd>false</RvslInd>
+        <Sts>BOOK</Sts>
+        <BookgDt><Dt>2026-10-04</Dt></BookgDt><ValDt><Dt>2026-10-04</Dt></ValDt>
+        <AcctSvcrRef>CSOB-90003</AcctSvcrRef>
+        <AddtlNtryInf>Výběr z bankomatu Brno, Masarykova</AddtlNtryInf>
+      </Ntry>
+      <Ntry>
+        <NtryRef>4</NtryRef>
+        <Amt Ccy="CZK">2420.00</Amt><CdtDbtInd>DBIT</CdtDbtInd><RvslInd>false</RvslInd>
+        <Sts>BOOK</Sts>
+        <BookgDt><Dt>2026-10-05</Dt></BookgDt><ValDt><Dt>2026-10-05</Dt></ValDt>
+        <AcctSvcrRef>CSOB-90004</AcctSvcrRef>
+        <NtryDtls><TxDtls><RltdPties><Cdtr><Nm>Alza.cz a.s.</Nm></Cdtr><CdtrAcct><Id><Othr><Id>2700000001/2700</Id></Othr></Id></CdtrAcct></RltdPties><RmtInf><Ustrd>Objednávka 541227 USB-C dock</Ustrd></RmtInf></TxDtls></NtryDtls>
+      </Ntry>
+      <Ntry>
+        <NtryRef>5</NtryRef>
+        <Amt Ccy="CZK">95.00</Amt><CdtDbtInd>DBIT</CdtDbtInd><RvslInd>false</RvslInd>
+        <Sts>BOOK</Sts>
+        <BookgDt><Dt>2026-10-06</Dt></BookgDt><ValDt><Dt>2026-10-06</Dt></ValDt>
+        <AcctSvcrRef>CSOB-90005</AcctSvcrRef>
+        <AddtlNtryInf>Poplatek za vedení účtu</AddtlNtryInf>
+      </Ntry>
+    </Stmt>
+  </BkToCstmrStmt>
+</Document>

@@ -82,7 +82,7 @@ export function Shell({
           id: "bank",
           label: "Bank",
           icon: Landmark,
-          count: count(ready(bank)?.lines.filter((l) => l.status === "open").length),
+          count: count(ready(bank)?.lines.filter((l) => l.status !== "booked").length),
         },
         { id: "statements", label: "Statements", icon: ChartNoAxesColumn },
         { id: "taxes", label: "Taxes", icon: Percent },

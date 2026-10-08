@@ -52,9 +52,25 @@ export const commands = {
 	issueInvoice: (id: number, issueDate: string) => typedError<InvoiceDto, IpcFailure>(__TAURI_INVOKE("issue_invoice", { id, issueDate })),
 	/**  Deletes a draft. */
 	deleteInvoiceDraft: (id: number) => typedError<null, IpcFailure>(__TAURI_INVOKE("delete_invoice_draft", { id })),
+	/**  Imports a statement file (base64): tied out and deduplicated first. */
+	importBankStatement: (fileName: string, contentBase64: string) => typedError<BankStatementDto, IpcFailure>(__TAURI_INVOKE("import_bank_statement", { fileName, contentBase64 })),
+	/**  Accepts every line the matcher or a rule is certain about. */
+	acceptCertainBankLines: () => typedError<BankStatementDto, IpcFailure>(__TAURI_INVOKE("accept_certain_bank_lines")),
+	/**  Books a line as the user chose: invoices, or account rows (a split). */
+	bookBankLine: (line: string, allocations: BankAllocationDto[]) => typedError<BankStatementDto, IpcFailure>(__TAURI_INVOKE("book_bank_line", { line, allocations })),
+	/**  Makes a rule from a line and books the line by it. */
+	createBankRule: (line: string, rule: BankRuleInputDto) => typedError<BankStatementDto, IpcFailure>(__TAURI_INVOKE("create_bank_rule", { line, rule })),
 };
 
 /* Types */
+/**  An account the user can pick. */
+export type AccountChoiceDto = {
+	/**  Code. */
+	code: string,
+	/**  Name. */
+	name: string,
+};
+
 /**  Build information. */
 export type AppInfo = {
 	/**  Product name. */
@@ -87,56 +103,123 @@ export type BalanceSheetDto = {
 	snapshot: SnapshotDto,
 };
 
-/**  A bank statement line. */
+/**
+ *  One part of how a line is booked: an invoice to settle (by its ledger
+ *  entry) or an account row with an optional VAT code. Amounts as typed.
+ */
+export type BankAllocationDto = {
+	/**  The invoice's ledger entry. */
+	entryId: number | null,
+	/**  Or an account. */
+	account: string | null,
+	/**  Input VAT code for an account row. */
+	vatCode: string | null,
+	/**  Gross amount, e.g. `3 630,00`. */
+	amount: string,
+};
+
+/**  One imported file. */
+export type BankImportDto = {
+	/**  File name. */
+	file: string,
+	/**  First day. */
+	from: string,
+	/**  Last day. */
+	to: string,
+	/**  New lines it brought. */
+	lines: number,
+	/**  Its closing balance. */
+	closing: MoneyDto | null,
+};
+
+/**  A bank statement line in the workbench. */
 export type BankLineDto = {
-	/**  Stable id. */
+	/**  Stable id: `s<import>-<line>`. */
 	id: string,
 	/**  Booking date. */
 	date: string,
-	/**  Who. */
+	/**  Who (or the bank's text when no party is named). */
 	counterparty: string,
-	/**  VS, card or other reference. */
+	/**  The other party's account, canonical. */
+	counterpartyAccount: string | null,
+	/**  Symbols and message. */
 	reference: string,
-	/**  Signed amount in the account currency. */
+	/**  Signed amount. */
 	amount: MoneyDto,
-	/**  The original foreign amount, for card payments abroad. */
-	foreign: ForeignAmountDto | null,
-	/**  `open` or `matched`. */
+	/**  `certain` (accepted with one press), `needs_you`, or `booked`. */
 	status: string,
-	/**  What it was matched to. */
-	matchedTo: string | null,
-	/**  The proposal for this line. */
+	/**  What it was booked as. */
+	bookedAs: string | null,
+	/**  The entry it was booked as. */
+	entryId: number | null,
+	/**  What the workbench proposes, e.g. `Settle 2026-102`. */
+	proposal: string | null,
+	/**  Why it isn't accepted with one press. */
+	heldBecause: string | null,
+	/**  An inbox proposal about the line. */
 	proposalId: string | null,
-	/**  Ranked candidates. */
+	/**  Scored candidates. */
 	candidates: MatchCandidateDto[],
 };
 
-/**  An imported statement with its tie-out. */
+/**  A bank rule. */
+export type BankRuleDto = {
+	/**  Id. */
+	id: number,
+	/**  Name. */
+	name: string,
+	/**  When and what, in words. */
+	summary: string,
+	/**  Accepted with the certain ones. */
+	autoAccept: boolean,
+};
+
+/**  A rule as the user creates it from a line. */
+export type BankRuleInputDto = {
+	/**  Name. */
+	name: string,
+	/**  The account to book to. */
+	account: string,
+	/**  An input VAT code, when the payments carry VAT. */
+	vatCode: string | null,
+	/**  Accept future lines it fits with the certain ones. */
+	autoAccept: boolean,
+};
+
+/**  The bank workbench. */
 export type BankStatementDto = {
-	/**  Bank account label. */
+	/**  `221 · ČSOB Business ··4412`. */
 	accountName: string,
-	/**  Imported file. */
+	/**  The latest file. */
 	file: string,
-	/**  `CAMT.053`, `MT940`, `ABO`, `CSV`. */
+	/**  Its format. */
 	format: string,
-	/**  First booking day. */
+	/**  Its first day. */
 	from: string,
-	/**  Last booking day. */
+	/**  Its last day. */
 	to: string,
-	/**  The ledger's balance before the statement. */
+	/**  Its opening balance. */
 	opening: MoneyDto,
-	/**  Sum of incoming lines. */
+	/**  Money in. */
 	credits: MoneyDto,
-	/**  Sum of outgoing lines (negative). */
+	/**  Money out. */
 	debits: MoneyDto,
-	/**  Opening plus every line. */
+	/**  Opening + lines. */
 	closing: MoneyDto,
-	/**  The closing balance the bank reported. */
+	/**  What the bank reports. */
 	reportedClosing: MoneyDto,
-	/**  `closing == reported_closing`. */
+	/**  Always true: a statement that doesn't tie out is refused at import. */
 	tiesOut: boolean,
-	/**  The lines, newest first. */
+	/**  Every import, oldest first. */
+	imports: BankImportDto[],
+	/**  Every line, newest first. */
 	lines: BankLineDto[],
+	/**  The user's rules. */
+	rules: BankRuleDto[],
+	/**  Accounts a line can be booked to. */
+	accounts: AccountChoiceDto[],
+	/**  Input VAT codes a purchase can carry. */
+	vatCodes: VatCodeChoiceDto[],
 };
 
 /**  Cash basis (*daňová evidence*). */
@@ -293,14 +376,6 @@ export type EntityDto = {
 	asOf: string,
 	/**  Bank account label, masked. */
 	bankName: string,
-};
-
-/**  A foreign-currency amount behind a bank line. */
-export type ForeignAmountDto = {
-	/**  The original amount. */
-	amount: MoneyDto,
-	/**  The conversion rate. */
-	rate: string,
 };
 
 /**  Journal integrity for the status line. */

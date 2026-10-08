@@ -614,166 +614,266 @@
     "args": {},
     "result": {
       "accountName": "221 · ČSOB Business ··4412",
+      "accounts": [
+        {
+          "code": "211",
+          "name": "Cash"
+        },
+        {
+          "code": "321",
+          "name": "Trade payables"
+        },
+        {
+          "code": "501",
+          "name": "Materials consumed"
+        },
+        {
+          "code": "502",
+          "name": "Energy consumed"
+        },
+        {
+          "code": "504",
+          "name": "Cost of goods sold"
+        },
+        {
+          "code": "511",
+          "name": "Repairs and maintenance"
+        },
+        {
+          "code": "512",
+          "name": "Travel"
+        },
+        {
+          "code": "513",
+          "name": "Entertainment"
+        },
+        {
+          "code": "518",
+          "name": "Other services"
+        },
+        {
+          "code": "521",
+          "name": "Wages and salaries"
+        },
+        {
+          "code": "524",
+          "name": "Statutory social and health insurance"
+        },
+        {
+          "code": "538",
+          "name": "Other taxes and fees"
+        },
+        {
+          "code": "543",
+          "name": "Gifts"
+        },
+        {
+          "code": "545",
+          "name": "Other fines and penalties"
+        },
+        {
+          "code": "548",
+          "name": "Other operating expenses"
+        },
+        {
+          "code": "551",
+          "name": "Depreciation and amortisation"
+        },
+        {
+          "code": "562",
+          "name": "Interest expense"
+        },
+        {
+          "code": "563",
+          "name": "Foreign exchange losses"
+        },
+        {
+          "code": "568",
+          "name": "Other financial expenses"
+        },
+        {
+          "code": "591",
+          "name": "Income tax – current"
+        },
+        {
+          "code": "601",
+          "name": "Sales of own products"
+        },
+        {
+          "code": "602",
+          "name": "Sales of services"
+        },
+        {
+          "code": "604",
+          "name": "Sales of goods"
+        },
+        {
+          "code": "641",
+          "name": "Proceeds from sale of long-term assets"
+        },
+        {
+          "code": "644",
+          "name": "Contractual penalties and late-payment interest"
+        },
+        {
+          "code": "648",
+          "name": "Other operating income"
+        },
+        {
+          "code": "662",
+          "name": "Interest income"
+        },
+        {
+          "code": "663",
+          "name": "Foreign exchange gains"
+        },
+        {
+          "code": "668",
+          "name": "Other financial income"
+        }
+      ],
       "closing": {
         "currency": "CZK",
-        "minor": 90274158
+        "minor": 84964958
       },
       "credits": {
         "currency": "CZK",
-        "minor": 5309200
+        "minor": 0
       },
       "debits": {
         "currency": "CZK",
         "minor": -3580392
       },
-      "file": "csob_2026-10-06.xml",
+      "file": "csob-2026-10-06.xml",
       "format": "CAMT.053",
       "from": "2026-10-01",
+      "imports": [
+        {
+          "closing": {
+            "currency": "CZK",
+            "minor": 84964958
+          },
+          "file": "csob-2026-10-06.xml",
+          "from": "2026-10-01",
+          "lines": 5,
+          "to": "2026-10-06"
+        }
+      ],
       "lines": [
         {
           "amount": {
             "currency": "CZK",
             "minor": -9500
           },
+          "bookedAs": null,
           "candidates": [],
-          "counterparty": "ČSOB",
+          "counterparty": "Poplatek za vedení účtu",
+          "counterpartyAccount": null,
           "date": "2026-10-06",
-          "foreign": null,
-          "id": "bl-6",
-          "matchedTo": null,
+          "entryId": null,
+          "heldBecause": "no received invoice or rule fits; book it to an account or create a rule",
+          "id": "s1-5",
+          "proposal": null,
           "proposalId": "p-bank-fee",
-          "reference": "Account fee · September",
-          "status": "open"
+          "reference": "Poplatek za vedení účtu",
+          "status": "needs_you"
         },
         {
           "amount": {
             "currency": "CZK",
             "minor": -242000
           },
+          "bookedAs": null,
           "candidates": [],
           "counterparty": "Alza.cz a.s.",
+          "counterpartyAccount": "2700000001/2700",
           "date": "2026-10-05",
-          "foreign": null,
-          "id": "bl-5",
-          "matchedTo": null,
+          "entryId": null,
+          "heldBecause": "no received invoice or rule fits; book it to an account or create a rule",
+          "id": "s1-4",
+          "proposal": null,
           "proposalId": "p-alza",
-          "reference": "VS 4402917733",
-          "status": "open"
+          "reference": "Objednávka 541227 USB-C dock",
+          "status": "needs_you"
         },
         {
           "amount": {
             "currency": "CZK",
             "minor": -600000
           },
+          "bookedAs": null,
           "candidates": [],
-          "counterparty": "ATM withdrawal, Brno",
+          "counterparty": "Výběr z bankomatu Brno, Masarykova",
+          "counterpartyAccount": null,
           "date": "2026-10-04",
-          "foreign": null,
-          "id": "bl-4",
-          "matchedTo": null,
+          "entryId": null,
+          "heldBecause": "no received invoice or rule fits; book it to an account or create a rule",
+          "id": "s1-3",
+          "proposal": null,
           "proposalId": "p-atm",
-          "reference": "No reference",
-          "status": "open"
+          "reference": "Výběr z bankomatu Brno, Masarykova",
+          "status": "needs_you"
         },
         {
           "amount": {
             "currency": "CZK",
             "minor": -115292
           },
+          "bookedAs": null,
           "candidates": [],
           "counterparty": "Google Ireland Ltd",
+          "counterpartyAccount": null,
           "date": "2026-10-03",
-          "foreign": {
-            "amount": {
-              "currency": "EUR",
-              "minor": -4586
-            },
-            "rate": "25.140"
-          },
-          "id": "bl-3",
-          "matchedTo": null,
+          "entryId": null,
+          "heldBecause": "no received invoice or rule fits; book it to an account or create a rule",
+          "id": "s1-2",
+          "proposal": null,
           "proposalId": "p-google",
-          "reference": "CARD 45,86 EUR · IE",
-          "status": "open"
-        },
-        {
-          "amount": {
-            "currency": "CZK",
-            "minor": 5309200
-          },
-          "candidates": [
-            {
-              "confidence": "certain",
-              "contributions": [
-                {
-                  "reason": "Amount matches the open balance exactly",
-                  "weight": "+.40"
-                },
-                {
-                  "reason": "VS 2026102 is the invoice number",
-                  "weight": "+.35"
-                },
-                {
-                  "reason": "Payer account is on the client record",
-                  "weight": "+.15"
-                },
-                {
-                  "reason": "Payer name matches",
-                  "weight": "+.05"
-                },
-                {
-                  "reason": "Paid 8 days after the due date",
-                  "weight": "+.01"
-                }
-              ],
-              "detail": "53 092,00 open · due 24 Sep",
-              "label": "Invoice 2026-102 · Studio Brno",
-              "score": "0.96"
-            },
-            {
-              "confidence": "unlikely",
-              "contributions": [
-                {
-                  "reason": "Amount differs",
-                  "weight": "+.00"
-                },
-                {
-                  "reason": "VS differs",
-                  "weight": "+.00"
-                },
-                {
-                  "reason": "Payer differs",
-                  "weight": "+.04"
-                }
-              ],
-              "detail": "Draft · amount and VS differ",
-              "label": "Invoice 2026-121 · Acme Analytics",
-              "score": "0.04"
-            }
-          ],
-          "counterparty": "Studio Brno",
-          "date": "2026-10-02",
-          "foreign": null,
-          "id": "bl-2",
-          "matchedTo": null,
-          "proposalId": "p-studio-brno",
-          "reference": "VS 2026102",
-          "status": "open"
+          "reference": "Platba kartou GOOGLE*WORKSPACE 45,86 EUR kurz 25,140",
+          "status": "needs_you"
         },
         {
           "amount": {
             "currency": "CZK",
             "minor": -2613600
           },
-          "candidates": [],
+          "bookedAs": null,
+          "candidates": [
+            {
+              "confidence": "likely",
+              "contributions": [
+                {
+                  "reason": "VS 20260917 is PF-2026-0917's",
+                  "weight": "+45"
+                },
+                {
+                  "reason": "the amount equals what's open, 26 136,00 Kč",
+                  "weight": "+30"
+                },
+                {
+                  "reason": "the payer's name is 100 % like Pixelfarm s.r.o.",
+                  "weight": "+15"
+                },
+                {
+                  "reason": "paid between issue and the due date (or soon after)",
+                  "weight": "+5"
+                }
+              ],
+              "detail": "26 136,00 Kč",
+              "label": "PF-2026-0917",
+              "score": "95"
+            }
+          ],
           "counterparty": "Pixelfarm s.r.o.",
+          "counterpartyAccount": "2900887766/2010",
           "date": "2026-10-01",
-          "foreign": null,
-          "id": "bl-1",
-          "matchedTo": "Received invoice PF-2026-0917",
+          "entryId": null,
+          "heldBecause": null,
+          "id": "s1-1",
+          "proposal": "Pay PF-2026-0917",
           "proposalId": null,
-          "reference": "VS 20260917",
-          "status": "matched"
+          "reference": "VS 20260917 · Faktura PF-2026-0917",
+          "status": "certain"
         }
       ],
       "opening": {
@@ -782,10 +882,23 @@
       },
       "reportedClosing": {
         "currency": "CZK",
-        "minor": 90274158
+        "minor": 84964958
       },
+      "rules": [],
       "tiesOut": true,
-      "to": "2026-10-06"
+      "to": "2026-10-06",
+      "vatCodes": [
+        {
+          "code": "IN21",
+          "name": "Domestic purchase, standard rate (input VAT)",
+          "ratePercent": "21"
+        },
+        {
+          "code": "IN12",
+          "name": "Domestic purchase, reduced rate (input VAT)",
+          "ratePercent": "12"
+        }
+      ]
     },
     "isError": false
   },
@@ -796,64 +909,9 @@
       {
         "amount": {
           "currency": "CZK",
-          "minor": 5309200
-        },
-        "bankLineId": "bl-2",
-        "confidence": "certain",
-        "detail": "Amount, VS and payer match · settles the open balance",
-        "dueOn": null,
-        "entry": {
-          "balanced": true,
-          "date": "2026-10-02",
-          "lines": [
-            {
-              "account": "221",
-              "accountName": "Bank accounts",
-              "credit": null,
-              "debit": {
-                "currency": "CZK",
-                "minor": 5309200
-              },
-              "vatCode": null
-            },
-            {
-              "account": "311",
-              "accountName": "Trade receivables",
-              "credit": {
-                "currency": "CZK",
-                "minor": 5309200
-              },
-              "debit": null,
-              "vatCode": null
-            }
-          ],
-          "memo": "Platba Studio Brno · 2026-102",
-          "totalCredit": {
-            "currency": "CZK",
-            "minor": 5309200
-          },
-          "totalDebit": {
-            "currency": "CZK",
-            "minor": 5309200
-          }
-        },
-        "id": "p-studio-brno",
-        "kind": "posting",
-        "reasons": [
-          "The amount equals the invoice's open balance.",
-          "The variable symbol is the invoice number.",
-          "Matched by rules, without the advisor."
-        ],
-        "source": "Matched by rules",
-        "sourceKind": "matcher",
-        "title": "Studio Brno → invoice 2026-102"
-      },
-      {
-        "amount": {
-          "currency": "CZK",
           "minor": -115292
         },
-        "bankLineId": "bl-3",
+        "bankLineId": "s1-2",
         "confidence": "certain",
         "detail": "Rule “EU SaaS” · same as 14 earlier lines",
         "dueOn": null,
@@ -928,7 +986,7 @@
           "currency": "CZK",
           "minor": -242000
         },
-        "bankLineId": "bl-5",
+        "bankLineId": "s1-4",
         "confidence": "likely",
         "detail": "Below the fixed-asset threshold, so no depreciation schedule",
         "dueOn": null,
@@ -993,7 +1051,7 @@
           "currency": "CZK",
           "minor": -9500
         },
-        "bankLineId": "bl-6",
+        "bankLineId": "s1-5",
         "confidence": "certain",
         "detail": "Rule “Bank fees”",
         "dueOn": null,
@@ -1046,7 +1104,7 @@
           "currency": "CZK",
           "minor": -600000
         },
-        "bankLineId": "bl-4",
+        "bankLineId": "s1-3",
         "confidence": "needs_you",
         "detail": "Owner withdrawal, or cash for a business expense?",
         "dueOn": null,
@@ -10999,6 +11057,4809 @@
     "isError": false,
     "scenario": "new-invoice",
     "state": "new-invoice/issued"
+  },
+  {
+    "command": "import_bank_statement",
+    "args": {
+      "contentBase64": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPCEtLSBza3ktbGEgZGVtbzogYSBzeW50aGV0aWMgxIxTT0Itc3R5bGUgY2FtdC4wNTMgc3RhdGVtZW50IGZvciB0aGUgZGVtbyBlbnRpdHkuIC0tPgo8RG9jdW1lbnQgeG1sbnM9InVybjppc286c3RkOmlzbzoyMDAyMjp0ZWNoOnhzZDpjYW10LjA1My4wMDEuMDIiPgogIDxCa1RvQ3N0bXJTdG10PgogICAgPEdycEhkcj48TXNnSWQ+Q1NPQi0yMDI2LTEwLTA3PC9Nc2dJZD48Q3JlRHRUbT4yMDI2LTEwLTA3VDIyOjAwOjAwPC9DcmVEdFRtPjwvR3JwSGRyPgogICAgPFN0bXQ+CiAgICAgIDxJZD4yMDI2MTAwNy0wMTIzNDU0NDEyPC9JZD4KICAgICAgPEVsY3RybmNTZXFOYj40MjwvRWxjdHJuY1NlcU5iPgogICAgICA8RnJUb0R0PjxGckR0VG0+MjAyNi0xMC0wN1QwMDowMDowMDwvRnJEdFRtPjxUb0R0VG0+MjAyNi0xMC0wN1QyMzo1OTo1OTwvVG9EdFRtPjwvRnJUb0R0PgogICAgICA8QWNjdD48SWQ+PElCQU4+Q1oyNzAzMDAwMDAwMDAwMTIzNDU0NDEyPC9JQkFOPjwvSWQ+PENjeT5DWks8L0NjeT48L0FjY3Q+CiAgICAgIDxCYWw+PFRwPjxDZE9yUHJ0cnk+PENkPk9QQkQ8L0NkPjwvQ2RPclBydHJ5PjwvVHA+PEFtdCBDY3k9IkNaSyI+ODQ5NjQ5LjU4PC9BbXQ+PENkdERidEluZD5DUkRUPC9DZHREYnRJbmQ+PER0PjxEdD4yMDI2LTEwLTA3PC9EdD48L0R0PjwvQmFsPgogICAgICA8QmFsPjxUcD48Q2RPclBydHJ5PjxDZD5DTEJEPC9DZD48L0NkT3JQcnRyeT48L1RwPjxBbXQgQ2N5PSJDWksiPjg4NTkwMS41ODwvQW10PjxDZHREYnRJbmQ+Q1JEVDwvQ2R0RGJ0SW5kPjxEdD48RHQ+MjAyNi0xMC0wNzwvRHQ+PC9EdD48L0JhbD4KICAgICAgPE50cnk+CiAgICAgICAgPE50cnlSZWY+MTwvTnRyeVJlZj4KICAgICAgICA8QW10IENjeT0iQ1pLIj41MzA5Mi4wMDwvQW10PjxDZHREYnRJbmQ+Q1JEVDwvQ2R0RGJ0SW5kPjxSdnNsSW5kPmZhbHNlPC9SdnNsSW5kPgogICAgICAgIDxTdHM+Qk9PSzwvU3RzPgogICAgICAgIDxCb29rZ0R0PjxEdD4yMDI2LTEwLTA3PC9EdD48L0Jvb2tnRHQ+PFZhbER0PjxEdD4yMDI2LTEwLTA3PC9EdD48L1ZhbER0PgogICAgICAgIDxBY2N0U3ZjclJlZj5DU09CLTkwMTAxPC9BY2N0U3ZjclJlZj4KICAgICAgICA8TnRyeUR0bHM+PFR4RHRscz48UmVmcz48RW5kVG9FbmRJZD4vVlMyMDI2MTAyL0tTMDMwODwvRW5kVG9FbmRJZD48L1JlZnM+PFJsdGRQdGllcz48RGJ0cj48Tm0+U1RVRElPIEJSTk8gU1JPPC9ObT48L0RidHI+PERidHJBY2N0PjxJZD48SUJBTj5DWjU1NTUwMDAwMDAwMDI5MDAxMTIyMzM8L0lCQU4+PC9JZD48L0RidHJBY2N0PjwvUmx0ZFB0aWVzPjxSbXRJbmY+PFVzdHJkPkRvcGxhdGVrIGZha3R1cnk8L1VzdHJkPjwvUm10SW5mPjwvVHhEdGxzPjwvTnRyeUR0bHM+CiAgICAgIDwvTnRyeT4KICAgICAgPE50cnk+CiAgICAgICAgPE50cnlSZWY+MjwvTnRyeVJlZj4KICAgICAgICA8QW10IENjeT0iQ1pLIj4xMjAwMC4wMDwvQW10PjxDZHREYnRJbmQ+REJJVDwvQ2R0RGJ0SW5kPjxSdnNsSW5kPmZhbHNlPC9SdnNsSW5kPgogICAgICAgIDxTdHM+Qk9PSzwvU3RzPgogICAgICAgIDxCb29rZ0R0PjxEdD4yMDI2LTEwLTA3PC9EdD48L0Jvb2tnRHQ+PFZhbER0PjxEdD4yMDI2LTEwLTA3PC9EdD48L1ZhbER0PgogICAgICAgIDxBY2N0U3ZjclJlZj5DU09CLTkwMTAyPC9BY2N0U3ZjclJlZj4KICAgICAgICA8TnRyeUR0bHM+PFR4RHRscz48UmVmcz48RW5kVG9FbmRJZD4vVlMyMDI2MTA8L0VuZFRvRW5kSWQ+PC9SZWZzPjxSbHRkUHRpZXM+PENkdHI+PE5tPkthbmNlbMOhxZllIEtvcnVubsOtIHMuci5vLjwvTm0+PC9DZHRyPjxDZHRyQWNjdD48SWQ+PE90aHI+PElkPjI0MDAxMjM0NTYvMjAxMDwvSWQ+PC9PdGhyPjwvSWQ+PC9DZHRyQWNjdD48L1JsdGRQdGllcz48Um10SW5mPjxVc3RyZD5Ow6FqZW0gxZnDrWplbjwvVXN0cmQ+PC9SbXRJbmY+PC9UeER0bHM+PC9OdHJ5RHRscz4KICAgICAgPC9OdHJ5PgogICAgICA8TnRyeT4KICAgICAgICA8TnRyeVJlZj4zPC9OdHJ5UmVmPgogICAgICAgIDxBbXQgQ2N5PSJDWksiPjQ4NDAuMDA8L0FtdD48Q2R0RGJ0SW5kPkRCSVQ8L0NkdERidEluZD48UnZzbEluZD5mYWxzZTwvUnZzbEluZD4KICAgICAgICA8U3RzPkJPT0s8L1N0cz4KICAgICAgICA8Qm9va2dEdD48RHQ+MjAyNi0xMC0wNzwvRHQ+PC9Cb29rZ0R0PjxWYWxEdD48RHQ+MjAyNi0xMC0wNzwvRHQ+PC9WYWxEdD4KICAgICAgICA8QWNjdFN2Y3JSZWY+Q1NPQi05MDEwMzwvQWNjdFN2Y3JSZWY+CiAgICAgICAgPE50cnlEdGxzPjxUeER0bHM+PFJsdGRQdGllcz48Q2R0cj48Tm0+RGF0YXJ0IEludGVybmF0aW9uYWwgYS5zLjwvTm0+PC9DZHRyPjxDZHRyQWNjdD48SWQ+PE90aHI+PElkPjI2MDAxMTEyMjIvMDEwMDwvSWQ+PC9PdGhyPjwvSWQ+PC9DZHRyQWNjdD48L1JsdGRQdGllcz48Um10SW5mPjxVc3RyZD5Nb25pdG9yIDI3IGEgcHJvZGxvdcW+ZW7DoSB6w6FydWthPC9Vc3RyZD48L1JtdEluZj48L1R4RHRscz48L050cnlEdGxzPgogICAgICA8L050cnk+CiAgICA8L1N0bXQ+CiAgPC9Ca1RvQ3N0bXJTdG10Pgo8L0RvY3VtZW50Pgo=",
+      "fileName": "csob-2026-10-07.xml"
+    },
+    "result": {
+      "accountName": "221 · ČSOB Business ··4412",
+      "accounts": [
+        {
+          "code": "211",
+          "name": "Cash"
+        },
+        {
+          "code": "321",
+          "name": "Trade payables"
+        },
+        {
+          "code": "501",
+          "name": "Materials consumed"
+        },
+        {
+          "code": "502",
+          "name": "Energy consumed"
+        },
+        {
+          "code": "504",
+          "name": "Cost of goods sold"
+        },
+        {
+          "code": "511",
+          "name": "Repairs and maintenance"
+        },
+        {
+          "code": "512",
+          "name": "Travel"
+        },
+        {
+          "code": "513",
+          "name": "Entertainment"
+        },
+        {
+          "code": "518",
+          "name": "Other services"
+        },
+        {
+          "code": "521",
+          "name": "Wages and salaries"
+        },
+        {
+          "code": "524",
+          "name": "Statutory social and health insurance"
+        },
+        {
+          "code": "538",
+          "name": "Other taxes and fees"
+        },
+        {
+          "code": "543",
+          "name": "Gifts"
+        },
+        {
+          "code": "545",
+          "name": "Other fines and penalties"
+        },
+        {
+          "code": "548",
+          "name": "Other operating expenses"
+        },
+        {
+          "code": "551",
+          "name": "Depreciation and amortisation"
+        },
+        {
+          "code": "562",
+          "name": "Interest expense"
+        },
+        {
+          "code": "563",
+          "name": "Foreign exchange losses"
+        },
+        {
+          "code": "568",
+          "name": "Other financial expenses"
+        },
+        {
+          "code": "591",
+          "name": "Income tax – current"
+        },
+        {
+          "code": "601",
+          "name": "Sales of own products"
+        },
+        {
+          "code": "602",
+          "name": "Sales of services"
+        },
+        {
+          "code": "604",
+          "name": "Sales of goods"
+        },
+        {
+          "code": "641",
+          "name": "Proceeds from sale of long-term assets"
+        },
+        {
+          "code": "644",
+          "name": "Contractual penalties and late-payment interest"
+        },
+        {
+          "code": "648",
+          "name": "Other operating income"
+        },
+        {
+          "code": "662",
+          "name": "Interest income"
+        },
+        {
+          "code": "663",
+          "name": "Foreign exchange gains"
+        },
+        {
+          "code": "668",
+          "name": "Other financial income"
+        }
+      ],
+      "closing": {
+        "currency": "CZK",
+        "minor": 88590158
+      },
+      "credits": {
+        "currency": "CZK",
+        "minor": 5309200
+      },
+      "debits": {
+        "currency": "CZK",
+        "minor": -1684000
+      },
+      "file": "csob-2026-10-07.xml",
+      "format": "CAMT.053",
+      "from": "2026-10-07",
+      "imports": [
+        {
+          "closing": {
+            "currency": "CZK",
+            "minor": 84964958
+          },
+          "file": "csob-2026-10-06.xml",
+          "from": "2026-10-01",
+          "lines": 5,
+          "to": "2026-10-06"
+        },
+        {
+          "closing": {
+            "currency": "CZK",
+            "minor": 88590158
+          },
+          "file": "csob-2026-10-07.xml",
+          "from": "2026-10-07",
+          "lines": 3,
+          "to": "2026-10-07"
+        }
+      ],
+      "lines": [
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -484000
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Datart International a.s.",
+          "counterpartyAccount": "2600111222/0100",
+          "date": "2026-10-07",
+          "entryId": null,
+          "heldBecause": "no received invoice or rule fits; book it to an account or create a rule",
+          "id": "s2-3",
+          "proposal": null,
+          "proposalId": null,
+          "reference": "Monitor 27 a prodloužená záruka",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -1200000
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Kanceláře Korunní s.r.o.",
+          "counterpartyAccount": "2400123456/2010",
+          "date": "2026-10-07",
+          "entryId": null,
+          "heldBecause": "no received invoice or rule fits; book it to an account or create a rule",
+          "id": "s2-2",
+          "proposal": null,
+          "proposalId": null,
+          "reference": "VS 202610 · Nájem říjen",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": 5309200
+          },
+          "bookedAs": null,
+          "candidates": [
+            {
+              "confidence": "likely",
+              "contributions": [
+                {
+                  "reason": "VS 2026102 is 2026-102's",
+                  "weight": "+45"
+                },
+                {
+                  "reason": "the amount equals what's open, 53 092,00 Kč",
+                  "weight": "+30"
+                },
+                {
+                  "reason": "the payer's name is 100 % like Studio Brno s.r.o.",
+                  "weight": "+15"
+                },
+                {
+                  "reason": "paid between issue and the due date (or soon after)",
+                  "weight": "+5"
+                }
+              ],
+              "detail": "53 092,00 Kč",
+              "label": "2026-102",
+              "score": "95"
+            }
+          ],
+          "counterparty": "STUDIO BRNO SRO",
+          "counterpartyAccount": "2900112233/5500",
+          "date": "2026-10-07",
+          "entryId": null,
+          "heldBecause": null,
+          "id": "s2-1",
+          "proposal": "Settle 2026-102",
+          "proposalId": null,
+          "reference": "VS 2026102 · Doplatek faktury",
+          "status": "certain"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -9500
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Poplatek za vedení účtu",
+          "counterpartyAccount": null,
+          "date": "2026-10-06",
+          "entryId": null,
+          "heldBecause": "no received invoice or rule fits; book it to an account or create a rule",
+          "id": "s1-5",
+          "proposal": null,
+          "proposalId": "p-bank-fee",
+          "reference": "Poplatek za vedení účtu",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -242000
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Alza.cz a.s.",
+          "counterpartyAccount": "2700000001/2700",
+          "date": "2026-10-05",
+          "entryId": null,
+          "heldBecause": "no received invoice or rule fits; book it to an account or create a rule",
+          "id": "s1-4",
+          "proposal": null,
+          "proposalId": "p-alza",
+          "reference": "Objednávka 541227 USB-C dock",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -600000
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Výběr z bankomatu Brno, Masarykova",
+          "counterpartyAccount": null,
+          "date": "2026-10-04",
+          "entryId": null,
+          "heldBecause": "no received invoice or rule fits; book it to an account or create a rule",
+          "id": "s1-3",
+          "proposal": null,
+          "proposalId": "p-atm",
+          "reference": "Výběr z bankomatu Brno, Masarykova",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -115292
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Google Ireland Ltd",
+          "counterpartyAccount": null,
+          "date": "2026-10-03",
+          "entryId": null,
+          "heldBecause": "no received invoice or rule fits; book it to an account or create a rule",
+          "id": "s1-2",
+          "proposal": null,
+          "proposalId": "p-google",
+          "reference": "Platba kartou GOOGLE*WORKSPACE 45,86 EUR kurz 25,140",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -2613600
+          },
+          "bookedAs": null,
+          "candidates": [
+            {
+              "confidence": "likely",
+              "contributions": [
+                {
+                  "reason": "VS 20260917 is PF-2026-0917's",
+                  "weight": "+45"
+                },
+                {
+                  "reason": "the amount equals what's open, 26 136,00 Kč",
+                  "weight": "+30"
+                },
+                {
+                  "reason": "the payer's name is 100 % like Pixelfarm s.r.o.",
+                  "weight": "+15"
+                },
+                {
+                  "reason": "paid between issue and the due date (or soon after)",
+                  "weight": "+5"
+                }
+              ],
+              "detail": "26 136,00 Kč",
+              "label": "PF-2026-0917",
+              "score": "95"
+            }
+          ],
+          "counterparty": "Pixelfarm s.r.o.",
+          "counterpartyAccount": "2900887766/2010",
+          "date": "2026-10-01",
+          "entryId": null,
+          "heldBecause": null,
+          "id": "s1-1",
+          "proposal": "Pay PF-2026-0917",
+          "proposalId": null,
+          "reference": "VS 20260917 · Faktura PF-2026-0917",
+          "status": "certain"
+        }
+      ],
+      "opening": {
+        "currency": "CZK",
+        "minor": 84964958
+      },
+      "reportedClosing": {
+        "currency": "CZK",
+        "minor": 88590158
+      },
+      "rules": [],
+      "tiesOut": true,
+      "to": "2026-10-07",
+      "vatCodes": [
+        {
+          "code": "IN21",
+          "name": "Domestic purchase, standard rate (input VAT)",
+          "ratePercent": "21"
+        },
+        {
+          "code": "IN12",
+          "name": "Domestic purchase, reduced rate (input VAT)",
+          "ratePercent": "12"
+        }
+      ]
+    },
+    "isError": false,
+    "scenario": "bank-workbench",
+    "leadsTo": "bank-workbench/imported"
+  },
+  {
+    "command": "bank_statement",
+    "args": {},
+    "result": {
+      "accountName": "221 · ČSOB Business ··4412",
+      "accounts": [
+        {
+          "code": "211",
+          "name": "Cash"
+        },
+        {
+          "code": "321",
+          "name": "Trade payables"
+        },
+        {
+          "code": "501",
+          "name": "Materials consumed"
+        },
+        {
+          "code": "502",
+          "name": "Energy consumed"
+        },
+        {
+          "code": "504",
+          "name": "Cost of goods sold"
+        },
+        {
+          "code": "511",
+          "name": "Repairs and maintenance"
+        },
+        {
+          "code": "512",
+          "name": "Travel"
+        },
+        {
+          "code": "513",
+          "name": "Entertainment"
+        },
+        {
+          "code": "518",
+          "name": "Other services"
+        },
+        {
+          "code": "521",
+          "name": "Wages and salaries"
+        },
+        {
+          "code": "524",
+          "name": "Statutory social and health insurance"
+        },
+        {
+          "code": "538",
+          "name": "Other taxes and fees"
+        },
+        {
+          "code": "543",
+          "name": "Gifts"
+        },
+        {
+          "code": "545",
+          "name": "Other fines and penalties"
+        },
+        {
+          "code": "548",
+          "name": "Other operating expenses"
+        },
+        {
+          "code": "551",
+          "name": "Depreciation and amortisation"
+        },
+        {
+          "code": "562",
+          "name": "Interest expense"
+        },
+        {
+          "code": "563",
+          "name": "Foreign exchange losses"
+        },
+        {
+          "code": "568",
+          "name": "Other financial expenses"
+        },
+        {
+          "code": "591",
+          "name": "Income tax – current"
+        },
+        {
+          "code": "601",
+          "name": "Sales of own products"
+        },
+        {
+          "code": "602",
+          "name": "Sales of services"
+        },
+        {
+          "code": "604",
+          "name": "Sales of goods"
+        },
+        {
+          "code": "641",
+          "name": "Proceeds from sale of long-term assets"
+        },
+        {
+          "code": "644",
+          "name": "Contractual penalties and late-payment interest"
+        },
+        {
+          "code": "648",
+          "name": "Other operating income"
+        },
+        {
+          "code": "662",
+          "name": "Interest income"
+        },
+        {
+          "code": "663",
+          "name": "Foreign exchange gains"
+        },
+        {
+          "code": "668",
+          "name": "Other financial income"
+        }
+      ],
+      "closing": {
+        "currency": "CZK",
+        "minor": 88590158
+      },
+      "credits": {
+        "currency": "CZK",
+        "minor": 5309200
+      },
+      "debits": {
+        "currency": "CZK",
+        "minor": -1684000
+      },
+      "file": "csob-2026-10-07.xml",
+      "format": "CAMT.053",
+      "from": "2026-10-07",
+      "imports": [
+        {
+          "closing": {
+            "currency": "CZK",
+            "minor": 84964958
+          },
+          "file": "csob-2026-10-06.xml",
+          "from": "2026-10-01",
+          "lines": 5,
+          "to": "2026-10-06"
+        },
+        {
+          "closing": {
+            "currency": "CZK",
+            "minor": 88590158
+          },
+          "file": "csob-2026-10-07.xml",
+          "from": "2026-10-07",
+          "lines": 3,
+          "to": "2026-10-07"
+        }
+      ],
+      "lines": [
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -484000
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Datart International a.s.",
+          "counterpartyAccount": "2600111222/0100",
+          "date": "2026-10-07",
+          "entryId": null,
+          "heldBecause": "no received invoice or rule fits; book it to an account or create a rule",
+          "id": "s2-3",
+          "proposal": null,
+          "proposalId": null,
+          "reference": "Monitor 27 a prodloužená záruka",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -1200000
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Kanceláře Korunní s.r.o.",
+          "counterpartyAccount": "2400123456/2010",
+          "date": "2026-10-07",
+          "entryId": null,
+          "heldBecause": "no received invoice or rule fits; book it to an account or create a rule",
+          "id": "s2-2",
+          "proposal": null,
+          "proposalId": null,
+          "reference": "VS 202610 · Nájem říjen",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": 5309200
+          },
+          "bookedAs": null,
+          "candidates": [
+            {
+              "confidence": "likely",
+              "contributions": [
+                {
+                  "reason": "VS 2026102 is 2026-102's",
+                  "weight": "+45"
+                },
+                {
+                  "reason": "the amount equals what's open, 53 092,00 Kč",
+                  "weight": "+30"
+                },
+                {
+                  "reason": "the payer's name is 100 % like Studio Brno s.r.o.",
+                  "weight": "+15"
+                },
+                {
+                  "reason": "paid between issue and the due date (or soon after)",
+                  "weight": "+5"
+                }
+              ],
+              "detail": "53 092,00 Kč",
+              "label": "2026-102",
+              "score": "95"
+            }
+          ],
+          "counterparty": "STUDIO BRNO SRO",
+          "counterpartyAccount": "2900112233/5500",
+          "date": "2026-10-07",
+          "entryId": null,
+          "heldBecause": null,
+          "id": "s2-1",
+          "proposal": "Settle 2026-102",
+          "proposalId": null,
+          "reference": "VS 2026102 · Doplatek faktury",
+          "status": "certain"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -9500
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Poplatek za vedení účtu",
+          "counterpartyAccount": null,
+          "date": "2026-10-06",
+          "entryId": null,
+          "heldBecause": "no received invoice or rule fits; book it to an account or create a rule",
+          "id": "s1-5",
+          "proposal": null,
+          "proposalId": "p-bank-fee",
+          "reference": "Poplatek za vedení účtu",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -242000
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Alza.cz a.s.",
+          "counterpartyAccount": "2700000001/2700",
+          "date": "2026-10-05",
+          "entryId": null,
+          "heldBecause": "no received invoice or rule fits; book it to an account or create a rule",
+          "id": "s1-4",
+          "proposal": null,
+          "proposalId": "p-alza",
+          "reference": "Objednávka 541227 USB-C dock",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -600000
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Výběr z bankomatu Brno, Masarykova",
+          "counterpartyAccount": null,
+          "date": "2026-10-04",
+          "entryId": null,
+          "heldBecause": "no received invoice or rule fits; book it to an account or create a rule",
+          "id": "s1-3",
+          "proposal": null,
+          "proposalId": "p-atm",
+          "reference": "Výběr z bankomatu Brno, Masarykova",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -115292
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Google Ireland Ltd",
+          "counterpartyAccount": null,
+          "date": "2026-10-03",
+          "entryId": null,
+          "heldBecause": "no received invoice or rule fits; book it to an account or create a rule",
+          "id": "s1-2",
+          "proposal": null,
+          "proposalId": "p-google",
+          "reference": "Platba kartou GOOGLE*WORKSPACE 45,86 EUR kurz 25,140",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -2613600
+          },
+          "bookedAs": null,
+          "candidates": [
+            {
+              "confidence": "likely",
+              "contributions": [
+                {
+                  "reason": "VS 20260917 is PF-2026-0917's",
+                  "weight": "+45"
+                },
+                {
+                  "reason": "the amount equals what's open, 26 136,00 Kč",
+                  "weight": "+30"
+                },
+                {
+                  "reason": "the payer's name is 100 % like Pixelfarm s.r.o.",
+                  "weight": "+15"
+                },
+                {
+                  "reason": "paid between issue and the due date (or soon after)",
+                  "weight": "+5"
+                }
+              ],
+              "detail": "26 136,00 Kč",
+              "label": "PF-2026-0917",
+              "score": "95"
+            }
+          ],
+          "counterparty": "Pixelfarm s.r.o.",
+          "counterpartyAccount": "2900887766/2010",
+          "date": "2026-10-01",
+          "entryId": null,
+          "heldBecause": null,
+          "id": "s1-1",
+          "proposal": "Pay PF-2026-0917",
+          "proposalId": null,
+          "reference": "VS 20260917 · Faktura PF-2026-0917",
+          "status": "certain"
+        }
+      ],
+      "opening": {
+        "currency": "CZK",
+        "minor": 84964958
+      },
+      "reportedClosing": {
+        "currency": "CZK",
+        "minor": 88590158
+      },
+      "rules": [],
+      "tiesOut": true,
+      "to": "2026-10-07",
+      "vatCodes": [
+        {
+          "code": "IN21",
+          "name": "Domestic purchase, standard rate (input VAT)",
+          "ratePercent": "21"
+        },
+        {
+          "code": "IN12",
+          "name": "Domestic purchase, reduced rate (input VAT)",
+          "ratePercent": "12"
+        }
+      ]
+    },
+    "isError": false,
+    "scenario": "bank-workbench",
+    "state": "bank-workbench/imported"
+  },
+  {
+    "command": "proposals",
+    "args": {},
+    "result": [
+      {
+        "amount": {
+          "currency": "CZK",
+          "minor": -115292
+        },
+        "bankLineId": "s1-2",
+        "confidence": "certain",
+        "detail": "Rule “EU SaaS” · same as 14 earlier lines",
+        "dueOn": null,
+        "entry": {
+          "balanced": true,
+          "date": "2026-10-03",
+          "lines": [
+            {
+              "account": "518",
+              "accountName": "Other services",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 115292
+              },
+              "vatCode": "RC21S"
+            },
+            {
+              "account": "221",
+              "accountName": "Bank accounts",
+              "credit": {
+                "currency": "CZK",
+                "minor": 115292
+              },
+              "debit": null,
+              "vatCode": null
+            },
+            {
+              "account": "343",
+              "accountName": "Value added tax",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 24211
+              },
+              "vatCode": "RC21S"
+            },
+            {
+              "account": "343",
+              "accountName": "Value added tax",
+              "credit": {
+                "currency": "CZK",
+                "minor": 24211
+              },
+              "debit": null,
+              "vatCode": "RC21S"
+            }
+          ],
+          "memo": "Google Workspace (45,86 EUR, přenesená daňová povinnost)",
+          "totalCredit": {
+            "currency": "CZK",
+            "minor": 139503
+          },
+          "totalDebit": {
+            "currency": "CZK",
+            "minor": 139503
+          }
+        },
+        "id": "p-google",
+        "kind": "posting",
+        "reasons": [
+          "Supplier is VAT-registered in Ireland, so you self-assess Czech VAT on the service.",
+          "Your rule “EU SaaS” has posted 14 earlier Google and AWS lines exactly this way.",
+          "The VAT base uses the ČNB rate for the supply date; the bank used the same rate, so there's no FX difference to book."
+        ],
+        "source": "Rule “EU SaaS”",
+        "sourceKind": "rule",
+        "title": "Google Ireland · reverse-charge posting"
+      },
+      {
+        "amount": {
+          "currency": "CZK",
+          "minor": -242000
+        },
+        "bankLineId": "s1-4",
+        "confidence": "likely",
+        "detail": "Below the fixed-asset threshold, so no depreciation schedule",
+        "dueOn": null,
+        "entry": {
+          "balanced": true,
+          "date": "2026-10-05",
+          "lines": [
+            {
+              "account": "501",
+              "accountName": "Materials consumed",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 200000
+              },
+              "vatCode": "IN21"
+            },
+            {
+              "account": "343",
+              "accountName": "Value added tax",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 42000
+              },
+              "vatCode": "IN21"
+            },
+            {
+              "account": "221",
+              "accountName": "Bank accounts",
+              "credit": {
+                "currency": "CZK",
+                "minor": 242000
+              },
+              "debit": null,
+              "vatCode": null
+            }
+          ],
+          "memo": "USB-C dock Alza",
+          "totalCredit": {
+            "currency": "CZK",
+            "minor": 242000
+          },
+          "totalDebit": {
+            "currency": "CZK",
+            "minor": 242000
+          }
+        },
+        "id": "p-alza",
+        "kind": "posting",
+        "reasons": [
+          "The receipt lists one item, a USB-C dock.",
+          "Equipment below the fixed-asset threshold is expensed directly.",
+          "Alza is VAT-registered, so the input VAT is claimable."
+        ],
+        "source": "Rule “Small equipment”",
+        "sourceKind": "rule",
+        "title": "Alza.cz · USB-C dock, expensed directly"
+      },
+      {
+        "amount": {
+          "currency": "CZK",
+          "minor": -9500
+        },
+        "bankLineId": "s1-5",
+        "confidence": "certain",
+        "detail": "Rule “Bank fees”",
+        "dueOn": null,
+        "entry": {
+          "balanced": true,
+          "date": "2026-10-06",
+          "lines": [
+            {
+              "account": "568",
+              "accountName": "Other financial expenses",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 9500
+              },
+              "vatCode": null
+            },
+            {
+              "account": "221",
+              "accountName": "Bank accounts",
+              "credit": {
+                "currency": "CZK",
+                "minor": 9500
+              },
+              "debit": null,
+              "vatCode": null
+            }
+          ],
+          "memo": "Poplatek za vedení účtu · září",
+          "totalCredit": {
+            "currency": "CZK",
+            "minor": 9500
+          },
+          "totalDebit": {
+            "currency": "CZK",
+            "minor": 9500
+          }
+        },
+        "id": "p-bank-fee",
+        "kind": "posting",
+        "reasons": [
+          "The bank's own fee line, posted the same way every month."
+        ],
+        "source": "Rule “Bank fees”",
+        "sourceKind": "rule",
+        "title": "ČSOB · account fee"
+      },
+      {
+        "amount": {
+          "currency": "CZK",
+          "minor": -600000
+        },
+        "bankLineId": "s1-3",
+        "confidence": "needs_you",
+        "detail": "Owner withdrawal, or cash for a business expense?",
+        "dueOn": null,
+        "entry": {
+          "balanced": true,
+          "date": "2026-10-04",
+          "lines": [
+            {
+              "account": "491",
+              "accountName": "Sole trader's own account",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 600000
+              },
+              "vatCode": null
+            },
+            {
+              "account": "221",
+              "accountName": "Bank accounts",
+              "credit": {
+                "currency": "CZK",
+                "minor": 600000
+              },
+              "debit": null,
+              "vatCode": null
+            }
+          ],
+          "memo": "Výběr z bankomatu",
+          "totalCredit": {
+            "currency": "CZK",
+            "minor": 600000
+          },
+          "totalDebit": {
+            "currency": "CZK",
+            "minor": 600000
+          }
+        },
+        "id": "p-atm",
+        "kind": "posting",
+        "reasons": [
+          "Your last four ATM withdrawals were owner drawings, so that's the suggestion.",
+          "It scores below the auto-accept threshold, so it waits for you.",
+          "The advisor received the amount, date and line type only."
+        ],
+        "source": "Advisor suggestion",
+        "sourceKind": "advisor",
+        "title": "ATM withdrawal, Brno · what was it for?"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "Draft for your review once September is closed",
+        "dueOn": "2026-10-26",
+        "entry": null,
+        "id": "p-dph-september",
+        "kind": "deadline",
+        "reasons": [
+          "Monthly VAT payer: the return and the control statement are due together, 25 days after the month ends.",
+          "25 October 2026 is a Sunday, so the deadline moves to the next working day (daňový řád § 33 odst. 4)."
+        ],
+        "source": "Rule pack cz-2026",
+        "sourceKind": "calendar",
+        "title": "DPH return and kontrolní hlášení · September"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "Tax advisor · a scenario for the annual return; nothing to post now",
+        "dueOn": null,
+        "entry": null,
+        "id": "p-flat-rate",
+        "kind": "advice",
+        "reasons": [
+          "A scenario, not tax advice. Open it to see the engine's figures and the assumptions."
+        ],
+        "source": "Tax advisor",
+        "sourceKind": "advisor",
+        "title": "Flat-rate expenses may beat your actual costs for 2026"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "Financial advisor · account 518 · three vendors",
+        "dueOn": null,
+        "entry": null,
+        "id": "p-subcontracting",
+        "kind": "advice",
+        "reasons": [
+          "A draft finding for your review. The figures come from the ledger."
+        ],
+        "source": "Financial advisor",
+        "sourceKind": "advisor",
+        "title": "Subcontracting rose while billed hours stayed flat"
+      },
+      {
+        "amount": {
+          "currency": "CZK",
+          "minor": -484000
+        },
+        "bankLineId": "s2-3",
+        "confidence": "needs_you",
+        "detail": "no received invoice or rule fits; book it to an account or create a rule",
+        "dueOn": null,
+        "entry": null,
+        "id": "bank-s2-3",
+        "kind": "posting",
+        "reasons": [
+          "no received invoice or rule fits; book it to an account or create a rule"
+        ],
+        "source": "Bank workbench",
+        "sourceKind": "rule",
+        "title": "Datart International a.s. · bank line needs you"
+      },
+      {
+        "amount": {
+          "currency": "CZK",
+          "minor": -1200000
+        },
+        "bankLineId": "s2-2",
+        "confidence": "needs_you",
+        "detail": "no received invoice or rule fits; book it to an account or create a rule",
+        "dueOn": null,
+        "entry": null,
+        "id": "bank-s2-2",
+        "kind": "posting",
+        "reasons": [
+          "no received invoice or rule fits; book it to an account or create a rule"
+        ],
+        "source": "Bank workbench",
+        "sourceKind": "rule",
+        "title": "Kanceláře Korunní s.r.o. · bank line needs you"
+      }
+    ],
+    "isError": false,
+    "scenario": "bank-workbench",
+    "state": "bank-workbench/imported"
+  },
+  {
+    "command": "accept_certain_bank_lines",
+    "args": {},
+    "result": {
+      "accountName": "221 · ČSOB Business ··4412",
+      "accounts": [
+        {
+          "code": "211",
+          "name": "Cash"
+        },
+        {
+          "code": "321",
+          "name": "Trade payables"
+        },
+        {
+          "code": "501",
+          "name": "Materials consumed"
+        },
+        {
+          "code": "502",
+          "name": "Energy consumed"
+        },
+        {
+          "code": "504",
+          "name": "Cost of goods sold"
+        },
+        {
+          "code": "511",
+          "name": "Repairs and maintenance"
+        },
+        {
+          "code": "512",
+          "name": "Travel"
+        },
+        {
+          "code": "513",
+          "name": "Entertainment"
+        },
+        {
+          "code": "518",
+          "name": "Other services"
+        },
+        {
+          "code": "521",
+          "name": "Wages and salaries"
+        },
+        {
+          "code": "524",
+          "name": "Statutory social and health insurance"
+        },
+        {
+          "code": "538",
+          "name": "Other taxes and fees"
+        },
+        {
+          "code": "543",
+          "name": "Gifts"
+        },
+        {
+          "code": "545",
+          "name": "Other fines and penalties"
+        },
+        {
+          "code": "548",
+          "name": "Other operating expenses"
+        },
+        {
+          "code": "551",
+          "name": "Depreciation and amortisation"
+        },
+        {
+          "code": "562",
+          "name": "Interest expense"
+        },
+        {
+          "code": "563",
+          "name": "Foreign exchange losses"
+        },
+        {
+          "code": "568",
+          "name": "Other financial expenses"
+        },
+        {
+          "code": "591",
+          "name": "Income tax – current"
+        },
+        {
+          "code": "601",
+          "name": "Sales of own products"
+        },
+        {
+          "code": "602",
+          "name": "Sales of services"
+        },
+        {
+          "code": "604",
+          "name": "Sales of goods"
+        },
+        {
+          "code": "641",
+          "name": "Proceeds from sale of long-term assets"
+        },
+        {
+          "code": "644",
+          "name": "Contractual penalties and late-payment interest"
+        },
+        {
+          "code": "648",
+          "name": "Other operating income"
+        },
+        {
+          "code": "662",
+          "name": "Interest income"
+        },
+        {
+          "code": "663",
+          "name": "Foreign exchange gains"
+        },
+        {
+          "code": "668",
+          "name": "Other financial income"
+        }
+      ],
+      "closing": {
+        "currency": "CZK",
+        "minor": 88590158
+      },
+      "credits": {
+        "currency": "CZK",
+        "minor": 5309200
+      },
+      "debits": {
+        "currency": "CZK",
+        "minor": -1684000
+      },
+      "file": "csob-2026-10-07.xml",
+      "format": "CAMT.053",
+      "from": "2026-10-07",
+      "imports": [
+        {
+          "closing": {
+            "currency": "CZK",
+            "minor": 84964958
+          },
+          "file": "csob-2026-10-06.xml",
+          "from": "2026-10-01",
+          "lines": 5,
+          "to": "2026-10-06"
+        },
+        {
+          "closing": {
+            "currency": "CZK",
+            "minor": 88590158
+          },
+          "file": "csob-2026-10-07.xml",
+          "from": "2026-10-07",
+          "lines": 3,
+          "to": "2026-10-07"
+        }
+      ],
+      "lines": [
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -484000
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Datart International a.s.",
+          "counterpartyAccount": "2600111222/0100",
+          "date": "2026-10-07",
+          "entryId": null,
+          "heldBecause": "money out with no rule; choose an account or create a rule",
+          "id": "s2-3",
+          "proposal": null,
+          "proposalId": null,
+          "reference": "Monitor 27 a prodloužená záruka",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -1200000
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Kanceláře Korunní s.r.o.",
+          "counterpartyAccount": "2400123456/2010",
+          "date": "2026-10-07",
+          "entryId": null,
+          "heldBecause": "money out with no rule; choose an account or create a rule",
+          "id": "s2-2",
+          "proposal": null,
+          "proposalId": null,
+          "reference": "VS 202610 · Nájem říjen",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": 5309200
+          },
+          "bookedAs": "Settles 2026-102",
+          "candidates": [],
+          "counterparty": "STUDIO BRNO SRO",
+          "counterpartyAccount": "2900112233/5500",
+          "date": "2026-10-07",
+          "entryId": 54,
+          "heldBecause": null,
+          "id": "s2-1",
+          "proposal": null,
+          "proposalId": null,
+          "reference": "VS 2026102 · Doplatek faktury",
+          "status": "booked"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -9500
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Poplatek za vedení účtu",
+          "counterpartyAccount": null,
+          "date": "2026-10-06",
+          "entryId": null,
+          "heldBecause": "money out with no rule; choose an account or create a rule",
+          "id": "s1-5",
+          "proposal": null,
+          "proposalId": "p-bank-fee",
+          "reference": "Poplatek za vedení účtu",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -242000
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Alza.cz a.s.",
+          "counterpartyAccount": "2700000001/2700",
+          "date": "2026-10-05",
+          "entryId": null,
+          "heldBecause": "money out with no rule; choose an account or create a rule",
+          "id": "s1-4",
+          "proposal": null,
+          "proposalId": "p-alza",
+          "reference": "Objednávka 541227 USB-C dock",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -600000
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Výběr z bankomatu Brno, Masarykova",
+          "counterpartyAccount": null,
+          "date": "2026-10-04",
+          "entryId": null,
+          "heldBecause": "money out with no rule; choose an account or create a rule",
+          "id": "s1-3",
+          "proposal": null,
+          "proposalId": "p-atm",
+          "reference": "Výběr z bankomatu Brno, Masarykova",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -115292
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Google Ireland Ltd",
+          "counterpartyAccount": null,
+          "date": "2026-10-03",
+          "entryId": null,
+          "heldBecause": "money out with no rule; choose an account or create a rule",
+          "id": "s1-2",
+          "proposal": null,
+          "proposalId": "p-google",
+          "reference": "Platba kartou GOOGLE*WORKSPACE 45,86 EUR kurz 25,140",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -2613600
+          },
+          "bookedAs": "Pays PF-2026-0917",
+          "candidates": [],
+          "counterparty": "Pixelfarm s.r.o.",
+          "counterpartyAccount": "2900887766/2010",
+          "date": "2026-10-01",
+          "entryId": 53,
+          "heldBecause": null,
+          "id": "s1-1",
+          "proposal": null,
+          "proposalId": null,
+          "reference": "VS 20260917 · Faktura PF-2026-0917",
+          "status": "booked"
+        }
+      ],
+      "opening": {
+        "currency": "CZK",
+        "minor": 84964958
+      },
+      "reportedClosing": {
+        "currency": "CZK",
+        "minor": 88590158
+      },
+      "rules": [],
+      "tiesOut": true,
+      "to": "2026-10-07",
+      "vatCodes": [
+        {
+          "code": "IN21",
+          "name": "Domestic purchase, standard rate (input VAT)",
+          "ratePercent": "21"
+        },
+        {
+          "code": "IN12",
+          "name": "Domestic purchase, reduced rate (input VAT)",
+          "ratePercent": "12"
+        }
+      ]
+    },
+    "isError": false,
+    "scenario": "bank-workbench",
+    "state": "bank-workbench/imported",
+    "leadsTo": "bank-workbench/accepted"
+  },
+  {
+    "command": "bank_statement",
+    "args": {},
+    "result": {
+      "accountName": "221 · ČSOB Business ··4412",
+      "accounts": [
+        {
+          "code": "211",
+          "name": "Cash"
+        },
+        {
+          "code": "321",
+          "name": "Trade payables"
+        },
+        {
+          "code": "501",
+          "name": "Materials consumed"
+        },
+        {
+          "code": "502",
+          "name": "Energy consumed"
+        },
+        {
+          "code": "504",
+          "name": "Cost of goods sold"
+        },
+        {
+          "code": "511",
+          "name": "Repairs and maintenance"
+        },
+        {
+          "code": "512",
+          "name": "Travel"
+        },
+        {
+          "code": "513",
+          "name": "Entertainment"
+        },
+        {
+          "code": "518",
+          "name": "Other services"
+        },
+        {
+          "code": "521",
+          "name": "Wages and salaries"
+        },
+        {
+          "code": "524",
+          "name": "Statutory social and health insurance"
+        },
+        {
+          "code": "538",
+          "name": "Other taxes and fees"
+        },
+        {
+          "code": "543",
+          "name": "Gifts"
+        },
+        {
+          "code": "545",
+          "name": "Other fines and penalties"
+        },
+        {
+          "code": "548",
+          "name": "Other operating expenses"
+        },
+        {
+          "code": "551",
+          "name": "Depreciation and amortisation"
+        },
+        {
+          "code": "562",
+          "name": "Interest expense"
+        },
+        {
+          "code": "563",
+          "name": "Foreign exchange losses"
+        },
+        {
+          "code": "568",
+          "name": "Other financial expenses"
+        },
+        {
+          "code": "591",
+          "name": "Income tax – current"
+        },
+        {
+          "code": "601",
+          "name": "Sales of own products"
+        },
+        {
+          "code": "602",
+          "name": "Sales of services"
+        },
+        {
+          "code": "604",
+          "name": "Sales of goods"
+        },
+        {
+          "code": "641",
+          "name": "Proceeds from sale of long-term assets"
+        },
+        {
+          "code": "644",
+          "name": "Contractual penalties and late-payment interest"
+        },
+        {
+          "code": "648",
+          "name": "Other operating income"
+        },
+        {
+          "code": "662",
+          "name": "Interest income"
+        },
+        {
+          "code": "663",
+          "name": "Foreign exchange gains"
+        },
+        {
+          "code": "668",
+          "name": "Other financial income"
+        }
+      ],
+      "closing": {
+        "currency": "CZK",
+        "minor": 88590158
+      },
+      "credits": {
+        "currency": "CZK",
+        "minor": 5309200
+      },
+      "debits": {
+        "currency": "CZK",
+        "minor": -1684000
+      },
+      "file": "csob-2026-10-07.xml",
+      "format": "CAMT.053",
+      "from": "2026-10-07",
+      "imports": [
+        {
+          "closing": {
+            "currency": "CZK",
+            "minor": 84964958
+          },
+          "file": "csob-2026-10-06.xml",
+          "from": "2026-10-01",
+          "lines": 5,
+          "to": "2026-10-06"
+        },
+        {
+          "closing": {
+            "currency": "CZK",
+            "minor": 88590158
+          },
+          "file": "csob-2026-10-07.xml",
+          "from": "2026-10-07",
+          "lines": 3,
+          "to": "2026-10-07"
+        }
+      ],
+      "lines": [
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -484000
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Datart International a.s.",
+          "counterpartyAccount": "2600111222/0100",
+          "date": "2026-10-07",
+          "entryId": null,
+          "heldBecause": "money out with no rule; choose an account or create a rule",
+          "id": "s2-3",
+          "proposal": null,
+          "proposalId": null,
+          "reference": "Monitor 27 a prodloužená záruka",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -1200000
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Kanceláře Korunní s.r.o.",
+          "counterpartyAccount": "2400123456/2010",
+          "date": "2026-10-07",
+          "entryId": null,
+          "heldBecause": "money out with no rule; choose an account or create a rule",
+          "id": "s2-2",
+          "proposal": null,
+          "proposalId": null,
+          "reference": "VS 202610 · Nájem říjen",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": 5309200
+          },
+          "bookedAs": "Settles 2026-102",
+          "candidates": [],
+          "counterparty": "STUDIO BRNO SRO",
+          "counterpartyAccount": "2900112233/5500",
+          "date": "2026-10-07",
+          "entryId": 54,
+          "heldBecause": null,
+          "id": "s2-1",
+          "proposal": null,
+          "proposalId": null,
+          "reference": "VS 2026102 · Doplatek faktury",
+          "status": "booked"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -9500
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Poplatek za vedení účtu",
+          "counterpartyAccount": null,
+          "date": "2026-10-06",
+          "entryId": null,
+          "heldBecause": "money out with no rule; choose an account or create a rule",
+          "id": "s1-5",
+          "proposal": null,
+          "proposalId": "p-bank-fee",
+          "reference": "Poplatek za vedení účtu",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -242000
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Alza.cz a.s.",
+          "counterpartyAccount": "2700000001/2700",
+          "date": "2026-10-05",
+          "entryId": null,
+          "heldBecause": "money out with no rule; choose an account or create a rule",
+          "id": "s1-4",
+          "proposal": null,
+          "proposalId": "p-alza",
+          "reference": "Objednávka 541227 USB-C dock",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -600000
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Výběr z bankomatu Brno, Masarykova",
+          "counterpartyAccount": null,
+          "date": "2026-10-04",
+          "entryId": null,
+          "heldBecause": "money out with no rule; choose an account or create a rule",
+          "id": "s1-3",
+          "proposal": null,
+          "proposalId": "p-atm",
+          "reference": "Výběr z bankomatu Brno, Masarykova",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -115292
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Google Ireland Ltd",
+          "counterpartyAccount": null,
+          "date": "2026-10-03",
+          "entryId": null,
+          "heldBecause": "money out with no rule; choose an account or create a rule",
+          "id": "s1-2",
+          "proposal": null,
+          "proposalId": "p-google",
+          "reference": "Platba kartou GOOGLE*WORKSPACE 45,86 EUR kurz 25,140",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -2613600
+          },
+          "bookedAs": "Pays PF-2026-0917",
+          "candidates": [],
+          "counterparty": "Pixelfarm s.r.o.",
+          "counterpartyAccount": "2900887766/2010",
+          "date": "2026-10-01",
+          "entryId": 53,
+          "heldBecause": null,
+          "id": "s1-1",
+          "proposal": null,
+          "proposalId": null,
+          "reference": "VS 20260917 · Faktura PF-2026-0917",
+          "status": "booked"
+        }
+      ],
+      "opening": {
+        "currency": "CZK",
+        "minor": 84964958
+      },
+      "reportedClosing": {
+        "currency": "CZK",
+        "minor": 88590158
+      },
+      "rules": [],
+      "tiesOut": true,
+      "to": "2026-10-07",
+      "vatCodes": [
+        {
+          "code": "IN21",
+          "name": "Domestic purchase, standard rate (input VAT)",
+          "ratePercent": "21"
+        },
+        {
+          "code": "IN12",
+          "name": "Domestic purchase, reduced rate (input VAT)",
+          "ratePercent": "12"
+        }
+      ]
+    },
+    "isError": false,
+    "scenario": "bank-workbench",
+    "state": "bank-workbench/accepted"
+  },
+  {
+    "command": "proposals",
+    "args": {},
+    "result": [
+      {
+        "amount": {
+          "currency": "CZK",
+          "minor": -115292
+        },
+        "bankLineId": "s1-2",
+        "confidence": "certain",
+        "detail": "Rule “EU SaaS” · same as 14 earlier lines",
+        "dueOn": null,
+        "entry": {
+          "balanced": true,
+          "date": "2026-10-03",
+          "lines": [
+            {
+              "account": "518",
+              "accountName": "Other services",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 115292
+              },
+              "vatCode": "RC21S"
+            },
+            {
+              "account": "221",
+              "accountName": "Bank accounts",
+              "credit": {
+                "currency": "CZK",
+                "minor": 115292
+              },
+              "debit": null,
+              "vatCode": null
+            },
+            {
+              "account": "343",
+              "accountName": "Value added tax",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 24211
+              },
+              "vatCode": "RC21S"
+            },
+            {
+              "account": "343",
+              "accountName": "Value added tax",
+              "credit": {
+                "currency": "CZK",
+                "minor": 24211
+              },
+              "debit": null,
+              "vatCode": "RC21S"
+            }
+          ],
+          "memo": "Google Workspace (45,86 EUR, přenesená daňová povinnost)",
+          "totalCredit": {
+            "currency": "CZK",
+            "minor": 139503
+          },
+          "totalDebit": {
+            "currency": "CZK",
+            "minor": 139503
+          }
+        },
+        "id": "p-google",
+        "kind": "posting",
+        "reasons": [
+          "Supplier is VAT-registered in Ireland, so you self-assess Czech VAT on the service.",
+          "Your rule “EU SaaS” has posted 14 earlier Google and AWS lines exactly this way.",
+          "The VAT base uses the ČNB rate for the supply date; the bank used the same rate, so there's no FX difference to book."
+        ],
+        "source": "Rule “EU SaaS”",
+        "sourceKind": "rule",
+        "title": "Google Ireland · reverse-charge posting"
+      },
+      {
+        "amount": {
+          "currency": "CZK",
+          "minor": -242000
+        },
+        "bankLineId": "s1-4",
+        "confidence": "likely",
+        "detail": "Below the fixed-asset threshold, so no depreciation schedule",
+        "dueOn": null,
+        "entry": {
+          "balanced": true,
+          "date": "2026-10-05",
+          "lines": [
+            {
+              "account": "501",
+              "accountName": "Materials consumed",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 200000
+              },
+              "vatCode": "IN21"
+            },
+            {
+              "account": "343",
+              "accountName": "Value added tax",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 42000
+              },
+              "vatCode": "IN21"
+            },
+            {
+              "account": "221",
+              "accountName": "Bank accounts",
+              "credit": {
+                "currency": "CZK",
+                "minor": 242000
+              },
+              "debit": null,
+              "vatCode": null
+            }
+          ],
+          "memo": "USB-C dock Alza",
+          "totalCredit": {
+            "currency": "CZK",
+            "minor": 242000
+          },
+          "totalDebit": {
+            "currency": "CZK",
+            "minor": 242000
+          }
+        },
+        "id": "p-alza",
+        "kind": "posting",
+        "reasons": [
+          "The receipt lists one item, a USB-C dock.",
+          "Equipment below the fixed-asset threshold is expensed directly.",
+          "Alza is VAT-registered, so the input VAT is claimable."
+        ],
+        "source": "Rule “Small equipment”",
+        "sourceKind": "rule",
+        "title": "Alza.cz · USB-C dock, expensed directly"
+      },
+      {
+        "amount": {
+          "currency": "CZK",
+          "minor": -9500
+        },
+        "bankLineId": "s1-5",
+        "confidence": "certain",
+        "detail": "Rule “Bank fees”",
+        "dueOn": null,
+        "entry": {
+          "balanced": true,
+          "date": "2026-10-06",
+          "lines": [
+            {
+              "account": "568",
+              "accountName": "Other financial expenses",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 9500
+              },
+              "vatCode": null
+            },
+            {
+              "account": "221",
+              "accountName": "Bank accounts",
+              "credit": {
+                "currency": "CZK",
+                "minor": 9500
+              },
+              "debit": null,
+              "vatCode": null
+            }
+          ],
+          "memo": "Poplatek za vedení účtu · září",
+          "totalCredit": {
+            "currency": "CZK",
+            "minor": 9500
+          },
+          "totalDebit": {
+            "currency": "CZK",
+            "minor": 9500
+          }
+        },
+        "id": "p-bank-fee",
+        "kind": "posting",
+        "reasons": [
+          "The bank's own fee line, posted the same way every month."
+        ],
+        "source": "Rule “Bank fees”",
+        "sourceKind": "rule",
+        "title": "ČSOB · account fee"
+      },
+      {
+        "amount": {
+          "currency": "CZK",
+          "minor": -600000
+        },
+        "bankLineId": "s1-3",
+        "confidence": "needs_you",
+        "detail": "Owner withdrawal, or cash for a business expense?",
+        "dueOn": null,
+        "entry": {
+          "balanced": true,
+          "date": "2026-10-04",
+          "lines": [
+            {
+              "account": "491",
+              "accountName": "Sole trader's own account",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 600000
+              },
+              "vatCode": null
+            },
+            {
+              "account": "221",
+              "accountName": "Bank accounts",
+              "credit": {
+                "currency": "CZK",
+                "minor": 600000
+              },
+              "debit": null,
+              "vatCode": null
+            }
+          ],
+          "memo": "Výběr z bankomatu",
+          "totalCredit": {
+            "currency": "CZK",
+            "minor": 600000
+          },
+          "totalDebit": {
+            "currency": "CZK",
+            "minor": 600000
+          }
+        },
+        "id": "p-atm",
+        "kind": "posting",
+        "reasons": [
+          "Your last four ATM withdrawals were owner drawings, so that's the suggestion.",
+          "It scores below the auto-accept threshold, so it waits for you.",
+          "The advisor received the amount, date and line type only."
+        ],
+        "source": "Advisor suggestion",
+        "sourceKind": "advisor",
+        "title": "ATM withdrawal, Brno · what was it for?"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "Draft for your review once September is closed",
+        "dueOn": "2026-10-26",
+        "entry": null,
+        "id": "p-dph-september",
+        "kind": "deadline",
+        "reasons": [
+          "Monthly VAT payer: the return and the control statement are due together, 25 days after the month ends.",
+          "25 October 2026 is a Sunday, so the deadline moves to the next working day (daňový řád § 33 odst. 4)."
+        ],
+        "source": "Rule pack cz-2026",
+        "sourceKind": "calendar",
+        "title": "DPH return and kontrolní hlášení · September"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "Tax advisor · a scenario for the annual return; nothing to post now",
+        "dueOn": null,
+        "entry": null,
+        "id": "p-flat-rate",
+        "kind": "advice",
+        "reasons": [
+          "A scenario, not tax advice. Open it to see the engine's figures and the assumptions."
+        ],
+        "source": "Tax advisor",
+        "sourceKind": "advisor",
+        "title": "Flat-rate expenses may beat your actual costs for 2026"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "Financial advisor · account 518 · three vendors",
+        "dueOn": null,
+        "entry": null,
+        "id": "p-subcontracting",
+        "kind": "advice",
+        "reasons": [
+          "A draft finding for your review. The figures come from the ledger."
+        ],
+        "source": "Financial advisor",
+        "sourceKind": "advisor",
+        "title": "Subcontracting rose while billed hours stayed flat"
+      },
+      {
+        "amount": {
+          "currency": "CZK",
+          "minor": -484000
+        },
+        "bankLineId": "s2-3",
+        "confidence": "needs_you",
+        "detail": "money out with no rule; choose an account or create a rule",
+        "dueOn": null,
+        "entry": null,
+        "id": "bank-s2-3",
+        "kind": "posting",
+        "reasons": [
+          "money out with no rule; choose an account or create a rule"
+        ],
+        "source": "Bank workbench",
+        "sourceKind": "rule",
+        "title": "Datart International a.s. · bank line needs you"
+      },
+      {
+        "amount": {
+          "currency": "CZK",
+          "minor": -1200000
+        },
+        "bankLineId": "s2-2",
+        "confidence": "needs_you",
+        "detail": "money out with no rule; choose an account or create a rule",
+        "dueOn": null,
+        "entry": null,
+        "id": "bank-s2-2",
+        "kind": "posting",
+        "reasons": [
+          "money out with no rule; choose an account or create a rule"
+        ],
+        "source": "Bank workbench",
+        "sourceKind": "rule",
+        "title": "Kanceláře Korunní s.r.o. · bank line needs you"
+      }
+    ],
+    "isError": false,
+    "scenario": "bank-workbench",
+    "state": "bank-workbench/accepted"
+  },
+  {
+    "command": "invoices",
+    "args": {},
+    "result": [
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 14000000
+        },
+        "client": "Northwind Traders s.r.o.",
+        "credited": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "daysOverdue": null,
+        "dueOn": "2026-11-15",
+        "entryId": null,
+        "gross": {
+          "currency": "CZK",
+          "minor": 16940000
+        },
+        "id": 9,
+        "issuedOn": null,
+        "lines": [
+          {
+            "base": {
+              "currency": "CZK",
+              "minor": 14000000
+            },
+            "description": "Product design · October",
+            "quantity": "112",
+            "unit": "h",
+            "unitPrice": {
+              "currency": "CZK",
+              "minor": 125000
+            },
+            "vat": {
+              "currency": "CZK",
+              "minor": 2940000
+            },
+            "vatCode": "OUT21",
+            "vatRatePercent": "21"
+          }
+        ],
+        "number": null,
+        "open": {
+          "currency": "CZK",
+          "minor": 16940000
+        },
+        "pack": null,
+        "paid": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "paidOn": null,
+        "scheduledFor": "2026-11-01",
+        "status": "scheduled",
+        "vat": {
+          "currency": "CZK",
+          "minor": 2940000
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 8000000
+        },
+        "client": "Acme Analytics a.s.",
+        "credited": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "daysOverdue": null,
+        "dueOn": null,
+        "entryId": null,
+        "gross": {
+          "currency": "CZK",
+          "minor": 9680000
+        },
+        "id": 8,
+        "issuedOn": null,
+        "lines": [
+          {
+            "base": {
+              "currency": "CZK",
+              "minor": 8000000
+            },
+            "description": "Dashboard phase 3 · fixed fee",
+            "quantity": "1",
+            "unit": "pc",
+            "unitPrice": {
+              "currency": "CZK",
+              "minor": 8000000
+            },
+            "vat": {
+              "currency": "CZK",
+              "minor": 1680000
+            },
+            "vatCode": "OUT21",
+            "vatRatePercent": "21"
+          }
+        ],
+        "number": null,
+        "open": {
+          "currency": "CZK",
+          "minor": 9680000
+        },
+        "pack": null,
+        "paid": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "paidOn": null,
+        "scheduledFor": null,
+        "status": "draft",
+        "vat": {
+          "currency": "CZK",
+          "minor": 1680000
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 7000000
+        },
+        "client": "Northwind Traders s.r.o.",
+        "credited": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "daysOverdue": null,
+        "dueOn": "2026-09-29",
+        "entryId": 28,
+        "gross": {
+          "currency": "CZK",
+          "minor": 8470000
+        },
+        "id": 7,
+        "issuedOn": "2026-09-15",
+        "lines": [
+          {
+            "base": {
+              "currency": "CZK",
+              "minor": 7000000
+            },
+            "description": "Product design · September",
+            "quantity": "56",
+            "unit": "h",
+            "unitPrice": {
+              "currency": "CZK",
+              "minor": 125000
+            },
+            "vat": {
+              "currency": "CZK",
+              "minor": 1470000
+            },
+            "vatCode": "OUT21",
+            "vatRatePercent": "21"
+          }
+        ],
+        "number": "2026-114",
+        "open": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "pack": "cz-2026@2026.1",
+        "paid": {
+          "currency": "CZK",
+          "minor": 8470000
+        },
+        "paidOn": "2026-09-29",
+        "scheduledFor": null,
+        "status": "paid",
+        "vat": {
+          "currency": "CZK",
+          "minor": 1470000
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 8520000
+        },
+        "client": "Studio Brno s.r.o.",
+        "credited": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "daysOverdue": null,
+        "dueOn": "2026-09-24",
+        "entryId": 27,
+        "gross": {
+          "currency": "CZK",
+          "minor": 10309200
+        },
+        "id": 6,
+        "issuedOn": "2026-08-25",
+        "lines": [
+          {
+            "base": {
+              "currency": "CZK",
+              "minor": 8520000
+            },
+            "description": "Website design",
+            "quantity": "71",
+            "unit": "h",
+            "unitPrice": {
+              "currency": "CZK",
+              "minor": 120000
+            },
+            "vat": {
+              "currency": "CZK",
+              "minor": 1789200
+            },
+            "vatCode": "OUT21",
+            "vatRatePercent": "21"
+          }
+        ],
+        "number": "2026-102",
+        "open": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "pack": "cz-2026@2026.1",
+        "paid": {
+          "currency": "CZK",
+          "minor": 10309200
+        },
+        "paidOn": "2026-10-07",
+        "scheduledFor": null,
+        "status": "paid",
+        "vat": {
+          "currency": "CZK",
+          "minor": 1789200
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 16000000
+        },
+        "client": "Acme Analytics a.s.",
+        "credited": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "daysOverdue": null,
+        "dueOn": "2026-08-25",
+        "entryId": 26,
+        "gross": {
+          "currency": "CZK",
+          "minor": 19360000
+        },
+        "id": 5,
+        "issuedOn": "2026-08-11",
+        "lines": [
+          {
+            "base": {
+              "currency": "CZK",
+              "minor": 16000000
+            },
+            "description": "Dashboard phase 2 · fixed fee",
+            "quantity": "1",
+            "unit": "pc",
+            "unitPrice": {
+              "currency": "CZK",
+              "minor": 16000000
+            },
+            "vat": {
+              "currency": "CZK",
+              "minor": 3360000
+            },
+            "vatCode": "OUT21",
+            "vatRatePercent": "21"
+          }
+        ],
+        "number": "2026-097",
+        "open": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "pack": "cz-2026@2026.1",
+        "paid": {
+          "currency": "CZK",
+          "minor": 19360000
+        },
+        "paidOn": "2026-09-08",
+        "scheduledFor": null,
+        "status": "paid",
+        "vat": {
+          "currency": "CZK",
+          "minor": 3360000
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 14000000
+        },
+        "client": "Northwind Traders s.r.o.",
+        "credited": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "daysOverdue": null,
+        "dueOn": "2026-07-28",
+        "entryId": 25,
+        "gross": {
+          "currency": "CZK",
+          "minor": 16940000
+        },
+        "id": 4,
+        "issuedOn": "2026-07-14",
+        "lines": [
+          {
+            "base": {
+              "currency": "CZK",
+              "minor": 14000000
+            },
+            "description": "Product design · June and July",
+            "quantity": "112",
+            "unit": "h",
+            "unitPrice": {
+              "currency": "CZK",
+              "minor": 125000
+            },
+            "vat": {
+              "currency": "CZK",
+              "minor": 2940000
+            },
+            "vatCode": "OUT21",
+            "vatRatePercent": "21"
+          }
+        ],
+        "number": "2026-089",
+        "open": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "pack": "cz-2026@2026.1",
+        "paid": {
+          "currency": "CZK",
+          "minor": 16940000
+        },
+        "paidOn": "2026-08-04",
+        "scheduledFor": null,
+        "status": "paid",
+        "vat": {
+          "currency": "CZK",
+          "minor": 2940000
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 12100000
+        },
+        "client": "Studio Brno s.r.o.",
+        "credited": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "daysOverdue": null,
+        "dueOn": "2026-06-29",
+        "entryId": 4,
+        "gross": {
+          "currency": "CZK",
+          "minor": 14641000
+        },
+        "id": 3,
+        "issuedOn": "2026-06-15",
+        "lines": [
+          {
+            "base": {
+              "currency": "CZK",
+              "minor": 9500000
+            },
+            "description": "Brand refresh",
+            "quantity": "1",
+            "unit": "pc",
+            "unitPrice": {
+              "currency": "CZK",
+              "minor": 9500000
+            },
+            "vat": {
+              "currency": "CZK",
+              "minor": 1995000
+            },
+            "vatCode": "OUT21",
+            "vatRatePercent": "21"
+          },
+          {
+            "base": {
+              "currency": "CZK",
+              "minor": 2600000
+            },
+            "description": "Illustration set",
+            "quantity": "26",
+            "unit": "pc",
+            "unitPrice": {
+              "currency": "CZK",
+              "minor": 100000
+            },
+            "vat": {
+              "currency": "CZK",
+              "minor": 546000
+            },
+            "vatCode": "OUT21",
+            "vatRatePercent": "21"
+          }
+        ],
+        "number": "2026-073",
+        "open": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "pack": "cz-2026@2026.1",
+        "paid": {
+          "currency": "CZK",
+          "minor": 14641000
+        },
+        "paidOn": "2026-07-06",
+        "scheduledFor": null,
+        "status": "paid",
+        "vat": {
+          "currency": "CZK",
+          "minor": 2541000
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 15000000
+        },
+        "client": "Acme Analytics a.s.",
+        "credited": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "daysOverdue": null,
+        "dueOn": "2026-05-26",
+        "entryId": 3,
+        "gross": {
+          "currency": "CZK",
+          "minor": 18150000
+        },
+        "id": 2,
+        "issuedOn": "2026-05-12",
+        "lines": [
+          {
+            "base": {
+              "currency": "CZK",
+              "minor": 15000000
+            },
+            "description": "Analytics dashboard design · fixed fee",
+            "quantity": "1",
+            "unit": "pc",
+            "unitPrice": {
+              "currency": "CZK",
+              "minor": 15000000
+            },
+            "vat": {
+              "currency": "CZK",
+              "minor": 3150000
+            },
+            "vatCode": "OUT21",
+            "vatRatePercent": "21"
+          }
+        ],
+        "number": "2026-058",
+        "open": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "pack": "cz-2026@2026.1",
+        "paid": {
+          "currency": "CZK",
+          "minor": 18150000
+        },
+        "paidOn": "2026-06-02",
+        "scheduledFor": null,
+        "status": "paid",
+        "vat": {
+          "currency": "CZK",
+          "minor": 3150000
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 12000000
+        },
+        "client": "Northwind Traders s.r.o.",
+        "credited": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "daysOverdue": null,
+        "dueOn": "2026-04-24",
+        "entryId": 2,
+        "gross": {
+          "currency": "CZK",
+          "minor": 14520000
+        },
+        "id": 1,
+        "issuedOn": "2026-04-10",
+        "lines": [
+          {
+            "base": {
+              "currency": "CZK",
+              "minor": 12000000
+            },
+            "description": "Product design · April",
+            "quantity": "96",
+            "unit": "h",
+            "unitPrice": {
+              "currency": "CZK",
+              "minor": 125000
+            },
+            "vat": {
+              "currency": "CZK",
+              "minor": 2520000
+            },
+            "vatCode": "OUT21",
+            "vatRatePercent": "21"
+          }
+        ],
+        "number": "2026-041",
+        "open": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "pack": "cz-2026@2026.1",
+        "paid": {
+          "currency": "CZK",
+          "minor": 14520000
+        },
+        "paidOn": "2026-04-28",
+        "scheduledFor": null,
+        "status": "paid",
+        "vat": {
+          "currency": "CZK",
+          "minor": 2520000
+        }
+      }
+    ],
+    "isError": false,
+    "scenario": "bank-workbench",
+    "state": "bank-workbench/accepted"
+  },
+  {
+    "command": "integrity",
+    "args": {},
+    "result": {
+      "balanced": true,
+      "chainIntact": true,
+      "entriesChecked": 54,
+      "firstBreak": null,
+      "head": "a052c6aa9ace6d71984a76f7e17375f0d39992d9764cb93712e5dcafca017d5f"
+    },
+    "isError": false,
+    "scenario": "bank-workbench",
+    "state": "bank-workbench/accepted"
+  },
+  {
+    "command": "balance_sheet",
+    "args": {
+      "asOf": "2026-10-07"
+    },
+    "result": {
+      "asOf": "2026-10-07",
+      "assets": [
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -1465000
+          },
+          "code": "211",
+          "nameCs": "Pokladna",
+          "nameEn": "Cash"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": 91240950
+          },
+          "code": "221",
+          "nameCs": "Peněžní prostředky na účtech",
+          "nameEn": "Bank accounts"
+        }
+      ],
+      "balances": true,
+      "equity": [
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": 19500000
+          },
+          "code": "491",
+          "nameCs": "Účet individuálního podnikatele",
+          "nameEn": "Sole trader's own account"
+        }
+      ],
+      "liabilities": [
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": 14362950
+          },
+          "code": "343",
+          "nameCs": "Daň z přidané hodnoty",
+          "nameEn": "Value added tax"
+        }
+      ],
+      "snapshot": {
+        "entries": 54,
+        "hash": "11c6357b21883c14ded80dcd0bae1a27d2372268e66dccfcc5a3cae4114372c7",
+        "lastPostedSeq": 54
+      },
+      "totalAssets": {
+        "currency": "CZK",
+        "minor": 89775950
+      },
+      "totalEquity": {
+        "currency": "CZK",
+        "minor": 75413000
+      },
+      "totalLiabilities": {
+        "currency": "CZK",
+        "minor": 14362950
+      },
+      "unclosedProfit": {
+        "currency": "CZK",
+        "minor": 55913000
+      }
+    },
+    "isError": false,
+    "scenario": "bank-workbench",
+    "state": "bank-workbench/accepted"
+  },
+  {
+    "command": "book_bank_line",
+    "args": {
+      "allocations": [
+        {
+          "account": "501",
+          "amount": "3 630,00",
+          "entryId": null,
+          "vatCode": "IN21"
+        },
+        {
+          "account": "518",
+          "amount": "1 210,00",
+          "entryId": null,
+          "vatCode": "IN21"
+        }
+      ],
+      "line": "s2-3"
+    },
+    "result": {
+      "accountName": "221 · ČSOB Business ··4412",
+      "accounts": [
+        {
+          "code": "211",
+          "name": "Cash"
+        },
+        {
+          "code": "321",
+          "name": "Trade payables"
+        },
+        {
+          "code": "501",
+          "name": "Materials consumed"
+        },
+        {
+          "code": "502",
+          "name": "Energy consumed"
+        },
+        {
+          "code": "504",
+          "name": "Cost of goods sold"
+        },
+        {
+          "code": "511",
+          "name": "Repairs and maintenance"
+        },
+        {
+          "code": "512",
+          "name": "Travel"
+        },
+        {
+          "code": "513",
+          "name": "Entertainment"
+        },
+        {
+          "code": "518",
+          "name": "Other services"
+        },
+        {
+          "code": "521",
+          "name": "Wages and salaries"
+        },
+        {
+          "code": "524",
+          "name": "Statutory social and health insurance"
+        },
+        {
+          "code": "538",
+          "name": "Other taxes and fees"
+        },
+        {
+          "code": "543",
+          "name": "Gifts"
+        },
+        {
+          "code": "545",
+          "name": "Other fines and penalties"
+        },
+        {
+          "code": "548",
+          "name": "Other operating expenses"
+        },
+        {
+          "code": "551",
+          "name": "Depreciation and amortisation"
+        },
+        {
+          "code": "562",
+          "name": "Interest expense"
+        },
+        {
+          "code": "563",
+          "name": "Foreign exchange losses"
+        },
+        {
+          "code": "568",
+          "name": "Other financial expenses"
+        },
+        {
+          "code": "591",
+          "name": "Income tax – current"
+        },
+        {
+          "code": "601",
+          "name": "Sales of own products"
+        },
+        {
+          "code": "602",
+          "name": "Sales of services"
+        },
+        {
+          "code": "604",
+          "name": "Sales of goods"
+        },
+        {
+          "code": "641",
+          "name": "Proceeds from sale of long-term assets"
+        },
+        {
+          "code": "644",
+          "name": "Contractual penalties and late-payment interest"
+        },
+        {
+          "code": "648",
+          "name": "Other operating income"
+        },
+        {
+          "code": "662",
+          "name": "Interest income"
+        },
+        {
+          "code": "663",
+          "name": "Foreign exchange gains"
+        },
+        {
+          "code": "668",
+          "name": "Other financial income"
+        }
+      ],
+      "closing": {
+        "currency": "CZK",
+        "minor": 88590158
+      },
+      "credits": {
+        "currency": "CZK",
+        "minor": 5309200
+      },
+      "debits": {
+        "currency": "CZK",
+        "minor": -1684000
+      },
+      "file": "csob-2026-10-07.xml",
+      "format": "CAMT.053",
+      "from": "2026-10-07",
+      "imports": [
+        {
+          "closing": {
+            "currency": "CZK",
+            "minor": 84964958
+          },
+          "file": "csob-2026-10-06.xml",
+          "from": "2026-10-01",
+          "lines": 5,
+          "to": "2026-10-06"
+        },
+        {
+          "closing": {
+            "currency": "CZK",
+            "minor": 88590158
+          },
+          "file": "csob-2026-10-07.xml",
+          "from": "2026-10-07",
+          "lines": 3,
+          "to": "2026-10-07"
+        }
+      ],
+      "lines": [
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -484000
+          },
+          "bookedAs": "Split across 501 + 518",
+          "candidates": [],
+          "counterparty": "Datart International a.s.",
+          "counterpartyAccount": "2600111222/0100",
+          "date": "2026-10-07",
+          "entryId": 55,
+          "heldBecause": null,
+          "id": "s2-3",
+          "proposal": null,
+          "proposalId": null,
+          "reference": "Monitor 27 a prodloužená záruka",
+          "status": "booked"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -1200000
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Kanceláře Korunní s.r.o.",
+          "counterpartyAccount": "2400123456/2010",
+          "date": "2026-10-07",
+          "entryId": null,
+          "heldBecause": "money out with no rule; choose an account or create a rule",
+          "id": "s2-2",
+          "proposal": null,
+          "proposalId": null,
+          "reference": "VS 202610 · Nájem říjen",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": 5309200
+          },
+          "bookedAs": "Settles 2026-102",
+          "candidates": [],
+          "counterparty": "STUDIO BRNO SRO",
+          "counterpartyAccount": "2900112233/5500",
+          "date": "2026-10-07",
+          "entryId": 54,
+          "heldBecause": null,
+          "id": "s2-1",
+          "proposal": null,
+          "proposalId": null,
+          "reference": "VS 2026102 · Doplatek faktury",
+          "status": "booked"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -9500
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Poplatek za vedení účtu",
+          "counterpartyAccount": null,
+          "date": "2026-10-06",
+          "entryId": null,
+          "heldBecause": "money out with no rule; choose an account or create a rule",
+          "id": "s1-5",
+          "proposal": null,
+          "proposalId": "p-bank-fee",
+          "reference": "Poplatek za vedení účtu",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -242000
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Alza.cz a.s.",
+          "counterpartyAccount": "2700000001/2700",
+          "date": "2026-10-05",
+          "entryId": null,
+          "heldBecause": "money out with no rule; choose an account or create a rule",
+          "id": "s1-4",
+          "proposal": null,
+          "proposalId": "p-alza",
+          "reference": "Objednávka 541227 USB-C dock",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -600000
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Výběr z bankomatu Brno, Masarykova",
+          "counterpartyAccount": null,
+          "date": "2026-10-04",
+          "entryId": null,
+          "heldBecause": "money out with no rule; choose an account or create a rule",
+          "id": "s1-3",
+          "proposal": null,
+          "proposalId": "p-atm",
+          "reference": "Výběr z bankomatu Brno, Masarykova",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -115292
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Google Ireland Ltd",
+          "counterpartyAccount": null,
+          "date": "2026-10-03",
+          "entryId": null,
+          "heldBecause": "money out with no rule; choose an account or create a rule",
+          "id": "s1-2",
+          "proposal": null,
+          "proposalId": "p-google",
+          "reference": "Platba kartou GOOGLE*WORKSPACE 45,86 EUR kurz 25,140",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -2613600
+          },
+          "bookedAs": "Pays PF-2026-0917",
+          "candidates": [],
+          "counterparty": "Pixelfarm s.r.o.",
+          "counterpartyAccount": "2900887766/2010",
+          "date": "2026-10-01",
+          "entryId": 53,
+          "heldBecause": null,
+          "id": "s1-1",
+          "proposal": null,
+          "proposalId": null,
+          "reference": "VS 20260917 · Faktura PF-2026-0917",
+          "status": "booked"
+        }
+      ],
+      "opening": {
+        "currency": "CZK",
+        "minor": 84964958
+      },
+      "reportedClosing": {
+        "currency": "CZK",
+        "minor": 88590158
+      },
+      "rules": [],
+      "tiesOut": true,
+      "to": "2026-10-07",
+      "vatCodes": [
+        {
+          "code": "IN21",
+          "name": "Domestic purchase, standard rate (input VAT)",
+          "ratePercent": "21"
+        },
+        {
+          "code": "IN12",
+          "name": "Domestic purchase, reduced rate (input VAT)",
+          "ratePercent": "12"
+        }
+      ]
+    },
+    "isError": false,
+    "scenario": "bank-workbench",
+    "state": "bank-workbench/accepted",
+    "leadsTo": "bank-workbench/split"
+  },
+  {
+    "command": "bank_statement",
+    "args": {},
+    "result": {
+      "accountName": "221 · ČSOB Business ··4412",
+      "accounts": [
+        {
+          "code": "211",
+          "name": "Cash"
+        },
+        {
+          "code": "321",
+          "name": "Trade payables"
+        },
+        {
+          "code": "501",
+          "name": "Materials consumed"
+        },
+        {
+          "code": "502",
+          "name": "Energy consumed"
+        },
+        {
+          "code": "504",
+          "name": "Cost of goods sold"
+        },
+        {
+          "code": "511",
+          "name": "Repairs and maintenance"
+        },
+        {
+          "code": "512",
+          "name": "Travel"
+        },
+        {
+          "code": "513",
+          "name": "Entertainment"
+        },
+        {
+          "code": "518",
+          "name": "Other services"
+        },
+        {
+          "code": "521",
+          "name": "Wages and salaries"
+        },
+        {
+          "code": "524",
+          "name": "Statutory social and health insurance"
+        },
+        {
+          "code": "538",
+          "name": "Other taxes and fees"
+        },
+        {
+          "code": "543",
+          "name": "Gifts"
+        },
+        {
+          "code": "545",
+          "name": "Other fines and penalties"
+        },
+        {
+          "code": "548",
+          "name": "Other operating expenses"
+        },
+        {
+          "code": "551",
+          "name": "Depreciation and amortisation"
+        },
+        {
+          "code": "562",
+          "name": "Interest expense"
+        },
+        {
+          "code": "563",
+          "name": "Foreign exchange losses"
+        },
+        {
+          "code": "568",
+          "name": "Other financial expenses"
+        },
+        {
+          "code": "591",
+          "name": "Income tax – current"
+        },
+        {
+          "code": "601",
+          "name": "Sales of own products"
+        },
+        {
+          "code": "602",
+          "name": "Sales of services"
+        },
+        {
+          "code": "604",
+          "name": "Sales of goods"
+        },
+        {
+          "code": "641",
+          "name": "Proceeds from sale of long-term assets"
+        },
+        {
+          "code": "644",
+          "name": "Contractual penalties and late-payment interest"
+        },
+        {
+          "code": "648",
+          "name": "Other operating income"
+        },
+        {
+          "code": "662",
+          "name": "Interest income"
+        },
+        {
+          "code": "663",
+          "name": "Foreign exchange gains"
+        },
+        {
+          "code": "668",
+          "name": "Other financial income"
+        }
+      ],
+      "closing": {
+        "currency": "CZK",
+        "minor": 88590158
+      },
+      "credits": {
+        "currency": "CZK",
+        "minor": 5309200
+      },
+      "debits": {
+        "currency": "CZK",
+        "minor": -1684000
+      },
+      "file": "csob-2026-10-07.xml",
+      "format": "CAMT.053",
+      "from": "2026-10-07",
+      "imports": [
+        {
+          "closing": {
+            "currency": "CZK",
+            "minor": 84964958
+          },
+          "file": "csob-2026-10-06.xml",
+          "from": "2026-10-01",
+          "lines": 5,
+          "to": "2026-10-06"
+        },
+        {
+          "closing": {
+            "currency": "CZK",
+            "minor": 88590158
+          },
+          "file": "csob-2026-10-07.xml",
+          "from": "2026-10-07",
+          "lines": 3,
+          "to": "2026-10-07"
+        }
+      ],
+      "lines": [
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -484000
+          },
+          "bookedAs": "Split across 501 + 518",
+          "candidates": [],
+          "counterparty": "Datart International a.s.",
+          "counterpartyAccount": "2600111222/0100",
+          "date": "2026-10-07",
+          "entryId": 55,
+          "heldBecause": null,
+          "id": "s2-3",
+          "proposal": null,
+          "proposalId": null,
+          "reference": "Monitor 27 a prodloužená záruka",
+          "status": "booked"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -1200000
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Kanceláře Korunní s.r.o.",
+          "counterpartyAccount": "2400123456/2010",
+          "date": "2026-10-07",
+          "entryId": null,
+          "heldBecause": "money out with no rule; choose an account or create a rule",
+          "id": "s2-2",
+          "proposal": null,
+          "proposalId": null,
+          "reference": "VS 202610 · Nájem říjen",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": 5309200
+          },
+          "bookedAs": "Settles 2026-102",
+          "candidates": [],
+          "counterparty": "STUDIO BRNO SRO",
+          "counterpartyAccount": "2900112233/5500",
+          "date": "2026-10-07",
+          "entryId": 54,
+          "heldBecause": null,
+          "id": "s2-1",
+          "proposal": null,
+          "proposalId": null,
+          "reference": "VS 2026102 · Doplatek faktury",
+          "status": "booked"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -9500
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Poplatek za vedení účtu",
+          "counterpartyAccount": null,
+          "date": "2026-10-06",
+          "entryId": null,
+          "heldBecause": "money out with no rule; choose an account or create a rule",
+          "id": "s1-5",
+          "proposal": null,
+          "proposalId": "p-bank-fee",
+          "reference": "Poplatek za vedení účtu",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -242000
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Alza.cz a.s.",
+          "counterpartyAccount": "2700000001/2700",
+          "date": "2026-10-05",
+          "entryId": null,
+          "heldBecause": "money out with no rule; choose an account or create a rule",
+          "id": "s1-4",
+          "proposal": null,
+          "proposalId": "p-alza",
+          "reference": "Objednávka 541227 USB-C dock",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -600000
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Výběr z bankomatu Brno, Masarykova",
+          "counterpartyAccount": null,
+          "date": "2026-10-04",
+          "entryId": null,
+          "heldBecause": "money out with no rule; choose an account or create a rule",
+          "id": "s1-3",
+          "proposal": null,
+          "proposalId": "p-atm",
+          "reference": "Výběr z bankomatu Brno, Masarykova",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -115292
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Google Ireland Ltd",
+          "counterpartyAccount": null,
+          "date": "2026-10-03",
+          "entryId": null,
+          "heldBecause": "money out with no rule; choose an account or create a rule",
+          "id": "s1-2",
+          "proposal": null,
+          "proposalId": "p-google",
+          "reference": "Platba kartou GOOGLE*WORKSPACE 45,86 EUR kurz 25,140",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -2613600
+          },
+          "bookedAs": "Pays PF-2026-0917",
+          "candidates": [],
+          "counterparty": "Pixelfarm s.r.o.",
+          "counterpartyAccount": "2900887766/2010",
+          "date": "2026-10-01",
+          "entryId": 53,
+          "heldBecause": null,
+          "id": "s1-1",
+          "proposal": null,
+          "proposalId": null,
+          "reference": "VS 20260917 · Faktura PF-2026-0917",
+          "status": "booked"
+        }
+      ],
+      "opening": {
+        "currency": "CZK",
+        "minor": 84964958
+      },
+      "reportedClosing": {
+        "currency": "CZK",
+        "minor": 88590158
+      },
+      "rules": [],
+      "tiesOut": true,
+      "to": "2026-10-07",
+      "vatCodes": [
+        {
+          "code": "IN21",
+          "name": "Domestic purchase, standard rate (input VAT)",
+          "ratePercent": "21"
+        },
+        {
+          "code": "IN12",
+          "name": "Domestic purchase, reduced rate (input VAT)",
+          "ratePercent": "12"
+        }
+      ]
+    },
+    "isError": false,
+    "scenario": "bank-workbench",
+    "state": "bank-workbench/split"
+  },
+  {
+    "command": "proposals",
+    "args": {},
+    "result": [
+      {
+        "amount": {
+          "currency": "CZK",
+          "minor": -115292
+        },
+        "bankLineId": "s1-2",
+        "confidence": "certain",
+        "detail": "Rule “EU SaaS” · same as 14 earlier lines",
+        "dueOn": null,
+        "entry": {
+          "balanced": true,
+          "date": "2026-10-03",
+          "lines": [
+            {
+              "account": "518",
+              "accountName": "Other services",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 115292
+              },
+              "vatCode": "RC21S"
+            },
+            {
+              "account": "221",
+              "accountName": "Bank accounts",
+              "credit": {
+                "currency": "CZK",
+                "minor": 115292
+              },
+              "debit": null,
+              "vatCode": null
+            },
+            {
+              "account": "343",
+              "accountName": "Value added tax",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 24211
+              },
+              "vatCode": "RC21S"
+            },
+            {
+              "account": "343",
+              "accountName": "Value added tax",
+              "credit": {
+                "currency": "CZK",
+                "minor": 24211
+              },
+              "debit": null,
+              "vatCode": "RC21S"
+            }
+          ],
+          "memo": "Google Workspace (45,86 EUR, přenesená daňová povinnost)",
+          "totalCredit": {
+            "currency": "CZK",
+            "minor": 139503
+          },
+          "totalDebit": {
+            "currency": "CZK",
+            "minor": 139503
+          }
+        },
+        "id": "p-google",
+        "kind": "posting",
+        "reasons": [
+          "Supplier is VAT-registered in Ireland, so you self-assess Czech VAT on the service.",
+          "Your rule “EU SaaS” has posted 14 earlier Google and AWS lines exactly this way.",
+          "The VAT base uses the ČNB rate for the supply date; the bank used the same rate, so there's no FX difference to book."
+        ],
+        "source": "Rule “EU SaaS”",
+        "sourceKind": "rule",
+        "title": "Google Ireland · reverse-charge posting"
+      },
+      {
+        "amount": {
+          "currency": "CZK",
+          "minor": -242000
+        },
+        "bankLineId": "s1-4",
+        "confidence": "likely",
+        "detail": "Below the fixed-asset threshold, so no depreciation schedule",
+        "dueOn": null,
+        "entry": {
+          "balanced": true,
+          "date": "2026-10-05",
+          "lines": [
+            {
+              "account": "501",
+              "accountName": "Materials consumed",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 200000
+              },
+              "vatCode": "IN21"
+            },
+            {
+              "account": "343",
+              "accountName": "Value added tax",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 42000
+              },
+              "vatCode": "IN21"
+            },
+            {
+              "account": "221",
+              "accountName": "Bank accounts",
+              "credit": {
+                "currency": "CZK",
+                "minor": 242000
+              },
+              "debit": null,
+              "vatCode": null
+            }
+          ],
+          "memo": "USB-C dock Alza",
+          "totalCredit": {
+            "currency": "CZK",
+            "minor": 242000
+          },
+          "totalDebit": {
+            "currency": "CZK",
+            "minor": 242000
+          }
+        },
+        "id": "p-alza",
+        "kind": "posting",
+        "reasons": [
+          "The receipt lists one item, a USB-C dock.",
+          "Equipment below the fixed-asset threshold is expensed directly.",
+          "Alza is VAT-registered, so the input VAT is claimable."
+        ],
+        "source": "Rule “Small equipment”",
+        "sourceKind": "rule",
+        "title": "Alza.cz · USB-C dock, expensed directly"
+      },
+      {
+        "amount": {
+          "currency": "CZK",
+          "minor": -9500
+        },
+        "bankLineId": "s1-5",
+        "confidence": "certain",
+        "detail": "Rule “Bank fees”",
+        "dueOn": null,
+        "entry": {
+          "balanced": true,
+          "date": "2026-10-06",
+          "lines": [
+            {
+              "account": "568",
+              "accountName": "Other financial expenses",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 9500
+              },
+              "vatCode": null
+            },
+            {
+              "account": "221",
+              "accountName": "Bank accounts",
+              "credit": {
+                "currency": "CZK",
+                "minor": 9500
+              },
+              "debit": null,
+              "vatCode": null
+            }
+          ],
+          "memo": "Poplatek za vedení účtu · září",
+          "totalCredit": {
+            "currency": "CZK",
+            "minor": 9500
+          },
+          "totalDebit": {
+            "currency": "CZK",
+            "minor": 9500
+          }
+        },
+        "id": "p-bank-fee",
+        "kind": "posting",
+        "reasons": [
+          "The bank's own fee line, posted the same way every month."
+        ],
+        "source": "Rule “Bank fees”",
+        "sourceKind": "rule",
+        "title": "ČSOB · account fee"
+      },
+      {
+        "amount": {
+          "currency": "CZK",
+          "minor": -600000
+        },
+        "bankLineId": "s1-3",
+        "confidence": "needs_you",
+        "detail": "Owner withdrawal, or cash for a business expense?",
+        "dueOn": null,
+        "entry": {
+          "balanced": true,
+          "date": "2026-10-04",
+          "lines": [
+            {
+              "account": "491",
+              "accountName": "Sole trader's own account",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 600000
+              },
+              "vatCode": null
+            },
+            {
+              "account": "221",
+              "accountName": "Bank accounts",
+              "credit": {
+                "currency": "CZK",
+                "minor": 600000
+              },
+              "debit": null,
+              "vatCode": null
+            }
+          ],
+          "memo": "Výběr z bankomatu",
+          "totalCredit": {
+            "currency": "CZK",
+            "minor": 600000
+          },
+          "totalDebit": {
+            "currency": "CZK",
+            "minor": 600000
+          }
+        },
+        "id": "p-atm",
+        "kind": "posting",
+        "reasons": [
+          "Your last four ATM withdrawals were owner drawings, so that's the suggestion.",
+          "It scores below the auto-accept threshold, so it waits for you.",
+          "The advisor received the amount, date and line type only."
+        ],
+        "source": "Advisor suggestion",
+        "sourceKind": "advisor",
+        "title": "ATM withdrawal, Brno · what was it for?"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "Draft for your review once September is closed",
+        "dueOn": "2026-10-26",
+        "entry": null,
+        "id": "p-dph-september",
+        "kind": "deadline",
+        "reasons": [
+          "Monthly VAT payer: the return and the control statement are due together, 25 days after the month ends.",
+          "25 October 2026 is a Sunday, so the deadline moves to the next working day (daňový řád § 33 odst. 4)."
+        ],
+        "source": "Rule pack cz-2026",
+        "sourceKind": "calendar",
+        "title": "DPH return and kontrolní hlášení · September"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "Tax advisor · a scenario for the annual return; nothing to post now",
+        "dueOn": null,
+        "entry": null,
+        "id": "p-flat-rate",
+        "kind": "advice",
+        "reasons": [
+          "A scenario, not tax advice. Open it to see the engine's figures and the assumptions."
+        ],
+        "source": "Tax advisor",
+        "sourceKind": "advisor",
+        "title": "Flat-rate expenses may beat your actual costs for 2026"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "Financial advisor · account 518 · three vendors",
+        "dueOn": null,
+        "entry": null,
+        "id": "p-subcontracting",
+        "kind": "advice",
+        "reasons": [
+          "A draft finding for your review. The figures come from the ledger."
+        ],
+        "source": "Financial advisor",
+        "sourceKind": "advisor",
+        "title": "Subcontracting rose while billed hours stayed flat"
+      },
+      {
+        "amount": {
+          "currency": "CZK",
+          "minor": -1200000
+        },
+        "bankLineId": "s2-2",
+        "confidence": "needs_you",
+        "detail": "money out with no rule; choose an account or create a rule",
+        "dueOn": null,
+        "entry": null,
+        "id": "bank-s2-2",
+        "kind": "posting",
+        "reasons": [
+          "money out with no rule; choose an account or create a rule"
+        ],
+        "source": "Bank workbench",
+        "sourceKind": "rule",
+        "title": "Kanceláře Korunní s.r.o. · bank line needs you"
+      }
+    ],
+    "isError": false,
+    "scenario": "bank-workbench",
+    "state": "bank-workbench/split"
+  },
+  {
+    "command": "integrity",
+    "args": {},
+    "result": {
+      "balanced": true,
+      "chainIntact": true,
+      "entriesChecked": 55,
+      "firstBreak": null,
+      "head": "8c9a0f8f538d4f6ca6a561d95c65e112bf209c7fa9a52595380740387ea0dfb6"
+    },
+    "isError": false,
+    "scenario": "bank-workbench",
+    "state": "bank-workbench/split"
+  },
+  {
+    "command": "create_bank_rule",
+    "args": {
+      "line": "s2-2",
+      "rule": {
+        "account": "518",
+        "autoAccept": true,
+        "name": "Office rent",
+        "vatCode": null
+      }
+    },
+    "result": {
+      "accountName": "221 · ČSOB Business ··4412",
+      "accounts": [
+        {
+          "code": "211",
+          "name": "Cash"
+        },
+        {
+          "code": "321",
+          "name": "Trade payables"
+        },
+        {
+          "code": "501",
+          "name": "Materials consumed"
+        },
+        {
+          "code": "502",
+          "name": "Energy consumed"
+        },
+        {
+          "code": "504",
+          "name": "Cost of goods sold"
+        },
+        {
+          "code": "511",
+          "name": "Repairs and maintenance"
+        },
+        {
+          "code": "512",
+          "name": "Travel"
+        },
+        {
+          "code": "513",
+          "name": "Entertainment"
+        },
+        {
+          "code": "518",
+          "name": "Other services"
+        },
+        {
+          "code": "521",
+          "name": "Wages and salaries"
+        },
+        {
+          "code": "524",
+          "name": "Statutory social and health insurance"
+        },
+        {
+          "code": "538",
+          "name": "Other taxes and fees"
+        },
+        {
+          "code": "543",
+          "name": "Gifts"
+        },
+        {
+          "code": "545",
+          "name": "Other fines and penalties"
+        },
+        {
+          "code": "548",
+          "name": "Other operating expenses"
+        },
+        {
+          "code": "551",
+          "name": "Depreciation and amortisation"
+        },
+        {
+          "code": "562",
+          "name": "Interest expense"
+        },
+        {
+          "code": "563",
+          "name": "Foreign exchange losses"
+        },
+        {
+          "code": "568",
+          "name": "Other financial expenses"
+        },
+        {
+          "code": "591",
+          "name": "Income tax – current"
+        },
+        {
+          "code": "601",
+          "name": "Sales of own products"
+        },
+        {
+          "code": "602",
+          "name": "Sales of services"
+        },
+        {
+          "code": "604",
+          "name": "Sales of goods"
+        },
+        {
+          "code": "641",
+          "name": "Proceeds from sale of long-term assets"
+        },
+        {
+          "code": "644",
+          "name": "Contractual penalties and late-payment interest"
+        },
+        {
+          "code": "648",
+          "name": "Other operating income"
+        },
+        {
+          "code": "662",
+          "name": "Interest income"
+        },
+        {
+          "code": "663",
+          "name": "Foreign exchange gains"
+        },
+        {
+          "code": "668",
+          "name": "Other financial income"
+        }
+      ],
+      "closing": {
+        "currency": "CZK",
+        "minor": 88590158
+      },
+      "credits": {
+        "currency": "CZK",
+        "minor": 5309200
+      },
+      "debits": {
+        "currency": "CZK",
+        "minor": -1684000
+      },
+      "file": "csob-2026-10-07.xml",
+      "format": "CAMT.053",
+      "from": "2026-10-07",
+      "imports": [
+        {
+          "closing": {
+            "currency": "CZK",
+            "minor": 84964958
+          },
+          "file": "csob-2026-10-06.xml",
+          "from": "2026-10-01",
+          "lines": 5,
+          "to": "2026-10-06"
+        },
+        {
+          "closing": {
+            "currency": "CZK",
+            "minor": 88590158
+          },
+          "file": "csob-2026-10-07.xml",
+          "from": "2026-10-07",
+          "lines": 3,
+          "to": "2026-10-07"
+        }
+      ],
+      "lines": [
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -484000
+          },
+          "bookedAs": "Split across 501 + 518",
+          "candidates": [],
+          "counterparty": "Datart International a.s.",
+          "counterpartyAccount": "2600111222/0100",
+          "date": "2026-10-07",
+          "entryId": 55,
+          "heldBecause": null,
+          "id": "s2-3",
+          "proposal": null,
+          "proposalId": null,
+          "reference": "Monitor 27 a prodloužená záruka",
+          "status": "booked"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -1200000
+          },
+          "bookedAs": "Rule: Office rent",
+          "candidates": [],
+          "counterparty": "Kanceláře Korunní s.r.o.",
+          "counterpartyAccount": "2400123456/2010",
+          "date": "2026-10-07",
+          "entryId": 56,
+          "heldBecause": null,
+          "id": "s2-2",
+          "proposal": null,
+          "proposalId": null,
+          "reference": "VS 202610 · Nájem říjen",
+          "status": "booked"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": 5309200
+          },
+          "bookedAs": "Settles 2026-102",
+          "candidates": [],
+          "counterparty": "STUDIO BRNO SRO",
+          "counterpartyAccount": "2900112233/5500",
+          "date": "2026-10-07",
+          "entryId": 54,
+          "heldBecause": null,
+          "id": "s2-1",
+          "proposal": null,
+          "proposalId": null,
+          "reference": "VS 2026102 · Doplatek faktury",
+          "status": "booked"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -9500
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Poplatek za vedení účtu",
+          "counterpartyAccount": null,
+          "date": "2026-10-06",
+          "entryId": null,
+          "heldBecause": "money out with no rule; choose an account or create a rule",
+          "id": "s1-5",
+          "proposal": null,
+          "proposalId": "p-bank-fee",
+          "reference": "Poplatek za vedení účtu",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -242000
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Alza.cz a.s.",
+          "counterpartyAccount": "2700000001/2700",
+          "date": "2026-10-05",
+          "entryId": null,
+          "heldBecause": "money out with no rule; choose an account or create a rule",
+          "id": "s1-4",
+          "proposal": null,
+          "proposalId": "p-alza",
+          "reference": "Objednávka 541227 USB-C dock",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -600000
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Výběr z bankomatu Brno, Masarykova",
+          "counterpartyAccount": null,
+          "date": "2026-10-04",
+          "entryId": null,
+          "heldBecause": "money out with no rule; choose an account or create a rule",
+          "id": "s1-3",
+          "proposal": null,
+          "proposalId": "p-atm",
+          "reference": "Výběr z bankomatu Brno, Masarykova",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -115292
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Google Ireland Ltd",
+          "counterpartyAccount": null,
+          "date": "2026-10-03",
+          "entryId": null,
+          "heldBecause": "money out with no rule; choose an account or create a rule",
+          "id": "s1-2",
+          "proposal": null,
+          "proposalId": "p-google",
+          "reference": "Platba kartou GOOGLE*WORKSPACE 45,86 EUR kurz 25,140",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -2613600
+          },
+          "bookedAs": "Pays PF-2026-0917",
+          "candidates": [],
+          "counterparty": "Pixelfarm s.r.o.",
+          "counterpartyAccount": "2900887766/2010",
+          "date": "2026-10-01",
+          "entryId": 53,
+          "heldBecause": null,
+          "id": "s1-1",
+          "proposal": null,
+          "proposalId": null,
+          "reference": "VS 20260917 · Faktura PF-2026-0917",
+          "status": "booked"
+        }
+      ],
+      "opening": {
+        "currency": "CZK",
+        "minor": 84964958
+      },
+      "reportedClosing": {
+        "currency": "CZK",
+        "minor": 88590158
+      },
+      "rules": [
+        {
+          "autoAccept": true,
+          "id": 1,
+          "name": "Office rent",
+          "summary": "to or from 2400123456/2010, money out → book to 518"
+        }
+      ],
+      "tiesOut": true,
+      "to": "2026-10-07",
+      "vatCodes": [
+        {
+          "code": "IN21",
+          "name": "Domestic purchase, standard rate (input VAT)",
+          "ratePercent": "21"
+        },
+        {
+          "code": "IN12",
+          "name": "Domestic purchase, reduced rate (input VAT)",
+          "ratePercent": "12"
+        }
+      ]
+    },
+    "isError": false,
+    "scenario": "bank-workbench",
+    "state": "bank-workbench/split",
+    "leadsTo": "bank-workbench/ruled"
+  },
+  {
+    "command": "bank_statement",
+    "args": {},
+    "result": {
+      "accountName": "221 · ČSOB Business ··4412",
+      "accounts": [
+        {
+          "code": "211",
+          "name": "Cash"
+        },
+        {
+          "code": "321",
+          "name": "Trade payables"
+        },
+        {
+          "code": "501",
+          "name": "Materials consumed"
+        },
+        {
+          "code": "502",
+          "name": "Energy consumed"
+        },
+        {
+          "code": "504",
+          "name": "Cost of goods sold"
+        },
+        {
+          "code": "511",
+          "name": "Repairs and maintenance"
+        },
+        {
+          "code": "512",
+          "name": "Travel"
+        },
+        {
+          "code": "513",
+          "name": "Entertainment"
+        },
+        {
+          "code": "518",
+          "name": "Other services"
+        },
+        {
+          "code": "521",
+          "name": "Wages and salaries"
+        },
+        {
+          "code": "524",
+          "name": "Statutory social and health insurance"
+        },
+        {
+          "code": "538",
+          "name": "Other taxes and fees"
+        },
+        {
+          "code": "543",
+          "name": "Gifts"
+        },
+        {
+          "code": "545",
+          "name": "Other fines and penalties"
+        },
+        {
+          "code": "548",
+          "name": "Other operating expenses"
+        },
+        {
+          "code": "551",
+          "name": "Depreciation and amortisation"
+        },
+        {
+          "code": "562",
+          "name": "Interest expense"
+        },
+        {
+          "code": "563",
+          "name": "Foreign exchange losses"
+        },
+        {
+          "code": "568",
+          "name": "Other financial expenses"
+        },
+        {
+          "code": "591",
+          "name": "Income tax – current"
+        },
+        {
+          "code": "601",
+          "name": "Sales of own products"
+        },
+        {
+          "code": "602",
+          "name": "Sales of services"
+        },
+        {
+          "code": "604",
+          "name": "Sales of goods"
+        },
+        {
+          "code": "641",
+          "name": "Proceeds from sale of long-term assets"
+        },
+        {
+          "code": "644",
+          "name": "Contractual penalties and late-payment interest"
+        },
+        {
+          "code": "648",
+          "name": "Other operating income"
+        },
+        {
+          "code": "662",
+          "name": "Interest income"
+        },
+        {
+          "code": "663",
+          "name": "Foreign exchange gains"
+        },
+        {
+          "code": "668",
+          "name": "Other financial income"
+        }
+      ],
+      "closing": {
+        "currency": "CZK",
+        "minor": 88590158
+      },
+      "credits": {
+        "currency": "CZK",
+        "minor": 5309200
+      },
+      "debits": {
+        "currency": "CZK",
+        "minor": -1684000
+      },
+      "file": "csob-2026-10-07.xml",
+      "format": "CAMT.053",
+      "from": "2026-10-07",
+      "imports": [
+        {
+          "closing": {
+            "currency": "CZK",
+            "minor": 84964958
+          },
+          "file": "csob-2026-10-06.xml",
+          "from": "2026-10-01",
+          "lines": 5,
+          "to": "2026-10-06"
+        },
+        {
+          "closing": {
+            "currency": "CZK",
+            "minor": 88590158
+          },
+          "file": "csob-2026-10-07.xml",
+          "from": "2026-10-07",
+          "lines": 3,
+          "to": "2026-10-07"
+        }
+      ],
+      "lines": [
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -484000
+          },
+          "bookedAs": "Split across 501 + 518",
+          "candidates": [],
+          "counterparty": "Datart International a.s.",
+          "counterpartyAccount": "2600111222/0100",
+          "date": "2026-10-07",
+          "entryId": 55,
+          "heldBecause": null,
+          "id": "s2-3",
+          "proposal": null,
+          "proposalId": null,
+          "reference": "Monitor 27 a prodloužená záruka",
+          "status": "booked"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -1200000
+          },
+          "bookedAs": "Rule: Office rent",
+          "candidates": [],
+          "counterparty": "Kanceláře Korunní s.r.o.",
+          "counterpartyAccount": "2400123456/2010",
+          "date": "2026-10-07",
+          "entryId": 56,
+          "heldBecause": null,
+          "id": "s2-2",
+          "proposal": null,
+          "proposalId": null,
+          "reference": "VS 202610 · Nájem říjen",
+          "status": "booked"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": 5309200
+          },
+          "bookedAs": "Settles 2026-102",
+          "candidates": [],
+          "counterparty": "STUDIO BRNO SRO",
+          "counterpartyAccount": "2900112233/5500",
+          "date": "2026-10-07",
+          "entryId": 54,
+          "heldBecause": null,
+          "id": "s2-1",
+          "proposal": null,
+          "proposalId": null,
+          "reference": "VS 2026102 · Doplatek faktury",
+          "status": "booked"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -9500
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Poplatek za vedení účtu",
+          "counterpartyAccount": null,
+          "date": "2026-10-06",
+          "entryId": null,
+          "heldBecause": "money out with no rule; choose an account or create a rule",
+          "id": "s1-5",
+          "proposal": null,
+          "proposalId": "p-bank-fee",
+          "reference": "Poplatek za vedení účtu",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -242000
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Alza.cz a.s.",
+          "counterpartyAccount": "2700000001/2700",
+          "date": "2026-10-05",
+          "entryId": null,
+          "heldBecause": "money out with no rule; choose an account or create a rule",
+          "id": "s1-4",
+          "proposal": null,
+          "proposalId": "p-alza",
+          "reference": "Objednávka 541227 USB-C dock",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -600000
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Výběr z bankomatu Brno, Masarykova",
+          "counterpartyAccount": null,
+          "date": "2026-10-04",
+          "entryId": null,
+          "heldBecause": "money out with no rule; choose an account or create a rule",
+          "id": "s1-3",
+          "proposal": null,
+          "proposalId": "p-atm",
+          "reference": "Výběr z bankomatu Brno, Masarykova",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -115292
+          },
+          "bookedAs": null,
+          "candidates": [],
+          "counterparty": "Google Ireland Ltd",
+          "counterpartyAccount": null,
+          "date": "2026-10-03",
+          "entryId": null,
+          "heldBecause": "money out with no rule; choose an account or create a rule",
+          "id": "s1-2",
+          "proposal": null,
+          "proposalId": "p-google",
+          "reference": "Platba kartou GOOGLE*WORKSPACE 45,86 EUR kurz 25,140",
+          "status": "needs_you"
+        },
+        {
+          "amount": {
+            "currency": "CZK",
+            "minor": -2613600
+          },
+          "bookedAs": "Pays PF-2026-0917",
+          "candidates": [],
+          "counterparty": "Pixelfarm s.r.o.",
+          "counterpartyAccount": "2900887766/2010",
+          "date": "2026-10-01",
+          "entryId": 53,
+          "heldBecause": null,
+          "id": "s1-1",
+          "proposal": null,
+          "proposalId": null,
+          "reference": "VS 20260917 · Faktura PF-2026-0917",
+          "status": "booked"
+        }
+      ],
+      "opening": {
+        "currency": "CZK",
+        "minor": 84964958
+      },
+      "reportedClosing": {
+        "currency": "CZK",
+        "minor": 88590158
+      },
+      "rules": [
+        {
+          "autoAccept": true,
+          "id": 1,
+          "name": "Office rent",
+          "summary": "to or from 2400123456/2010, money out → book to 518"
+        }
+      ],
+      "tiesOut": true,
+      "to": "2026-10-07",
+      "vatCodes": [
+        {
+          "code": "IN21",
+          "name": "Domestic purchase, standard rate (input VAT)",
+          "ratePercent": "21"
+        },
+        {
+          "code": "IN12",
+          "name": "Domestic purchase, reduced rate (input VAT)",
+          "ratePercent": "12"
+        }
+      ]
+    },
+    "isError": false,
+    "scenario": "bank-workbench",
+    "state": "bank-workbench/ruled"
+  },
+  {
+    "command": "proposals",
+    "args": {},
+    "result": [
+      {
+        "amount": {
+          "currency": "CZK",
+          "minor": -115292
+        },
+        "bankLineId": "s1-2",
+        "confidence": "certain",
+        "detail": "Rule “EU SaaS” · same as 14 earlier lines",
+        "dueOn": null,
+        "entry": {
+          "balanced": true,
+          "date": "2026-10-03",
+          "lines": [
+            {
+              "account": "518",
+              "accountName": "Other services",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 115292
+              },
+              "vatCode": "RC21S"
+            },
+            {
+              "account": "221",
+              "accountName": "Bank accounts",
+              "credit": {
+                "currency": "CZK",
+                "minor": 115292
+              },
+              "debit": null,
+              "vatCode": null
+            },
+            {
+              "account": "343",
+              "accountName": "Value added tax",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 24211
+              },
+              "vatCode": "RC21S"
+            },
+            {
+              "account": "343",
+              "accountName": "Value added tax",
+              "credit": {
+                "currency": "CZK",
+                "minor": 24211
+              },
+              "debit": null,
+              "vatCode": "RC21S"
+            }
+          ],
+          "memo": "Google Workspace (45,86 EUR, přenesená daňová povinnost)",
+          "totalCredit": {
+            "currency": "CZK",
+            "minor": 139503
+          },
+          "totalDebit": {
+            "currency": "CZK",
+            "minor": 139503
+          }
+        },
+        "id": "p-google",
+        "kind": "posting",
+        "reasons": [
+          "Supplier is VAT-registered in Ireland, so you self-assess Czech VAT on the service.",
+          "Your rule “EU SaaS” has posted 14 earlier Google and AWS lines exactly this way.",
+          "The VAT base uses the ČNB rate for the supply date; the bank used the same rate, so there's no FX difference to book."
+        ],
+        "source": "Rule “EU SaaS”",
+        "sourceKind": "rule",
+        "title": "Google Ireland · reverse-charge posting"
+      },
+      {
+        "amount": {
+          "currency": "CZK",
+          "minor": -242000
+        },
+        "bankLineId": "s1-4",
+        "confidence": "likely",
+        "detail": "Below the fixed-asset threshold, so no depreciation schedule",
+        "dueOn": null,
+        "entry": {
+          "balanced": true,
+          "date": "2026-10-05",
+          "lines": [
+            {
+              "account": "501",
+              "accountName": "Materials consumed",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 200000
+              },
+              "vatCode": "IN21"
+            },
+            {
+              "account": "343",
+              "accountName": "Value added tax",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 42000
+              },
+              "vatCode": "IN21"
+            },
+            {
+              "account": "221",
+              "accountName": "Bank accounts",
+              "credit": {
+                "currency": "CZK",
+                "minor": 242000
+              },
+              "debit": null,
+              "vatCode": null
+            }
+          ],
+          "memo": "USB-C dock Alza",
+          "totalCredit": {
+            "currency": "CZK",
+            "minor": 242000
+          },
+          "totalDebit": {
+            "currency": "CZK",
+            "minor": 242000
+          }
+        },
+        "id": "p-alza",
+        "kind": "posting",
+        "reasons": [
+          "The receipt lists one item, a USB-C dock.",
+          "Equipment below the fixed-asset threshold is expensed directly.",
+          "Alza is VAT-registered, so the input VAT is claimable."
+        ],
+        "source": "Rule “Small equipment”",
+        "sourceKind": "rule",
+        "title": "Alza.cz · USB-C dock, expensed directly"
+      },
+      {
+        "amount": {
+          "currency": "CZK",
+          "minor": -9500
+        },
+        "bankLineId": "s1-5",
+        "confidence": "certain",
+        "detail": "Rule “Bank fees”",
+        "dueOn": null,
+        "entry": {
+          "balanced": true,
+          "date": "2026-10-06",
+          "lines": [
+            {
+              "account": "568",
+              "accountName": "Other financial expenses",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 9500
+              },
+              "vatCode": null
+            },
+            {
+              "account": "221",
+              "accountName": "Bank accounts",
+              "credit": {
+                "currency": "CZK",
+                "minor": 9500
+              },
+              "debit": null,
+              "vatCode": null
+            }
+          ],
+          "memo": "Poplatek za vedení účtu · září",
+          "totalCredit": {
+            "currency": "CZK",
+            "minor": 9500
+          },
+          "totalDebit": {
+            "currency": "CZK",
+            "minor": 9500
+          }
+        },
+        "id": "p-bank-fee",
+        "kind": "posting",
+        "reasons": [
+          "The bank's own fee line, posted the same way every month."
+        ],
+        "source": "Rule “Bank fees”",
+        "sourceKind": "rule",
+        "title": "ČSOB · account fee"
+      },
+      {
+        "amount": {
+          "currency": "CZK",
+          "minor": -600000
+        },
+        "bankLineId": "s1-3",
+        "confidence": "needs_you",
+        "detail": "Owner withdrawal, or cash for a business expense?",
+        "dueOn": null,
+        "entry": {
+          "balanced": true,
+          "date": "2026-10-04",
+          "lines": [
+            {
+              "account": "491",
+              "accountName": "Sole trader's own account",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 600000
+              },
+              "vatCode": null
+            },
+            {
+              "account": "221",
+              "accountName": "Bank accounts",
+              "credit": {
+                "currency": "CZK",
+                "minor": 600000
+              },
+              "debit": null,
+              "vatCode": null
+            }
+          ],
+          "memo": "Výběr z bankomatu",
+          "totalCredit": {
+            "currency": "CZK",
+            "minor": 600000
+          },
+          "totalDebit": {
+            "currency": "CZK",
+            "minor": 600000
+          }
+        },
+        "id": "p-atm",
+        "kind": "posting",
+        "reasons": [
+          "Your last four ATM withdrawals were owner drawings, so that's the suggestion.",
+          "It scores below the auto-accept threshold, so it waits for you.",
+          "The advisor received the amount, date and line type only."
+        ],
+        "source": "Advisor suggestion",
+        "sourceKind": "advisor",
+        "title": "ATM withdrawal, Brno · what was it for?"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "Draft for your review once September is closed",
+        "dueOn": "2026-10-26",
+        "entry": null,
+        "id": "p-dph-september",
+        "kind": "deadline",
+        "reasons": [
+          "Monthly VAT payer: the return and the control statement are due together, 25 days after the month ends.",
+          "25 October 2026 is a Sunday, so the deadline moves to the next working day (daňový řád § 33 odst. 4)."
+        ],
+        "source": "Rule pack cz-2026",
+        "sourceKind": "calendar",
+        "title": "DPH return and kontrolní hlášení · September"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "Tax advisor · a scenario for the annual return; nothing to post now",
+        "dueOn": null,
+        "entry": null,
+        "id": "p-flat-rate",
+        "kind": "advice",
+        "reasons": [
+          "A scenario, not tax advice. Open it to see the engine's figures and the assumptions."
+        ],
+        "source": "Tax advisor",
+        "sourceKind": "advisor",
+        "title": "Flat-rate expenses may beat your actual costs for 2026"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "Financial advisor · account 518 · three vendors",
+        "dueOn": null,
+        "entry": null,
+        "id": "p-subcontracting",
+        "kind": "advice",
+        "reasons": [
+          "A draft finding for your review. The figures come from the ledger."
+        ],
+        "source": "Financial advisor",
+        "sourceKind": "advisor",
+        "title": "Subcontracting rose while billed hours stayed flat"
+      }
+    ],
+    "isError": false,
+    "scenario": "bank-workbench",
+    "state": "bank-workbench/ruled"
+  },
+  {
+    "command": "integrity",
+    "args": {},
+    "result": {
+      "balanced": true,
+      "chainIntact": true,
+      "entriesChecked": 56,
+      "firstBreak": null,
+      "head": "515e45abb9f8f329b003a4103fc94a4d2fe52a2e3c059cf842895589e604a24d"
+    },
+    "isError": false,
+    "scenario": "bank-workbench",
+    "state": "bank-workbench/ruled"
   },
   {
     "command": "create_invoice_draft",

@@ -116,20 +116,20 @@ test("main lists move the selection and the inspector by keyboard", async ({ pag
   await settle(page);
   const inbox = page.getByRole("grid", { name: "Inbox" });
   // The first proposal is selected by default; clicking it focuses the list.
-  const first = inbox.getByRole("row", { name: /Studio Brno → invoice 2026-102/ });
+  const first = inbox.getByRole("row", { name: /Google Ireland/ });
   await first.click();
   await expect(first).toHaveAttribute("aria-selected", "true");
-  await page.keyboard.press("ArrowDown");
-  await expect(page).toHaveURL(/#\/inbox\/p-google$/);
   await expect(page.getByRole("complementary", { name: /Google Ireland/ })).toContainText(
     "Proposed journal entry",
   );
   await expect(page.getByRole("complementary")).toContainText("242,11");
+  await page.keyboard.press("ArrowDown");
+  await expect(page).toHaveURL(/#\/inbox\/p-alza$/);
 
   await page.goto("/#/bank");
   const lines = page.getByRole("grid", { name: "Bank lines" });
-  // Newest first: the ČSOB fee (6 Oct), then Alza (5 Oct).
-  await lines.getByRole("row", { name: /ČSOB/ }).click();
+  // Newest first: the account fee (6 Oct), then Alza (5 Oct).
+  await lines.getByRole("row", { name: /Poplatek za vedení účtu/ }).click();
   await page.keyboard.press("ArrowDown");
   await expect(page.getByRole("complementary")).toContainText("Alza.cz a.s.");
 });
@@ -156,8 +156,8 @@ test("figures on screen are the core's: overview, bank tie-out, cash basis", asy
   await page.goto("/#/overview");
   await expect(page.getByRole("grid", { name: "Key figures" })).toContainText("280 350,00 Kč");
   await page.goto("/#/bank");
-  await expect(page.getByTestId("tie-out")).toContainText("Ties to the bank's reported closing");
-  await expect(page.getByTestId("tie-out")).toContainText("902 741,58");
+  await expect(page.getByTestId("tie-out")).toContainText("Ties to the bank's closing");
+  await expect(page.getByTestId("tie-out")).toContainText("849 649,58");
   await page.goto("/#/taxes/taxable-income");
   await expect(page.getByRole("complementary", { name: "Taxable income" })).toBeVisible();
 });
@@ -347,4 +347,64 @@ test("a draft can be discarded before it's issued", async ({ page }) => {
     .click();
   await expect(page).toHaveURL(/#\/invoices$/);
   await expect(page.getByRole("rowheader", { name: "Draft", exact: true })).toHaveCount(2);
+});
+
+// WP-19 acceptance: import → accept certain matches → split one → create a
+// rule, on the recorded core (skyla_app::recordings, "bank-workbench").
+test("a statement is imported, matched, split and turned into a rule", async ({ page }) => {
+  await page.goto("/#/bank");
+  await settle(page);
+  const lines = page.getByRole("grid", { name: "Bank lines" });
+  await expect(lines).toContainText("Certain · 1");
+
+  await page
+    .getByLabel("Statement file")
+    .setInputFiles("../../packages/fixtures/data/statements/csob-2026-10-07.xml");
+  await expect(page.getByRole("status")).toContainText(
+    "Imported csob-2026-10-07.xml: 3 new lines; it ties out to 885 901,58",
+  );
+  await expect(lines).toContainText("Certain · 2");
+  await lines.getByRole("row", { name: /STUDIO BRNO/ }).click();
+  const studio = page.getByRole("complementary", { name: /STUDIO BRNO/ });
+  await expect(studio).toContainText("Settle 2026-102");
+  await expect(studio).toContainText("VS 2026102 is 2026-102's");
+  await expect(studio).toContainText("+45");
+  await page.screenshot({ path: "test-results/screens/bank-workbench-imported.png" });
+
+  await page.getByRole("button", { name: "Accept 2 certain" }).click();
+  await expect(page.getByRole("status")).toContainText("Accepted 2 certain lines");
+  await page.getByRole("radio", { name: "All" }).click();
+  await expect(lines).toContainText("Booked · 2");
+  await expect(lines).toContainText("Settles 2026-102");
+
+  // Split the Datart purchase across two accounts.
+  await lines.getByRole("row", { name: /Datart/ }).click();
+  const datart = page.getByRole("complementary", { name: /Datart/ });
+  await datart.getByRole("button", { name: "Book…" }).click();
+  const split = page.getByRole("dialog", { name: "Book line" });
+  await split.getByRole("button", { name: /Row 1 account/ }).click();
+  await page.getByRole("option", { name: /^501 / }).click();
+  await split.getByLabel("Row 1 amount").fill("3 630,00");
+  await split.getByRole("button", { name: "Add row" }).click();
+  await split.getByRole("button", { name: /Row 2 account/ }).click();
+  await page.getByRole("option", { name: /^518 / }).click();
+  await split.getByLabel("Row 2 amount").fill("1 210,00");
+  await split.getByRole("button", { name: "Book split" }).click();
+  await expect(page.getByRole("status")).toContainText("is booked across 2 accounts");
+  await expect(lines).toContainText("Split across 501 + 518");
+
+  // A rule from the rent line.
+  await lines.getByRole("row", { name: /Kanceláře Korunní/ }).click();
+  const rent = page.getByRole("complementary", { name: /Kanceláře Korunní/ });
+  await rent.getByRole("button", { name: "Create rule…" }).click();
+  const rule = page.getByRole("dialog", { name: "Create rule" });
+  await rule.getByLabel("Rule name").fill("Office rent");
+  await rule.getByRole("button", { name: /Book to/ }).click();
+  await page.getByRole("option", { name: /^518 / }).click();
+  await rule.getByRole("button", { name: "Create rule and book" }).click();
+  await expect(page.getByRole("status")).toContainText('Rule "Office rent" created');
+  await expect(page.getByTestId("tie-out")).toContainText("1 rule: Office rent");
+  await expect(lines).toContainText("Booked · 4");
+  await page.screenshot({ path: "test-results/screens/bank-workbench-after.png" });
+  await expect(page.getByTestId("status-line")).toContainText("chain verified");
 });

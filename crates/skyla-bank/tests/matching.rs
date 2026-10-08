@@ -258,6 +258,7 @@ fn fixture_year() -> (Vec<OpenItem>, BTreeMap<String, Vec<Day>>, usize) {
             let id = i64::from(seq);
             items.push((
                 OpenItem {
+                    side: skyla_bank::Side::Receivable,
                     id,
                     number: number.clone(),
                     vs: None,
@@ -640,6 +641,7 @@ proptest! {
             bank_ref: None,
         };
         let items: Vec<OpenItem> = opens.iter().enumerate().map(|(i, (open, number, c))| OpenItem {
+                side: skyla_bank::Side::Receivable,
             id: i64::try_from(i).unwrap_or(0),
             number: format!("2026-{number:03}"),
             vs: None,
@@ -664,6 +666,7 @@ proptest! {
 
 fn open(id: i64, number: &str, customer: usize, amount: i64, issued: &str) -> OpenItem {
     OpenItem {
+        side: skyla_bank::Side::Receivable,
         id,
         number: number.into(),
         vs: None,

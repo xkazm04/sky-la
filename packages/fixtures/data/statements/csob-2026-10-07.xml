@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- sky-la demo: a synthetic ČSOB-style camt.053 statement for the demo entity. -->
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:camt.053.001.02">
+  <BkToCstmrStmt>
+    <GrpHdr><MsgId>CSOB-2026-10-07</MsgId><CreDtTm>2026-10-07T22:00:00</CreDtTm></GrpHdr>
+    <Stmt>
+      <Id>20261007-0123454412</Id>
+      <ElctrncSeqNb>42</ElctrncSeqNb>
+      <FrToDt><FrDtTm>2026-10-07T00:00:00</FrDtTm><ToDtTm>2026-10-07T23:59:59</ToDtTm></FrToDt>
+      <Acct><Id><IBAN>CZ2703000000000123454412</IBAN></Id><Ccy>CZK</Ccy></Acct>
+      <Bal><Tp><CdOrPrtry><Cd>OPBD</Cd></CdOrPrtry></Tp><Amt Ccy="CZK">849649.58</Amt><CdtDbtInd>CRDT</CdtDbtInd><Dt><Dt>2026-10-07</Dt></Dt></Bal>
+      <Bal><Tp><CdOrPrtry><Cd>CLBD</Cd></CdOrPrtry></Tp><Amt Ccy="CZK">885901.58</Amt><CdtDbtInd>CRDT</CdtDbtInd><Dt><Dt>2026-10-07</Dt></Dt></Bal>
+      <Ntry>
+        <NtryRef>1</NtryRef>
+        <Amt Ccy="CZK">53092.00</Amt><CdtDbtInd>CRDT</CdtDbtInd><RvslInd>false</RvslInd>
+        <Sts>BOOK</Sts>
+        <BookgDt><Dt>2026-10-07</Dt></BookgDt><ValDt><Dt>2026-10-07</Dt></ValDt>
+        <AcctSvcrRef>CSOB-90101</AcctSvcrRef>
+        <NtryDtls><TxDtls><Refs><EndToEndId>/VS2026102/KS0308</EndToEndId></Refs><RltdPties><Dbtr><Nm>STUDIO BRNO SRO</Nm></Dbtr><DbtrAcct><Id><IBAN>CZ5555000000002900112233</IBAN></Id></DbtrAcct></RltdPties><RmtInf><Ustrd>Doplatek faktury</Ustrd></RmtInf></TxDtls></NtryDtls>
+      </Ntry>
+      <Ntry>
+        <NtryRef>2</NtryRef>
+        <Amt Ccy="CZK">12000.00</Amt><CdtDbtInd>DBIT</CdtDbtInd><RvslInd>false</RvslInd>
+        <Sts>BOOK</Sts>
+        <BookgDt><Dt>2026-10-07</Dt></BookgDt><ValDt><Dt>2026-10-07</Dt></ValDt>
+        <AcctSvcrRef>CSOB-90102</AcctSvcrRef>
+        <NtryDtls><TxDtls><Refs><EndToEndId>/VS202610</EndToEndId></Refs><RltdPties><Cdtr><Nm>Kanceláře Korunní s.r.o.</Nm></Cdtr><CdtrAcct><Id><Othr><Id>2400123456/2010</Id></Othr></Id></CdtrAcct></RltdPties><RmtInf><Ustrd>Nájem říjen</Ustrd></RmtInf></TxDtls></NtryDtls>
+      </Ntry>
+      <Ntry>
+        <NtryRef>3</NtryRef>
+        <Amt Ccy="CZK">4840.00</Amt><CdtDbtInd>DBIT</CdtDbtInd><RvslInd>false</RvslInd>
+        <Sts>BOOK</Sts>
+        <BookgDt><Dt>2026-10-07</Dt></BookgDt><ValDt><Dt>2026-10-07</Dt></ValDt>
+        <AcctSvcrRef>CSOB-90103</AcctSvcrRef>
+        <NtryDtls><TxDtls><RltdPties><Cdtr><Nm>Datart International a.s.</Nm></Cdtr><CdtrAcct><Id><Othr><Id>2600111222/0100</Id></Othr></Id></CdtrAcct></RltdPties><RmtInf><Ustrd>Monitor 27 a prodloužená záruka</Ustrd></RmtInf></TxDtls></NtryDtls>
+      </Ntry>
+    </Stmt>
+  </BkToCstmrStmt>
+</Document>

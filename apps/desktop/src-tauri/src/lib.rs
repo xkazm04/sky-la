@@ -3,10 +3,10 @@
 //! signatures and types to `packages/ipc/src/bindings.ts`.
 
 use skyla_app::dto::{
-    AppInfo, BalanceSheetDto, BankStatementDto, CashBasisDto, DocumentPdfDto, DocumentXmlDto,
-    DunningNoticeDto, EgressRunDto, EntityDto, IntegrityDto, InvoiceDraftDto, InvoiceDto,
-    InvoiceFormDto, JournalEntryDto, PeriodDto, ProfitAndLossDto, ProposalDto,
-    RecurringTemplateDto, RulePackDto, TrialBalanceDto, VatReturnDto,
+    AppInfo, BalanceSheetDto, BankAllocationDto, BankRuleInputDto, BankStatementDto, CashBasisDto,
+    DocumentPdfDto, DocumentXmlDto, DunningNoticeDto, EgressRunDto, EntityDto, IntegrityDto,
+    InvoiceDraftDto, InvoiceDto, InvoiceFormDto, JournalEntryDto, PeriodDto, ProfitAndLossDto,
+    ProposalDto, RecurringTemplateDto, RulePackDto, TrialBalanceDto, VatReturnDto,
 };
 use skyla_app::{Core, IpcFailure};
 use tauri::{Runtime, State};
@@ -179,6 +179,46 @@ fn delete_invoice_draft(core: State<'_, Core>, id: i64) -> Answer<()> {
     Ok(core.delete_invoice_draft(id)?)
 }
 
+/// Imports a statement file (base64): tied out and deduplicated first.
+#[tauri::command]
+#[specta::specta]
+fn import_bank_statement(
+    core: State<'_, Core>,
+    file_name: String,
+    content_base64: String,
+) -> Answer<BankStatementDto> {
+    Ok(core.import_bank_statement(&file_name, &content_base64)?)
+}
+
+/// Accepts every line the matcher or a rule is certain about.
+#[tauri::command]
+#[specta::specta]
+fn accept_certain_bank_lines(core: State<'_, Core>) -> Answer<BankStatementDto> {
+    Ok(core.accept_certain_bank_lines()?)
+}
+
+/// Books a line as the user chose: invoices, or account rows (a split).
+#[tauri::command]
+#[specta::specta]
+fn book_bank_line(
+    core: State<'_, Core>,
+    line: String,
+    allocations: Vec<BankAllocationDto>,
+) -> Answer<BankStatementDto> {
+    Ok(core.book_bank_line(&line, &allocations)?)
+}
+
+/// Makes a rule from a line and books the line by it.
+#[tauri::command]
+#[specta::specta]
+fn create_bank_rule(
+    core: State<'_, Core>,
+    line: String,
+    rule: BankRuleInputDto,
+) -> Answer<BankStatementDto> {
+    Ok(core.create_bank_rule(&line, &rule)?)
+}
+
 /// Every command, for the invoke handler and the TypeScript export.
 pub fn specta_builder<R: Runtime>() -> Builder<R> {
     Builder::<R>::new()
@@ -206,6 +246,10 @@ pub fn specta_builder<R: Runtime>() -> Builder<R> {
             create_invoice_draft,
             issue_invoice,
             delete_invoice_draft,
+            import_bank_statement,
+            accept_certain_bank_lines,
+            book_bank_line,
+            create_bank_rule,
         ])
         // Money crosses as integer minor units; `MoneyDto` refuses anything
         // beyond 2^53 - 1, so a JavaScript number holds every value exactly.

@@ -80,6 +80,10 @@ impl Scenario<'_> {
     }
 }
 
+/// The second October statement, which the workbench's e2e test imports.
+pub const SECOND_STATEMENT: &str =
+    include_str!("../../../packages/fixtures/data/statements/csob-2026-10-07.xml");
+
 /// The editor's scripted invoice: typed in the e2e test exactly like this.
 pub fn scripted_draft() -> Value {
     json!({
@@ -129,6 +133,45 @@ pub fn scenarios() -> Vec<(&'static str, Script)> {
                 "invoice_xml",
                 json!({ "id": issued["id"], "format": "isdoc" }),
             );
+        }),
+        ("bank-workbench", |s| {
+            use base64::Engine as _;
+            let file =
+                base64::engine::general_purpose::STANDARD.encode(SECOND_STATEMENT.as_bytes());
+            s.write(
+                "import_bank_statement",
+                json!({ "fileName": "csob-2026-10-07.xml", "contentBase64": file }),
+                "imported",
+            );
+            s.read("bank_statement", json!({}));
+            s.read("proposals", json!({}));
+            s.write("accept_certain_bank_lines", json!({}), "accepted");
+            s.read("bank_statement", json!({}));
+            s.read("proposals", json!({}));
+            s.read("invoices", json!({}));
+            s.read("integrity", json!({}));
+            s.read("balance_sheet", json!({ "asOf": "2026-10-07" }));
+            s.write(
+                "book_bank_line",
+                json!({ "line": "s2-3", "allocations": [
+                    { "entryId": null, "account": "501", "vatCode": "IN21", "amount": "3 630,00" },
+                    { "entryId": null, "account": "518", "vatCode": "IN21", "amount": "1 210,00" }
+                ] }),
+                "split",
+            );
+            s.read("bank_statement", json!({}));
+            s.read("proposals", json!({}));
+            s.read("integrity", json!({}));
+            s.write(
+                "create_bank_rule",
+                json!({ "line": "s2-2", "rule": {
+                    "name": "Office rent", "account": "518", "vatCode": null, "autoAccept": true
+                } }),
+                "ruled",
+            );
+            s.read("bank_statement", json!({}));
+            s.read("proposals", json!({}));
+            s.read("integrity", json!({}));
         }),
         ("discard-draft", |s| {
             let mut draft = scripted_draft();
@@ -253,6 +296,32 @@ pub fn dispatch(core: &Core, command: &str, args: &Value) -> Result<Value, IpcFa
             to_value(core.issue_invoice(id, arg(args, "issueDate")?))
         }
         "delete_invoice_draft" => to_value(core.delete_invoice_draft(id_arg(args)?)),
+        "import_bank_statement" => to_value(
+            core.import_bank_statement(arg(args, "fileName")?, arg(args, "contentBase64")?),
+        ),
+        "accept_certain_bank_lines" => to_value(core.accept_certain_bank_lines()),
+        "book_bank_line" => {
+            let allocations: Vec<crate::dto::BankAllocationDto> = args
+                .get("allocations")
+                .cloned()
+                .and_then(|a| serde_json::from_value(a).ok())
+                .ok_or_else(|| IpcFailure {
+                    code: "bad_request".into(),
+                    message: "missing or malformed argument allocations".into(),
+                })?;
+            to_value(core.book_bank_line(arg(args, "line")?, &allocations))
+        }
+        "create_bank_rule" => {
+            let rule: crate::dto::BankRuleInputDto = args
+                .get("rule")
+                .cloned()
+                .and_then(|r| serde_json::from_value(r).ok())
+                .ok_or_else(|| IpcFailure {
+                    code: "bad_request".into(),
+                    message: "missing or malformed argument rule".into(),
+                })?;
+            to_value(core.create_bank_rule(arg(args, "line")?, &rule))
+        }
         "dunning_queue" => to_value(core.dunning_queue(arg(args, "asOf")?)),
         "invoice_pdf" => {
             let id = args

@@ -81,12 +81,14 @@ fn the_bank_import_ties_out_against_the_ledger() {
         statement.lines.first().map(|l| l.date.as_str()),
         Some("2026-10-06")
     );
+    assert_eq!(statement.closing.minor, 84_964_958);
 }
 
 #[test]
 fn every_proposed_entry_balances_and_its_vat_is_the_engines() {
     let proposals = core().proposals().unwrap();
-    assert_eq!(proposals.len(), 8);
+    // Studio Brno's payment is the workbench's certain match now, not a proposal.
+    assert_eq!(proposals.len(), 7);
     for p in proposals
         .iter()
         .filter_map(|p| p.entry.as_ref().map(|e| (p, e)))

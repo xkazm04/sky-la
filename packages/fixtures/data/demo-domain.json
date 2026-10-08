@@ -200,161 +200,7 @@
       ]
     }
   ],
-  "bankImport": {
-    "file": "csob_2026-10-06.xml",
-    "format": "CAMT.053",
-    "from": "2026-10-01",
-    "to": "2026-10-06",
-    "openingAsOf": "2026-09-30",
-    "reportedClosingMinor": 90274158,
-    "lines": [
-      {
-        "id": "bl-1",
-        "date": "2026-10-01",
-        "counterparty": "Pixelfarm s.r.o.",
-        "reference": "VS 20260917",
-        "amountMinor": -2613600,
-        "status": "matched",
-        "matchedTo": "Received invoice PF-2026-0917"
-      },
-      {
-        "id": "bl-2",
-        "date": "2026-10-02",
-        "counterparty": "Studio Brno",
-        "reference": "VS 2026102",
-        "amountMinor": 5309200,
-        "status": "open",
-        "proposalId": "p-studio-brno",
-        "candidates": [
-          {
-            "label": "Invoice 2026-102 · Studio Brno",
-            "detail": "53 092,00 open · due 24 Sep",
-            "score": "0.96",
-            "confidence": "certain",
-            "contributions": [
-              {
-                "reason": "Amount matches the open balance exactly",
-                "weight": "+.40"
-              },
-              {
-                "reason": "VS 2026102 is the invoice number",
-                "weight": "+.35"
-              },
-              {
-                "reason": "Payer account is on the client record",
-                "weight": "+.15"
-              },
-              {
-                "reason": "Payer name matches",
-                "weight": "+.05"
-              },
-              {
-                "reason": "Paid 8 days after the due date",
-                "weight": "+.01"
-              }
-            ]
-          },
-          {
-            "label": "Invoice 2026-121 · Acme Analytics",
-            "detail": "Draft · amount and VS differ",
-            "score": "0.04",
-            "confidence": "unlikely",
-            "contributions": [
-              {
-                "reason": "Amount differs",
-                "weight": "+.00"
-              },
-              {
-                "reason": "VS differs",
-                "weight": "+.00"
-              },
-              {
-                "reason": "Payer differs",
-                "weight": "+.04"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "id": "bl-3",
-        "date": "2026-10-03",
-        "counterparty": "Google Ireland Ltd",
-        "reference": "CARD 45,86 EUR · IE",
-        "amountMinor": -115292,
-        "foreign": {
-          "amountMinor": -4586,
-          "currency": "EUR",
-          "rate": "25.140"
-        },
-        "status": "open",
-        "proposalId": "p-google"
-      },
-      {
-        "id": "bl-4",
-        "date": "2026-10-04",
-        "counterparty": "ATM withdrawal, Brno",
-        "reference": "No reference",
-        "amountMinor": -600000,
-        "status": "open",
-        "proposalId": "p-atm"
-      },
-      {
-        "id": "bl-5",
-        "date": "2026-10-05",
-        "counterparty": "Alza.cz a.s.",
-        "reference": "VS 4402917733",
-        "amountMinor": -242000,
-        "status": "open",
-        "proposalId": "p-alza"
-      },
-      {
-        "id": "bl-6",
-        "date": "2026-10-06",
-        "counterparty": "ČSOB",
-        "reference": "Account fee · September",
-        "amountMinor": -9500,
-        "status": "open",
-        "proposalId": "p-bank-fee"
-      }
-    ]
-  },
   "proposals": [
-    {
-      "id": "p-studio-brno",
-      "kind": "posting",
-      "title": "Studio Brno → invoice 2026-102",
-      "detail": "Amount, VS and payer match · settles the open balance",
-      "confidence": "certain",
-      "sourceKind": "matcher",
-      "source": "Matched by rules",
-      "bankLineId": "bl-2",
-      "entry": {
-        "date": "2026-10-02",
-        "memo": "Platba Studio Brno · 2026-102",
-        "lines": [
-          {
-            "account": "221",
-            "amountMinor": 5309200
-          },
-          {
-            "account": "311",
-            "amountMinor": -5309200
-          }
-        ],
-        "settles": [
-          {
-            "invoice": "2026-102",
-            "amountMinor": 5309200
-          }
-        ]
-      },
-      "reasons": [
-        "The amount equals the invoice's open balance.",
-        "The variable symbol is the invoice number.",
-        "Matched by rules, without the advisor."
-      ]
-    },
     {
       "id": "p-google",
       "kind": "posting",
@@ -363,7 +209,7 @@
       "confidence": "certain",
       "sourceKind": "rule",
       "source": "Rule “EU SaaS”",
-      "bankLineId": "bl-3",
+      "bankLineId": "s1-2",
       "entry": {
         "date": "2026-10-03",
         "memo": "Google Workspace (45,86 EUR, přenesená daňová povinnost)",
@@ -407,7 +253,7 @@
       "confidence": "likely",
       "sourceKind": "rule",
       "source": "Rule “Small equipment”",
-      "bankLineId": "bl-5",
+      "bankLineId": "s1-4",
       "entry": {
         "date": "2026-10-05",
         "memo": "USB-C dock Alza",
@@ -446,7 +292,7 @@
       "confidence": "certain",
       "sourceKind": "rule",
       "source": "Rule “Bank fees”",
-      "bankLineId": "bl-6",
+      "bankLineId": "s1-5",
       "entry": {
         "date": "2026-10-06",
         "memo": "Poplatek za vedení účtu · září",
@@ -471,7 +317,7 @@
       "confidence": "needs_you",
       "sourceKind": "advisor",
       "source": "Advisor suggestion",
-      "bankLineId": "bl-4",
+      "bankLineId": "s1-3",
       "entry": {
         "date": "2026-10-04",
         "memo": "Výběr z bankomatu",

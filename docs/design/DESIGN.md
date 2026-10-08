@@ -213,6 +213,8 @@ parse → normalise(BankLine) → dedupe(hash: account, date, amount, ref, seque
 
 - **Signals:** exact or near amount, VS = invoice number, KS/SS, known payer IBAN, fuzzy name, date window relative to due date. Every score is shown as a sum of named contributions (direction D).
 - **Learning:** accepting a match can create a rule ("auto-accept Northwind when amount and VS match"). Rules are visible and editable.
+
+**Implementation (WP-17 – WP-19):** `skyla-bank` parses camt.053, MT940, ABO/GPC and CSV profiles (fuzzed, no panics), normalises and deduplicates lines, ties statements out, and scores candidates with integer signals whose sum is the score. Money in is matched to issued invoices, money out to received ones. The core's workbench keeps imports in order, refuses a statement that doesn't tie out to the previous one (or the books), and posts each accepted line as one kernel entry approved by the user: a receipt or payment with settlement links, or account rows with VAT split from the gross by the pack. Lines it can't settle become inbox items.
 - **Formats:** CAMT.053, MT940, ABO/GPC (common Czech bank export), CSV with a saved per-bank column profile. Every parser has a `cargo-fuzz` target.
 
 ### 3.7 Advisors: the LLM pillar

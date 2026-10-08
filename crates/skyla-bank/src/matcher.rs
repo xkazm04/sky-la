@@ -2,7 +2,7 @@
 //! that is exactly the sum of named contributions, so the inspector can
 //! show why ("VS matches 2026-097 +45, amount equals what's open +30 …").
 //!
-//! Money in is matched to open invoices. A transfer that pays several of a
+//! Money in is matched to issued invoices, money out to received ones. A transfer that pays several of a
 //! customer's invoices becomes a split. Rules come first: a line a rule
 //! books never reaches the scorer. Auto-accept needs the user's opt-in, a
 //! score over the threshold, a clear margin over the runner-up, and an
@@ -15,16 +15,30 @@ use skyla_money::Money;
 use crate::normalise::{Normalised, canonical_account, name_similarity};
 use crate::rules::{Action, Rule, first_rule};
 
+/// Which way an open item is paid.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum Side {
+    /// An issued invoice: the customer pays us (money in).
+    #[default]
+    Receivable,
+    /// A received invoice: we pay the supplier (money out).
+    Payable,
+}
+
 /// An invoice still (partly) open.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct OpenItem {
+    /// Which way it's paid.
+    #[serde(default)]
+    pub side: Side,
     /// The document id.
     pub id: i64,
     /// Its number, e.g. `2026-097`.
     pub number: String,
     /// The variable symbol it asks for.
     pub vs: Option<String>,
-    /// The customer's name.
+    /// The customer's (or, for a payable, the supplier's) name.
     pub customer: String,
     /// Accounts the customer has paid from before (any spelling).
     pub known_accounts: Vec<String>,
@@ -161,6 +175,9 @@ const KNOWN_ACCOUNT: i32 = 20;
 const NAME_MAX: i32 = 15;
 const DATE_WINDOW: i32 = 5;
 const BEFORE_ISSUE: i32 = -30;
+/// The least a candidate must score to be offered at all: one strong
+/// signal (a symbol, the number, the exact amount or a known account).
+const MIN_CANDIDATE: i32 = 25;
 /// Days after the due date a payment still counts as "in the window".
 const LATE_DAYS: i64 = 60;
 
@@ -235,7 +252,10 @@ fn party_and_date(line: &Normalised, item: &OpenItem, out: &mut Vec<Contribution
 
 fn single(line: &Normalised, item: &OpenItem) -> Candidate {
     let mut c = Vec::new();
-    let amount = line.line.amount;
+    let amount = Money::new(
+        line.line.amount.minor().saturating_abs(),
+        line.line.amount.currency(),
+    );
     let message = line.line.message.as_deref().unwrap_or("");
     let item_vs = item
         .vs
@@ -308,7 +328,7 @@ fn single(line: &Normalised, item: &OpenItem) -> Candidate {
 /// Several open invoices of one customer whose open amounts add up to the
 /// line, up to four at a time, oldest first.
 fn splits(line: &Normalised, items: &[OpenItem]) -> Vec<Candidate> {
-    let amount = line.line.amount.minor();
+    let amount = line.line.amount.minor().saturating_abs();
     let message = line.line.message.as_deref().unwrap_or("");
     let mut customers: Vec<&str> = items.iter().map(|i| i.customer.as_str()).collect();
     customers.sort_unstable();
@@ -394,7 +414,19 @@ pub fn suggest(
                 .then(|| format!("rule \"{}\" asks before booking", rule.name)),
         };
     }
-    if line.line.amount.minor() <= 0 {
+    let side = if line.line.amount.minor() > 0 {
+        Side::Receivable
+    } else {
+        Side::Payable
+    };
+    let same_currency: Vec<OpenItem> = items
+        .iter()
+        .filter(|i| {
+            i.side == side && i.open.currency() == line.line.amount.currency() && i.open.minor() > 0
+        })
+        .cloned()
+        .collect();
+    if line.line.amount.minor() == 0 || (side == Side::Payable && same_currency.is_empty()) {
         return Suggestion {
             key: line.key.clone(),
             proposal: Proposal::Unmatched,
@@ -403,11 +435,6 @@ pub fn suggest(
             held_because: Some("money out with no rule; choose an account or create a rule".into()),
         };
     }
-    let same_currency: Vec<OpenItem> = items
-        .iter()
-        .filter(|i| i.open.currency() == line.line.amount.currency() && i.open.minor() > 0)
-        .cloned()
-        .collect();
     let mut candidates: Vec<Candidate> = same_currency.iter().map(|i| single(line, i)).collect();
     // Only worth considering when no single invoice is paid exactly.
     if !candidates
@@ -416,7 +443,7 @@ pub fn suggest(
     {
         candidates.extend(splits(line, &same_currency));
     }
-    candidates.retain(|c| c.score > 0);
+    candidates.retain(|c| c.score >= MIN_CANDIDATE);
     candidates.sort_by(|a, b| b.score.cmp(&a.score).then(a.numbers.cmp(&b.numbers)));
     candidates.truncate(5);
     let Some(best) = candidates.first().cloned() else {
@@ -425,7 +452,11 @@ pub fn suggest(
             proposal: Proposal::Unmatched,
             candidates,
             auto: false,
-            held_because: Some("no open invoice fits".into()),
+            held_because: Some(if side == Side::Receivable {
+                "no open invoice fits".into()
+            } else {
+                "no received invoice or rule fits; book it to an account or create a rule".into()
+            }),
         };
     };
     let runner_up = candidates.get(1).map_or(i32::MIN / 2, |c| c.score);

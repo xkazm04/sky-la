@@ -2,6 +2,8 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import type { ReactNode } from "react";
 import {
   Button as AriaButton,
+  Checkbox as AriaCheckbox,
+  type CheckboxProps as AriaCheckboxProps,
   Select as AriaSelect,
   type SelectProps as AriaSelectProps,
   TextField as AriaTextField,
@@ -169,5 +171,30 @@ export function Select({
         </ListBox>
       </PopoverSurface>
     </AriaSelect>
+  );
+}
+
+export interface CheckboxProps extends Omit<AriaCheckboxProps, "children"> {
+  children: ReactNode;
+}
+
+/** A labelled checkbox. */
+export function Checkbox({ children, className, ...props }: CheckboxProps) {
+  return (
+    <AriaCheckbox
+      {...props}
+      className={cx(
+        "group flex cursor-default items-center gap-2 text-body text-ink outline-none",
+        typeof className === "string" ? className : "",
+      )}
+    >
+      <span
+        aria-hidden
+        className="flex size-4 shrink-0 items-center justify-center rounded-[4px] bg-surface text-on-accent shadow-[inset_0_0_0_0.5px_var(--sk-hairline-strong)] group-data-focus-visible:outline-3 group-data-focus-visible:outline-focus group-data-selected:bg-accent group-data-selected:shadow-none"
+      >
+        <Check size={11} strokeWidth={3} className="hidden group-data-selected:block" />
+      </span>
+      {children}
+    </AriaCheckbox>
   );
 }

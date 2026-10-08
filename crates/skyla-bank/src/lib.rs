@@ -34,7 +34,7 @@ pub use camt::parse_camt053;
 pub use csv_profile::{Amounts, CsvProfile, parse_csv};
 pub use gpc::parse_gpc;
 pub use matcher::{
-    Candidate, Contribution, OpenItem, Policy, Proposal, Signal, Suggestion, suggest,
+    Candidate, Contribution, OpenItem, Policy, Proposal, Side, Signal, Suggestion, suggest,
 };
 pub use model::{Account, BankError, BankLine, Format, Statement};
 pub use mt940::parse_mt940;

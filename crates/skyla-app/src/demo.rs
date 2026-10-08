@@ -21,6 +21,9 @@ const CZ_CHART: &str = include_str!("../../../rules/cz/chart.toml");
 pub const GOLDEN_JOURNAL: &str = include_str!("../../../packages/fixtures/data/demo-ledger.json");
 /// Typed demo data for the domains not built yet.
 pub const DOMAIN: &str = include_str!("../../../packages/fixtures/data/demo-domain.json");
+/// The demo's first October bank statement, imported when the core opens.
+pub const FIRST_STATEMENT: &str =
+    include_str!("../../../packages/fixtures/data/statements/csob-2026-10-06.xml");
 
 #[derive(Deserialize)]
 struct Golden {
@@ -339,7 +342,6 @@ pub(crate) struct Domain {
     /// Invoice documents (issued ones link to the ledger by number).
     pub(crate) invoices: Vec<DomainInvoice>,
     /// The latest bank import.
-    pub(crate) bank_import: DomainBankImport,
     /// The inbox.
     pub(crate) proposals: Vec<DomainProposal>,
     /// The egress register.
@@ -422,45 +424,6 @@ pub(crate) struct DomainInvoiceLine {
     pub(crate) unit_price_minor: i64,
     /// A VAT code from the rule pack; the rate comes from the pack.
     pub(crate) vat_code: String,
-}
-
-/// A bank import.
-#[derive(Debug, Clone, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub(crate) struct DomainBankImport {
-    pub(crate) file: String,
-    pub(crate) format: String,
-    pub(crate) from: String,
-    pub(crate) to: String,
-    pub(crate) opening_as_of: String,
-    pub(crate) reported_closing_minor: i64,
-    pub(crate) lines: Vec<DomainBankLine>,
-}
-
-/// A bank line.
-#[derive(Debug, Clone, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub(crate) struct DomainBankLine {
-    pub(crate) id: String,
-    pub(crate) date: String,
-    pub(crate) counterparty: String,
-    pub(crate) reference: String,
-    pub(crate) amount_minor: i64,
-    pub(crate) foreign: Option<DomainForeign>,
-    pub(crate) status: String,
-    pub(crate) matched_to: Option<String>,
-    pub(crate) proposal_id: Option<String>,
-    #[serde(default)]
-    pub(crate) candidates: Vec<crate::dto::MatchCandidateDto>,
-}
-
-/// A foreign amount.
-#[derive(Debug, Clone, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub(crate) struct DomainForeign {
-    pub(crate) amount_minor: i64,
-    pub(crate) currency: String,
-    pub(crate) rate: String,
 }
 
 /// An inbox item.

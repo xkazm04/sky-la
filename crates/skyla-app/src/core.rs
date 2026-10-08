@@ -20,6 +20,8 @@ const VAT_ACCOUNTS: &[&str] = &["343"];
 /// The namespace of the demo's draft and posting ids (UUID v5).
 const DEMO_POSTING_NAMESPACE: uuid::Uuid = uuid::uuid!("5d2b8f61-0c7e-5a93-b4d1-7e3f9a2c6b08");
 
+mod bank;
+
 /// The application core: one open entity and its ledger.
 pub struct Core {
     conn: Mutex<Connection>,
@@ -34,6 +36,8 @@ pub struct Core {
     repo_rates: Vec<skyla_invoicing::RepoRate>,
     /// Drafts created in this session (the demo derives their ids from it).
     drafts_created: std::sync::atomic::AtomicU64,
+    /// The bank workbench: imports, rules, bookings.
+    bank: Mutex<bank::BankState>,
 }
 
 fn money(m: Money) -> Result<MoneyDto, CoreError> {
@@ -120,7 +124,7 @@ impl Core {
         let domain = demo_domain()?;
         let pack = Pack::cz_2026()?;
         let scheduled = crate::demo::seed_invoicing(&conn, &pack, &domain)?;
-        Ok(Self {
+        let core = Self {
             conn: Mutex::new(conn),
             domain,
             accounts,
@@ -129,7 +133,14 @@ impl Core {
             scheduled,
             repo_rates: Vec::new(),
             drafts_created: std::sync::atomic::AtomicU64::new(0),
-        })
+            bank: Mutex::new(bank::BankState::default()),
+        };
+        // The demo's first October statement, imported but not yet booked.
+        core.import_bytes(
+            "csob-2026-10-06.xml",
+            crate::demo::FIRST_STATEMENT.as_bytes(),
+        )?;
+        Ok(core)
     }
 
     fn db(&self) -> MutexGuard<'_, Connection> {
@@ -746,73 +757,6 @@ impl Core {
             .ok_or_else(|| CoreError::BadRequest(format!("no invoice {id}")))
     }
 
-    /// The latest bank import, tied out against the ledger.
-    pub fn bank_statement(&self) -> Result<BankStatementDto, CoreError> {
-        let import = &self.domain.bank_import;
-        let account = &self.domain.entity.bank_account;
-        let opening = trial_balance(&self.db(), None, &import.opening_as_of)?
-            .rows
-            .into_iter()
-            .find(|r| &r.code == account)
-            .map_or(Money::zero(self.currency), |r| r.balance);
-        let (mut credits, mut debits) = (0_i64, 0_i64);
-        let mut lines = Vec::new();
-        for l in &import.lines {
-            if l.amount_minor >= 0 {
-                credits = credits
-                    .checked_add(l.amount_minor)
-                    .ok_or(skyla_money::MoneyError::Overflow)?;
-            } else {
-                debits = debits
-                    .checked_add(l.amount_minor)
-                    .ok_or(skyla_money::MoneyError::Overflow)?;
-            }
-            lines.push(BankLineDto {
-                id: l.id.clone(),
-                date: l.date.clone(),
-                counterparty: l.counterparty.clone(),
-                reference: l.reference.clone(),
-                amount: self.amount(l.amount_minor)?,
-                foreign: l
-                    .foreign
-                    .as_ref()
-                    .map(|f| -> Result<ForeignAmountDto, CoreError> {
-                        Ok(ForeignAmountDto {
-                            amount: money(Money::new(
-                                f.amount_minor,
-                                Currency::from_code(&f.currency)?,
-                            ))?,
-                            rate: f.rate.clone(),
-                        })
-                    })
-                    .transpose()?,
-                status: l.status.clone(),
-                matched_to: l.matched_to.clone(),
-                proposal_id: l.proposal_id.clone(),
-                candidates: l.candidates.clone(),
-            });
-        }
-        lines.sort_by(|a, b| b.date.cmp(&a.date));
-        let closing = opening
-            .checked_add(Money::new(credits, self.currency))?
-            .checked_add(Money::new(debits, self.currency))?;
-        let reported = Money::new(import.reported_closing_minor, self.currency);
-        Ok(BankStatementDto {
-            account_name: format!("{account} · {}", self.domain.entity.bank_name),
-            file: import.file.clone(),
-            format: import.format.clone(),
-            from: import.from.clone(),
-            to: import.to.clone(),
-            opening: money(opening)?,
-            credits: self.amount(credits)?,
-            debits: self.amount(debits)?,
-            closing: money(closing)?,
-            reported_closing: money(reported)?,
-            ties_out: closing == reported,
-            lines,
-        })
-    }
-
     fn proposed_entry(&self, entry: &DomainEntry) -> Result<ProposedEntryDto, CoreError> {
         let (mut debit, mut credit) = (0_i64, 0_i64);
         let mut out = Vec::new();
@@ -888,14 +832,26 @@ impl Core {
         })
     }
 
-    /// The inbox: proposals waiting for a human decision.
+    /// The demo proposal about a bank line, if there is one.
+    fn proposal_for_line(&self, line_id: &str) -> Option<String> {
+        self.domain
+            .proposals
+            .iter()
+            .find(|p| p.bank_line_id.as_deref() == Some(line_id))
+            .map(|p| p.id.clone())
+    }
+
+    /// The inbox: proposals waiting for a human decision, and bank lines
+    /// the workbench couldn't settle on its own.
     pub fn proposals(&self) -> Result<Vec<ProposalDto>, CoreError> {
+        let lines = self.bank_statement()?.lines;
         let open_invoices: HashMap<String, i64> = self
             .invoices()?
             .into_iter()
             .filter_map(|i| i.number.map(|n| (n, i.open.minor)))
             .collect();
-        self.domain
+        let mut items: Vec<ProposalDto> = self
+            .domain
             .proposals
             .iter()
             .map(|p| {
@@ -919,9 +875,8 @@ impl Core {
                 let amount = p
                     .bank_line_id
                     .as_ref()
-                    .and_then(|id| self.domain.bank_import.lines.iter().find(|l| &l.id == id))
-                    .map(|l| self.amount(l.amount_minor))
-                    .transpose()?;
+                    .and_then(|id| lines.iter().find(|l| &l.id == id))
+                    .map(|l| l.amount.clone());
                 Ok(ProposalDto {
                     id: p.id.clone(),
                     kind: p.kind.clone(),
@@ -940,7 +895,38 @@ impl Core {
                     reasons: p.reasons.clone(),
                 })
             })
-            .collect()
+            .collect::<Result<Vec<_>, CoreError>>()?;
+        // A proposal about a line that's booked now is done.
+        let booked = |id: &Option<String>| {
+            id.as_ref()
+                .and_then(|id| lines.iter().find(|l| &l.id == id))
+                .is_some_and(|l| l.status == "booked")
+        };
+        items.retain(|p| !booked(&p.bank_line_id));
+        // Lines the workbench couldn't settle on its own, without a proposal.
+        for l in lines
+            .iter()
+            .filter(|l| l.status == "needs_you" && l.proposal_id.is_none())
+        {
+            items.push(ProposalDto {
+                id: format!("bank-{}", l.id),
+                kind: "posting".into(),
+                title: format!("{} · bank line needs you", l.counterparty),
+                detail: l
+                    .held_because
+                    .clone()
+                    .unwrap_or_else(|| "Nothing in the books fits this line yet.".into()),
+                confidence: Some("needs_you".into()),
+                source_kind: "rule".into(),
+                source: "Bank workbench".into(),
+                bank_line_id: Some(l.id.clone()),
+                due_on: None,
+                amount: Some(l.amount.clone()),
+                entry: None,
+                reasons: l.held_because.iter().cloned().collect(),
+            });
+        }
+        Ok(items)
     }
 
     /// The DPH return for `from..=to`: the ledger's VAT postings mapped onto
