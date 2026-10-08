@@ -722,6 +722,16 @@ pub struct InterestPeriodDto {
     pub interest: MoneyDto,
 }
 
+/// A reminder that went out.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct ReminderSentDto {
+    /// The step (1 friendly, then firmer).
+    pub step: u8,
+    /// When it was recorded as sent.
+    pub sent_on: String,
+}
+
 /// A reminder that is due, drafted for the user to send.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]

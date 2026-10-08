@@ -8,8 +8,8 @@ use skyla_app::dto::{
     DunningNoticeDto, EgressPayloadDto, EgressPolicyDto, EgressRunDto, EntityDto, ExplainTargetDto,
     ExplanationDto, FindingDto, IntegrityDto, InvoiceDraftDto, InvoiceDto, InvoiceFormDto,
     JournalEntryDto, ObligationDto, PackUpdateDto, PeriodDto, ProfitAndLossDto, ProposalDto,
-    RecurringDraftDto, RecurringTemplateDto, RefDataDto, RulePackDto, TaxAdviceDto,
-    TaxProjectionDto, TaxScenariosDto, TrialBalanceDto, VatReturnDto,
+    RecurringDraftDto, RecurringTemplateDto, RefDataDto, ReminderSentDto, RulePackDto,
+    TaxAdviceDto, TaxProjectionDto, TaxScenariosDto, TrialBalanceDto, VatReturnDto,
 };
 use skyla_app::dto::{
     BackupDto, BackupsDto, DrillDto, EntitySetupDto, ExportDto, ImportPreviewDto, PurchaseDraftDto,
@@ -227,6 +227,20 @@ fn invoice_xml(core: Books, id: i64, format: String) -> Answer<DocumentXmlDto> {
 #[specta::specta]
 fn dunning_queue(core: Books, as_of: String) -> Answer<Vec<DunningNoticeDto>> {
     Ok(core.dunning_queue(&as_of)?)
+}
+
+/// Records that the due reminder went out today.
+#[tauri::command]
+#[specta::specta]
+fn record_reminder(core: Books, document_id: i64, step: u8) -> Answer<Vec<DunningNoticeDto>> {
+    Ok(core.record_reminder(document_id, step)?)
+}
+
+/// The reminders that went out for an invoice.
+#[tauri::command]
+#[specta::specta]
+fn reminders_sent(core: Books, document_id: i64) -> Answer<Vec<ReminderSentDto>> {
+    Ok(core.reminders_sent(document_id)?)
 }
 
 /// Recurring invoice templates and their next runs.
@@ -770,6 +784,8 @@ pub fn specta_builder<R: Runtime>() -> Builder<R> {
             invoice_pdf,
             invoice_xml,
             dunning_queue,
+            record_reminder,
+            reminders_sent,
             recurring_templates,
             invoice_form,
             create_invoice_draft,

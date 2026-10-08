@@ -623,6 +623,38 @@ impl Core {
             .collect()
     }
 
+    /// Records that the reminder due for an invoice went out today (the
+    /// user sent it from their own mail). Only the step that's due can be
+    /// recorded, once; returns the queue as it is afterwards.
+    pub fn record_reminder(
+        &self,
+        document_id: i64,
+        step: u8,
+    ) -> Result<Vec<DunningNoticeDto>, CoreError> {
+        let today = self.domain.entity.as_of.clone();
+        let due = self.dunning_queue(&today)?;
+        if !due
+            .iter()
+            .any(|n| n.document_id == document_id && n.step == step)
+        {
+            return Err(CoreError::BadRequest(format!(
+                "reminder {step} isn't due for document {document_id}"
+            )));
+        }
+        skyla_invoicing::dunning::record_reminder(&self.db(), document_id, step, &today)?;
+        self.dunning_queue(&today)
+    }
+
+    /// The reminders that went out for an invoice, in order.
+    pub fn reminders_sent(&self, document_id: i64) -> Result<Vec<ReminderSentDto>, CoreError> {
+        Ok(
+            skyla_invoicing::dunning::reminders_sent(&self.db(), document_id)?
+                .into_iter()
+                .map(|(step, sent_on)| ReminderSentDto { step, sent_on })
+                .collect(),
+        )
+    }
+
     /// The recurring invoice templates and when each runs next.
     pub fn recurring_templates(&self) -> Result<Vec<RecurringTemplateDto>, CoreError> {
         let db = self.db();

@@ -374,6 +374,16 @@ pub fn scenarios() -> Vec<(&'static str, Script)> {
             s.read("invoices", json!({}));
             s.read("invoice_draft", json!({ "id": 8 }));
         }),
+        // The overdue invoice's first reminder, sent and recorded.
+        ("reminder", |s| {
+            s.write(
+                "record_reminder",
+                json!({ "documentId": 6, "step": 1 }),
+                "sent",
+            );
+            s.read("dunning_queue", json!({ "asOf": "2026-10-07" }));
+            s.read("reminders_sent", json!({ "documentId": 6 }));
+        }),
         // Dismissing a finding that's been read.
         ("inbox-dismiss", |s| {
             s.write(
@@ -508,6 +518,7 @@ pub fn canonical_requests() -> Vec<(&'static str, Value)> {
         // The demo's draft, as the editor opens it.
         ("invoice_draft", json!({ "id": 8 })),
         ("dunning_queue", json!({ "asOf": "2026-10-07" })),
+        ("reminders_sent", json!({ "documentId": 6 })),
         ("recurring_templates", json!({})),
         ("reference_data", json!({})),
         ("income_tax_scenarios", json!({ "projection": null })),
@@ -555,6 +566,15 @@ fn id_arg(args: &Value) -> Result<i64, IpcFailure> {
         .ok_or_else(|| IpcFailure {
             code: "bad_request".into(),
             message: "missing argument id".into(),
+        })
+}
+
+fn doc_arg(args: &Value) -> Result<i64, IpcFailure> {
+    args.get("documentId")
+        .and_then(Value::as_i64)
+        .ok_or_else(|| IpcFailure {
+            code: "bad_request".into(),
+            message: "missing argument documentId".into(),
         })
 }
 
@@ -738,6 +758,18 @@ pub fn dispatch(core: &Core, command: &str, args: &Value) -> Result<Value, IpcFa
             to_value(core.create_bank_rule(arg(args, "line")?, &rule))
         }
         "dunning_queue" => to_value(core.dunning_queue(arg(args, "asOf")?)),
+        "record_reminder" => {
+            let step = args
+                .get("step")
+                .and_then(Value::as_u64)
+                .and_then(|s| u8::try_from(s).ok())
+                .ok_or_else(|| IpcFailure {
+                    code: "bad_request".into(),
+                    message: "missing or malformed argument step".into(),
+                })?;
+            to_value(core.record_reminder(doc_arg(args)?, step))
+        }
+        "reminders_sent" => to_value(core.reminders_sent(doc_arg(args)?)),
         "invoice_pdf" => {
             let id = args
                 .get("id")

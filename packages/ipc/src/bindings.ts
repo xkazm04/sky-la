@@ -110,6 +110,10 @@ export const commands = {
 	invoiceXml: (id: number, format: string) => typedError<DocumentXmlDto, IpcFailure>(__TAURI_INVOKE("invoice_xml", { id, format })),
 	/**  Reminders due on a date, drafted for the user to send. */
 	dunningQueue: (asOf: string) => typedError<DunningNoticeDto[], IpcFailure>(__TAURI_INVOKE("dunning_queue", { asOf })),
+	/**  Records that the due reminder went out today. */
+	recordReminder: (documentId: number, step: number) => typedError<DunningNoticeDto[], IpcFailure>(__TAURI_INVOKE("record_reminder", { documentId, step })),
+	/**  The reminders that went out for an invoice. */
+	remindersSent: (documentId: number) => typedError<ReminderSentDto[], IpcFailure>(__TAURI_INVOKE("reminders_sent", { documentId })),
 	/**  Recurring invoice templates and their next runs. */
 	recurringTemplates: () => typedError<RecurringTemplateDto[], IpcFailure>(__TAURI_INVOKE("recurring_templates")),
 	/**  What the invoice editor offers. */
@@ -1353,6 +1357,14 @@ export type RefSourceDto = {
 	summary: string,
 	/**  When. */
 	on: string,
+};
+
+/**  A reminder that went out. */
+export type ReminderSentDto = {
+	/**  The step (1 friendly, then firmer). */
+	step: number,
+	/**  When it was recorded as sent. */
+	sentOn: string,
 };
 
 /**  What the screens report on, as of the books' date. */

@@ -2212,6 +2212,14 @@
     "isError": false
   },
   {
+    "command": "reminders_sent",
+    "args": {
+      "documentId": 6
+    },
+    "result": [],
+    "isError": false
+  },
+  {
     "command": "recurring_templates",
     "args": {},
     "result": [
@@ -21589,6 +21597,42 @@
     "isError": false,
     "scenario": "draft-edit",
     "state": "draft-edit/edited"
+  },
+  {
+    "command": "record_reminder",
+    "args": {
+      "documentId": 6,
+      "step": 1
+    },
+    "result": [],
+    "isError": false,
+    "scenario": "reminder",
+    "leadsTo": "reminder/sent"
+  },
+  {
+    "command": "dunning_queue",
+    "args": {
+      "asOf": "2026-10-07"
+    },
+    "result": [],
+    "isError": false,
+    "scenario": "reminder",
+    "state": "reminder/sent"
+  },
+  {
+    "command": "reminders_sent",
+    "args": {
+      "documentId": 6
+    },
+    "result": [
+      {
+        "sentOn": "2026-10-07",
+        "step": 1
+      }
+    ],
+    "isError": false,
+    "scenario": "reminder",
+    "state": "reminder/sent"
   },
   {
     "command": "dismiss_proposal",

@@ -933,3 +933,21 @@ test("a draft is edited before it's issued, and checked again", async ({ page })
   await expect(page).toHaveURL(/#\/invoices\/draft-8$/);
   await expect(inspector).toContainText("102 850,00");
 });
+
+test("an overdue invoice's reminder is drafted, sent from the user's mail and recorded", async ({
+  page,
+}) => {
+  await page.goto("/#/invoices/2026-102");
+  await settle(page);
+  const inspector = page.getByRole("complementary", { name: "Invoice 2026-102" });
+  await expect(inspector).toContainText("Reminder 1 (friendly) is due since 29 Sep 2026");
+  const text = inspector.getByLabel("Reminder text");
+  await expect(text).toContainText("Připomínka: faktura 2026-102 je po splatnosti");
+  await inspector.getByRole("radio", { name: "English" }).click();
+  await expect(text).toContainText("Reminder: invoice 2026-102 is overdue");
+  await axeClean(page);
+  await page.screenshot({ path: "test-results/screens/invoice-reminder.png" });
+  await inspector.getByRole("button", { name: "Mark as sent" }).click();
+  await expect(inspector).toContainText("sent 7 Oct 2026");
+  await expect(inspector.getByRole("button", { name: "Mark as sent" })).toHaveCount(0);
+});

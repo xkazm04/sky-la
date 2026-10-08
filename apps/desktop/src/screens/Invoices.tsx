@@ -26,6 +26,7 @@ import { InspectorPane } from "../shell/Shell";
 import { EmptyInspector, Loaded } from "./common";
 import { DraftEditor, InvoiceEditor } from "./InvoiceEditor";
 import { InvoiceImport, type PendingImport } from "./InvoiceImport";
+import { ReminderSection } from "./Reminders";
 
 type Filter = "all" | "open" | "paid";
 
@@ -211,6 +212,7 @@ function InvoiceInspector({ invoice }: { invoice: InvoiceDto }) {
             ]}
           />
         </InspectorSection>
+        {posted && invoice.daysOverdue !== null && <ReminderSection invoice={invoice} />}
         {result && result.state !== "busy" && (
           <p
             role="status"
