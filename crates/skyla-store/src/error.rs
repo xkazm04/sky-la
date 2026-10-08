@@ -56,6 +56,9 @@ pub enum StoreError {
     /// SQLite or SQLCipher error.
     #[error(transparent)]
     Sql(#[from] rusqlite::Error),
+    /// The OS keychain refused or isn't available.
+    #[error("keychain: {0}")]
+    Keychain(String),
     /// Filesystem error.
     #[error(transparent)]
     Io(#[from] std::io::Error),

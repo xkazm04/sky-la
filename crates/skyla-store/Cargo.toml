@@ -17,12 +17,17 @@ argon2 = "0.6.0"
 chacha20poly1305 = "0.11.0"
 data-encoding = "2.11.1"
 getrandom = "0.4.3"
+keyring = { version = "4.2.0", optional = true }
 rusqlite = { version = "0.40.2", features = ["bundled-sqlcipher-vendored-openssl"] }
 serde = { version = "1.0.229", features = ["derive"] }
 serde_json = "1.0.151"
 sha2 = "0.11.0"
 thiserror = "2.0.21"
 zeroize = { version = "1.9.1", features = ["derive"] }
+
+[features]
+# The OS keychain adapter; the desktop shell turns it on.
+os-keychain = ["dep:keyring"]
 
 [dev-dependencies]
 tempfile = "3.27.0"

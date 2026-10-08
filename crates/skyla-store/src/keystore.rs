@@ -5,8 +5,8 @@ use crate::{DataKey, StoreError};
 
 /// Where an unlocked [`DataKey`] may be cached between launches, so the user
 /// doesn't type the passphrase every time. The OS keychain backend (macOS
-/// Keychain, Windows Credential Manager, Secret Service) is wired up with the
-/// unlock UX in WP-30. Tests and headless sessions use [`MemoryKeyStore`].
+/// Keychain, Windows Credential Manager, Secret Service) is [`OsKeyStore`],
+/// behind the `os-keychain` feature. Tests and headless sessions use [`MemoryKeyStore`].
 pub trait KeyStore: Send + Sync {
     /// The cached key for `account`, if any.
     fn load(&self, account: &str) -> Result<Option<DataKey>, StoreError>;
@@ -61,5 +61,65 @@ mod tests {
         store.forget("books").unwrap();
         store.forget("books").unwrap();
         assert!(store.load("books").unwrap().is_none());
+    }
+}
+
+/// The OS keychain: macOS Keychain, Windows Credential Manager, or the
+/// Secret Service on Linux (through keyring 4). Each entity's data key is a
+/// secret under the `sky-la` service, named by the entity's account.
+#[cfg(feature = "os-keychain")]
+#[derive(Debug, Clone)]
+pub struct OsKeyStore {
+    service: String,
+}
+
+#[cfg(feature = "os-keychain")]
+impl Default for OsKeyStore {
+    fn default() -> Self {
+        Self {
+            service: "sky-la".into(),
+        }
+    }
+}
+
+#[cfg(feature = "os-keychain")]
+impl OsKeyStore {
+    /// Whether the platform's store is available (e.g. a Secret Service is running).
+    pub fn available() -> bool {
+        keyring::Entry::store_status().is_ok()
+    }
+
+    fn entry(&self, account: &str) -> Result<keyring::Entry, StoreError> {
+        keyring::Entry::new(&self.service, account).map_err(|e| StoreError::Keychain(e.to_string()))
+    }
+}
+
+#[cfg(feature = "os-keychain")]
+impl KeyStore for OsKeyStore {
+    fn load(&self, account: &str) -> Result<Option<DataKey>, StoreError> {
+        match self.entry(account)?.get_secret() {
+            Ok(bytes) => {
+                let bytes = zeroize::Zeroizing::new(bytes);
+                let key: [u8; 32] = bytes.as_slice().try_into().map_err(|_| {
+                    StoreError::Keychain("the cached key has the wrong length".into())
+                })?;
+                Ok(Some(DataKey::from_bytes(key)))
+            }
+            Err(keyring::Error::NoEntry) => Ok(None),
+            Err(e) => Err(StoreError::Keychain(e.to_string())),
+        }
+    }
+
+    fn save(&self, account: &str, key: &DataKey) -> Result<(), StoreError> {
+        self.entry(account)?
+            .set_secret(key.as_bytes())
+            .map_err(|e| StoreError::Keychain(e.to_string()))
+    }
+
+    fn forget(&self, account: &str) -> Result<(), StoreError> {
+        match self.entry(account)?.delete_credential() {
+            Ok(()) | Err(keyring::Error::NoEntry) => Ok(()),
+            Err(e) => Err(StoreError::Keychain(e.to_string())),
+        }
     }
 }
