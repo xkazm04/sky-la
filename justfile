@@ -87,10 +87,13 @@ fuzz secs="120":
     #!/usr/bin/env bash
     set -euo pipefail
     cd crates/skyla-bank
+    # cargo-fuzz defaults to the target it was built for; a prebuilt musl
+    # cargo-fuzz would then build for musl, which has no nightly std here.
+    host=$(rustc +nightly -vV | sed -n 's/^host: //p')
     for t in parse_any camt053 mt940 gpc csv; do
       mkdir -p fuzz/corpus/$t
       cp -n tests/samples/* tests/corpus/$t/* fuzz/corpus/$t/ 2>/dev/null || true
-      cargo +nightly fuzz run --debug-assertions $t -- -max_total_time={{secs}} -max_len=65536 -rss_limit_mb=2048
+      cargo +nightly fuzz run --target "$host" --debug-assertions $t -- -max_total_time={{secs}} -max_len=65536 -rss_limit_mb=2048
     done
 
 # Supply-chain and licence policy for third-party crates.
