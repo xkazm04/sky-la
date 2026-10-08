@@ -13,3 +13,13 @@ publish = false
 workspace = true
 
 [dependencies]
+csv = "1.4.0"
+encoding_rs = "0.8.42"
+roxmltree = "0.21.1"
+serde = { version = "1.0.229", features = ["derive"] }
+skyla-money = { version = "0.1.0", path = "../skyla-money" }
+skyla-rules = { version = "0.1.0", path = "../skyla-rules" }
+thiserror = "2.0.21"
+
+[dev-dependencies]
+proptest = "1.11.0"

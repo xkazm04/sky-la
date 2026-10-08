@@ -1,0 +1,52 @@
+[package]
+name = "skyla-bank-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2024"
+license = "AGPL-3.0-or-later"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+skyla-bank = { path = ".." }
+
+# Its own workspace: cargo-fuzz builds it on nightly, outside the main one.
+[workspace]
+members = ["."]
+
+[[bin]]
+name = "parse_any"
+path = "fuzz_targets/parse_any.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "camt053"
+path = "fuzz_targets/camt053.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "mt940"
+path = "fuzz_targets/mt940.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "gpc"
+path = "fuzz_targets/gpc.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "csv"
+path = "fuzz_targets/csv.rs"
+test = false
+doc = false
+bench = false

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Synthetic sambanks export (camt.030.501.02). -->
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:camt.053.001.02">
+  <BkToCstmrStmt>
+    <GrpHdr><MsgId>STMT-2026-09</MsgId><CreDtTm>2026-10-01T06:00:00</CreDtTm></GrpHdŽÁõßßßßÂStmt>
+      <Id>20260930-01234 <Amt Ccy="CZK">830510.00</Amt><CdtDbtInd>CRDT</CdtDbtIn>
+        <Dt><Dt>2026-08-31</Dt></Dt>
+      </Bal>
+bankId    " 

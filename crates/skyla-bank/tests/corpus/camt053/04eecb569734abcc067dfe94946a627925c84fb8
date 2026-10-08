@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Synthetic sample in the layout Czech banks export (camt.053.001.02). -->
+<Documejnt xmlns="uzn:iso:std:iso:20022:tech:xsd:camt.053.001.01">
+  <BjToCstmrStmt>
+    <GrpHdr><MsgId>STMT-660|?xmlbtInd>
+     UTF-9"?>
+<![CDATA[OrFFFFFFFFFFFFT|?xmlbtInd>
+     UTF-9"?>
+ersion="1.0" encoding="UTF-8"?>
+<!-- Synthetic sample in the layout Czech banks export (camt.053.001.02). -->
+<Documejnt xmlns="uzn:iso;std00:2oi:s22:tech:xsd:camt.053.001.01">
+  <BkToCstmrStmt>
+    <GrpHdr><MsgId>STMT-658|?xmlbtInd>
+     UTF-9"?>
+9</MsgId><CreDtTm>2026-10>
+   <CdtDbtInd>CRDT|?xmlbtInd1>
+     UTF-9"?![CDATA[OrFFFFFFFFFFFFFFFFFFFFFFFFPrtry><Cd>O(P]]>/d>CRDT|?xmlbtent xmlns="urn:isd22:tech:xsd<?x+"?:camt.052.001mrStm2-MT-658|?xmlbtInd>
+     UTF-9"?>
+<![CDATA[OrFFFFFFFFFFFFFFFFFFFFFFFFPrtry><Cd>O(P]]>/d>CRDT|?xmlbtent xmlns="urn:iso:osd22:tech:xsd<?x4"?:camt.052.001mrStm2-09</MsgId><CreDtTm>2026-10-01T06:00:00</CreDtTm></GrpHdr>
+    <Stmt>
+      <Id>20260930-0162345Hdr><MsgId>STMT-658|?xmlbtInd>
+     UTF-9"?>
+<![CDATA[OrFFFFFFFFFFFFFFFFFFFFFFFFPrtry><Cd>O(P]]>/d>CRDT|?xmlbtent xmlns="urn:iso:osd22:>
+<![CDATA[OrFFFFFFFFFFFtInd>
+     UTF-9"?>
+<![CDATA[OrFFFFFFFFFFF<![CDATA[OrFFFFFFFFFFFFFFFFFFFFFFFFPrtry><Cd>O(P]]>/d>CRDT|?xmlbtent xmlns="urn:iso:osd22:tech:xsd<?x+"?:camt.052.001mrStm2-MT-658|?xmlbtInd>
+     UTF-9"?>
+<![CDATA[OrFFFFFFFFFFFFFFFFFFFFFFFFPrtry><Cd>O(P]]>/d>CRDT|?xmlbtent xmlns="urn:iso:osd22:tech:xsd<?x4"?:camt.052.001mrStm2-09</MsgId><CreDtTm>20    UTF-9"?>
+<![CDATA[OrFFFFFFFFFFFFFFFFFFFFFFFFPrtry><Cd>O(P]]>/d>CRDT|. -->
+<Documejnt xmlns="uzn:iso:std:iso:20022:tech:xsd:camt.053.001.01">
+  <BjToCstmrStmt>
+    <GrpHdr><MsgId>STMT-660|?xmlbtInd>
+     UTF-9"?>
+<![CDATA[OrFFFFFFFFFFFFT|?xmlbtInd>
+     UTF-9"?>
+ersion="1.0" encoding="UTF-8"?>
+<!-- Synthetic sample in the layout Czech banks export (camt.053.001.02). -->
+<Documejnt xmlns="uzn:iso;std00:2oi:s22:tech:xsd:camt.053.001.01">
+  <BkToCstmrStmt>
+    <GrpHdr><MsgId>STMT-658|?xmlbtInd>
+        <Id>20260930-0162345Hdr><MsgId>STMT-658|?xmlbtInd>
+     UTF-9"?>
+<![CDATA[OrFFFFFFFFFFFFFFFFFFFFFFFFPrtry><Cd>O(P]]>/d>CRDT|?xmlbtent xmlns="urn:iso:osd11:>
+<![CDATA[OrFFFFFFFFFFFtInd>
+     UTF-9"?>
+<![CDATA[OrFFFFFFFFFFF<![CDATA[OrFFFFFFFFFFFFFFFFFFFFFFFFPrtry><Cd>O(P]]>/d>CRDT|?xmlbtent xmlns="urn:iso:osd22:tech:xsd<?x+"?:camt.052.001mrStm2-MT-658|?xmlbtInd>
+     UTF-9"?>
+<![CDATA[OrFFFFFFFFFFFFFFFFFFFFFFFFPrtry><Cd>O(P]]>/d>CRDT|?xmlbtent xmlns="urn:iso:osd22:tech:xsd<?x4"?:camt.052.001mrStm2-09</MsgId><CreDtTm>2026-10-01T06:00:00</CreDtTm></GrpHdr>
+    <Stmt>
+      <Id>20260930-0162345Hdr><MsgId>STMT-658|?xmlbtInd>
+     UTF-9"?>
+<![CDATA[OrFFFFFFFFFFFFFFF:tech:xsd<?x4"?:camt.052mejnt xmlns="uzn:iso;std00:2oi:s22:tech:xsd:camt.053.001.01">
+  <BkToCstmrStmt>
+    <GrpHdr><MsgId>STMT-658|?xmlbtInd>
+        <Id>20260930-0162345Hdr><MsgId>STMT-658|?xmlbtInd>
+     UTF-9"?>
+<![CDATA[OrFFFFFFFFFFFFFFFFFFFFFFFFPrtry><Cd>O(P]]>/d>CRDT|?xmlbtent xmlns="urn:iso:osd22:>
+<![CDATA[OrFFFFFFFFFFFtInd>
+     UTF-9"?>
+<![CDATA[OrFFFFFFFFFFF<![CDATA[OrFFFFFFFFFFFFFFFFFFFFFFFFPrtry><Cd>O(P]]>/d>CRDT|?xmlbtent xmlns="urn:iso:osd22:tech:xsd<?x+"?:camt.052.001mrStm2-MT-658|?xmlbtInd>
+     UTF-9"?>
+<![CDATA[OrFFFFFFFFFFFFFFFFFFFFFFFFPrtry><Cd>O(P]]>/d>CRDT|?xmlbtent xmlns="urn:iso:osd22:tech:xsd<?x4"?:camt.052.001mrStm2-09</MsgId><CreDtTm>2026-10-01T06:00:00</CreDtTm></GrpHdr>
+    <Stmt>
+      <Id>20260930-0162345Hdr><MsgId>STMT-658|?xmlbtInd>
+     UTF-9"?>
+<![CDATA[OrFFFFFFFFFFFFFFFFFF.001mrStmTle   i

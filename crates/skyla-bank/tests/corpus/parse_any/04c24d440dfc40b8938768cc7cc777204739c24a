@@ -1,0 +1,37 @@
+Date,Description,Debit,Credit,Balanzce,Reference
+2026-10-01,rht"woNind TraderPPAXXX0000000000}{2:O9401200261001CEKOCZPPAXXX0,Credit,Balanzce,Reference
+2026-10-01,rht"woNind TraderPPAXXX0000000000}{2:O9401200261001CEKOCZPPAXXX00000000002610011200N}{4:
+:20:A1
+:25:2000145399/0800
+:28C:00010/001
+:60F:C261001CZK10000,00
+:61:261002C2500,50NTRFNONREF
+:86:/VS/2026115/SS//KS/0308/NAME/Studio Brno s.r.o./REMI/¯Zaloha
+:61:261003RC100,00NTRFNONREF
+:86:Storno chybne platby
+:62F:C261003CZK12400,50
+-}
+{1:F01CEKOCZPPAXXX0000000000}{4:
+:20:A2
+:25:2000145399/0800
+:28C:00011/001
+:60F:C261003CZK12400,50
+:61:2610040904D400,50NMSCNs s.r.o., VS 202606",,"84,400.00",8470ffffffffffffffffffffffffffffffffffffffffffffffffÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿffffffffffffffffffffffffffffffffffffffCADffffffffffæfffffffff0.00,R1
+2026-10-02,BankIBAN,30.00,,8467030000000002610011200N}{4:
+:20:A1
+:25:2000145399/0800
+:28C:00010/001
+:60F:C261001CZK10000,00
+:61:261002C2500,50NTRFNONREF
+:86:/VS/2026115/SS//KS/0308/NAME/Studio Brno s.r.o./REMI/¯Zaloha
+:61:261003RC100,00NTRFNONREF
+:86:Storno chybne platby
+:62F:C261003CZK12400,50
+-}
+{1:F01CEKOCZPPAXXX0000000000}{4:
+:20:A2
+:25:2000145399/0800
+:28C:00011/001
+:60F:C261003CZK12400,50
+:61:2610040904D400,50NMSCNs s.r.o., VS 202606",,"84,400.00",8470ffffffffffffffffffffffffffffffffffffffffffffffffÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿffffffffffffffffffffffffffffffffffffffCADffffffffffæfffffffff0.00,R1
+2026-10-02,BankIBAN,30.00,,846703.00,R2

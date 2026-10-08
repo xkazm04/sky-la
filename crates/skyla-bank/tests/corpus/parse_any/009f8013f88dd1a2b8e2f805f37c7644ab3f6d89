@@ -1,0 +1,12 @@
+<?xmáááááááááááááááááá          <Acct><Id><IBAN>CZ2703000000000123454412</IBAN></Idl version="1.0? encoding="UTF-8"?>
+<!--y names under Pty, status codes, a reversal. -->
+<?ocument xmlns="urn:iso:std:iso:20022:t€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€ec&h:xsd:camt.053.001.08">
+  /CreDtTm></GrpHdr>
+    <Stmt>
+      <Id>S-2026<D-10-012</IBAN></Id><Ccy>CZing Praha</Nm></Pty></Cdtr></RltdPties>
+          <RmtInf><Ustrd>Hosting Å™Ã­jen</Ustrd></RmtInf>
+        </^xDtls></NtryDtls>
+      </Ntry>
+      <Ntry>
+        <Amt Ccy="CZK">0.00</Amt><CdtDbtInd>DBIT?/CdtDbtIrd><RvslInd>true</Rv</BkToCstmrStmt>
+</Document>

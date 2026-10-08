@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Synthetic sample in the layout Czech banks export (camt.053.001.02). -->
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:camt.053.001.02">
+  <BkToCstmrStmt>
+    <GrpHdr><MsgId>STMT-2026-09</MsgId><CreDtTm>2026-10-01T06:00:00</CreDtTm></GrpHdr>
+    <Stmt>
+      <Id>20260930-0123454412</Id>
+      <ElctrncSeqNb>9</ElctrncSeqNb>
+      <CreDtTm>2026-10-01T06:00:00</CreDtTm>
+      <FrToDt><FrDtTm>2026-09-01T00:00:00</FrDtTm><ToDtTm>2026-09-30T23:59:59</ToDtTm></FrToDt>
+      <Acct><Id><IBAN>CZ2703000000000123454412</IBAN></Id><Ccy>CZK</Ccy></Acct>
+      <Bal>
+        <Tp><CdOrPrtry><Cd>OPBD</Cd></CdOrPrtry></Tp>
+        <Amt Ccy="CZK">830510.00</Amt><CdtDbtInd>CRDT</CdtDbtInd>
+        <Dt><Dt>2026-08-31</Dt></Dt>
+      </Bal>
+      <Bal>
+        <Tp><CdOrPrtry><Cd>CLBD</Cd></CdOrPrtry></Tp>
+        <Amt Ccy="CZK">968130.00</Amt><CdtDbtInd>CRDT</CdtDbtInd>
+        <Dt><Dt>2026-09-30</Dt></Dt>
+      </Bal>
+      <Ntry>
+        <NtryRef>1</NtryRef>
+        <Amt Ccy="CZK">113600.00</Amt><CdtDbtInd>CRDT</CdtDbtInd><RvslInd>false</RvslInd>
+        <Sts>BOOK</Sts>
+        <BookgDt><Dt>2026-09-08</Dt></BookgDt><ValDt><Dt>2026-09-08</Dt></ValDt>
+        <AcctSvcrRef>CSOB-77810021</AcctSvcrRef>
+        <NtryDtls><TxDtls>
+          <Refs><EndToEndId>/VS202609766666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666/SS/KS0308</EndToEndId></Refs>
+          <RltdPties>
+            <Dbtr><Nm>Acme Analytics a.s.</Nm></Dbtr>
+            <DbtrAcct><Id><IBAN>CZ5501000000000987654321</IBAN></Id></DbtrAcct>
+          </RltdPties>
+          <RmtInf><Ustrd>Faktura 2026-097</Ustrd></RmtInf>
+        </TxDtls></NtryDtls>
+      </Ntry>
+      <Ntry>
+        <NtryRef>2</NtryRef>
+        <Amt Ccy="CZK">120000.00</Amt><CdtDbtInd>DBIT</CdtDbtInd>
+        <Sts>BOOK</Sts>
+        <BookgDt><Dt>2026-09-15</Dt></BookgDt><ValDt><Dt>2026-09-15</Dt></ValDt>
+        <AcctSvcrRef>CSOB-77810455</AcctSvcrRef>
+        <NtryDtls><TxDtls>
+          <RltdPties>
+            <Cdtr><Nm>Kanceláře Korunní s.r.o.</Nm></Cdtr>
+            <CdtrAcct><Id><Othr><Id>24001123456/2010</Id></Othr></Id></CdtrAcct>
+          </RltdPties>
+          <RmtInf><Strd><CdtrRefInf><Ref>20260915</Ref></CdtrRefInf></Strd></RmtInf>
+        </TxDtls></NtryDtls>
+        <AddtlNtryInf>Nájem září</AddtlNtryInf>
+      </Ntry>
+      <Ntry>
+        <NtryRef>3</NtryRef>
+        <Amt Ccy="CZK">64020.00</Amt><CdtDbtInd>CRDT</CdtDbtInd>
+        <Sts>BOOK</Sts>
+        Amt><CdtDbtInd>CRDT</CdtDbtInd>
+        <Sts>PDNG</Sts>
+        <BookgDt><Dt>2026-09-30</Dt></BookgDt>
+      </Ntry>
+    </Stmt>
+  </BkToCstmrStmt>
+</Document>

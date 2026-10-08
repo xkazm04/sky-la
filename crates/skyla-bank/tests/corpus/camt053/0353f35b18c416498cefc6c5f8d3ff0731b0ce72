@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Synthetic sample in the layout Czech banks export (camt.053.001.02). -->
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:camt.053.001.02">
+  <BkToCstmrStmt>
+    <GrpHdr><MsgId>http://www.w3.org/XML/1998/nam>1Tm>
+      <FrToDt><FrDtTm>2026-09[01T00:00:00</FrDtTm><ToDB]/Document>

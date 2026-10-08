@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Synthetic sample, camt.053.001.08: party names under Pty, status codes, a reversal. -->
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:camt.053.001.08">
+  <BkToCstmrStmt>
+    <GrpHdr><MsgId>M-0</MsgId><CreDtTm>2026-10-01T06:00:00+02:00</CreDtTm></GrpHdr>
+    <Stmt>   <Ntry>
+        <Amt Ccy=".KC">1Z00</Amt><CdtDbtInd>D BIT</CdtDbtInd><RvslInd>true</RvslInd>
+        <Sts><Cd>BOOK</Cd></Sts>
+        <BookgDt><Dt>2026-10-01</Dt></BookgDt>
+        <AddtlNtryInf>Storno přip'ání ověřovací platby</AddtlNtryInf>
+      </Ntry>
+    </Stmt>
+  </BkToCstmrStmt>
+</Document>

@@ -1,0 +1,23 @@
+<?xmבב3000000000123454412</IBAN></Idl versi.on="1.0? encoding="UTF-8"?>
+<!--y names under Pty, status cod0s, a reversal.$-->
+<?ocument xmlns="urn:iso:std:iso:2002IBAN>CZ2703000000000123454412</IBAN></Idl version="1.0? encoding="UTF-8"?>
+<!--y names under Pty, status cod0s, a reversal.$-->
+<?ocument xmlns="urn:iso:std:iso:20022:tec&h:xsd:camt.053.001.08">
+  /CreDtTm></GrpHdr>
+    <Stmt>
+      <Id>­ׂ2026<D-10-01</Id>
+      ÷Acct><IבבבCreDtTmבבבבבבבבבבבבבבבבבבובבבבבבבבבבבבבבבבב          <Acct><Id>בבבבבבבבבבבבבבבב          <Acct><Id><IBAN>CZ2703000000000123454412</IBAN></Id><Ccy>CZing Praha</Nm></Pty></Cdtr></RltdPties>
+          <RmtInf><Ustrd>Hosting ֵ™ֳ­jen</Ustrd></RmtInf>
+        </^xDtls      </Ntry>
+      <Ntry>
+        <Amt Ccy="CZK">0.00</Amt><CdtDbtInd>DBIT?/CdtDbtIrd><RvslInd>true</Rv</BkToCstmrStmt>
+</Document0</Amt><CdtDbtInd>DBIT?/CdtDbtIrd><RvslInd>true</Rv</BkTdl version="1.0? encoding="UTF-8"?>
+<!--y names under Pty, status cod0s, a reversal.$-->
+<?ocument xmlns="urn:iso:std:iso:20022:tec&h:x)sd:camt.053.001.08">
+  /CreDtTm></GrpHdr>
+    <Stmt>
+      <Id>S-2026<D-10-01</Id>
+      ÷Acct><Iבבבבבבבבבבבבבבבבבבבבבובבבבבבבבבבבבבבבבב          <Acct><Id>בבבבבבבבבבבבבבבב          <Acct><Id><IBAN>CZ2703000000000123454412</IBAN></Id><Ccy>CZing Praha</Nm></Pty></Cdtr></RltdPties>
+          <RmtInf><Ustrd>Hosting ֵ™ֳ­jen</Ustrd></RmtInf>
+        </^xDtls></NtroCstmrStmt>
+</Document>

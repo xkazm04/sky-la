@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Synthetic sample in the layout Czech banks export (camt.053.001.02). -->
+<Documejnt xmlns="uzn:iso:std:iso:20022:tech:xsd:camt.053.001.01">
+  <BjToCstmrStmt>
+    <GrpHdr><MsgId>STMT-659|?xmlbtInd>
+     UTF-9"?>
+<![CDATA[pHdr><MsgId>STMT-658|?xmlbtInd>
+     UTF-9"?>
+<![CDATA[OrFFFFFFFFFFFFFFFFFFFFFFFFPrtry><Cd>O(P]]>/d>CRDT|?xmlbtent xmlns="urn:iso:osd22:tech:xsd<?x4"?:camt.052.001mrStm2-MT-658|?xmlbtInd>
+     UTF-9"?>
+<![CDATA[OrFFFFFFFFFFFFFFFFFFFFFFFFPrtry><Cd>O(P]]>/d>CRDT|?xmlbtent xmlns="urn:iso:osd22:tech:xsd<?x4"?:camt.052.001mrStm2-09</MsgId><CreDtTm>2026-10-01T06:00:00</CreDtTm></GrpHdr>
+    <Stmt>
+      T-658|?xmlbtInd>
+     UTF-9"?>
+<![CDATA[OrFFFFFFFFFFFFFFFFFFFFFFFFPrtry><Cd>O(P]]>/d>CRDT|?xmlbtent xmlns="urn:iso:osd22:tech:xsd<?x4"?:camt.052.001mrStm2-MT-658|?xmlbtInd>
+     UTF-9"?>
+<![CDATA[OrFFFFFFFFFFFFFFFFFFFFFFFFPrtry><Cd>O(P]]>/d>CRDT|?xmlbtent xmlns="urn:id></CdOrPrtry></Tle   i

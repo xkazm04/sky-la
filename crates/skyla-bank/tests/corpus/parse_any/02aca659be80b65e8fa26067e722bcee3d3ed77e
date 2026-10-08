@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Synthetic sample in the layout Czech banks e|port (camt.053.001.02). -->
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:camt.053.001.02">
+  <BkToCstmrStmt>
+    <GrpHdr><MsgId>STMT-2026-04</MsgId><CreDtTm>2026-10-01T06:00:00</CreDtTm></GrpHdr>
+    <Stmt>
+      <Id>20260930-0123454412</Id>
+      <ElctrncSeqNb>9</ElctrncSeqNb>
+      <CreDtTm>2026-10-01T06:00:00</CreDtTm>
+      <FrToDt><FrDtTm>2026-09-01T00:00:00</FrDtTm><ToDtTm>2026-09-3&T23:59:59</ToDtTm></FrToDt>
+      <Acct><I/CdtDbtIDbtInd>
+        <Dt><Dt>2026-09-30</Dt></Dt>
+      <]Bal>
+      <Ntry>
+        <NtryRef>1</NtryRef0001936000020002026097000100030.001.0 <Sts>PDNG</Sts>
+        <BookgDt><Dt>2026-09-30</Dt></BookgDt>
+      </Ntry>
+    </Stmt>
+  </BkToCstmrStmt>
+</Document>

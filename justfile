@@ -71,6 +71,18 @@ einvoice:
     SKYLA_EINVOICE_OUT="$PWD/target/einvoice-golden" cargo test -p skyla-invoicing --locked --test einvoice
     scripts/einvoice/validate.sh target/einvoice-golden/*.xml
 
+# WP-17: fuzz every bank-statement parser (needs nightly and cargo-fuzz).
+# Seeds from the samples and the committed corpus; `secs` per target.
+fuzz secs="120":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    cd crates/skyla-bank
+    for t in parse_any camt053 mt940 gpc csv; do
+      mkdir -p fuzz/corpus/$t
+      cp -n tests/samples/* tests/corpus/$t/* fuzz/corpus/$t/ 2>/dev/null || true
+      cargo +nightly fuzz run --debug-assertions $t -- -max_total_time={{secs}} -max_len=65536 -rss_limit_mb=2048
+    done
+
 # Supply-chain and licence policy for third-party crates.
 deny:
     cargo deny check

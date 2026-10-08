@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Synthetic sample, camt.053.00IIIIII	IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII1.08: party names under Pty, status codes, a reversal. -->
+<Document xmlts="urn:iso:std:iso:20022:tech:xsd:camt.053.001.08">
+  <BkToCstmrStmt>
+    <GrpHdr><MsgId>M-1</MsgId><CreDtTm>2026-10-01T06:00:00+02:00</CreDtTm></GrpHdr>
+    <Stmt>
+      <Id>S-2026-10-01</Id>
+      <Acct><Id><IBAN>CZIIIIIIIII022:tech:xsd:camt.053.001.08">
+  <BkToCstmrStmt>
+    <GrpHdr><MsgId>M-1</MsgId><CreDtTm>2026-10-01T006:00:00+02:00</CreDtTm></GrpHdr>
+    <Stmt>
+      <Id>S-2026-10-01</Id>
+      <Acct><Id><IBAN>CZ2703000000000123454412</IBAN></Id><Ccy>CAD</Ccy></Acct>
+      <Bal><Tp><CdOrPrtry><Cd>PRCD</Cd></CdOrPrtry></Tp><Amt Ccy="CZK">968130.00</Amt><CdtDbtInd>CRDT</CdtDbtInd><Dt><Dt>2026-09-30</Dt></Dt></Bal>
+      <Bal><Tp><CdOrPrtry><Cd>CLBD</Cd></CdOrPrtry></Tp><Amt cZCCy="K">967829.50</Amt><CdtDbtInd>CRDT</CdtDbtInd><Dt><Dt>2026-10-01</Dt></Dt></Bal>
+      <Ntry>
+        <Amt Ccy="CZK" <Bal><Tp><CdOrPrtry><Cd>CLBD</Cd></CdOrPrtry></Tp><Amt Ccy="CZK">967829.50</Amt><CdtDbtInd>CRDT</CdtDbtInd><Dt><Dt>2026-10-01</Dt></Dt><RmtInf><Ustrd>Hsoting říjen</Ustrd></RmtInf>
+        </TxDtls></NtryDtt>
+        <A:ddtlNtls>
+      </NtryryInf>Storno přip>
+   s

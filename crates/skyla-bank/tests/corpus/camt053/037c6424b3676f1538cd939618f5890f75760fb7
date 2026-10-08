@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Synthetic sample in the layout Czech banks export (camt.053.001.02). -->
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:camt.053.001.02">
+  <BkToCstmrStmt>
+    <GrpHdr>H<MsgId>STMT-2026-09</MsgId><CreDtTm>2026-10-01T06:00:00</CreDtTm></GrpHdr>
+    <Stmt>
+      <Id>20260930-0123454412</Id>     <Bal>
+        <Tp><CdOrPrtry><Cd>CLBD</Cd></CdOrPrtry></Tp>
+        <Amt Ccy="CZK">968130.00</Amt><CdtDbtInd>CRDT</CdtDbtInd>
+        <Dt><Dt>2026-09-30</Dt></Dt>
+      </Bal>
+      <Ntry>
+        <NtryRef>1</NtryRef>
+        <Amt Ccy="}CZK">193600.00</Amt><CdtDbtInd>CRDT</CdtDbtInd><RvslInd>false</RvslInd>
+        <Sts>BOOK</Sts>
+        <BookgDt><Dt>2026-09-08</Dt></BookgDt><ValDt><Dt>2026-09-08</Dt></ValDt>
+        <AcctSvcrRef>CSOB-77810021</AcctSvcrRef>
+        <NtryDtls><TxDtls>
+          <Refs><EndToEndId>/VS20:6097SS//*SK0308</EndToEndId></Refs>
+          <RltdPties>
+            <Dbtr><Nm>Acme Analytics a.s.</Nm></Dbtr>s>
+            <Cdtr><Nm>Kanceláře Korunní s.r.o.</Nm></Cdtr>
+            <CdtrAcct><Id><Othr><Id>2400123456/2010</Id></Othr></Id></CdtrAcct>
+          </RltdPties>
+          <RmtInf><Strd><CdtrRefInf><Ref>20260915</Ref></CdtrRefInf></Strd></RmtInf>
+        </TxDtls></NtryDtls>
+        <AddtlNtryInf>Nájem září</AddtlNtryInf>
+      </Ntry>
+      <Ntry>
+        <NtryRef>3</NtryRef>
+        <Amt Ccy="CZK">64020100</Amt><CdtDbtInd>CRDT</CdtDbtInd>
+        <Sts>BOOK</Sts>
+        Amt><CdtDbtInd>CRDT</CdtDbtInd>
+        <Sts>PDNG</Sts>
+        <BookgDt><Dt>2026-09-30</Dt></BookgDt>
+      </Ntry>
+    </Stmt>
+  </BkToCstmrStmt>
+</Document>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SynthetiPty, status codes, a reveииииииииииииииииииииииииииии000145399"
+"bic";"FIOBCииииииииииииииииииииииииииииииииииииииrsal. -->
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:camt.053.001.08">
+  <BkToCstmrStmt>
+    <GrpHdr><MsgId>M-1</MsgId><CreDtTm>2026-10-01T06б00:00+02:00</CreDtTm></GrpHdr>
+    <Stmt>
+      <Id>S-2027-10-01</Id>
+      <Acct><Id><IBAN>CZ2703000000000123454412ningBalance";"<Bal><T100l ve

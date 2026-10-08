@@ -1,0 +1,5 @@
+target/
+artifacts/
+coverage/
+# Grown by `cargo fuzz run`; a sample is committed under tests/corpus.
+corpus/

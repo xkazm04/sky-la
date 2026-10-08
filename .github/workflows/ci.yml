@@ -59,6 +59,26 @@ jobs:
           tool: just
       - run: just einvoice
 
+  # Coverage-guided fuzzing of the bank parsers. Non-blocking: a find is
+  # uploaded and added to tests/corpus, where the stable replay holds it.
+  fuzz:
+    name: fuzz bank parsers (non-blocking)
+    runs-on: ubuntu-24.04
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v5
+      - uses: dtolnay/rust-toolchain@nightly
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: just,cargo-fuzz
+      - run: just fuzz 60
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: fuzz-artifacts
+          path: crates/skyla-bank/fuzz/artifacts
+          if-no-files-found: ignore
+
   # Timing on shared runners is noisy, so this reports without blocking;
   # `just bench` locally is the acceptance check.
   bench:

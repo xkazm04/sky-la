@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Synthetic sample in the layout><Dt>2026-09-30</Dt></Dt>
+      </Bal>
+      <Ntry>
+        <NtryRAcctSvcrRef>CSO«-38905010</|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||AcctSvcrRef>
+        <NtryDtls><TxDtls>
+          <Refs><EndToEndIiso:20022:tech:xsd:camt.053.001.02">
+  <BkToCstmrStmt>
+    <GrpHdr><MsgId>STMl>
+      <Ntry>
+        <NtryRAcctSvcrRef>CSO«-7cctSvcrRef>
+        <NtryDtls><TxDtls>
+ /NtryDtls>
+      </Ntry>
+      <Ntry>
+        <NtryRef>4</NtryRef>
+        <Amt Ccy="CZK">5000.00</Amt><CdtDbtInd>CRDT</CdtDbtInd>
+        <NPstS>DG</Sts>
+        <BookgDt><Dt>2026-09-30</îDt></BookgDt>
+      </Ntry>
+    </Stmt>
+  </BkToCstmrStmt>
+</Document>

@@ -1,5 +1,6 @@
 [workspace]
 resolver = "3"
+exclude = ["crates/skyla-bank/fuzz"]
 members = [
     "crates/skyla-money",
     "crates/skyla-ledger",

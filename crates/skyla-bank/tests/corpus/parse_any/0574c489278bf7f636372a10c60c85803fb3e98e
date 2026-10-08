@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Synthetic sample, camt.053.00IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII1.08: party names under Pty, status codes, a reversal. -->
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:camt{1:F01CEKOCZPPAXXX0000000001}{4:O9401200261001CEKOCZPPAXXX0000000000261001‘1200N}{4:
+:20:A1
+:25:2000145399/0800
+:28C:00010/001
+:60F:C261001CZK10000,00
+:61:261002C2500,50NTRFNONREF
+:86:/VS/20ÿÿÿÿÿÿÿ1ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ<?xml version="1.0" encoding="UTF-8"?>
+<!-- Synthetic sample, camt.053.0ÿÿÿÿÿÿöÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ26114/SS//KS/0
+:28C:00005/001
+:60F:C261003CZWWWWWWWWWWWWK12400,50
+:61:2610040904D400,50NMSCNONREF
+31082600000083051000+00000096813000+0000001202000,00
+-}
+.053.001.08">
+  <BkToCstmrStmt>
+    <GrpHdr><MsgId>M-1</MsgId><CreDtTm>2025-10-01T06:00:00+02t>
+      <Id>S-2026-10-01</Id>
+      <Acct><Id><IB0IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIA
