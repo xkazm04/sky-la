@@ -6,7 +6,9 @@
 //! [`BankError`]; none of them panics, which fuzz targets (`fuzz/`) and a
 //! corpus replay in the tests hold them to. Amounts are exact minor units.
 //!
-//! WP-18 adds normalisation, deduplication, tie-out and matching.
+//! WP-18 adds normalisation and deduplication ([`normalise`]), statement
+//! tie-out ([`tie_out`]), user rules ([`Rule`]) and the explainable matcher
+//! ([`suggest`]), whose scores are sums of named contributions.
 
 #![deny(
     clippy::indexing_slicing,
@@ -20,15 +22,25 @@
 mod camt;
 mod csv_profile;
 mod gpc;
+mod matcher;
 mod model;
 mod mt940;
+pub mod normalise;
+mod rules;
 mod text;
+mod tieout;
 
 pub use camt::parse_camt053;
 pub use csv_profile::{Amounts, CsvProfile, parse_csv};
 pub use gpc::parse_gpc;
+pub use matcher::{
+    Candidate, Contribution, OpenItem, Policy, Proposal, Signal, Suggestion, suggest,
+};
 pub use model::{Account, BankError, BankLine, Format, Statement};
 pub use mt940::parse_mt940;
+pub use normalise::{Normalised, dedupe, normalise};
+pub use rules::{Action, Condition, Direction, Rule};
+pub use tieout::{TieOut, TieOutError, tie_out};
 
 /// The largest file sky-la reads (a year of a busy account is a few MB).
 pub const MAX_BYTES: usize = 32 * 1024 * 1024;
