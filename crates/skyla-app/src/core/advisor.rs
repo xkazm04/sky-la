@@ -311,7 +311,7 @@ impl Core {
                         .map_or_else(String::new, |s| s.label.clone());
                     let mut reasons = vec![advice.explanation.clone().unwrap_or_default()];
                     reasons.extend(advice.questions.iter().map(|q| format!("Question: {q}")));
-                    if let Ok(mut inbox) = self.advisor_inbox.lock() {
+                    {
                         let proposal = crate::dto::ProposalDto {
                             id: String::new(),
                             kind: "advice".into(),
@@ -327,8 +327,9 @@ impl Core {
                             entry: None,
                             reasons,
                         };
-                        inbox.file(proposal, None);
+                        self.inbox().file(proposal, None);
                     }
+                    self.persist_inbox()?;
                     outcome_note = "Scenario explained; figures checked against the engine".into();
                 } else {
                     advice.status = "rejected".into();

@@ -141,3 +141,71 @@ fn an_advisors_entry_posts_as_proposed_and_its_id_isnt_reused() {
         .unwrap();
     assert_ne!(next["proposal"].as_str().unwrap(), id);
 }
+
+#[test]
+fn advice_can_be_dismissed_and_postings_cannot() {
+    let core = Core::demo().unwrap();
+    let advice: Vec<String> = core
+        .proposals()
+        .unwrap()
+        .into_iter()
+        .filter(|p| p.kind == "advice")
+        .map(|p| p.id)
+        .collect();
+    assert!(advice.iter().any(|id| id.starts_with("finding-")));
+    let after = core.dismiss_proposal(&advice[0]).unwrap();
+    assert!(after.iter().all(|p| p.id != advice[0]));
+    assert!(core.dismiss_proposal(&advice[0]).is_err(), "gone already");
+    let posting = core.dismiss_proposal("p-alza").unwrap_err();
+    assert!(posting.to_string().contains("only advice"), "{posting}");
+
+    let asked = core
+        .call_tool(
+            "ask_user",
+            &json!({ "question": "Is the car used privately?", "why": "It decides the VAT deduction." }),
+        )
+        .unwrap();
+    let id = asked["proposal"].as_str().unwrap();
+    let after = core.dismiss_proposal(id).unwrap();
+    assert!(after.iter().all(|p| p.id != id));
+}
+
+#[test]
+fn an_advisors_categorisation_is_approved_into_the_line_it_names() {
+    let core = Core::demo().unwrap();
+    let filed = core
+        .call_tool(
+            "propose_categorisation",
+            &json!({ "line": "s1-3", "account": "491", "reason": "Owner drawings, like the last four." }),
+        )
+        .unwrap();
+    let id = filed["proposal"].as_str().unwrap().to_owned();
+    let item = core
+        .proposals()
+        .unwrap()
+        .into_iter()
+        .find(|p| p.id == id)
+        .unwrap();
+    assert_eq!(item.kind, "posting");
+    let entry = item.entry.unwrap();
+    assert!(entry.balanced);
+    assert_eq!(entry.lines[0].account, "491");
+    assert!(entry.lines[0].debit.is_some(), "money out is a debit");
+
+    let after = core.approve_proposals(std::slice::from_ref(&id)).unwrap();
+    // The line is booked, so the demo's own proposal about it leaves too.
+    assert!(after.iter().all(|p| p.id != id && p.id != "p-atm"));
+    let line = core
+        .bank_statement()
+        .unwrap()
+        .lines
+        .into_iter()
+        .find(|l| l.id == "s1-3")
+        .unwrap();
+    assert_eq!(line.status, "booked");
+    let refused = core.call_tool(
+        "propose_categorisation",
+        &json!({ "line": "s1-3", "account": "518", "reason": "x" }),
+    );
+    assert!(refused.unwrap_err().to_string().contains("booked already"));
+}

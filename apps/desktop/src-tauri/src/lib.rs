@@ -409,6 +409,13 @@ fn approve_proposals(core: Books, ids: Vec<String>) -> Answer<Vec<ProposalDto>> 
     Ok(core.approve_proposals(&ids)?)
 }
 
+/// Dismisses advice the user has read.
+#[tauri::command]
+#[specta::specta]
+fn dismiss_proposal(core: Books, id: String) -> Answer<Vec<ProposalDto>> {
+    Ok(core.dismiss_proposal(&id)?)
+}
+
 /// Accepts every line the matcher or a rule is certain about.
 #[tauri::command]
 #[specta::specta]
@@ -756,6 +763,7 @@ pub fn specta_builder<R: Runtime>() -> Builder<R> {
             set_update_check,
             check_for_update,
             approve_proposals,
+            dismiss_proposal,
             accept_certain_bank_lines,
             book_bank_line,
             create_bank_rule,

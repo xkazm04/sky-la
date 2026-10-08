@@ -19255,6 +19255,688 @@
     "state": "inbox-approve/certain"
   },
   {
+    "command": "dismiss_proposal",
+    "args": {
+      "id": "finding-duplicate:figma:42"
+    },
+    "result": [
+      {
+        "amount": {
+          "currency": "CZK",
+          "minor": -115292
+        },
+        "bankLineId": "s1-2",
+        "confidence": "certain",
+        "detail": "Rule “EU SaaS” · same as 14 earlier lines",
+        "dueOn": null,
+        "entry": {
+          "balanced": true,
+          "date": "2026-10-03",
+          "lines": [
+            {
+              "account": "518",
+              "accountName": "Other services",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 115292
+              },
+              "vatCode": "RC21S"
+            },
+            {
+              "account": "221",
+              "accountName": "Bank accounts",
+              "credit": {
+                "currency": "CZK",
+                "minor": 115292
+              },
+              "debit": null,
+              "vatCode": null
+            },
+            {
+              "account": "343",
+              "accountName": "Value added tax",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 24211
+              },
+              "vatCode": "RC21S"
+            },
+            {
+              "account": "343",
+              "accountName": "Value added tax",
+              "credit": {
+                "currency": "CZK",
+                "minor": 24211
+              },
+              "debit": null,
+              "vatCode": "RC21S"
+            }
+          ],
+          "memo": "Google Workspace (45,86 EUR, přenesená daňová povinnost)",
+          "totalCredit": {
+            "currency": "CZK",
+            "minor": 139503
+          },
+          "totalDebit": {
+            "currency": "CZK",
+            "minor": 139503
+          }
+        },
+        "id": "p-google",
+        "kind": "posting",
+        "reasons": [
+          "Supplier is VAT-registered in Ireland, so you self-assess Czech VAT on the service.",
+          "Your rule “EU SaaS” has posted 14 earlier Google and AWS lines exactly this way.",
+          "The VAT base uses the ČNB rate for the supply date; the bank used the same rate, so there's no FX difference to book."
+        ],
+        "source": "Rule “EU SaaS”",
+        "sourceKind": "rule",
+        "title": "Google Ireland · reverse-charge posting"
+      },
+      {
+        "amount": {
+          "currency": "CZK",
+          "minor": -242000
+        },
+        "bankLineId": "s1-4",
+        "confidence": "likely",
+        "detail": "Below the fixed-asset threshold, so no depreciation schedule",
+        "dueOn": null,
+        "entry": {
+          "balanced": true,
+          "date": "2026-10-05",
+          "lines": [
+            {
+              "account": "501",
+              "accountName": "Materials consumed",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 200000
+              },
+              "vatCode": "IN21"
+            },
+            {
+              "account": "343",
+              "accountName": "Value added tax",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 42000
+              },
+              "vatCode": "IN21"
+            },
+            {
+              "account": "221",
+              "accountName": "Bank accounts",
+              "credit": {
+                "currency": "CZK",
+                "minor": 242000
+              },
+              "debit": null,
+              "vatCode": null
+            }
+          ],
+          "memo": "USB-C dock Alza",
+          "totalCredit": {
+            "currency": "CZK",
+            "minor": 242000
+          },
+          "totalDebit": {
+            "currency": "CZK",
+            "minor": 242000
+          }
+        },
+        "id": "p-alza",
+        "kind": "posting",
+        "reasons": [
+          "The receipt lists one item, a USB-C dock.",
+          "Equipment below the fixed-asset threshold is expensed directly.",
+          "Alza is VAT-registered, so the input VAT is claimable."
+        ],
+        "source": "Rule “Small equipment”",
+        "sourceKind": "rule",
+        "title": "Alza.cz · USB-C dock, expensed directly"
+      },
+      {
+        "amount": {
+          "currency": "CZK",
+          "minor": -9500
+        },
+        "bankLineId": "s1-5",
+        "confidence": "certain",
+        "detail": "Rule “Bank fees”",
+        "dueOn": null,
+        "entry": {
+          "balanced": true,
+          "date": "2026-10-06",
+          "lines": [
+            {
+              "account": "568",
+              "accountName": "Other financial expenses",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 9500
+              },
+              "vatCode": null
+            },
+            {
+              "account": "221",
+              "accountName": "Bank accounts",
+              "credit": {
+                "currency": "CZK",
+                "minor": 9500
+              },
+              "debit": null,
+              "vatCode": null
+            }
+          ],
+          "memo": "Poplatek za vedení účtu · září",
+          "totalCredit": {
+            "currency": "CZK",
+            "minor": 9500
+          },
+          "totalDebit": {
+            "currency": "CZK",
+            "minor": 9500
+          }
+        },
+        "id": "p-bank-fee",
+        "kind": "posting",
+        "reasons": [
+          "The bank's own fee line, posted the same way every month."
+        ],
+        "source": "Rule “Bank fees”",
+        "sourceKind": "rule",
+        "title": "ČSOB · account fee"
+      },
+      {
+        "amount": {
+          "currency": "CZK",
+          "minor": -600000
+        },
+        "bankLineId": "s1-3",
+        "confidence": "needs_you",
+        "detail": "Owner withdrawal, or cash for a business expense?",
+        "dueOn": null,
+        "entry": {
+          "balanced": true,
+          "date": "2026-10-04",
+          "lines": [
+            {
+              "account": "491",
+              "accountName": "Sole trader's own account",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 600000
+              },
+              "vatCode": null
+            },
+            {
+              "account": "221",
+              "accountName": "Bank accounts",
+              "credit": {
+                "currency": "CZK",
+                "minor": 600000
+              },
+              "debit": null,
+              "vatCode": null
+            }
+          ],
+          "memo": "Výběr z bankomatu",
+          "totalCredit": {
+            "currency": "CZK",
+            "minor": 600000
+          },
+          "totalDebit": {
+            "currency": "CZK",
+            "minor": 600000
+          }
+        },
+        "id": "p-atm",
+        "kind": "posting",
+        "reasons": [
+          "Your last four ATM withdrawals were owner drawings, so that's the suggestion.",
+          "It scores below the auto-accept threshold, so it waits for you.",
+          "The advisor received the amount, date and line type only."
+        ],
+        "source": "Advisor suggestion",
+        "sourceKind": "advisor",
+        "title": "ATM withdrawal, Brno · what was it for?"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "Tax advisor · a scenario for the annual return; nothing to post now",
+        "dueOn": null,
+        "entry": null,
+        "id": "p-flat-rate",
+        "kind": "advice",
+        "reasons": [
+          "A scenario, not tax advice. Open it to see the engine's figures and the assumptions."
+        ],
+        "source": "Tax advisor",
+        "sourceKind": "advisor",
+        "title": "Flat-rate expenses may beat your actual costs for 2026"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "Financial advisor · 74 700,00 Kč → 106 100,00 Kč across 3 suppliers who bill hours",
+        "dueOn": null,
+        "entry": null,
+        "id": "finding-subcontracting",
+        "kind": "advice",
+        "reasons": [
+          "A finding from the books for your review; nothing to post.",
+          "Entries: #8, #9, #10, #34, #35, #36"
+        ],
+        "source": "Financial advisor",
+        "sourceKind": "advisor",
+        "title": "Subcontracting rose 42 % on the previous quarter"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "From the obligations calendar; a payment to make",
+        "dueOn": "2026-10-08",
+        "entry": null,
+        "id": "deadline-2026-09-2026-10-08",
+        "kind": "deadline",
+        "reasons": [
+          "Health insurance advance: Zákon č. 592/1992 Sb., o pojistném na veřejné zdravotní pojištění, § 7 odst. 1 písm. b)"
+        ],
+        "source": "Rule pack cz-2026@2026.1",
+        "sourceKind": "calendar",
+        "title": "Health insurance advance · September 2026"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "From the obligations calendar; a payment to make",
+        "dueOn": "2026-10-20",
+        "entry": null,
+        "id": "deadline-2026-09-2026-10-20",
+        "kind": "deadline",
+        "reasons": [
+          "Social insurance advance: Zákon č. 589/1992 Sb., o pojistném na sociální zabezpečení a příspěvku na státní politiku zaměstnanosti, § 14a odst. 2"
+        ],
+        "source": "Rule pack cz-2026@2026.1",
+        "sourceKind": "calendar",
+        "title": "Social insurance advance · September 2026"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "From the obligations calendar; prepare it in Taxes",
+        "dueOn": "2026-10-26",
+        "entry": null,
+        "id": "deadline-2026-09-2026-10-26",
+        "kind": "deadline",
+        "reasons": [
+          "DPH return and payment: Zákon č. 235/2004 Sb., o dani z přidané hodnoty, § 101 odst. 1",
+          "Kontrolní hlášení: Zákon č. 235/2004 Sb., o dani z přidané hodnoty, § 101e odst. 1",
+          "The nominal deadline, 2026-10-25, isn't a working day, so it moves to 2026-10-26 (daňový řád § 33 odst. 4)."
+        ],
+        "source": "Rule pack cz-2026@2026.1",
+        "sourceKind": "calendar",
+        "title": "DPH return and payment, Kontrolní hlášení · September 2026"
+      }
+    ],
+    "isError": false,
+    "scenario": "inbox-dismiss",
+    "leadsTo": "inbox-dismiss/dismissed"
+  },
+  {
+    "command": "proposals",
+    "args": {},
+    "result": [
+      {
+        "amount": {
+          "currency": "CZK",
+          "minor": -115292
+        },
+        "bankLineId": "s1-2",
+        "confidence": "certain",
+        "detail": "Rule “EU SaaS” · same as 14 earlier lines",
+        "dueOn": null,
+        "entry": {
+          "balanced": true,
+          "date": "2026-10-03",
+          "lines": [
+            {
+              "account": "518",
+              "accountName": "Other services",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 115292
+              },
+              "vatCode": "RC21S"
+            },
+            {
+              "account": "221",
+              "accountName": "Bank accounts",
+              "credit": {
+                "currency": "CZK",
+                "minor": 115292
+              },
+              "debit": null,
+              "vatCode": null
+            },
+            {
+              "account": "343",
+              "accountName": "Value added tax",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 24211
+              },
+              "vatCode": "RC21S"
+            },
+            {
+              "account": "343",
+              "accountName": "Value added tax",
+              "credit": {
+                "currency": "CZK",
+                "minor": 24211
+              },
+              "debit": null,
+              "vatCode": "RC21S"
+            }
+          ],
+          "memo": "Google Workspace (45,86 EUR, přenesená daňová povinnost)",
+          "totalCredit": {
+            "currency": "CZK",
+            "minor": 139503
+          },
+          "totalDebit": {
+            "currency": "CZK",
+            "minor": 139503
+          }
+        },
+        "id": "p-google",
+        "kind": "posting",
+        "reasons": [
+          "Supplier is VAT-registered in Ireland, so you self-assess Czech VAT on the service.",
+          "Your rule “EU SaaS” has posted 14 earlier Google and AWS lines exactly this way.",
+          "The VAT base uses the ČNB rate for the supply date; the bank used the same rate, so there's no FX difference to book."
+        ],
+        "source": "Rule “EU SaaS”",
+        "sourceKind": "rule",
+        "title": "Google Ireland · reverse-charge posting"
+      },
+      {
+        "amount": {
+          "currency": "CZK",
+          "minor": -242000
+        },
+        "bankLineId": "s1-4",
+        "confidence": "likely",
+        "detail": "Below the fixed-asset threshold, so no depreciation schedule",
+        "dueOn": null,
+        "entry": {
+          "balanced": true,
+          "date": "2026-10-05",
+          "lines": [
+            {
+              "account": "501",
+              "accountName": "Materials consumed",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 200000
+              },
+              "vatCode": "IN21"
+            },
+            {
+              "account": "343",
+              "accountName": "Value added tax",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 42000
+              },
+              "vatCode": "IN21"
+            },
+            {
+              "account": "221",
+              "accountName": "Bank accounts",
+              "credit": {
+                "currency": "CZK",
+                "minor": 242000
+              },
+              "debit": null,
+              "vatCode": null
+            }
+          ],
+          "memo": "USB-C dock Alza",
+          "totalCredit": {
+            "currency": "CZK",
+            "minor": 242000
+          },
+          "totalDebit": {
+            "currency": "CZK",
+            "minor": 242000
+          }
+        },
+        "id": "p-alza",
+        "kind": "posting",
+        "reasons": [
+          "The receipt lists one item, a USB-C dock.",
+          "Equipment below the fixed-asset threshold is expensed directly.",
+          "Alza is VAT-registered, so the input VAT is claimable."
+        ],
+        "source": "Rule “Small equipment”",
+        "sourceKind": "rule",
+        "title": "Alza.cz · USB-C dock, expensed directly"
+      },
+      {
+        "amount": {
+          "currency": "CZK",
+          "minor": -9500
+        },
+        "bankLineId": "s1-5",
+        "confidence": "certain",
+        "detail": "Rule “Bank fees”",
+        "dueOn": null,
+        "entry": {
+          "balanced": true,
+          "date": "2026-10-06",
+          "lines": [
+            {
+              "account": "568",
+              "accountName": "Other financial expenses",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 9500
+              },
+              "vatCode": null
+            },
+            {
+              "account": "221",
+              "accountName": "Bank accounts",
+              "credit": {
+                "currency": "CZK",
+                "minor": 9500
+              },
+              "debit": null,
+              "vatCode": null
+            }
+          ],
+          "memo": "Poplatek za vedení účtu · září",
+          "totalCredit": {
+            "currency": "CZK",
+            "minor": 9500
+          },
+          "totalDebit": {
+            "currency": "CZK",
+            "minor": 9500
+          }
+        },
+        "id": "p-bank-fee",
+        "kind": "posting",
+        "reasons": [
+          "The bank's own fee line, posted the same way every month."
+        ],
+        "source": "Rule “Bank fees”",
+        "sourceKind": "rule",
+        "title": "ČSOB · account fee"
+      },
+      {
+        "amount": {
+          "currency": "CZK",
+          "minor": -600000
+        },
+        "bankLineId": "s1-3",
+        "confidence": "needs_you",
+        "detail": "Owner withdrawal, or cash for a business expense?",
+        "dueOn": null,
+        "entry": {
+          "balanced": true,
+          "date": "2026-10-04",
+          "lines": [
+            {
+              "account": "491",
+              "accountName": "Sole trader's own account",
+              "credit": null,
+              "debit": {
+                "currency": "CZK",
+                "minor": 600000
+              },
+              "vatCode": null
+            },
+            {
+              "account": "221",
+              "accountName": "Bank accounts",
+              "credit": {
+                "currency": "CZK",
+                "minor": 600000
+              },
+              "debit": null,
+              "vatCode": null
+            }
+          ],
+          "memo": "Výběr z bankomatu",
+          "totalCredit": {
+            "currency": "CZK",
+            "minor": 600000
+          },
+          "totalDebit": {
+            "currency": "CZK",
+            "minor": 600000
+          }
+        },
+        "id": "p-atm",
+        "kind": "posting",
+        "reasons": [
+          "Your last four ATM withdrawals were owner drawings, so that's the suggestion.",
+          "It scores below the auto-accept threshold, so it waits for you.",
+          "The advisor received the amount, date and line type only."
+        ],
+        "source": "Advisor suggestion",
+        "sourceKind": "advisor",
+        "title": "ATM withdrawal, Brno · what was it for?"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "Tax advisor · a scenario for the annual return; nothing to post now",
+        "dueOn": null,
+        "entry": null,
+        "id": "p-flat-rate",
+        "kind": "advice",
+        "reasons": [
+          "A scenario, not tax advice. Open it to see the engine's figures and the assumptions."
+        ],
+        "source": "Tax advisor",
+        "sourceKind": "advisor",
+        "title": "Flat-rate expenses may beat your actual costs for 2026"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "Financial advisor · 74 700,00 Kč → 106 100,00 Kč across 3 suppliers who bill hours",
+        "dueOn": null,
+        "entry": null,
+        "id": "finding-subcontracting",
+        "kind": "advice",
+        "reasons": [
+          "A finding from the books for your review; nothing to post.",
+          "Entries: #8, #9, #10, #34, #35, #36"
+        ],
+        "source": "Financial advisor",
+        "sourceKind": "advisor",
+        "title": "Subcontracting rose 42 % on the previous quarter"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "From the obligations calendar; a payment to make",
+        "dueOn": "2026-10-08",
+        "entry": null,
+        "id": "deadline-2026-09-2026-10-08",
+        "kind": "deadline",
+        "reasons": [
+          "Health insurance advance: Zákon č. 592/1992 Sb., o pojistném na veřejné zdravotní pojištění, § 7 odst. 1 písm. b)"
+        ],
+        "source": "Rule pack cz-2026@2026.1",
+        "sourceKind": "calendar",
+        "title": "Health insurance advance · September 2026"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "From the obligations calendar; a payment to make",
+        "dueOn": "2026-10-20",
+        "entry": null,
+        "id": "deadline-2026-09-2026-10-20",
+        "kind": "deadline",
+        "reasons": [
+          "Social insurance advance: Zákon č. 589/1992 Sb., o pojistném na sociální zabezpečení a příspěvku na státní politiku zaměstnanosti, § 14a odst. 2"
+        ],
+        "source": "Rule pack cz-2026@2026.1",
+        "sourceKind": "calendar",
+        "title": "Social insurance advance · September 2026"
+      },
+      {
+        "amount": null,
+        "bankLineId": null,
+        "confidence": null,
+        "detail": "From the obligations calendar; prepare it in Taxes",
+        "dueOn": "2026-10-26",
+        "entry": null,
+        "id": "deadline-2026-09-2026-10-26",
+        "kind": "deadline",
+        "reasons": [
+          "DPH return and payment: Zákon č. 235/2004 Sb., o dani z přidané hodnoty, § 101 odst. 1",
+          "Kontrolní hlášení: Zákon č. 235/2004 Sb., o dani z přidané hodnoty, § 101e odst. 1",
+          "The nominal deadline, 2026-10-25, isn't a working day, so it moves to 2026-10-26 (daňový řád § 33 odst. 4)."
+        ],
+        "source": "Rule pack cz-2026@2026.1",
+        "sourceKind": "calendar",
+        "title": "DPH return and payment, Kontrolní hlášení · September 2026"
+      }
+    ],
+    "isError": false,
+    "scenario": "inbox-dismiss",
+    "state": "inbox-dismiss/dismissed"
+  },
+  {
     "command": "preview_invoice_import",
     "args": {
       "contentBase64": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPCEtLSBTeW50aGV0aWMgc2FtcGxlLCB3cml0dGVuIGJ5IGhhbmQgZm9yIHRlc3RzIGFuZCB0aGUgZGVtby4gTm90IGV4cG9ydGVkIGZyb20gYSByZWFsIFBvaG9kYSBpbnN0YWxsYXRpb24gYW5kIG5vdCBhbnlvbmUncyByZWFsIGRhdGEuIC0tPgo8ZGF0OmRhdGFQYWNrIHhtbG5zOmRhdD0iaHR0cDovL3d3dy5zdG9ybXdhcmUuY3ovc2NoZW1hL3ZlcnNpb25fMi9kYXRhLnhzZCIgeG1sbnM6aW52PSJodHRwOi8vd3d3LnN0b3Jtd2FyZS5jei9zY2hlbWEvdmVyc2lvbl8yL2ludm9pY2UueHNkIiB4bWxuczp0eXA9Imh0dHA6Ly93d3cuc3Rvcm13YXJlLmN6L3NjaGVtYS92ZXJzaW9uXzIvdHlwZS54c2QiIGlkPSJzeW50aGV0aWMiIGFwcGxpY2F0aW9uPSJzeW50aGV0aWMgc2FtcGxlIiB2ZXJzaW9uPSIyLjAiIG5vdGU9IlN5bnRoZXRpYyBzYW1wbGUiPgogIDxkYXQ6ZGF0YVBhY2tJdGVtIGlkPSIxIiB2ZXJzaW9uPSIyLjAiPgogICAgPGludjppbnZvaWNlIHZlcnNpb249IjIuMCI+CiAgICAgIDxpbnY6aW52b2ljZUhlYWRlcj4KICAgICAgICA8aW52Omludm9pY2VUeXBlPmlzc3VlZEludm9pY2U8L2ludjppbnZvaWNlVHlwZT4KICAgICAgICA8aW52Om51bWJlcj48dHlwOm51bWJlclJlcXVlc3RlZD4yMDI2LTAzODwvdHlwOm51bWJlclJlcXVlc3RlZD48L2ludjpudW1iZXI+CiAgICAgICAgPGludjpkYXRlPjIwMjYtMDMtMjc8L2ludjpkYXRlPgogICAgICAgIDxpbnY6ZGF0ZVRheD4yMDI2LTAzLTI3PC9pbnY6ZGF0ZVRheD4KICAgICAgICA8aW52OmRhdGVEdWU+MjAyNi0wNC0xMDwvaW52OmRhdGVEdWU+CiAgICAgICAgPGludjp0ZXh0PkFuYWzDvXphIGRhdCwgYsWZZXplbjwvaW52OnRleHQ+CiAgICAgICAgPGludjpwYXJ0bmVySWRlbnRpdHk+PHR5cDphZGRyZXNzPjx0eXA6Y29tcGFueT5BY21lIEFuYWx5dGljcyBhLnMuPC90eXA6Y29tcGFueT48dHlwOmNpdHk+UHJhaGEgMTwvdHlwOmNpdHk+PHR5cDpzdHJlZXQ+SnVuZ21hbm5vdmEgNTwvdHlwOnN0cmVldD48dHlwOnppcD4xMTAgMDA8L3R5cDp6aXA+PHR5cDppY28+OTM2MTc0NTM8L3R5cDppY28+PHR5cDpkaWM+Q1o5MzYxNzQ1MzwvdHlwOmRpYz48L3R5cDphZGRyZXNzPjwvaW52OnBhcnRuZXJJZGVudGl0eT4KICAgICAgPC9pbnY6aW52b2ljZUhlYWRlcj4KICAgICAgPGludjppbnZvaWNlU3VtbWFyeT48aW52OmhvbWVDdXJyZW5jeT48dHlwOnByaWNlTm9uZT4wPC90eXA6cHJpY2VOb25lPjx0eXA6cHJpY2VMb3c+MDwvdHlwOnByaWNlTG93Pjx0eXA6cHJpY2VMb3dWQVQ+MDwvdHlwOnByaWNlTG93VkFUPjx0eXA6cHJpY2VIaWdoPjI0MDAwPC90eXA6cHJpY2VIaWdoPjx0eXA6cHJpY2VIaWdoVkFUPjUwNDA8L3R5cDpwcmljZUhpZ2hWQVQ+PC9pbnY6aG9tZUN1cnJlbmN5PjwvaW52Omludm9pY2VTdW1tYXJ5PgogICAgPC9pbnY6aW52b2ljZT4KICA8L2RhdDpkYXRhUGFja0l0ZW0+CiAgPGRhdDpkYXRhUGFja0l0ZW0gaWQ9IjIiIHZlcnNpb249IjIuMCI+CiAgICA8aW52Omludm9pY2UgdmVyc2lvbj0iMi4wIj4KICAgICAgPGludjppbnZvaWNlSGVhZGVyPgogICAgICAgIDxpbnY6aW52b2ljZVR5cGU+aXNzdWVkSW52b2ljZTwvaW52Omludm9pY2VUeXBlPgogICAgICAgIDxpbnY6bnVtYmVyPjx0eXA6bnVtYmVyUmVxdWVzdGVkPjIwMjYtMDQxPC90eXA6bnVtYmVyUmVxdWVzdGVkPjwvaW52Om51bWJlcj4KICAgICAgICA8aW52OmRhdGU+MjAyNi0wNC0xMDwvaW52OmRhdGU+CiAgICAgICAgPGludjpkYXRlVGF4PjIwMjYtMDQtMTA8L2ludjpkYXRlVGF4PgogICAgICAgIDxpbnY6ZGF0ZUR1ZT4yMDI2LTA0LTI0PC9pbnY6ZGF0ZUR1ZT4KICAgICAgICA8aW52OnBhcnRuZXJJZGVudGl0eT48dHlwOmFkZHJlc3M+PHR5cDpjb21wYW55Pk5vcnRod2luZCBUcmFkZXJzIHMuci5vLjwvdHlwOmNvbXBhbnk+PHR5cDpjaXR5PlByYWhhIDI8L3R5cDpjaXR5Pjx0eXA6c3RyZWV0PlZpbm9ocmFkc2vDoSAxPC90eXA6c3RyZWV0Pjx0eXA6emlwPjEyMCAwMDwvdHlwOnppcD48dHlwOmljbz45MTM0MTI3MjwvdHlwOmljbz48dHlwOmRpYz5DWjkxMzQxMjcyPC90eXA6ZGljPjwvdHlwOmFkZHJlc3M+PC9pbnY6cGFydG5lcklkZW50aXR5PgogICAgICA8L2ludjppbnZvaWNlSGVhZGVyPgogICAgICA8aW52Omludm9pY2VTdW1tYXJ5PjxpbnY6aG9tZUN1cnJlbmN5Pjx0eXA6cHJpY2VOb25lPjA8L3R5cDpwcmljZU5vbmU+PHR5cDpwcmljZUxvdz4wPC90eXA6cHJpY2VMb3c+PHR5cDpwcmljZUxvd1ZBVD4wPC90eXA6cHJpY2VMb3dWQVQ+PHR5cDpwcmljZUhpZ2g+MTIwMDAwPC90eXA6cHJpY2VIaWdoPjx0eXA6cHJpY2VIaWdoVkFUPjI1MjAwPC90eXA6cHJpY2VIaWdoVkFUPjwvaW52OmhvbWVDdXJyZW5jeT48L2ludjppbnZvaWNlU3VtbWFyeT4KICAgIDwvaW52Omludm9pY2U+CiAgPC9kYXQ6ZGF0YVBhY2tJdGVtPgogIDxkYXQ6ZGF0YVBhY2tJdGVtIGlkPSIzIiB2ZXJzaW9uPSIyLjAiPgogICAgPGludjppbnZvaWNlIHZlcnNpb249IjIuMCI+CiAgICAgIDxpbnY6aW52b2ljZUhlYWRlcj4KICAgICAgICA8aW52Omludm9pY2VUeXBlPmlzc3VlZEludm9pY2U8L2ludjppbnZvaWNlVHlwZT4KICAgICAgICA8aW52Om51bWJlcj48dHlwOm51bWJlclJlcXVlc3RlZD4yMDI2LTA0NDwvdHlwOm51bWJlclJlcXVlc3RlZD48L2ludjpudW1iZXI+CiAgICAgICAgPGludjpkYXRlPjIwMjYtMDQtMjA8L2ludjpkYXRlPgogICAgICAgIDxpbnY6ZGF0ZVRheD4yMDI2LTA0LTIwPC9pbnY6ZGF0ZVRheD4KICAgICAgICA8aW52OmRhdGVEdWU+MjAyNi0wNS0wNDwvaW52OmRhdGVEdWU+CiAgICAgICAgPGludjp0ZXh0Pk7DoXZyaCB2aXp1w6FsbsOtIGlkZW50aXR5PC9pbnY6dGV4dD4KICAgICAgICA8aW52OnBhcnRuZXJJZGVudGl0eT48dHlwOmFkZHJlc3M+PHR5cDpjb21wYW55PlN0dWRpbyBCcm5vIHMuci5vLjwvdHlwOmNvbXBhbnk+PHR5cDpjaXR5PkJybm88L3R5cDpjaXR5Pjx0eXA6c3RyZWV0Pk1hc2FyeWtvdmEgMTI8L3R5cDpzdHJlZXQ+PHR5cDp6aXA+NjAyIDAwPC90eXA6emlwPjx0eXA6aWNvPjk0NzIyMTg4PC90eXA6aWNvPjx0eXA6ZGljPkNaOTQ3MjIxODg8L3R5cDpkaWM+PC90eXA6YWRkcmVzcz48L2ludjpwYXJ0bmVySWRlbnRpdHk+CiAgICAgIDwvaW52Omludm9pY2VIZWFkZXI+CiAgICAgIDxpbnY6aW52b2ljZVN1bW1hcnk+PGludjpob21lQ3VycmVuY3k+PHR5cDpwcmljZU5vbmU+MDwvdHlwOnByaWNlTm9uZT48dHlwOnByaWNlTG93PjA8L3R5cDpwcmljZUxvdz48dHlwOnByaWNlTG93VkFUPjA8L3R5cDpwcmljZUxvd1ZBVD48dHlwOnByaWNlSGlnaD4xODAwMDwvdHlwOnByaWNlSGlnaD48dHlwOnByaWNlSGlnaFZBVD4zNzgwPC90eXA6cHJpY2VIaWdoVkFUPjwvaW52OmhvbWVDdXJyZW5jeT48L2ludjppbnZvaWNlU3VtbWFyeT4KICAgIDwvaW52Omludm9pY2U+CiAgPC9kYXQ6ZGF0YVBhY2tJdGVtPgogIDxkYXQ6ZGF0YVBhY2tJdGVtIGlkPSI0IiB2ZXJzaW9uPSIyLjAiPgogICAgPGludjppbnZvaWNlIHZlcnNpb249IjIuMCI+CiAgICAgIDxpbnY6aW52b2ljZUhlYWRlcj4KICAgICAgICA8aW52Omludm9pY2VUeXBlPmlzc3VlZEludm9pY2U8L2ludjppbnZvaWNlVHlwZT4KICAgICAgICA8aW52Om51bWJlcj48dHlwOm51bWJlclJlcXVlc3RlZD4yMDI2LTA0NzwvdHlwOm51bWJlclJlcXVlc3RlZD48L2ludjpudW1iZXI+CiAgICAgICAgPGludjpkYXRlPjIwMjYtMDQtMjg8L2ludjpkYXRlPgogICAgICAgIDxpbnY6ZGF0ZVRheD4yMDI2LTA0LTI4PC9pbnY6ZGF0ZVRheD4KICAgICAgICA8aW52OmRhdGVEdWU+MjAyNi0wNS0xMjwvaW52OmRhdGVEdWU+CiAgICAgICAgPGludjp0ZXh0Pktvbnp1bHRhY2UgayBkYXRvdsOpbXUgbW9kZWx1PC9pbnY6dGV4dD4KICAgICAgICA8aW52OnBhcnRuZXJJZGVudGl0eT48dHlwOmFkZHJlc3M+PHR5cDpjb21wYW55Pk5vcnRod2luZCBUcmFkZXJzIHMuci5vLjwvdHlwOmNvbXBhbnk+PHR5cDpjaXR5PlByYWhhIDI8L3R5cDpjaXR5Pjx0eXA6c3RyZWV0PlZpbm9ocmFkc2vDoSAxPC90eXA6c3RyZWV0Pjx0eXA6emlwPjEyMCAwMDwvdHlwOnppcD48dHlwOmljbz45MTM0MTI3MjwvdHlwOmljbz48dHlwOmRpYz5DWjkxMzQxMjcyPC90eXA6ZGljPjwvdHlwOmFkZHJlc3M+PC9pbnY6cGFydG5lcklkZW50aXR5PgogICAgICA8L2ludjppbnZvaWNlSGVhZGVyPgogICAgICA8aW52Omludm9pY2VTdW1tYXJ5PjxpbnY6aG9tZUN1cnJlbmN5Pjx0eXA6cHJpY2VOb25lPjA8L3R5cDpwcmljZU5vbmU+PHR5cDpwcmljZUxvdz4wPC90eXA6cHJpY2VMb3c+PHR5cDpwcmljZUxvd1ZBVD4wPC90eXA6cHJpY2VMb3dWQVQ+PHR5cDpwcmljZUhpZ2g+OTYwMC4wMDwvdHlwOnByaWNlSGlnaD48dHlwOnByaWNlSGlnaFZBVD4yMDE2LjAwPC90eXA6cHJpY2VIaWdoVkFUPjwvaW52OmhvbWVDdXJyZW5jeT48L2ludjppbnZvaWNlU3VtbWFyeT4KICAgIDwvaW52Omludm9pY2U+CiAgPC9kYXQ6ZGF0YVBhY2tJdGVtPgogIDxkYXQ6ZGF0YVBhY2tJdGVtIGlkPSI1IiB2ZXJzaW9uPSIyLjAiPgogICAgPGludjppbnZvaWNlIHZlcnNpb249IjIuMCI+CiAgICAgIDxpbnY6aW52b2ljZUhlYWRlcj4KICAgICAgICA8aW52Omludm9pY2VUeXBlPmlzc3VlZEludm9pY2U8L2ludjppbnZvaWNlVHlwZT4KICAgICAgICA8aW52Om51bWJlcj48dHlwOm51bWJlclJlcXVlc3RlZD4yMDI2LTA0OTwvdHlwOm51bWJlclJlcXVlc3RlZD48L2ludjpudW1iZXI+CiAgICAgICAgPGludjpkYXRlPjIwMjYtMDUtMDY8L2ludjpkYXRlPgogICAgICAgIDxpbnY6ZGF0ZVRheD4yMDI2LTA1LTA2PC9pbnY6ZGF0ZVRheD4KICAgICAgICA8aW52OmRhdGVEdWU+MjAyNi0wNS0yMDwvaW52OmRhdGVEdWU+CiAgICAgICAgPGludjp0ZXh0PkRhc2hib2FyZCwgw7pwcmF2eTwvaW52OnRleHQ+CiAgICAgICAgPGludjpwYXJ0bmVySWRlbnRpdHk+PHR5cDphZGRyZXNzPjx0eXA6Y29tcGFueT5BY21lIEFuYWx5dGljcyBhLnMuPC90eXA6Y29tcGFueT48dHlwOmNpdHk+UHJhaGEgMTwvdHlwOmNpdHk+PHR5cDpzdHJlZXQ+SnVuZ21hbm5vdmEgNTwvdHlwOnN0cmVldD48dHlwOnppcD4xMTAgMDA8L3R5cDp6aXA+PHR5cDppY28+OTM2MTc0NTM8L3R5cDppY28+PHR5cDpkaWM+Q1o5MzYxNzQ1MzwvdHlwOmRpYz48L3R5cDphZGRyZXNzPjwvaW52OnBhcnRuZXJJZGVudGl0eT4KICAgICAgPC9pbnY6aW52b2ljZUhlYWRlcj4KICAgICAgPGludjppbnZvaWNlU3VtbWFyeT48aW52OmhvbWVDdXJyZW5jeT48dHlwOnByaWNlTm9uZT4wPC90eXA6cHJpY2VOb25lPjx0eXA6cHJpY2VMb3c+MDwvdHlwOnByaWNlTG93Pjx0eXA6cHJpY2VMb3dWQVQ+MDwvdHlwOnByaWNlTG93VkFUPjx0eXA6cHJpY2VIaWdoPjEwMDAwPC90eXA6cHJpY2VIaWdoPjx0eXA6cHJpY2VIaWdoVkFUPjIxMTA8L3R5cDpwcmljZUhpZ2hWQVQ+PC9pbnY6aG9tZUN1cnJlbmN5PjwvaW52Omludm9pY2VTdW1tYXJ5PgogICAgPC9pbnY6aW52b2ljZT4KICA8L2RhdDpkYXRhUGFja0l0ZW0+CiAgPGRhdDpkYXRhUGFja0l0ZW0gaWQ9IjYiIHZlcnNpb249IjIuMCI+CiAgICA8aW52Omludm9pY2UgdmVyc2lvbj0iMi4wIj4KICAgICAgPGludjppbnZvaWNlSGVhZGVyPgogICAgICAgIDxpbnY6aW52b2ljZVR5cGU+cmVjZWl2ZWRJbnZvaWNlPC9pbnY6aW52b2ljZVR5cGU+CiAgICAgICAgPGludjpudW1iZXI+PHR5cDpudW1iZXJSZXF1ZXN0ZWQ+UEYtMjAyNi0wMDEyPC90eXA6bnVtYmVyUmVxdWVzdGVkPjwvaW52Om51bWJlcj4KICAgICAgICA8aW52OmRhdGU+MjAyNi0wNS0wMjwvaW52OmRhdGU+CiAgICAgIDwvaW52Omludm9pY2VIZWFkZXI+CiAgICAgIDxpbnY6aW52b2ljZVN1bW1hcnk+PGludjpob21lQ3VycmVuY3k+PHR5cDpwcmljZU5vbmU+MDwvdHlwOnByaWNlTm9uZT48dHlwOnByaWNlTG93PjA8L3R5cDpwcmljZUxvdz48dHlwOnByaWNlTG93VkFUPjA8L3R5cDpwcmljZUxvd1ZBVD48dHlwOnByaWNlSGlnaD4xMDAwPC90eXA6cHJpY2VIaWdoPjx0eXA6cHJpY2VIaWdoVkFUPjIxMDwvdHlwOnByaWNlSGlnaFZBVD48L2ludjpob21lQ3VycmVuY3k+PC9pbnY6aW52b2ljZVN1bW1hcnk+CiAgICA8L2ludjppbnZvaWNlPgogIDwvZGF0OmRhdGFQYWNrSXRlbT4KPC9kYXQ6ZGF0YVBhY2s+Cg==",

@@ -982,13 +982,6 @@ impl Core {
                 })
             })
             .collect::<Result<Vec<_>, CoreError>>()?;
-        // A proposal about a line that's booked now is done.
-        let booked = |id: &Option<String>| {
-            id.as_ref()
-                .and_then(|id| lines.iter().find(|l| &l.id == id))
-                .is_some_and(|l| l.status == "booked")
-        };
-        items.retain(|p| !booked(&p.bank_line_id));
         // Lines the workbench couldn't settle on its own, without a proposal.
         for l in lines
             .iter()
@@ -1042,9 +1035,16 @@ impl Core {
         }
         items.extend(self.upcoming_deadlines()?);
         // What advisors filed through their tools, waiting for review.
-        if let Ok(inbox) = self.advisor_inbox.lock() {
-            items.extend(inbox.proposals().cloned());
-        }
+        let inbox = self.inbox();
+        items.extend(inbox.proposals().cloned());
+        // A proposal about a line that's booked now is done, and dismissed
+        // advice stays dismissed.
+        let booked = |id: &Option<String>| {
+            id.as_ref()
+                .and_then(|id| lines.iter().find(|l| &l.id == id))
+                .is_some_and(|l| l.status == "booked")
+        };
+        items.retain(|p| !booked(&p.bank_line_id) && !inbox.is_dismissed(&p.id));
         Ok(items)
     }
 

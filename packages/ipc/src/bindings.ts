@@ -155,6 +155,8 @@ export const commands = {
 	checkForUpdate: () => typedError<UpdateStatusDto, IpcFailure>(__TAURI_INVOKE("check_for_update")),
 	/**  Approves inbox postings: the kernel re-validates and posts each one. */
 	approveProposals: (ids: string[]) => typedError<ProposalDto[], IpcFailure>(__TAURI_INVOKE("approve_proposals", { ids })),
+	/**  Dismisses advice the user has read. */
+	dismissProposal: (id: string) => typedError<ProposalDto[], IpcFailure>(__TAURI_INVOKE("dismiss_proposal", { id })),
 	/**  Accepts every line the matcher or a rule is certain about. */
 	acceptCertainBankLines: () => typedError<BankStatementDto, IpcFailure>(__TAURI_INVOKE("accept_certain_bank_lines")),
 	/**  Books a line as the user chose: invoices, or account rows (a split). */

@@ -6,7 +6,7 @@
 use std::collections::HashMap;
 
 use rusqlite::Connection;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use skyla_ledger::{
     ChartSpec, NewEntry, NewLine, Replay, SourceKind, apply_schema, create_draft_as, get_entry,
     link_settlement, open_period, post_entry_at, reverse_entry_at, seed_chart,
@@ -501,7 +501,7 @@ pub(crate) struct DomainDeadline {
 }
 
 /// A proposed entry.
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub(crate) struct DomainEntry {
     pub(crate) date: String,
@@ -516,7 +516,7 @@ pub(crate) struct DomainEntry {
 }
 
 /// A proposed line, signed (debit positive).
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub(crate) struct DomainEntryLine {
     pub(crate) account: String,
@@ -525,7 +525,7 @@ pub(crate) struct DomainEntryLine {
 }
 
 /// A proposed settlement.
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub(crate) struct DomainSettle {
     pub(crate) invoice: String,
@@ -533,7 +533,7 @@ pub(crate) struct DomainSettle {
 }
 
 /// VAT figures the core re-derives with the engine.
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub(crate) struct DomainVatCheck {
     pub(crate) base_minor: Option<i64>,

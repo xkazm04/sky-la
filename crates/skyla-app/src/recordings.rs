@@ -347,6 +347,15 @@ pub fn scenarios() -> Vec<(&'static str, Script)> {
             s.read("bank_statement", json!({}));
             s.read("integrity", json!({}));
         }),
+        // Dismissing a finding that's been read.
+        ("inbox-dismiss", |s| {
+            s.write(
+                "dismiss_proposal",
+                json!({ "id": "finding-duplicate:figma:42" }),
+                "dismissed",
+            );
+            s.read("proposals", json!({}));
+        }),
         ("invoice-import", |s| {
             use base64::Engine as _;
             let file = json!({
@@ -588,6 +597,7 @@ pub fn dispatch(core: &Core, command: &str, args: &Value) -> Result<Value, IpcFa
                 })?;
             to_value(core.approve_proposals(&ids))
         }
+        "dismiss_proposal" => to_value(core.dismiss_proposal(arg(args, "id")?)),
         "preview_invoice_import" => to_value(
             core.preview_invoice_import(arg(args, "fileName")?, arg(args, "contentBase64")?),
         ),

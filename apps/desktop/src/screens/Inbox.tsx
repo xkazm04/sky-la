@@ -68,6 +68,7 @@ function elsewhere(p: ProposalDto): { label: string; go: () => void } | null {
       ? { label: "Open in Taxes", go: () => navigate("taxes", "scenarios") }
       : { label: "Open in Advisors", go: () => navigate("advisors") };
   }
+  if (p.kind === "deadline") return { label: "Open in Taxes", go: () => navigate("taxes") };
   return null;
 }
 
@@ -75,10 +76,12 @@ function ProposalInspector({
   proposal,
   busy,
   onApprove,
+  onDismiss,
 }: {
   proposal: ProposalDto;
   busy: boolean;
   onApprove: (ids: string[]) => void;
+  onDismiss: (id: string) => void;
 }) {
   const isPosting = proposal.kind === "posting";
   const canPost = isPosting && proposal.entry !== null;
@@ -106,9 +109,16 @@ function ProposalInspector({
               </Button>
             </>
           ) : other ? (
-            <Button variant="primary" onPress={other.go}>
-              {other.label}
-            </Button>
+            <>
+              {proposal.kind === "advice" && (
+                <Button variant="plain" isDisabled={busy} onPress={() => onDismiss(proposal.id)}>
+                  Dismiss
+                </Button>
+              )}
+              <Button variant="primary" onPress={other.go}>
+                {other.label}
+              </Button>
+            </>
           ) : undefined
         }
       >
@@ -164,16 +174,14 @@ export function InboxScreen({ item }: { item: string | null }) {
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<{ ok: boolean; lines: string[] } | null>(null);
   const proposals = useQuery("proposals", () => unwrap(commands.proposals()));
-  const approve = async (ids: string[]) => {
+  /** Runs a decision, refreshes everything it may have moved, and reports. */
+  const decide = async (write: () => Promise<unknown>, done: string) => {
     setBusy(true);
     setResult(null);
     try {
-      await unwrap(commands.approveProposals(ids));
+      await write();
       invalidateAll();
-      setResult({
-        ok: true,
-        lines: [`Posted ${ids.length} ${ids.length === 1 ? "entry" : "entries"}.`],
-      });
+      setResult({ ok: true, lines: [done] });
       navigate("inbox", null, true);
     } catch (e) {
       setResult({ ok: false, lines: problems(e) });
@@ -181,6 +189,12 @@ export function InboxScreen({ item }: { item: string | null }) {
       setBusy(false);
     }
   };
+  const approve = (ids: string[]) =>
+    decide(
+      () => unwrap(commands.approveProposals(ids)),
+      `Posted ${ids.length} ${ids.length === 1 ? "entry" : "entries"}.`,
+    );
+  const dismiss = (id: string) => decide(() => unwrap(commands.dismissProposal(id)), "Dismissed.");
   return (
     <Loaded query={proposals}>
       {(all) => {
@@ -252,6 +266,7 @@ export function InboxScreen({ item }: { item: string | null }) {
                 proposal={selected}
                 busy={busy}
                 onApprove={(ids) => void approve(ids)}
+                onDismiss={(id) => void dismiss(id)}
               />
             ) : (
               <EmptyInspector label="Inbox" text="Nothing selected." />

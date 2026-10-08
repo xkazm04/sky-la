@@ -139,3 +139,70 @@ fn a_verified_pack_update_applies_from_the_next_opening() {
     let core = Core::open_entity_trusting(&books, &data_key, "2026-10-07", &[]).unwrap();
     assert_eq!(core.rule_pack().provenance, "cz-2026@2026.1");
 }
+
+#[test]
+fn the_inbox_keeps_advisor_items_and_dismissals_after_unlocking_again() {
+    let dir = tempfile::tempdir().unwrap();
+    let gate = Gate::reproducible(dir.path().to_path_buf());
+    let (core, _) = gate.create(&setup(), PASS).unwrap();
+    let s = core
+        .import_bank_statement("fio.csv", &b64(&statement()))
+        .unwrap();
+    let line = s
+        .lines
+        .iter()
+        .find(|l| l.status != "booked" && l.amount.minor < 0)
+        .unwrap()
+        .id
+        .clone();
+    let cat = core
+        .call_tool(
+            "propose_categorisation",
+            &serde_json::json!({ "line": line, "account": "518", "reason": "A service." }),
+        )
+        .unwrap();
+    let asked = core
+        .call_tool(
+            "ask_user",
+            &serde_json::json!({ "question": "Do you claim a child?", "why": "The bonus." }),
+        )
+        .unwrap();
+    core.dismiss_proposal(asked["proposal"].as_str().unwrap())
+        .unwrap();
+    drop(core);
+
+    let core = gate.unlock(PASS, false).unwrap();
+    let ids: Vec<String> = core
+        .proposals()
+        .unwrap()
+        .into_iter()
+        .map(|p| p.id)
+        .collect();
+    let cat = cat["proposal"].as_str().unwrap().to_owned();
+    assert!(ids.contains(&cat), "{ids:?}");
+    assert!(
+        !ids.iter()
+            .any(|id| id == asked["proposal"].as_str().unwrap())
+    );
+    core.approve_proposals(std::slice::from_ref(&cat)).unwrap();
+    drop(core);
+
+    let core = gate.unlock(PASS, false).unwrap();
+    let booked = core
+        .bank_statement()
+        .unwrap()
+        .lines
+        .into_iter()
+        .find(|l| l.id == line)
+        .unwrap();
+    assert_eq!(booked.status, "booked");
+    assert!(core.proposals().unwrap().iter().all(|p| p.id != cat));
+    let next = core
+        .call_tool(
+            "ask_user",
+            &serde_json::json!({ "question": "Anything else?", "why": "To finish." }),
+        )
+        .unwrap();
+    assert_eq!(next["proposal"], "advisor-3", "ids aren't reused");
+    assert!(core.integrity().unwrap().chain_intact);
+}

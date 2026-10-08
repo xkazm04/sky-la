@@ -1,9 +1,13 @@
-//! Approving the inbox's postings (improvement wave 11). A proposal from a
+//! The inbox's decisions (improvement waves 11 and 12). A proposal from a
 //! rule or an advisor is only ever a proposal: the user pressing Approve is
 //! the approval, and the kernel re-validates the entry and posts it. A
 //! proposal about a bank line books that line; one an advisor filed through
-//! its tools posts on its own and leaves the inbox.
+//! its tools posts on its own and leaves the inbox. Advice can be dismissed
+//! once read. Real books keep what advisors filed and what was dismissed.
 
+use std::collections::BTreeSet;
+
+use serde::{Deserialize, Serialize};
 use skyla_ledger::{NewEntry, NewLine, SourceKind, create_draft_as, post_entry_at};
 use skyla_money::Money;
 
@@ -15,14 +19,17 @@ use crate::error::CoreError;
 
 const ADVISOR_NAMESPACE: uuid::Uuid = uuid::uuid!("6d1b9e37-4a2c-5f80-9b63-1e7c4a0d8f52");
 
-/// What advisors filed through their tools, waiting for the user. Postings
-/// keep the entry as proposed, in minor units, so approving posts exactly
-/// what the user reviewed.
-#[derive(Default)]
+/// What advisors filed through their tools, waiting for the user, and the
+/// advice the user dismissed. Postings keep the entry as proposed, in minor
+/// units, so approving posts exactly what the user reviewed.
+#[derive(Default, Serialize, Deserialize)]
 pub(crate) struct AdvisorInbox {
     items: Vec<(ProposalDto, Option<DomainEntry>)>,
     /// How many were ever filed, so an id is never reused after one leaves.
     filed: usize,
+    /// Advice dismissed from the inbox (findings and the demo's items).
+    #[serde(default)]
+    dismissed: BTreeSet<String>,
 }
 
 impl AdvisorInbox {
@@ -37,6 +44,10 @@ impl AdvisorInbox {
 
     pub(crate) fn proposals(&self) -> impl Iterator<Item = &ProposalDto> {
         self.items.iter().map(|(p, _)| p)
+    }
+
+    pub(crate) fn is_dismissed(&self, id: &str) -> bool {
+        self.dismissed.contains(id)
     }
 }
 
@@ -90,7 +101,39 @@ impl Core {
             }
         }
         self.persist_bank()?;
+        self.persist_inbox()?;
         self.proposals()
+    }
+
+    /// Dismisses advice the user has read. Postings are approved or booked
+    /// in Bank instead, and deadlines leave when they pass.
+    pub fn dismiss_proposal(&self, id: &str) -> Result<Vec<ProposalDto>, CoreError> {
+        let shown = self.proposals()?;
+        let Some(p) = shown.iter().find(|p| p.id == id) else {
+            return Err(bad(format!("{id} isn't in the inbox")));
+        };
+        if p.kind != "advice" {
+            return Err(bad(format!(
+                "only advice can be dismissed; “{}” is a {}",
+                p.title, p.kind
+            )));
+        }
+        {
+            let mut inbox = self.inbox();
+            if let Some(at) = inbox.items.iter().position(|(q, _)| q.id == id) {
+                inbox.items.remove(at);
+            } else {
+                inbox.dismissed.insert(id.to_owned());
+            }
+        }
+        self.persist_inbox()?;
+        self.proposals()
+    }
+
+    pub(crate) fn inbox(&self) -> std::sync::MutexGuard<'_, AdvisorInbox> {
+        self.advisor_inbox
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
     }
 
     /// A rule's or an advisor's proposal about a bank line: books the line.
@@ -143,20 +186,37 @@ impl Core {
         self.post_line_as(&mut state, line, self.new_lines(entry), &settles, how)
     }
 
-    /// An entry an advisor proposed with its tools: posts it on its own.
+    /// An entry an advisor proposed with its tools: books its bank line,
+    /// or posts on its own.
     fn approve_advisor_entry(&self, id: &str) -> Result<(), CoreError> {
-        let mut inbox = self
-            .advisor_inbox
-            .lock()
-            .unwrap_or_else(std::sync::PoisonError::into_inner);
+        let mut inbox = self.inbox();
         let at = inbox
             .items
             .iter()
             .position(|(p, _)| p.id == id)
             .ok_or_else(|| bad(format!("{id} isn't in the inbox")))?;
-        let Some(entry) = inbox.items[at].1.clone() else {
+        let (p, entry) = inbox.items[at].clone();
+        let Some(entry) = entry else {
             return Err(bad(format!("{id} has no entry to post")));
         };
+        if let Some(line) = &p.bank_line_id {
+            let mut state = self.bank_state();
+            if Self::find_line(&state, line)?.line.booking_date != entry.date {
+                return Err(bad(format!(
+                    "“{}” isn't dated on its bank line's day",
+                    p.title
+                )));
+            }
+            let how = LineEntry {
+                source_kind: SourceKind::Advisor,
+                memo: Some(entry.memo.clone()),
+                created_by: "advisor",
+                label: format!("Approved: {}", p.title),
+            };
+            self.post_line_as(&mut state, line, self.new_lines(&entry), &[], how)?;
+            inbox.items.remove(at);
+            return Ok(());
+        }
         let new = NewEntry {
             date: entry.date.clone(),
             source_kind: SourceKind::Advisor,

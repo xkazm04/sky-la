@@ -222,11 +222,8 @@ impl Core {
 
     /// Files a proposal with the entry it proposes, kept as proposed.
     fn file_entry(&self, p: ProposalDto, entry: Option<DomainEntry>) -> Result<Value, ToolError> {
-        let id = self
-            .advisor_inbox
-            .lock()
-            .map_err(|_| ToolError("the inbox is unavailable".into()))?
-            .file(p, entry);
+        let id = self.inbox().file(p, entry);
+        self.persist_inbox()?;
         Ok(json!({ "proposal": id, "status": "waiting for the user's review" }))
     }
 
@@ -304,38 +301,7 @@ impl Core {
                 to_json(&self.income_tax_scenarios(projection.as_ref())?)
             }
             "propose_entry" => self.propose_entry(args),
-            "propose_categorisation" => {
-                let (line, account, reason) = (
-                    text(args, "line")?,
-                    text(args, "account")?,
-                    text(args, "reason")?,
-                );
-                let lines = self.bank_statement()?.lines;
-                let Some(l) = lines.iter().find(|l| l.id == line) else {
-                    return Err(ToolError(format!("no bank line {line}")));
-                };
-                if !self.accounts.contains_key(account) {
-                    return Err(ToolError(format!("no account {account}")));
-                }
-                self.file_proposal(ProposalDto {
-                    id: String::new(),
-                    kind: "advice".into(),
-                    title: format!(
-                        "Book “{}” to {account} {}",
-                        l.counterparty,
-                        self.account_name(account)
-                    ),
-                    detail: "Suggested by an advisor · for your review".into(),
-                    confidence: Some("needs_you".into()),
-                    source_kind: "advisor".into(),
-                    source: "Financial advisor".into(),
-                    bank_line_id: Some(line.to_owned()),
-                    due_on: None,
-                    amount: Some(l.amount.clone()),
-                    entry: None,
-                    reasons: vec![reason.to_owned()],
-                })
-            }
+            "propose_categorisation" => self.propose_categorisation(args),
             "propose_finding" => {
                 let cites: Vec<String> = args
                     .get("cites")
@@ -381,6 +347,89 @@ impl Core {
             }),
             other => Err(ToolError(format!("there is no tool {other}"))),
         }
+    }
+
+    /// An account for a bank line the matcher couldn't place: filed as the
+    /// entry that books the line there, for the user to approve.
+    fn propose_categorisation(&self, args: &Value) -> Result<Value, ToolError> {
+        let (line, account, reason) = (
+            text(args, "line")?,
+            text(args, "account")?,
+            text(args, "reason")?,
+        );
+        let lines = self.bank_statement()?.lines;
+        let Some(l) = lines.iter().find(|l| l.id == line) else {
+            return Err(ToolError(format!("no bank line {line}")));
+        };
+        if l.status == "booked" {
+            return Err(ToolError(format!("bank line {line} is booked already")));
+        }
+        if !self.accounts.contains_key(account) {
+            return Err(ToolError(format!("no account {account}")));
+        }
+        let amount = l.amount.minor;
+        let proposed = DomainEntry {
+            date: l.date.clone(),
+            memo: l.counterparty.clone(),
+            // Money out is a cost (debit); money in is income (credit).
+            lines: vec![
+                DomainEntryLine {
+                    account: account.to_owned(),
+                    amount_minor: -amount,
+                    vat_code: None,
+                },
+                DomainEntryLine {
+                    account: self.domain.entity.bank_account.clone(),
+                    amount_minor: amount,
+                    vat_code: None,
+                },
+            ],
+            settles: Vec::new(),
+            reverse_charge: None,
+            vat_split: None,
+        };
+        // The kernel's own checks (a leaf account, an open period), rolled back.
+        let new = skyla_ledger::NewEntry {
+            date: proposed.date.clone(),
+            source_kind: skyla_ledger::SourceKind::Advisor,
+            source_ref: None,
+            memo: proposed.memo.clone(),
+            created_by: "advisor".into(),
+            lines: proposed
+                .lines
+                .iter()
+                .map(|l| {
+                    skyla_ledger::NewLine::debit(
+                        &l.account,
+                        skyla_money::Money::new(l.amount_minor, self.currency),
+                    )
+                })
+                .collect(),
+        };
+        skyla_ledger::check_entry(&self.db(), &new)
+            .map_err(|e| ToolError(format!("the kernel refused it: {e}")))?;
+        let entry = self.proposed_entry(&proposed)?;
+        self.file_entry(
+            ProposalDto {
+                id: String::new(),
+                kind: "posting".into(),
+                title: format!(
+                    "Book “{}” to {account} {}",
+                    l.counterparty,
+                    self.account_name(account)
+                ),
+                detail: "Suggested by an advisor · for your review".into(),
+                confidence: Some("needs_you".into()),
+                source_kind: "advisor".into(),
+                source: "Financial advisor".into(),
+                bank_line_id: Some(line.to_owned()),
+                due_on: None,
+                amount: Some(l.amount.clone()),
+                entry: Some(entry),
+                reasons: vec![reason.to_owned()],
+            },
+            Some(proposed),
+        )
     }
 
     fn propose_entry(&self, args: &Value) -> Result<Value, ToolError> {
@@ -431,6 +480,26 @@ impl Core {
             reverse_charge: None,
             vat_split: None,
         };
+        // The kernel's own checks (a leaf account, an open period), rolled back.
+        let new = skyla_ledger::NewEntry {
+            date: proposed.date.clone(),
+            source_kind: skyla_ledger::SourceKind::Advisor,
+            source_ref: None,
+            memo: proposed.memo.clone(),
+            created_by: "advisor".into(),
+            lines: proposed
+                .lines
+                .iter()
+                .map(|l| {
+                    skyla_ledger::NewLine::debit(
+                        &l.account,
+                        skyla_money::Money::new(l.amount_minor, self.currency),
+                    )
+                })
+                .collect(),
+        };
+        skyla_ledger::check_entry(&self.db(), &new)
+            .map_err(|e| ToolError(format!("the kernel refused it: {e}")))?;
         let entry = self.proposed_entry(&proposed)?;
         self.file_entry(
             ProposalDto {

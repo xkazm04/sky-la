@@ -888,3 +888,12 @@ test("inbox postings are approved through the kernel, one or the certain ones to
     "Approved: Alza.cz",
   );
 });
+
+test("advice that has been read is dismissed from the inbox", async ({ page }) => {
+  await page.goto(`/#/inbox/${encodeURIComponent("finding-duplicate:figma:42")}`);
+  await settle(page);
+  const figma = page.getByRole("complementary", { name: /Figma charged twice/ });
+  await figma.getByRole("button", { name: "Dismiss" }).click();
+  await expect(page.getByRole("status")).toContainText("Dismissed.");
+  await expect(page.getByRole("grid", { name: "Inbox" })).not.toContainText("Figma");
+});

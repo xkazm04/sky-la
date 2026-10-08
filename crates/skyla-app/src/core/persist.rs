@@ -1,6 +1,7 @@
 //! What real books keep between sessions, beside the journal (improvement
 //! wave 2): the bank workbench (imported statements, rules, what's booked,
-//! learnt payer accounts), the advisor policies, reference data and its
+//! learnt payer accounts), the advisor policies, the inbox's advisor items
+//! and dismissals (wave 12), reference data and its
 //! switch, the update-check switch, and a verified rule-pack update. Each is
 //! a JSON document in `app_state`, inside the same encrypted file, written
 //! after every change. The demo keeps all of it in memory.
@@ -20,6 +21,7 @@ const POLICIES: &str = "egress_policies";
 const REFDATA: &str = "reference_data";
 const UPDATES: &str = "update_check";
 const PACK: &str = "pack_update";
+const INBOX: &str = "inbox";
 
 /// A rule-pack update, as installed: its text and its signature, verified
 /// again whenever the books open.
@@ -128,6 +130,12 @@ impl Core {
         self.save(UPDATES, Value::Bool(enabled))
     }
 
+    /// Saves what advisors filed and what was dismissed.
+    pub(crate) fn persist_inbox(&self) -> Result<(), CoreError> {
+        let value = serde_json::to_value(&*self.inbox()).map_err(json_err)?;
+        self.save(INBOX, value)
+    }
+
     /// Saves a verified pack update, to use from the next opening.
     pub(crate) fn persist_pack(&self, pack: &SavedPack) -> Result<(), CoreError> {
         self.save(PACK, serde_json::to_value(pack).map_err(json_err)?)
@@ -135,15 +143,19 @@ impl Core {
 
     /// Reads back what [`Core::persist_bank`] and the others saved.
     pub(crate) fn restore_state(&self) -> Result<(), CoreError> {
-        let (bank, policies, refdata, updates) = {
+        let (bank, policies, refdata, updates, inbox) = {
             let db = self.db();
             (
                 load(&db, BANK)?,
                 load(&db, POLICIES)?,
                 load(&db, REFDATA)?,
                 load(&db, UPDATES)?,
+                load(&db, INBOX)?,
             )
         };
+        if let Some(v) = inbox {
+            *self.inbox() = serde_json::from_value(v).map_err(json_err)?;
+        }
         if let Some(v) = bank {
             *self.bank_state() = serde_json::from_value(v).map_err(json_err)?;
         }
