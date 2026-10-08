@@ -130,6 +130,8 @@ export const commands = {
 	updateStatus: () => __TAURI_INVOKE<UpdateStatusDto>("update_status"),
 	/**  What the purchase editor offers. */
 	purchaseForm: () => typedError<PurchaseFormDto, IpcFailure>(__TAURI_INVOKE("purchase_form")),
+	/**  The periods the screens report on, as of the books' date. */
+	reportingPeriods: () => typedError<ReportingPeriodsDto, IpcFailure>(__TAURI_INVOKE("reporting_periods")),
 	/**  Every received invoice, with what's paid. */
 	purchases: () => typedError<PurchaseDto[], IpcFailure>(__TAURI_INVOKE("purchases")),
 	/**  Records a received invoice: checked, posted, the supplier kept. */
@@ -1061,6 +1063,18 @@ export type PackValueDto = {
 	note: string | null,
 };
 
+/**  A period a screen can report on. */
+export type PeriodChoiceDto = {
+	/**  `2026-09`, `2026-Q3`, `2026-ytd`. */
+	id: string,
+	/**  `September 2026`, `Q3 2026`, `Apr – Sep 2026`. */
+	label: string,
+	/**  First day. */
+	from: string,
+	/**  Last day. */
+	to: string,
+};
+
 /**  An accounting period. */
 export type PeriodDto = {
 	/**  Row id. */
@@ -1298,6 +1312,29 @@ export type RefSourceDto = {
 	summary: string,
 	/**  When. */
 	on: string,
+};
+
+/**  What the screens report on, as of the books' date. */
+export type ReportingPeriodsDto = {
+	/**  The books' date. */
+	today: string,
+	/**  Its year, for the obligations calendar. */
+	year: number,
+	/**  Where the books begin. */
+	booksFrom: string,
+	/**
+	 *  The last VAT periods that have ended, newest first; none when the
+	 *  books aren't VAT-registered.
+	 */
+	vat: PeriodChoiceDto[],
+	/**  Up to two ended quarters that overlap the books, oldest first. */
+	quarters: PeriodChoiceDto[],
+	/**  The last of them. */
+	lastQuarter: PeriodChoiceDto | null,
+	/**  The one before, to compare with. */
+	priorQuarter: PeriodChoiceDto | null,
+	/**  The last quarter's year up to its end (or the books so far). */
+	yearToDate: PeriodChoiceDto,
 };
 
 /**  The rule pack in force. */

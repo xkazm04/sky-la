@@ -1089,6 +1089,43 @@ pub struct PurchaseDto {
     pub days_overdue: Option<i64>,
 }
 
+/// A period a screen can report on.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct PeriodChoiceDto {
+    /// `2026-09`, `2026-Q3`, `2026-ytd`.
+    pub id: String,
+    /// `September 2026`, `Q3 2026`, `Apr – Sep 2026`.
+    pub label: String,
+    /// First day.
+    pub from: String,
+    /// Last day.
+    pub to: String,
+}
+
+/// What the screens report on, as of the books' date.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct ReportingPeriodsDto {
+    /// The books' date.
+    pub today: String,
+    /// Its year, for the obligations calendar.
+    pub year: i64,
+    /// Where the books begin.
+    pub books_from: String,
+    /// The last VAT periods that have ended, newest first; none when the
+    /// books aren't VAT-registered.
+    pub vat: Vec<PeriodChoiceDto>,
+    /// Up to two ended quarters that overlap the books, oldest first.
+    pub quarters: Vec<PeriodChoiceDto>,
+    /// The last of them.
+    pub last_quarter: Option<PeriodChoiceDto>,
+    /// The one before, to compare with.
+    pub prior_quarter: Option<PeriodChoiceDto>,
+    /// The last quarter's year up to its end (or the books so far).
+    pub year_to_date: PeriodChoiceDto,
+}
+
 /// Whether there are books to unlock.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]

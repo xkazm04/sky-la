@@ -28,6 +28,7 @@ mod explain;
 mod export;
 pub mod findings;
 mod imports;
+mod periods;
 mod persist;
 mod purchases;
 pub mod refdata;

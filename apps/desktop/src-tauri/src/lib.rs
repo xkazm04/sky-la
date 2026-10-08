@@ -13,7 +13,8 @@ use skyla_app::dto::{
 };
 use skyla_app::dto::{
     BackupDto, BackupsDto, DrillDto, EntitySetupDto, ExportDto, ImportPreviewDto, PurchaseDraftDto,
-    PurchaseDto, PurchaseFormDto, RecoveryKeyDto, SessionStateDto, UpdateStatusDto,
+    PurchaseDto, PurchaseFormDto, RecoveryKeyDto, ReportingPeriodsDto, SessionStateDto,
+    UpdateStatusDto,
 };
 use skyla_app::session::Gate;
 use skyla_app::{Core, IpcFailure};
@@ -310,6 +311,13 @@ fn commit_invoice_import(
     content_base64: String,
 ) -> Answer<ImportPreviewDto> {
     Ok(core.commit_invoice_import(&file_name, &content_base64)?)
+}
+
+/// The periods the screens report on, as of the books' date.
+#[tauri::command]
+#[specta::specta]
+fn reporting_periods(core: State<'_, Core>) -> Answer<ReportingPeriodsDto> {
+    Ok(core.reporting_periods()?)
 }
 
 /// What the purchase editor offers.
@@ -640,6 +648,7 @@ pub fn specta_builder<R: Runtime>() -> Builder<R> {
             export_books,
             update_status,
             purchase_form,
+            reporting_periods,
             purchases,
             record_purchase,
             set_update_check,

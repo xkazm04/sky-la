@@ -4,6 +4,7 @@ import {
   type KhItemDto,
   type KhTotalsDto,
   type ObligationDto,
+  type ReportingPeriodsDto,
   unwrap,
   type VatReturnDto,
 } from "@skyla/ipc";
@@ -55,12 +56,6 @@ const columns: TableColumn<TaxRow>[] = [
     width: "11rem",
     cell: (r) => <Badge tone={r.status.tone}>{r.status.label}</Badge>,
   },
-];
-
-const MONTHS: ReadonlyArray<{ id: string; label: string; from: string; to: string }> = [
-  { id: "vat-2026-09", label: "September 2026", from: "2026-09-01", to: "2026-09-30" },
-  { id: "vat-2026-08", label: "August 2026", from: "2026-08-01", to: "2026-08-31" },
-  { id: "vat-2026-07", label: "July 2026", from: "2026-07-01", to: "2026-07-31" },
 ];
 
 function VatRows({ vat }: { vat: VatReturnDto }) {
@@ -173,18 +168,26 @@ function ControlStatement({ kh }: { kh: ControlStatementDto }) {
 
 /** Taxes: deadlines, the VAT returns and the income-tax base so far. */
 export function TaxesScreen({ item }: { item: string | null }) {
+  const periods = useQuery("reporting_periods", () => unwrap(commands.reportingPeriods()));
+  return <Loaded query={periods}>{(p) => <TaxesBody item={item} periods={p} />}</Loaded>;
+}
+
+function TaxesBody({ item, periods }: { item: string | null; periods: ReportingPeriodsDto }) {
+  const months = periods.vat;
+  const ytd = periods.yearToDate;
+  const span = months.map((m) => m.id).join(",");
   const entity = useQuery("entity", () => commands.entity());
   const proposals = useQuery("proposals", () => unwrap(commands.proposals()));
-  const cash = useQuery("cash:2026-04-01:2026-09-30", () =>
-    unwrap(commands.cashBasis("2026-04-01", "2026-09-30")),
+  const cash = useQuery(`cash:${ytd.from}:${ytd.to}`, () =>
+    unwrap(commands.cashBasis(ytd.from, ytd.to)),
   );
-  const returns = useQuery("vat:2026-07..09", () =>
-    Promise.all(MONTHS.map((m) => unwrap(commands.vatReturn(m.from, m.to)))),
+  const returns = useQuery(`vat:${span}`, () =>
+    Promise.all(months.map((m) => unwrap(commands.vatReturn(m.from, m.to)))),
   );
   const scenarios = useBooksScenarios();
-  const calendar = useObligations(2026);
-  const statements = useQuery("kh:2026-07..09", () =>
-    Promise.all(MONTHS.map((m) => unwrap(commands.controlStatement(m.from, m.to)))),
+  const calendar = useObligations(periods.year);
+  const statements = useQuery(`kh:${span}`, () =>
+    Promise.all(months.map((m) => unwrap(commands.controlStatement(m.from, m.to)))),
   );
   return (
     <Loaded query={cash}>
@@ -208,7 +211,7 @@ export function TaxesScreen({ item }: { item: string | null }) {
           const next = left[0];
           deadlines.push({
             id: "calendar",
-            title: "Obligations calendar 2026",
+            title: `Obligations calendar ${periods.year}`,
             detail: next
               ? `${left.length} deadlines left · next: ${next.name}, ${day(next.due)}`
               : "Nothing left this year",
@@ -216,7 +219,7 @@ export function TaxesScreen({ item }: { item: string | null }) {
             figure: "This year",
             status: { tone: "neutral", label: "From the rule pack" },
             about: [
-              "Every return and payment the rule pack lists for an OSVČ who pays VAT monthly, dated for 2026.",
+              `Every return and payment the rule pack lists for these books, dated for ${periods.year}.`,
               "A deadline that falls on a weekend or public holiday moves to the next working day (daňový řád § 33 odst. 4).",
               "Insurance overviews (přehledy) aren't listed yet: their deadline depends on when the tax return is filed.",
             ],
@@ -226,10 +229,10 @@ export function TaxesScreen({ item }: { item: string | null }) {
         const vat: TaxRow[] =
           returns.state === "ready"
             ? returns.data.map((v, i) => {
-                const month = MONTHS[i];
+                const month = months[i];
                 const refund = v.payable.minor < 0;
                 return {
-                  id: month?.id ?? v.from,
+                  id: month ? `vat-${month.id}` : v.from,
                   title: `DPH return · ${month?.label ?? v.from}`,
                   detail: `${v.rows.length} rows · due ${day(v.dueOn, true)}`,
                   value: money(v.payable),
@@ -252,7 +255,7 @@ export function TaxesScreen({ item }: { item: string | null }) {
         const kh: TaxRow[] =
           statements.state === "ready"
             ? statements.data.map((k, i) => {
-                const month = MONTHS[i];
+                const month = months[i];
                 const itemised = k.a2.length + k.a4.length + k.b2.length;
                 const fine = k.matchesReturn && k.problems.length === 0;
                 return {
@@ -270,7 +273,7 @@ export function TaxesScreen({ item }: { item: string | null }) {
                     `Documents above ${money(k.threshold)} including VAT are itemised (A.4, B.2); the rest are summed (A.5, B.3). The threshold comes from the rule pack.`,
                     "Services received from the EU under reverse charge are always itemised in A.2.",
                     k.matchesReturn
-                      ? "Section C agrees with the DPH return for the same month."
+                      ? "Section C agrees with the DPH return for the same period."
                       : "Section C differs from the DPH return: check the rows marked ≠.",
                     ...k.problems,
                     "Export for EPO filing isn't available yet.",
@@ -338,7 +341,7 @@ export function TaxesScreen({ item }: { item: string | null }) {
                   status: { tone: "neutral", label: "From the engine" },
                   about: [
                     "Assessed on half the profit with actual expenses, from the same worksheet as the income tax.",
-                    "Minimum assessment bases and the advances already paid aren't applied: the pack doesn't hold the 2026 average wage, and advances are paid privately, outside the books.",
+                    "Minimum assessment bases and the advances already paid aren't applied: the pack doesn't hold the year's average wage, and advances are paid privately, outside the books.",
                   ],
                 } satisfies TaxRow,
                 {
@@ -350,7 +353,7 @@ export function TaxesScreen({ item }: { item: string | null }) {
                   status: { tone: "neutral", label: "From the engine" },
                   about: [
                     "Assessed on half the profit with actual expenses.",
-                    "The minimum assessment base isn't applied: the pack doesn't hold the 2026 average wage.",
+                    "The minimum assessment base isn't applied: the pack doesn't hold the year's average wage.",
                   ],
                 } satisfies TaxRow,
               ]
@@ -391,7 +394,11 @@ export function TaxesScreen({ item }: { item: string | null }) {
                   { id: "deadlines", title: "Deadlines", rows: deadlines },
                   { id: "vat", title: "VAT returns", rows: vat },
                   { id: "kh", title: "Control statements", rows: kh },
-                  { id: "income", title: "Income tax · daňová evidence 2026 so far", rows: income },
+                  {
+                    id: "income",
+                    title: `Income tax · daňová evidence ${ytd.from.slice(0, 4)} so far`,
+                    rows: income,
+                  },
                 ].filter((s) => s.rows.length > 0)}
                 selectedId={selected?.id ?? null}
                 onSelect={(id) => navigate("taxes", id, true)}

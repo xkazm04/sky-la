@@ -1,4 +1,4 @@
-import { commands, type MoneyDto, unwrap } from "@skyla/ipc";
+import { commands, type MoneyDto, type ReportingPeriodsDto, unwrap } from "@skyla/ipc";
 import {
   Badge,
   Button,
@@ -47,38 +47,44 @@ function line(lines: { code: string; amount: MoneyDto }[] | undefined, code: str
 
 /** Overview: the figures that matter, each one opening the screen behind it. */
 export function OverviewScreen({ item }: { item: string | null }) {
-  const entity = useQuery("entity", () => commands.entity());
-  const q3 = useQuery("pnl:2026-07-01:2026-09-30", () =>
-    unwrap(commands.profitAndLoss("2026-07-01", "2026-09-30")),
+  const periods = useQuery("reporting_periods", () => unwrap(commands.reportingPeriods()));
+  return <Loaded query={periods}>{(p) => <Overview item={item} periods={p} />}</Loaded>;
+}
+
+function Overview({ item, periods }: { item: string | null; periods: ReportingPeriodsDto }) {
+  // The last quarter that has ended, or the books so far.
+  const q = periods.lastQuarter ?? periods.yearToDate;
+  const asOf = periods.today;
+  const result = useQuery(`pnl:${q.from}:${q.to}`, () =>
+    unwrap(commands.profitAndLoss(q.from, q.to)),
   );
-  const sheet = useQuery("bs:2026-10-07", () => unwrap(commands.balanceSheet("2026-10-07")));
+  const sheet = useQuery(`bs:${asOf}`, () => unwrap(commands.balanceSheet(asOf)));
   const proposals = useQuery("proposals", () => unwrap(commands.proposals()));
 
   return (
-    <Loaded query={q3}>
+    <Loaded query={result}>
       {(p) => {
         const b = sheet.state === "ready" ? sheet.data : undefined;
-        const asOf = entity.state === "ready" ? entity.data.asOf : "2026-10-07";
         const figures: Figure[] = [
           {
             id: "revenue",
-            label: "Revenue · Q3 2026",
+            label: `Revenue · ${q.label}`,
             detail: "Accrual basis, excluding VAT",
             value: money(p.totalRevenue),
             target: "statements",
-            about: "Revenue booked in Q3 from issued invoices and other income.",
+            about: `Revenue booked in ${q.label} from issued invoices and other income.`,
           },
           {
             id: "expenses",
-            label: "Expenses · Q3 2026",
+            label: `Expenses · ${q.label}`,
             detail: "Accrual basis, excluding VAT",
             value: money(p.totalExpenses),
             target: "statements",
-            about: "Costs booked in Q3, including non-deductible client entertainment.",
+            about: `Costs booked in ${q.label}, the non-deductible ones included.`,
           },
           {
             id: "profit",
-            label: "Profit before tax · Q3 2026",
+            label: `Profit before tax · ${q.label}`,
             detail: "Revenue minus expenses, from the ledger",
             value: money(p.profit),
             target: "statements",
@@ -88,11 +94,11 @@ export function OverviewScreen({ item }: { item: string | null }) {
           {
             id: "bank",
             label: `Bank · ${day(asOf, true)}`,
-            detail: "Account 221, before this week's import",
+            detail: "Account 221, as the books stand",
             value: money(line(b?.assets, "221")),
             target: "bank",
             about:
-              "The ledger balance of account 221. The bank workbench ties this week's statement to it.",
+              "The ledger balance of account 221. The bank workbench ties each imported statement to it.",
           },
           {
             id: "receivables",
@@ -100,7 +106,7 @@ export function OverviewScreen({ item }: { item: string | null }) {
             detail: "What clients still owe",
             value: money(line(b?.assets, "311")),
             target: "invoices",
-            about: "Account 311. Studio Brno's invoice 2026-102 is overdue and partly paid.",
+            about: "Account 311: issued invoices not yet paid. Invoices shows which are overdue.",
           },
           {
             id: "payables",

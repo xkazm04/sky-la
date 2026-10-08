@@ -1,6 +1,7 @@
 import {
   commands,
   type JournalEntryDto,
+  type ReportingPeriodsDto,
   type SnapshotDto,
   type StatementLineDto,
   unwrap,
@@ -22,13 +23,6 @@ import { EmptyInspector, Loaded } from "./common";
 import { ExplainThis } from "./ExplainThis";
 
 type Report = "pnl" | "balance" | "cash";
-type Range = "q2" | "q3" | "ytd";
-
-const RANGES: Record<Range, { label: string; from: string; to: string }> = {
-  q2: { label: "Q2 2026", from: "2026-04-01", to: "2026-06-30" },
-  q3: { label: "Q3 2026", from: "2026-07-01", to: "2026-09-30" },
-  ytd: { label: "Apr – Sep 2026", from: "2026-04-01", to: "2026-09-30" },
-};
 
 /** A statement row, clickable to drill into the entries behind it. */
 function Row({
@@ -182,14 +176,25 @@ function Drilldown({ code, from, to }: { code: string; from: string; to: string 
 
 /** Statements (pattern C): the books as a document, every figure opens to its entries. */
 export function StatementsScreen({ item }: { item: string | null }) {
+  const periods = useQuery("reporting_periods", () => unwrap(commands.reportingPeriods()));
+  return <Loaded query={periods}>{(p) => <Statements item={item} periods={p} />}</Loaded>;
+}
+
+function Statements({ item, periods }: { item: string | null; periods: ReportingPeriodsDto }) {
+  // The ended quarters, then the year to date; segments drop the year.
+  const ranges = [...periods.quarters, periods.yearToDate].map((p) => ({
+    ...p,
+    short: p.label.replace(/ \d{4}$/, ""),
+  }));
   const [report, setReport] = useState<Report>("pnl");
-  const [range, setRange] = useState<Range>("q3");
-  const r = RANGES[range];
+  const [range, setRange] = useState<string>(periods.lastQuarter?.id ?? periods.yearToDate.id);
+  const r = ranges.find((x) => x.id === range) ?? periods.yearToDate;
   const select = (code: string) => navigate("statements", code, true);
+  const before = periods.priorQuarter;
 
   const pnl = useQuery(`pnl:${r.from}:${r.to}`, () => unwrap(commands.profitAndLoss(r.from, r.to)));
-  const prior = useQuery("pnl:2026-04-01:2026-06-30", () =>
-    unwrap(commands.profitAndLoss("2026-04-01", "2026-06-30")),
+  const prior = useQuery(`pnl:${before?.from}:${before?.to}`, () =>
+    before ? unwrap(commands.profitAndLoss(before.from, before.to)) : Promise.resolve(null),
   );
   const sheet = useQuery(`bs:${r.to}`, () => unwrap(commands.balanceSheet(r.to)));
   const cash = useQuery(`cash:${r.from}:${r.to}`, () => unwrap(commands.cashBasis(r.from, r.to)));
@@ -221,11 +226,7 @@ export function StatementsScreen({ item }: { item: string | null }) {
         />
         <SegmentedControl
           label="Period"
-          segments={[
-            { id: "q2", label: "Q2" },
-            { id: "q3", label: "Q3" },
-            { id: "ytd", label: "Apr – Sep" },
-          ]}
+          segments={ranges.map((x) => ({ id: x.id, label: x.short }))}
           value={range}
           onChange={setRange}
         />
@@ -234,7 +235,10 @@ export function StatementsScreen({ item }: { item: string | null }) {
         {report === "pnl" && (
           <Loaded query={pnl}>
             {(p) => {
-              const comparing = range === "q3" && prior.state === "ready" ? prior.data : undefined;
+              const comparing =
+                range === periods.lastQuarter?.id && prior.state === "ready" && prior.data
+                  ? prior.data
+                  : undefined;
               return (
                 <>
                   <table className="w-full border-collapse text-body" aria-label="Profit and loss">
@@ -243,7 +247,9 @@ export function StatementsScreen({ item }: { item: string | null }) {
                         <th className="h-8 pl-5 text-left font-medium">Account</th>
                         <th className="h-8 text-left font-medium" />
                         <th className="h-8 pr-4 text-right font-medium">{r.label}</th>
-                        {comparing && <th className="h-8 pr-5 text-right font-medium">Q2 2026</th>}
+                        {comparing && (
+                          <th className="h-8 pr-5 text-right font-medium">{before?.label}</th>
+                        )}
                       </tr>
                     </thead>
                     <Group
@@ -387,7 +393,7 @@ export function StatementsScreen({ item }: { item: string | null }) {
         )}
       </ContentGroup>
       {item && /^\d{3}/.test(item) ? (
-        <Drilldown code={item} from={report === "balance" ? "2026-04-01" : r.from} to={r.to} />
+        <Drilldown code={item} from={report === "balance" ? periods.booksFrom : r.from} to={r.to} />
       ) : (
         <EmptyInspector
           label="Statement"

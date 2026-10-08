@@ -333,7 +333,11 @@ export function InvoicesScreen({ item }: { item: string | null }) {
 function InvoiceList({ item }: { item: string | null }) {
   const [filter, setFilter] = useState<Filter>("all");
   const invoices = useQuery("invoices", () => unwrap(commands.invoices()));
-  const sheet = useQuery("bs:2026-10-07", () => unwrap(commands.balanceSheet("2026-10-07")));
+  const periods = useQuery("reporting_periods", () => unwrap(commands.reportingPeriods()));
+  const today = periods.state === "ready" ? periods.data.today : null;
+  const sheet = useQuery(`bs:${today}`, () =>
+    today ? unwrap(commands.balanceSheet(today)) : Promise.resolve(null),
+  );
   const fileInput = useRef<HTMLInputElement>(null);
   const [pending, setPending] = useState<PendingImport | null>(null);
   const [notice, setNotice] = useState<{ ok: boolean; lines: string[] } | null>(null);
@@ -368,7 +372,7 @@ function InvoiceList({ item }: { item: string | null }) {
           rows.find((r) => invoiceKey(r) === item) ?? rows.find(needsAttention) ?? rows[0];
         const receivables =
           sheet.state === "ready"
-            ? sheet.data.assets.find((l) => l.code === "311")?.amount
+            ? sheet.data?.assets.find((l) => l.code === "311")?.amount
             : undefined;
         return (
           <>

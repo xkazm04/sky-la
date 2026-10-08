@@ -1310,6 +1310,68 @@
     "isError": false
   },
   {
+    "command": "reporting_periods",
+    "args": {},
+    "result": {
+      "booksFrom": "2026-04-01",
+      "lastQuarter": {
+        "from": "2026-07-01",
+        "id": "2026-Q3",
+        "label": "Q3 2026",
+        "to": "2026-09-30"
+      },
+      "priorQuarter": {
+        "from": "2026-04-01",
+        "id": "2026-Q2",
+        "label": "Q2 2026",
+        "to": "2026-06-30"
+      },
+      "quarters": [
+        {
+          "from": "2026-04-01",
+          "id": "2026-Q2",
+          "label": "Q2 2026",
+          "to": "2026-06-30"
+        },
+        {
+          "from": "2026-07-01",
+          "id": "2026-Q3",
+          "label": "Q3 2026",
+          "to": "2026-09-30"
+        }
+      ],
+      "today": "2026-10-07",
+      "vat": [
+        {
+          "from": "2026-09-01",
+          "id": "2026-09",
+          "label": "September 2026",
+          "to": "2026-09-30"
+        },
+        {
+          "from": "2026-08-01",
+          "id": "2026-08",
+          "label": "August 2026",
+          "to": "2026-08-31"
+        },
+        {
+          "from": "2026-07-01",
+          "id": "2026-07",
+          "label": "July 2026",
+          "to": "2026-07-31"
+        }
+      ],
+      "year": 2026,
+      "yearToDate": {
+        "from": "2026-04-01",
+        "id": "2026-ytd",
+        "label": "Apr – Sep 2026",
+        "to": "2026-09-30"
+      }
+    },
+    "isError": false
+  },
+  {
     "command": "purchase_form",
     "args": {},
     "result": {
