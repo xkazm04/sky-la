@@ -58,6 +58,15 @@ pub(crate) struct BankState {
     payers: HashMap<String, Vec<String>>,
 }
 
+/// Who proposed a line's entry, what it says, and how the line reads once booked.
+pub(super) struct LineEntry<'a> {
+    pub(super) source_kind: SourceKind,
+    /// The entry's memo; `None` takes the line's name and message.
+    pub(super) memo: Option<String>,
+    pub(super) created_by: &'a str,
+    pub(super) label: String,
+}
+
 fn line_id(seq: u32, l: &Normalised) -> String {
     format!("s{seq}-{}", l.line.sequence)
 }
@@ -156,7 +165,7 @@ impl Core {
 
     /// Issued and received invoices still open, as the matcher sees them.
     /// Ids are the documents' ledger entries.
-    fn open_items(&self, state: &BankState) -> Result<Vec<OpenItem>, CoreError> {
+    pub(super) fn open_items(&self, state: &BankState) -> Result<Vec<OpenItem>, CoreError> {
         let mut items = Vec::new();
         for i in self.invoices()? {
             let (Some(number), Some(entry_id)) = (i.number.clone(), i.entry_id) else {
@@ -242,7 +251,10 @@ impl Core {
         Ok(out)
     }
 
-    fn find_line<'a>(state: &'a BankState, id: &str) -> Result<&'a Normalised, CoreError> {
+    pub(super) fn find_line<'a>(
+        state: &'a BankState,
+        id: &str,
+    ) -> Result<&'a Normalised, CoreError> {
         state
             .imports
             .iter()
@@ -262,28 +274,49 @@ impl Core {
         created_by: &str,
         label: String,
     ) -> Result<(), CoreError> {
+        let how = LineEntry {
+            source_kind: SourceKind::Bank,
+            memo: None,
+            created_by,
+            label,
+        };
+        self.post_line_as(state, id, lines, settles, how)
+    }
+
+    /// Posts one entry for a line, saying who proposed it and how, and
+    /// records the line as booked.
+    pub(super) fn post_line_as(
+        &self,
+        state: &mut BankState,
+        id: &str,
+        lines: Vec<NewLine>,
+        settles: &[(i64, Money)],
+        how: LineEntry<'_>,
+    ) -> Result<(), CoreError> {
         let line = Self::find_line(state, id)?.clone();
         if state.booked.contains_key(id) {
             return Err(bad(format!("bank line {id} is booked already")));
         }
-        let memo = [
-            line.line.counterparty_name.as_deref(),
-            line.line.message.as_deref(),
-        ]
-        .into_iter()
-        .flatten()
-        .collect::<Vec<_>>()
-        .join(" · ");
+        let memo = how.memo.unwrap_or_else(|| {
+            [
+                line.line.counterparty_name.as_deref(),
+                line.line.message.as_deref(),
+            ]
+            .into_iter()
+            .flatten()
+            .collect::<Vec<_>>()
+            .join(" · ")
+        });
         let entry = NewEntry {
             date: line.line.booking_date.clone(),
-            source_kind: SourceKind::Bank,
+            source_kind: how.source_kind,
             source_ref: line.line.bank_ref.clone().or_else(|| Some(id.to_owned())),
             memo: if memo.is_empty() {
                 "Bankovní pohyb".into()
             } else {
                 memo
             },
-            created_by: created_by.to_owned(),
+            created_by: how.created_by.to_owned(),
             lines,
         };
         let uid = uuid::Uuid::new_v5(&BANK_NAMESPACE, id.as_bytes()).to_string();
@@ -303,9 +336,13 @@ impl Core {
             Ok(entry_id) => {
                 db.execute_batch("RELEASE bank_line")
                     .map_err(|e| bad(e.to_string()))?;
-                state
-                    .booked
-                    .insert(id.to_owned(), Booked { entry_id, label });
+                state.booked.insert(
+                    id.to_owned(),
+                    Booked {
+                        entry_id,
+                        label: how.label,
+                    },
+                );
                 Ok(())
             }
             Err(e) => {

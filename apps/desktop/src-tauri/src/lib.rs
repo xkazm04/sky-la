@@ -402,6 +402,13 @@ fn export_books(
     Ok(core.export_books()?)
 }
 
+/// Approves inbox postings: the kernel re-validates and posts each one.
+#[tauri::command]
+#[specta::specta]
+fn approve_proposals(core: Books, ids: Vec<String>) -> Answer<Vec<ProposalDto>> {
+    Ok(core.approve_proposals(&ids)?)
+}
+
 /// Accepts every line the matcher or a rule is certain about.
 #[tauri::command]
 #[specta::specta]
@@ -748,6 +755,7 @@ pub fn specta_builder<R: Runtime>() -> Builder<R> {
             record_purchase,
             set_update_check,
             check_for_update,
+            approve_proposals,
             accept_certain_bank_lines,
             book_bank_line,
             create_bank_rule,

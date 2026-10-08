@@ -7,7 +7,6 @@ import {
   FactList,
   Inspector,
   InspectorSection,
-  Popup,
   SegmentedControl,
   type TableColumn,
   type Tone,
@@ -15,11 +14,11 @@ import {
 } from "@skyla/ui";
 import { CheckCheck } from "lucide-react";
 import { useState } from "react";
-import { useQuery } from "../data";
+import { invalidateAll, problems, useQuery } from "../data";
 import { day, signed } from "../format";
 import { navigate } from "../router";
 import { InspectorPane } from "../shell/Shell";
-import { DemoNote, EmptyInspector, EntryTable, Loaded, Reasons, TwoLine } from "./common";
+import { EmptyInspector, EntryTable, Loaded, Reasons, TwoLine } from "./common";
 
 type Filter = "all" | "posting" | "deadline" | "advice";
 
@@ -58,8 +57,32 @@ const columns: TableColumn<Row>[] = [
   },
 ];
 
-function ProposalInspector({ proposal }: { proposal: ProposalDto }) {
+/** Where an item without an entry is dealt with. */
+function elsewhere(p: ProposalDto): { label: string; go: () => void } | null {
+  if (p.kind === "posting" && p.bankLineId) {
+    const line = p.bankLineId;
+    return { label: "Book in Bank", go: () => navigate("bank", line) };
+  }
+  if (p.kind === "advice") {
+    return p.source.startsWith("Tax")
+      ? { label: "Open in Taxes", go: () => navigate("taxes", "scenarios") }
+      : { label: "Open in Advisors", go: () => navigate("advisors") };
+  }
+  return null;
+}
+
+function ProposalInspector({
+  proposal,
+  busy,
+  onApprove,
+}: {
+  proposal: ProposalDto;
+  busy: boolean;
+  onApprove: (ids: string[]) => void;
+}) {
   const isPosting = proposal.kind === "posting";
+  const canPost = isPosting && proposal.entry !== null;
+  const other = elsewhere(proposal);
   return (
     <InspectorPane>
       <Inspector
@@ -67,22 +90,25 @@ function ProposalInspector({ proposal }: { proposal: ProposalDto }) {
         title={proposal.title}
         subtitle={proposal.source}
         actions={
-          isPosting ? (
+          canPost ? (
             <>
-              <Button variant="plain">Edit</Button>
-              <Popup
-                label="Approve and post"
-                placement="top end"
-                trigger={<Button variant="primary">Approve and post</Button>}
-              >
-                <DemoNote>
-                  Approving sends the entry to the kernel, which re-validates and posts it. That
-                  arrives with bank matching (WP-18); nothing posts in the demo.
-                </DemoNote>
-              </Popup>
+              {proposal.bankLineId && (
+                <Button
+                  variant="plain"
+                  isDisabled={busy}
+                  onPress={() => navigate("bank", proposal.bankLineId)}
+                >
+                  Book differently
+                </Button>
+              )}
+              <Button variant="primary" isDisabled={busy} onPress={() => onApprove([proposal.id])}>
+                Approve and post
+              </Button>
             </>
-          ) : proposal.kind === "advice" ? (
-            <Button variant="primary">Open the scenario</Button>
+          ) : other ? (
+            <Button variant="primary" onPress={other.go}>
+              {other.label}
+            </Button>
           ) : undefined
         }
       >
@@ -122,8 +148,10 @@ function ProposalInspector({ proposal }: { proposal: ProposalDto }) {
         <InspectorSection title={isPosting ? "Why this posting" : "About this"}>
           <Reasons reasons={proposal.reasons} />
         </InspectorSection>
-        {isPosting && (
-          <p className="mt-4 text-footnote text-ink-secondary">Nothing posts until you approve.</p>
+        {canPost && (
+          <p className="mt-4 text-footnote text-ink-secondary">
+            Nothing posts until you approve. The kernel checks the entry again before it posts.
+          </p>
         )}
       </Inspector>
     </InspectorPane>
@@ -133,13 +161,32 @@ function ProposalInspector({ proposal }: { proposal: ProposalDto }) {
 /** Inbox (pattern B): decisions first. */
 export function InboxScreen({ item }: { item: string | null }) {
   const [filter, setFilter] = useState<Filter>("all");
+  const [busy, setBusy] = useState(false);
+  const [result, setResult] = useState<{ ok: boolean; lines: string[] } | null>(null);
   const proposals = useQuery("proposals", () => unwrap(commands.proposals()));
+  const approve = async (ids: string[]) => {
+    setBusy(true);
+    setResult(null);
+    try {
+      await unwrap(commands.approveProposals(ids));
+      invalidateAll();
+      setResult({
+        ok: true,
+        lines: [`Posted ${ids.length} ${ids.length === 1 ? "entry" : "entries"}.`],
+      });
+      navigate("inbox", null, true);
+    } catch (e) {
+      setResult({ ok: false, lines: problems(e) });
+    } finally {
+      setBusy(false);
+    }
+  };
   return (
     <Loaded query={proposals}>
       {(all) => {
         const shown = all.filter((p) => filter === "all" || p.kind === filter);
         const postings = all.filter((p) => p.kind === "posting");
-        const certain = postings.filter((p) => p.confidence === "certain").length;
+        const certain = postings.filter((p) => p.confidence === "certain" && p.entry !== null);
         const selected = all.find((p) => p.id === item) ?? shown[0];
         return (
           <>
@@ -158,20 +205,25 @@ export function InboxScreen({ item }: { item: string | null }) {
                 value={filter}
                 onChange={setFilter}
               />
-              <Popup
-                label={`Approve ${certain} certain`}
-                placement="bottom end"
-                trigger={
-                  <Button variant="primary" icon={CheckCheck}>
-                    Approve {certain} certain
-                  </Button>
-                }
+              <Button
+                variant="primary"
+                icon={CheckCheck}
+                isDisabled={busy || certain.length === 0}
+                onPress={() => void approve(certain.map((p) => p.id))}
               >
-                <DemoNote>
-                  Bulk approval posts every certain match through the kernel. It arrives with WP-18.
-                </DemoNote>
-              </Popup>
+                Approve {certain.length} certain
+              </Button>
             </Toolbar>
+            {result && (
+              <div
+                role={result.ok ? "status" : "alert"}
+                className={`mb-2 px-2 text-footnote ${result.ok ? "text-ink-secondary" : "text-negative-ink"}`}
+              >
+                {result.lines.map((l) => (
+                  <p key={l}>{l}</p>
+                ))}
+              </div>
+            )}
             <ContentGroup>
               <DataTable
                 label="Inbox"
@@ -195,7 +247,12 @@ export function InboxScreen({ item }: { item: string | null }) {
               />
             </ContentGroup>
             {selected ? (
-              <ProposalInspector proposal={selected} />
+              <ProposalInspector
+                key={selected.id}
+                proposal={selected}
+                busy={busy}
+                onApprove={(ids) => void approve(ids)}
+              />
             ) : (
               <EmptyInspector label="Inbox" text="Nothing selected." />
             )}

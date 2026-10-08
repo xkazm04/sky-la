@@ -2,7 +2,7 @@
 
 ## The overview and the inbox
 
-**Overview** shows where the business stands: key figures and results, what clients still owe you and what you owe suppliers, and what's coming up. **Inbox** collects what waits for you: proposals from bank rules and advisors, findings and questions, and the deadlines of the next month from the obligations calendar. Nothing in the inbox is in your books yet. **Approve and post** turns a proposal into a journal entry; **Edit** lets you change it first.
+**Overview** shows where the business stands: key figures and results, what clients still owe you and what you owe suppliers, and what's coming up. **Inbox** collects what waits for you: proposals from bank rules and advisors, findings and questions, and the deadlines of the next month from the obligations calendar. Nothing in the inbox is in your books yet. **Approve and post** turns a proposal into a journal entry: the core checks it again (accounts, balance, VAT from the rule pack, an open period) and posts it, and a proposal about a bank line books that line. **Approve N certain** does the same for every proposal marked certain. To book a line another way, **Book differently** opens it in Bank. Advice and deadlines have nothing to post; their button opens the screen where you deal with them.
 
 ## Invoices
 

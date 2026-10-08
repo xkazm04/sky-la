@@ -28,6 +28,7 @@ mod explain;
 mod export;
 pub mod findings;
 mod imports;
+mod inbox;
 mod periods;
 mod persist;
 mod purchases;
@@ -57,8 +58,9 @@ pub struct Core {
     bank: Mutex<bank::BankState>,
     /// The model provider advisors run on.
     provider: Mutex<Box<dyn skyla_advisor::LlmProvider>>,
-    /// Proposals advisors filed through their tools (never posted).
-    advisor_inbox: Mutex<Vec<ProposalDto>>,
+    /// Proposals advisors filed through their tools (posted only when the
+    /// user approves one).
+    advisor_inbox: Mutex<inbox::AdvisorInbox>,
     /// What the user lets each advisor task do.
     egress_policies: Mutex<egress::Policies>,
     /// The `skyla-mcp` shim advisors' runs start.
@@ -1041,7 +1043,7 @@ impl Core {
         items.extend(self.upcoming_deadlines()?);
         // What advisors filed through their tools, waiting for review.
         if let Ok(inbox) = self.advisor_inbox.lock() {
-            items.extend(inbox.iter().cloned());
+            items.extend(inbox.proposals().cloned());
         }
         Ok(items)
     }

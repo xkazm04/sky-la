@@ -312,9 +312,8 @@ impl Core {
                     let mut reasons = vec![advice.explanation.clone().unwrap_or_default()];
                     reasons.extend(advice.questions.iter().map(|q| format!("Question: {q}")));
                     if let Ok(mut inbox) = self.advisor_inbox.lock() {
-                        let id = format!("advisor-{}", inbox.len() + 1);
-                        inbox.push(crate::dto::ProposalDto {
-                            id,
+                        let proposal = crate::dto::ProposalDto {
+                            id: String::new(),
                             kind: "advice".into(),
                             title: format!("Tax scenario for {}: {label}", scenarios.year),
                             detail: "Tax advisor · a scenario for your review, not tax advice"
@@ -327,7 +326,8 @@ impl Core {
                             amount: None,
                             entry: None,
                             reasons,
-                        });
+                        };
+                        inbox.file(proposal, None);
                     }
                     outcome_note = "Scenario explained; figures checked against the engine".into();
                 } else {

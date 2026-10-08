@@ -860,3 +860,31 @@ test("a recurring invoice is set up, then paused", async ({ page }) => {
   await row.getByRole("button", { name: "Pause" }).click();
   await expect(row).toContainText("paused");
 });
+
+test("inbox postings are approved through the kernel, one or the certain ones together", async ({
+  page,
+}) => {
+  await page.goto("/#/inbox/p-alza");
+  await settle(page);
+  const inbox = page.getByRole("grid", { name: "Inbox" });
+  const alza = page.getByRole("complementary", { name: /Alza\.cz/ });
+  await expect(alza).toContainText("Proposed journal entry");
+  await alza.getByRole("button", { name: "Approve and post" }).click();
+  await expect(page.getByRole("status")).toContainText("Posted 1 entry.");
+  await expect(inbox).not.toContainText("Alza.cz");
+
+  await page.getByRole("button", { name: "Approve 2 certain" }).click();
+  await expect(page.getByRole("status")).toContainText("Posted 2 entries.");
+  await expect(inbox).not.toContainText("Google Ireland");
+  await expect(inbox).not.toContainText("ČSOB");
+  await expect(page.getByRole("button", { name: "Approve 0 certain" })).toBeDisabled();
+  await axeClean(page);
+  await page.screenshot({ path: "test-results/screens/inbox-approved.png" });
+
+  // The lines are booked in the workbench, saying how.
+  await page.goto("/#/bank/s1-4");
+  await settle(page);
+  await expect(page.getByRole("complementary", { name: /Alza/ })).toContainText(
+    "Approved: Alza.cz",
+  );
+});

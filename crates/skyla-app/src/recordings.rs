@@ -330,6 +330,23 @@ pub fn scenarios() -> Vec<(&'static str, Script)> {
             );
             s.read("recurring_templates", json!({}));
         }),
+        // Approving in the inbox: one likely posting, then the certain ones
+        // together; each books its bank line.
+        ("inbox-approve", |s| {
+            s.write("approve_proposals", json!({ "ids": ["p-alza"] }), "one");
+            s.read("proposals", json!({}));
+            s.read("bank_statement", json!({}));
+            s.read("integrity", json!({}));
+            s.read("approve_proposals", json!({ "ids": ["p-alza"] }));
+            s.write(
+                "approve_proposals",
+                json!({ "ids": ["p-google", "p-bank-fee"] }),
+                "certain",
+            );
+            s.read("proposals", json!({}));
+            s.read("bank_statement", json!({}));
+            s.read("integrity", json!({}));
+        }),
         ("invoice-import", |s| {
             use base64::Engine as _;
             let file = json!({
@@ -560,6 +577,17 @@ pub fn dispatch(core: &Core, command: &str, args: &Value) -> Result<Value, IpcFa
             core.import_bank_statement(arg(args, "fileName")?, arg(args, "contentBase64")?),
         ),
         "accept_certain_bank_lines" => to_value(core.accept_certain_bank_lines()),
+        "approve_proposals" => {
+            let ids = args
+                .get("ids")
+                .cloned()
+                .and_then(|d| serde_json::from_value::<Vec<String>>(d).ok())
+                .ok_or_else(|| IpcFailure {
+                    code: "bad_request".into(),
+                    message: "missing or malformed argument ids".into(),
+                })?;
+            to_value(core.approve_proposals(&ids))
+        }
         "preview_invoice_import" => to_value(
             core.preview_invoice_import(arg(args, "fileName")?, arg(args, "contentBase64")?),
         ),

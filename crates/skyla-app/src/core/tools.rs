@@ -216,14 +216,17 @@ fn to_json<T: Serialize>(value: &T) -> Result<Value, ToolError> {
 }
 
 impl Core {
-    fn file_proposal(&self, mut p: ProposalDto) -> Result<Value, ToolError> {
-        let mut inbox = self
+    fn file_proposal(&self, p: ProposalDto) -> Result<Value, ToolError> {
+        self.file_entry(p, None)
+    }
+
+    /// Files a proposal with the entry it proposes, kept as proposed.
+    fn file_entry(&self, p: ProposalDto, entry: Option<DomainEntry>) -> Result<Value, ToolError> {
+        let id = self
             .advisor_inbox
             .lock()
-            .map_err(|_| ToolError("the inbox is unavailable".into()))?;
-        p.id = format!("advisor-{}", inbox.len() + 1);
-        let id = p.id.clone();
-        inbox.push(p);
+            .map_err(|_| ToolError("the inbox is unavailable".into()))?
+            .file(p, entry);
         Ok(json!({ "proposal": id, "status": "waiting for the user's review" }))
     }
 
@@ -420,27 +423,31 @@ impl Core {
         };
         skyla_ledger::check_entry(&self.db(), &new)
             .map_err(|e| ToolError(format!("the kernel refused it: {e}")))?;
-        let entry = self.proposed_entry(&DomainEntry {
+        let proposed = DomainEntry {
             date: date.to_owned(),
             memo: memo.to_owned(),
             lines,
             settles: Vec::new(),
             reverse_charge: None,
             vat_split: None,
-        })?;
-        self.file_proposal(ProposalDto {
-            id: String::new(),
-            kind: "posting".into(),
-            title: memo.to_owned(),
-            detail: "Proposed by an advisor · checked by the kernel · not posted".into(),
-            confidence: Some("needs_you".into()),
-            source_kind: "advisor".into(),
-            source: "Advisor".into(),
-            bank_line_id: None,
-            due_on: None,
-            amount: Some(entry.total_debit.clone()),
-            entry: Some(entry),
-            reasons: vec![reason.to_owned()],
-        })
+        };
+        let entry = self.proposed_entry(&proposed)?;
+        self.file_entry(
+            ProposalDto {
+                id: String::new(),
+                kind: "posting".into(),
+                title: memo.to_owned(),
+                detail: "Proposed by an advisor · checked by the kernel · not posted".into(),
+                confidence: Some("needs_you".into()),
+                source_kind: "advisor".into(),
+                source: "Advisor".into(),
+                bank_line_id: None,
+                due_on: None,
+                amount: Some(entry.total_debit.clone()),
+                entry: Some(entry),
+                reasons: vec![reason.to_owned()],
+            },
+            Some(proposed),
+        )
     }
 }

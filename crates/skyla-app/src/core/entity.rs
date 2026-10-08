@@ -127,7 +127,7 @@ impl Core {
             drafts_created: std::sync::atomic::AtomicU64::new(0),
             bank: Mutex::new(bank::BankState::default()),
             provider: Mutex::new(provider),
-            advisor_inbox: Mutex::new(Vec::new()),
+            advisor_inbox: Mutex::new(super::inbox::AdvisorInbox::default()),
             egress_policies: Mutex::new(egress::Policies::new()),
             shim: Mutex::new(PathBuf::from("skyla-mcp")),
             real,
