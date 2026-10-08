@@ -12,13 +12,30 @@ use tauri::test::{
 };
 use tauri::webview::InvokeRequest;
 
+static NEXT: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
+
 fn repo() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../..")
 }
 
 fn app() -> (tauri::App<MockRuntime>, tauri::WebviewWindow<MockRuntime>) {
+    // The same reproducible gate the recordings were made with, in its own folder.
+    let dir = std::env::temp_dir().join(format!(
+        "skyla-ipc-{}-{}",
+        std::process::id(),
+        NEXT.fetch_add(1, std::sync::atomic::Ordering::SeqCst)
+    ));
+    let _ = std::fs::remove_dir_all(&dir);
+    let demo = Core::demo().expect("demo core");
+    let session = skyla_desktop_lib::Session::new(
+        skyla_app::session::Gate::reproducible(dir),
+        // The demo core is already managed; books opened in a scenario are dropped.
+        Box::new(|_| {}),
+    );
+    session.mark_open(demo.session_state());
     let app = mock_builder()
-        .manage(Core::demo().expect("demo core"))
+        .manage(demo)
+        .manage(session)
         .invoke_handler(skyla_desktop_lib::specta_builder::<MockRuntime>().invoke_handler())
         .build(mock_context(noop_assets()))
         .expect("app");

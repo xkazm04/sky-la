@@ -910,6 +910,102 @@ pub struct PackUpdateDto {
     pub message: String,
 }
 
+/// Whether there are books to unlock.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct SessionStateDto {
+    /// `needs_setup`, `locked`, `open` or `demo`.
+    pub state: String,
+    /// Whose books, when known.
+    pub entity: Option<String>,
+    /// The OS keychain holds the key, so unlocking needn't ask.
+    pub remembered: bool,
+}
+
+/// A recovery key to show once and have confirmed.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct RecoveryKeyDto {
+    /// In groups of four, e.g. `ABCD-EFGH-…`.
+    pub key: String,
+    /// How many groups.
+    pub groups: u32,
+}
+
+/// The first-run form: who the books are for.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct EntitySetupDto {
+    /// The name on invoices (an OSVČ's own name, or a trade name).
+    pub display_name: String,
+    /// IČO (may be empty while registering).
+    pub ico: String,
+    /// DIČ, for VAT payers.
+    pub dic: Option<String>,
+    /// The address printed on invoices.
+    pub address: String,
+    /// `monthly`, `quarterly` or `none`.
+    pub vat_period: String,
+    /// The trade-register line printed on invoices.
+    pub registration: String,
+    /// The business account's IBAN.
+    pub iban: Option<String>,
+    /// The bank's name, for the status line.
+    pub bank_name: String,
+    /// An email for invoices.
+    pub email: Option<String>,
+    /// `craft`, `trade` or `liberal`, when known.
+    pub flat_rate_group: Option<String>,
+}
+
+/// One backup.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct BackupDto {
+    /// The file.
+    pub file: String,
+    /// When (UTC).
+    pub created_at: String,
+    /// Size.
+    pub bytes: u32,
+    /// The journal's chain head it anchors.
+    pub chain_head: Option<String>,
+}
+
+/// The backups and the policy.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct BackupsDto {
+    /// The demo keeps its books in memory and has none.
+    pub demo: bool,
+    /// Where they go.
+    pub folder: Option<String>,
+    /// Every this many days.
+    pub every_days: u32,
+    /// How many are kept.
+    pub keep: u32,
+    /// Newest first.
+    pub backups: Vec<BackupDto>,
+}
+
+/// What the restore drill found.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct DrillDto {
+    /// The backup checked.
+    pub file: String,
+    /// Everything checked out.
+    pub passed: bool,
+    /// The file is the one its manifest describes.
+    pub file_matches: bool,
+    /// It opened with the key.
+    pub opens: bool,
+    /// Its content matches the manifest.
+    pub content_matches: bool,
+    /// Its chain head matches the manifest.
+    pub chain_matches: Option<bool>,
+}
+
 /// What to explain: an account over a period, or one entry.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]

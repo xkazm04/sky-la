@@ -12,6 +12,7 @@ pub mod dto;
 mod error;
 pub mod evals;
 pub mod recordings;
+pub mod session;
 
 pub use crate::core::Core;
 /// The financial advisor's detectors, for tests and tools.
@@ -20,3 +21,4 @@ pub use crate::core::toolhost::{ToolCallLog, ToolRun};
 pub use crate::core::tools::{ToolError, ToolKind, ToolSpec, tool_specs};
 pub use error::{CoreError, IpcFailure};
 pub use skyla_rules::Pack;
+pub use skyla_store::KeyStore;

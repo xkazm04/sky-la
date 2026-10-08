@@ -2561,6 +2561,28 @@
     "isError": false
   },
   {
+    "command": "session_state",
+    "args": {},
+    "result": {
+      "entity": "Jan Novák",
+      "remembered": false,
+      "state": "demo"
+    },
+    "isError": false
+  },
+  {
+    "command": "backups",
+    "args": {},
+    "result": {
+      "backups": [],
+      "demo": true,
+      "everyDays": 0,
+      "folder": null,
+      "keep": 0
+    },
+    "isError": false
+  },
+  {
     "command": "financial_findings",
     "args": {},
     "result": [
@@ -13785,6 +13807,132 @@
     "isError": false,
     "scenario": "explain-518",
     "state": "explain-518/explained"
+  },
+  {
+    "command": "create_entity",
+    "args": {
+      "passphrase": "short",
+      "setup": {
+        "address": "Dlouhá 1, 110 00 Praha 1",
+        "bankName": "ČSOB",
+        "dic": "CZ8001011234",
+        "displayName": "Eva Malá",
+        "email": null,
+        "flatRateGroup": "liberal",
+        "iban": "CZ6508000000192000145399",
+        "ico": "27415830",
+        "registration": "Zapsána v živnostenském rejstříku",
+        "vatPeriod": "monthly"
+      }
+    },
+    "result": {
+      "code": "bad_request",
+      "message": "a passphrase needs at least 10 characters"
+    },
+    "isError": true,
+    "scenario": "first-run"
+  },
+  {
+    "command": "create_entity",
+    "args": {
+      "passphrase": "a long passphrase for the books",
+      "setup": {
+        "address": "Dlouhá 1, 110 00 Praha 1",
+        "bankName": "ČSOB",
+        "dic": "CZ8001011234",
+        "displayName": "Eva Malá",
+        "email": null,
+        "flatRateGroup": "liberal",
+        "iban": "CZ6508000000192000145399",
+        "ico": "27415830",
+        "registration": "Zapsána v živnostenském rejstříku",
+        "vatPeriod": "monthly"
+      }
+    },
+    "result": {
+      "groups": 13,
+      "key": "QEDI-STBC-JOO5-IROT-W2GI-VJFZ-SUUL-AQNW-HBGU-5XHI-MIJT-HEHT-ZQVA"
+    },
+    "isError": false,
+    "scenario": "first-run",
+    "leadsTo": "first-run/created"
+  },
+  {
+    "command": "confirm_recovery_key",
+    "args": {
+      "lastGroup": "AAAA"
+    },
+    "result": false,
+    "isError": false,
+    "scenario": "first-run",
+    "state": "first-run/created"
+  },
+  {
+    "command": "confirm_recovery_key",
+    "args": {
+      "lastGroup": "ZQVA"
+    },
+    "result": true,
+    "isError": false,
+    "scenario": "first-run",
+    "state": "first-run/created",
+    "leadsTo": "first-run/confirmed"
+  },
+  {
+    "command": "unlock",
+    "args": {
+      "passphrase": "not the passphrase",
+      "remember": false
+    },
+    "result": {
+      "code": "bad_request",
+      "message": "that passphrase or recovery key doesn't open these books"
+    },
+    "isError": true,
+    "scenario": "first-run",
+    "state": "first-run/confirmed"
+  },
+  {
+    "command": "unlock",
+    "args": {
+      "passphrase": "a long passphrase for the books",
+      "remember": false
+    },
+    "result": {
+      "entity": "Eva Malá",
+      "remembered": false,
+      "state": "open"
+    },
+    "isError": false,
+    "scenario": "first-run",
+    "state": "first-run/confirmed",
+    "leadsTo": "first-run/unlocked"
+  },
+  {
+    "command": "recover",
+    "args": {
+      "newPassphrase": "a brand new passphrase here",
+      "recoveryKey": "QEDI-STBC-JOO5-IROT-W2GI-VJFZ-SUUL-AQNW-HBGU-5XHI-MIJT-HEHT-ZQVA"
+    },
+    "result": {
+      "groups": 13,
+      "key": "FKL3-ZSAY-33FX-6HSG-JDPL-WF5H-MMBL-SLJN-SDOS-WYDD-L65B-VSPW-IJFA"
+    },
+    "isError": false,
+    "scenario": "first-run",
+    "state": "first-run/unlocked",
+    "leadsTo": "first-run/recovered"
+  },
+  {
+    "command": "confirm_recovery_key",
+    "args": {
+      "lastGroup": "IJFA"
+    },
+    "result": true,
+    "isError": false,
+    "scenario": "first-run",
+    "state": "first-run/recovered",
+    "leadsTo": "first-run/recovery-confirmed"
   },
   {
     "command": "set_egress_policy",

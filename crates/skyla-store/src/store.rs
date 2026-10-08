@@ -51,6 +51,58 @@ fn open_connection(path: &Path, key: &DataKey, flags: OpenFlags) -> Result<Conne
     Ok(conn)
 }
 
+/// A read-write connection to the encrypted database at `path`, keyed and
+/// set up like the store's own (foreign keys, WAL, full sync). For callers
+/// that manage their own connection (the app core). With `create`, a new
+/// file is made; otherwise the file must exist.
+pub fn open_keyed(path: &Path, key: &DataKey, create: bool) -> Result<Connection, StoreError> {
+    open_keyed_with(path, key, create, false)
+}
+
+/// A read-only keyed connection, for checks that must not change the file.
+pub fn open_keyed_read_only(path: &Path, key: &DataKey) -> Result<Connection, StoreError> {
+    open_keyed_with(path, key, false, true)
+}
+
+fn open_keyed_with(
+    path: &Path,
+    key: &DataKey,
+    create: bool,
+    read_only: bool,
+) -> Result<Connection, StoreError> {
+    if create && path.exists() {
+        return Err(StoreError::AlreadyExists(path.to_owned()));
+    }
+    if !create && !path.is_file() {
+        return Err(StoreError::NotFound(path.to_owned()));
+    }
+    let flags = if read_only {
+        OpenFlags::SQLITE_OPEN_READ_ONLY
+    } else if create {
+        OpenFlags::SQLITE_OPEN_READ_WRITE | OpenFlags::SQLITE_OPEN_CREATE
+    } else {
+        OpenFlags::SQLITE_OPEN_READ_WRITE
+    };
+    open_connection(path, key, flags)
+}
+
+/// Writes an encrypted copy of `conn`'s database (under `key`) to `dest`,
+/// which must not exist.
+pub fn export_encrypted(conn: &Connection, key: &DataKey, dest: &Path) -> Result<(), StoreError> {
+    if dest.exists() {
+        return Err(StoreError::AlreadyExists(dest.to_owned()));
+    }
+    let literal = key.sqlcipher_literal();
+    conn.execute(
+        &format!("ATTACH DATABASE ?1 AS backup KEY {}", literal.as_str()),
+        [dest.to_string_lossy().as_ref()],
+    )?;
+    let exported = conn.query_row("SELECT sqlcipher_export('backup')", [], |_| Ok(()));
+    conn.execute_batch("DETACH DATABASE backup;")?;
+    exported?;
+    Ok(())
+}
+
 fn lock(reader: &Mutex<Connection>) -> MutexGuard<'_, Connection> {
     reader.lock().unwrap_or_else(PoisonError::into_inner)
 }
@@ -225,38 +277,42 @@ impl Store {
     /// A SHA-256 over every table's schema and rows, independent of row order
     /// and of encryption. Equal hashes mean equal content.
     pub fn content_hash(&self) -> Result<String, StoreError> {
-        self.read(|conn| {
-            let mut tables = conn.prepare(
+        self.read(content_hash_of)
+    }
+}
+
+/// [`Store::content_hash`] for any connection.
+pub fn content_hash_of(conn: &Connection) -> Result<String, StoreError> {
+    let mut tables = conn.prepare(
                 "SELECT name, sql FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' ORDER BY name",
             )?;
-            let tables: Vec<(String, String)> =
-                tables.query_map([], |row| Ok((row.get(0)?, row.get(1)?)))?.collect::<Result<_, _>>()?;
-            let mut hasher = Sha256::new();
-            for (name, sql) in tables {
-                hasher.update(name.as_bytes());
-                hasher.update([0]);
-                hasher.update(sql.as_bytes());
-                hasher.update([0]);
-                let mut stmt = conn.prepare(&format!("SELECT * FROM \"{}\"", name.replace('"', "\"\"")))?;
-                let columns = stmt.column_count();
-                let mut rows: Vec<Vec<u8>> = stmt
-                    .query_map([], |row| {
-                        let mut bytes = Vec::new();
-                        for i in 0..columns {
-                            encode_value(row.get_ref(i)?, &mut bytes);
-                        }
-                        Ok(bytes)
-                    })?
-                    .collect::<Result<_, _>>()?;
-                rows.sort_unstable();
-                for row in rows {
-                    hasher.update((row.len() as u64).to_le_bytes());
-                    hasher.update(&row);
+    let tables: Vec<(String, String)> = tables
+        .query_map([], |row| Ok((row.get(0)?, row.get(1)?)))?
+        .collect::<Result<_, _>>()?;
+    let mut hasher = Sha256::new();
+    for (name, sql) in tables {
+        hasher.update(name.as_bytes());
+        hasher.update([0]);
+        hasher.update(sql.as_bytes());
+        hasher.update([0]);
+        let mut stmt = conn.prepare(&format!("SELECT * FROM \"{}\"", name.replace('"', "\"\"")))?;
+        let columns = stmt.column_count();
+        let mut rows: Vec<Vec<u8>> = stmt
+            .query_map([], |row| {
+                let mut bytes = Vec::new();
+                for i in 0..columns {
+                    encode_value(row.get_ref(i)?, &mut bytes);
                 }
-            }
-            Ok(HEXLOWER.encode(&hasher.finalize()))
-        })
+                Ok(bytes)
+            })?
+            .collect::<Result<_, _>>()?;
+        rows.sort_unstable();
+        for row in rows {
+            hasher.update((row.len() as u64).to_le_bytes());
+            hasher.update(&row);
+        }
     }
+    Ok(HEXLOWER.encode(&hasher.finalize()))
 }
 
 /// Type-tagged, length-prefixed encoding so different values never collide.

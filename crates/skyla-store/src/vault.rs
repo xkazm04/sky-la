@@ -149,9 +149,23 @@ impl Vault {
         passphrase: &str,
         kdf: KdfParams,
     ) -> Result<(Self, DataKey, RecoveryKey), StoreError> {
+        Self::create_with(
+            passphrase,
+            kdf,
+            DataKey::generate()?,
+            RecoveryKey::generate()?,
+        )
+    }
+
+    /// [`Self::create`] with the keys given rather than drawn: for
+    /// reproducible recordings and tests. The app uses [`Self::create`].
+    pub fn create_with(
+        passphrase: &str,
+        kdf: KdfParams,
+        key: DataKey,
+        recovery: RecoveryKey,
+    ) -> Result<(Self, DataKey, RecoveryKey), StoreError> {
         check_passphrase(passphrase)?;
-        let key = DataKey::generate()?;
-        let recovery = RecoveryKey::generate()?;
         let salt = random_bytes()?;
         let kek = derive_kek(passphrase, &salt, kdf)?;
         let vault = Self {
@@ -204,8 +218,16 @@ impl Vault {
 
     /// Replaces the recovery key, e.g. after the old one was exposed.
     pub fn rotate_recovery_key(&mut self, key: &DataKey) -> Result<RecoveryKey, StoreError> {
+        self.rotate_recovery_key_with(key, RecoveryKey::generate()?)
+    }
+
+    /// [`Self::rotate_recovery_key`] to a given key (reproducible recordings and tests).
+    pub fn rotate_recovery_key_with(
+        &mut self,
+        key: &DataKey,
+        recovery: RecoveryKey,
+    ) -> Result<RecoveryKey, StoreError> {
         self.verify_key(key)?;
-        let recovery = RecoveryKey::generate()?;
         self.by_recovery = wrap(recovery.as_bytes(), key, AAD_RECOVERY)?;
         Ok(recovery)
     }

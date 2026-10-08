@@ -336,17 +336,23 @@ pub(crate) struct Domain {
     /// The supplier profile printed on documents.
     pub(crate) supplier: DomainSupplier,
     /// Customers, by the name invoices use.
+    #[serde(default)]
     pub(crate) clients: Vec<DomainClient>,
     /// Who sent each received invoice (by its reference in the journal).
+    #[serde(default)]
     pub(crate) purchases: Vec<DomainPurchase>,
     /// Recurring invoice templates.
+    #[serde(default)]
     pub(crate) recurring: Vec<DomainRecurring>,
     /// Invoice documents (issued ones link to the ledger by number).
+    #[serde(default)]
     pub(crate) invoices: Vec<DomainInvoice>,
     /// The latest bank import.
     /// The inbox.
+    #[serde(default)]
     pub(crate) proposals: Vec<DomainProposal>,
     /// Past advisor runs, replayed through the gate into the register.
+    #[serde(default)]
     pub(crate) egress_runs: Vec<DomainEgressRun>,
 }
 

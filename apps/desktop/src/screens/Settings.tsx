@@ -1,4 +1,5 @@
 import {
+  type BackupsDto,
   type CoreKind,
   commands,
   type EgressPolicyDto,
@@ -41,6 +42,7 @@ interface Setting {
   pack?: RulePackDto | undefined;
   refdata?: RefDataDto | undefined;
   policies?: EgressPolicyDto[] | undefined;
+  backups?: BackupsDto | undefined;
 }
 
 const columns: TableColumn<Setting>[] = [
@@ -68,6 +70,8 @@ export function SettingsScreen({ item, core }: { item: string | null; core: Core
   const badge = connectionBadge(status.state === "ready" ? status.data : undefined);
   const policies = useQuery("egress_policies", () => commands.egressPolicies());
   const pol = policies.state === "ready" ? policies.data : undefined;
+  const backupList = useQuery("backups", () => unwrap(commands.backups()));
+  const bk = backupList.state === "ready" ? backupList.data : undefined;
 
   const settings: Setting[] = [
     {
@@ -97,6 +101,26 @@ export function SettingsScreen({ item, core }: { item: string | null; core: Core
         "Real books live in an encrypted file. The demo entity is built in memory and never written to disk.",
         "Encryption, the recovery key and auto-lock arrive with the unlock flow (WP-30).",
       ],
+    },
+    {
+      id: "backups",
+      title: "Backups",
+      detail: "Encrypted copies of your books, made every day",
+      value: bk?.demo ? (
+        <Badge tone="neutral">Demo · in memory</Badge>
+      ) : bk ? (
+        <span className="text-ink-secondary">
+          {bk.backups.length > 0 ? `Last ${bk.backups[0]?.createdAt.slice(0, 10)}` : "None yet"}
+        </span>
+      ) : (
+        ""
+      ),
+      about: [
+        "Each backup is encrypted with the same key as your books, so your passphrase and your recovery key both open it.",
+        "Beside each one, a manifest records its content hash and the journal's hash-chain head, so a rewritten history can't pass as a backup.",
+        "Check the newest backup now and then: sky-la restores it to a scratch folder and confirms it matches.",
+      ],
+      backups: bk,
     },
     {
       id: "recovery",
@@ -200,9 +224,9 @@ export function SettingsScreen({ item, core }: { item: string | null; core: Core
           columns={columns}
           sections={[
             { id: "general", title: "General", rows: settings.slice(0, 1) },
-            { id: "security", title: "Security", rows: settings.slice(1, 3) },
-            { id: "advisors", title: "Advisors and data", rows: settings.slice(3, 7) },
-            { id: "about", title: "About", rows: settings.slice(7) },
+            { id: "security", title: "Security", rows: settings.slice(1, 4) },
+            { id: "advisors", title: "Advisors and data", rows: settings.slice(4, 8) },
+            { id: "about", title: "About", rows: settings.slice(8) },
           ]}
           selectedId={selected?.id ?? null}
           onSelect={(id) => navigate("settings", id, true)}
@@ -216,6 +240,7 @@ export function SettingsScreen({ item, core }: { item: string | null; core: Core
             </InspectorSection>
             {selected.refdata && <ReferenceData data={selected.refdata} />}
             {selected.policies && <AdvisorSharing policies={selected.policies} />}
+            {selected.backups && <Backups data={selected.backups} />}
             {selected.pack && (
               <>
                 <InspectorSection title={`Values in force · ${selected.pack.values.length}`}>
@@ -251,6 +276,74 @@ export function SettingsScreen({ item, core }: { item: string | null; core: Core
             )}
           </Inspector>
         </InspectorPane>
+      )}
+    </>
+  );
+}
+
+/** Backups: the list, a backup now, and the restore drill. */
+function Backups({ data }: { data: BackupsDto }) {
+  const [result, setResult] = useState<{ ok: boolean; lines: string[] } | null>(null);
+  if (data.demo) {
+    return (
+      <InspectorSection title="This demo">
+        <p className="text-body text-ink-secondary">
+          The demo keeps its books in memory, so there's nothing to back up. Your own books are
+          backed up every day to a Backups folder beside them.
+        </p>
+      </InspectorSection>
+    );
+  }
+  const run = async (action: () => Promise<string>) => {
+    try {
+      const line = await action();
+      invalidateAll();
+      setResult({ ok: true, lines: [line] });
+    } catch (e) {
+      setResult({ ok: false, lines: problems(e) });
+    }
+  };
+  return (
+    <>
+      <InspectorSection title={`Backups · every ${data.everyDays} day(s), ${data.keep} kept`}>
+        <FactList
+          facts={[
+            { label: "Folder", value: data.folder ?? "—" },
+            ...data.backups.map((b) => ({
+              label: b.createdAt.replace("T", " ").replace("Z", " UTC"),
+              value: `${Math.round(b.bytes / 1024)} kB`,
+            })),
+          ]}
+        />
+      </InspectorSection>
+      <div className="mt-3 flex gap-2">
+        <Button
+          onPress={() =>
+            void run(async () => `Backed up at ${(await unwrap(commands.backupNow())).createdAt}.`)
+          }
+        >
+          Back up now
+        </Button>
+        <Button
+          onPress={() =>
+            void run(async () => {
+              const d = await unwrap(commands.restoreDrill());
+              return d.passed
+                ? "The newest backup restores and matches its manifest."
+                : "The newest backup doesn't match its manifest. Make a new one and keep the old for now.";
+            })
+          }
+        >
+          Check the newest backup
+        </Button>
+      </div>
+      {result && (
+        <p
+          role={result.ok ? "status" : "alert"}
+          className={`mt-2 text-footnote ${result.ok ? "text-ink-secondary" : "text-negative-ink"}`}
+        >
+          {result.lines.join(" ")}
+        </p>
       )}
     </>
   );

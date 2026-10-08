@@ -3,8 +3,8 @@ use std::sync::{Mutex, MutexGuard};
 
 use rusqlite::Connection;
 use skyla_ledger::{
-    AccountKind, balance_sheet, cash_basis, functional_currency, list_accounts, list_periods,
-    list_posted, profit_and_loss, trial_balance, verify_chain,
+    AccountKind, balance_sheet, cash_basis, list_periods, list_posted, profit_and_loss,
+    trial_balance, verify_chain,
 };
 use skyla_money::{Currency, Money, vat};
 use skyla_rules::{Pack, RowPart};
@@ -23,6 +23,7 @@ const DEMO_POSTING_NAMESPACE: uuid::Uuid = uuid::uuid!("5d2b8f61-0c7e-5a93-b4d1-
 mod advisor;
 mod bank;
 pub mod egress;
+mod entity;
 mod explain;
 pub mod findings;
 pub mod refdata;
@@ -53,6 +54,8 @@ pub struct Core {
     egress_policies: Mutex<egress::Policies>,
     /// The `skyla-mcp` shim advisors' runs start.
     shim: Mutex<std::path::PathBuf>,
+    /// For a real entity: where its books and backups are, and the key.
+    real: Option<entity::RealEntity>,
 }
 
 fn money(m: Money) -> Result<MoneyDto, CoreError> {
@@ -128,34 +131,14 @@ fn kind_name(kind: AccountKind) -> String {
 }
 
 impl Core {
-    /// Opens the demo entity (WP-09). The unlock flow (WP-30) adds `Core::open`.
+    /// Opens the demo entity (WP-09). A real entity opens with
+    /// [`Core::open_entity`] after the vault unlocks (WP-30).
     pub fn demo() -> Result<Self, CoreError> {
         let conn = demo_ledger()?;
-        let currency = functional_currency(&conn)?;
-        let accounts = list_accounts(&conn)?
-            .into_iter()
-            .map(|a| (a.code, (a.name_en, a.kind)))
-            .collect();
         let domain = demo_domain()?;
         let pack = Pack::cz_2026()?;
         let scheduled = crate::demo::seed_invoicing(&conn, &pack, &domain)?;
-        let core = Self {
-            conn: Mutex::new(conn),
-            domain,
-            accounts,
-            currency,
-            pack,
-            scheduled,
-            refdata: Mutex::new(refdata::RefData::new(refdata::https_fetcher())),
-            drafts_created: std::sync::atomic::AtomicU64::new(0),
-            bank: Mutex::new(bank::BankState::default()),
-            // The demo answers from recorded runs; the desktop shell swaps in
-            // the user's own Claude Code CLI.
-            provider: Mutex::new(Box::new(crate::demo::demo_provider())),
-            advisor_inbox: Mutex::new(Vec::new()),
-            egress_policies: Mutex::new(egress::Policies::new()),
-            shim: Mutex::new(std::path::PathBuf::from("skyla-mcp")),
-        };
+        let core = Self::assemble_demo(conn, domain, scheduled)?;
         // The demo's first October statement, imported but not yet booked.
         core.import_bytes(
             "csob-2026-10-06.xml",

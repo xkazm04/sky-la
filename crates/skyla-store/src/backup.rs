@@ -19,7 +19,66 @@ use rusqlite::Connection;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 
-use crate::{DataKey, Migration, Store, StoreError};
+use crate::{DataKey, Store, StoreError, content_hash_of, export_encrypted, open_keyed_read_only};
+
+/// What can be backed up: a [`Store`], or a keyed connection the caller
+/// manages ([`Keyed`]).
+pub trait Source {
+    /// Writes an encrypted copy to `dest` (which must not exist).
+    fn export_to(&self, dest: &Path) -> Result<(), StoreError>;
+    /// The schema version (0 when the database has no migrations table).
+    fn schema_version(&self) -> Result<u32, StoreError>;
+    /// The content hash ([`content_hash_of`]).
+    fn content_hash(&self) -> Result<String, StoreError>;
+}
+
+impl Source for Store {
+    fn export_to(&self, dest: &Path) -> Result<(), StoreError> {
+        self.backup_to(dest)
+    }
+    fn schema_version(&self) -> Result<u32, StoreError> {
+        Store::schema_version(self)
+    }
+    fn content_hash(&self) -> Result<String, StoreError> {
+        Store::content_hash(self)
+    }
+}
+
+/// A connection the caller opened with [`crate::open_keyed`], and its key.
+pub struct Keyed<'a> {
+    /// The connection.
+    pub conn: &'a Connection,
+    /// Its data key.
+    pub key: &'a DataKey,
+}
+
+fn schema_version_of(conn: &Connection) -> Result<u32, StoreError> {
+    let has: i64 = conn.query_row(
+        "SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = 'schema_migrations'",
+        [],
+        |r| r.get(0),
+    )?;
+    if has == 0 {
+        return Ok(0);
+    }
+    Ok(conn.query_row(
+        "SELECT coalesce(max(version), 0) FROM schema_migrations",
+        [],
+        |r| r.get(0),
+    )?)
+}
+
+impl Source for Keyed<'_> {
+    fn export_to(&self, dest: &Path) -> Result<(), StoreError> {
+        export_encrypted(self.conn, self.key, dest)
+    }
+    fn schema_version(&self) -> Result<u32, StoreError> {
+        schema_version_of(self.conn)
+    }
+    fn content_hash(&self) -> Result<String, StoreError> {
+        content_hash_of(self.conn)
+    }
+}
 
 /// The backup file's extension.
 pub const EXTENSION: &str = "skyla-backup";
@@ -104,7 +163,7 @@ fn manifest_path(file: &Path) -> PathBuf {
 /// Makes a backup of `store` in `dir` now (`now` is UTC, RFC 3339), with
 /// `chain_head` from the ledger.
 pub fn backup_now(
-    store: &Store,
+    store: &impl Source,
     dir: &Path,
     entity: &str,
     now: &str,
@@ -116,7 +175,7 @@ pub fn backup_now(
         slug(entity),
         compact(now)
     ));
-    store.backup_to(&file)?;
+    store.export_to(&file)?;
     let manifest = Manifest {
         format: 1,
         entity: entity.to_owned(),
@@ -222,13 +281,12 @@ impl DrillReport {
     }
 }
 
-/// Restores `backup` into `scratch`, opens it and checks it against its
-/// manifest. `head_of` reads the journal's chain head from the restored
-/// database (the ledger knows how).
+/// Restores `backup` into `scratch`, opens it read-only and checks it
+/// against its manifest. `head_of` reads the journal's chain head from the
+/// restored database (the ledger knows how).
 pub fn drill(
     backup: &Backup,
     key: &DataKey,
-    migrations: &[Migration],
     scratch: &Path,
     head_of: impl FnOnce(&Connection) -> Option<String>,
 ) -> Result<DrillReport, StoreError> {
@@ -250,14 +308,15 @@ pub fn drill(
     fs::create_dir_all(&work)?;
     let target = work.join("restored.db");
     Store::restore(&backup.file, &target, key)?;
-    let store = Store::open(&target, key, migrations)?;
+    // Read-only, so the check can't change what it checks.
+    let conn = open_keyed_read_only(&target, key)?;
     report.opens = true;
-    report.content_matches = store.content_hash()? == backup.manifest.content_hash;
+    report.content_matches = content_hash_of(&conn)? == backup.manifest.content_hash
+        && schema_version_of(&conn)? == backup.manifest.schema_version;
     if let Some(expected) = backup.manifest.chain_head.clone() {
-        let head = store.read(move |conn| Ok(head_of(conn)))?;
-        report.chain_matches = Some(head.as_deref() == Some(expected.as_str()));
+        report.chain_matches = Some(head_of(&conn).as_deref() == Some(expected.as_str()));
     }
-    drop(store);
+    drop(conn);
     let _ = fs::remove_dir_all(&work);
     Ok(report)
 }

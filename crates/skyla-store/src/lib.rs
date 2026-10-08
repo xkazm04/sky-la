@@ -25,5 +25,5 @@ pub use keystore::OsKeyStore;
 pub use keystore::{KeyStore, MemoryKeyStore};
 pub use migrate::Migration;
 pub use secret::{DataKey, RecoveryKey};
-pub use store::Store;
+pub use store::{Store, content_hash_of, export_encrypted, open_keyed, open_keyed_read_only};
 pub use vault::{KdfParams, MIN_PASSPHRASE_CHARS, Vault};

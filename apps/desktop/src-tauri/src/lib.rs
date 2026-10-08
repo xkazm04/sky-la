@@ -11,10 +11,14 @@ use skyla_app::dto::{
     RecurringTemplateDto, RefDataDto, RulePackDto, TaxAdviceDto, TaxProjectionDto, TaxScenariosDto,
     TrialBalanceDto, VatReturnDto,
 };
+use skyla_app::dto::{
+    BackupDto, BackupsDto, DrillDto, EntitySetupDto, RecoveryKeyDto, SessionStateDto,
+};
+use skyla_app::session::Gate;
 use skyla_app::{Core, IpcFailure};
 use std::path::Path;
 
-use tauri::{Runtime, State};
+use tauri::{Manager, Runtime, State};
 use tauri_specta::{Builder, collect_commands};
 
 type Answer<T> = Result<T, IpcFailure>;
@@ -358,10 +362,163 @@ fn install_pack_update(
     Ok(core.install_pack_update(&pack_toml, &signature)?)
 }
 
+/// The session gate and what to do with books once they open: the shell
+/// passes a callback that makes the core the app's managed state.
+pub struct Session {
+    gate: Gate,
+    open: Box<dyn Fn(Core) + Send + Sync>,
+    state: std::sync::Mutex<Option<SessionStateDto>>,
+}
+
+impl Session {
+    /// A session over `gate` that hands opened books to `open`.
+    pub fn new(gate: Gate, open: Box<dyn Fn(Core) + Send + Sync>) -> Self {
+        Self {
+            gate,
+            open,
+            state: std::sync::Mutex::new(None),
+        }
+    }
+
+    /// Records books that were opened another way (the IPC test manages the
+    /// demo core directly).
+    pub fn mark_open(&self, state: SessionStateDto) {
+        if let Ok(mut s) = self.state.lock() {
+            *s = Some(state);
+        }
+    }
+
+    /// Gets a freshly opened core ready (the CLI driver, the shim, a backup
+    /// if one is due) and hands it over. Only the first is kept: books stay
+    /// open until the app quits.
+    pub fn adopt(&self, core: Core) -> SessionStateDto {
+        core.replace_provider(Box::new(skyla_advisor::ClaudeCodeCli::from_system()));
+        if let Some(dir) = std::env::current_exe()
+            .ok()
+            .and_then(|p| p.parent().map(Path::to_path_buf))
+        {
+            core.set_shim_path(dir.join(if cfg!(windows) {
+                "skyla-mcp.exe"
+            } else {
+                "skyla-mcp"
+            }));
+        }
+        if !core.is_demo() {
+            // A failed backup mustn't keep the books closed; Settings shows the state.
+            let _ = core.backup_if_due(&self.gate.now());
+        }
+        let state = core.session_state();
+        if let Ok(mut s) = self.state.lock()
+            && s.is_none()
+        {
+            *s = Some(state.clone());
+            (self.open)(core);
+        }
+        state
+    }
+}
+
+/// Whether books are open, and if not, whether to set up or unlock.
+#[tauri::command]
+#[specta::specta]
+fn session_state(session: State<'_, Session>) -> SessionStateDto {
+    match session.state.lock().ok().and_then(|s| s.clone()) {
+        Some(open) => open,
+        None => session.gate.state(),
+    }
+}
+
+/// Creates new books protected by `passphrase`; returns the recovery key to show once.
+#[tauri::command]
+#[specta::specta]
+fn create_entity(
+    session: State<'_, Session>,
+    setup: EntitySetupDto,
+    passphrase: String,
+) -> Answer<RecoveryKeyDto> {
+    let (core, key) = session.gate.create(&setup, &passphrase)?;
+    session.adopt(core);
+    Ok(key)
+}
+
+/// Checks the user saved the recovery key, by its last group.
+#[tauri::command]
+#[specta::specta]
+fn confirm_recovery_key(session: State<'_, Session>, last_group: String) -> Answer<bool> {
+    Ok(session.gate.confirm_recovery_key(&last_group)?)
+}
+
+/// Unlocks with the passphrase; `remember` keeps the key in the OS keychain.
+#[tauri::command]
+#[specta::specta]
+fn unlock(
+    session: State<'_, Session>,
+    passphrase: String,
+    remember: bool,
+) -> Answer<SessionStateDto> {
+    let core = session.gate.unlock(&passphrase, remember)?;
+    let state = core.session_state();
+    session.adopt(core);
+    Ok(state)
+}
+
+/// Opens the books with the recovery key and a new passphrase; returns the new recovery key.
+#[tauri::command]
+#[specta::specta]
+fn recover(
+    session: State<'_, Session>,
+    recovery_key: String,
+    new_passphrase: String,
+) -> Answer<RecoveryKeyDto> {
+    let (core, key) = session.gate.recover(&recovery_key, &new_passphrase)?;
+    session.adopt(core);
+    Ok(key)
+}
+
+/// Opens the demo books instead.
+#[tauri::command]
+#[specta::specta]
+fn open_demo(session: State<'_, Session>) -> Answer<SessionStateDto> {
+    if let Some(open) = session.state.lock().ok().and_then(|s| s.clone()) {
+        return Ok(open);
+    }
+    Ok(session.adopt(Core::demo()?))
+}
+
+/// The backups there are, and the policy.
+#[tauri::command]
+#[specta::specta]
+fn backups(core: State<'_, Core>) -> Answer<BackupsDto> {
+    Ok(core.backups()?)
+}
+
+/// Backs up now.
+#[tauri::command]
+#[specta::specta]
+fn backup_now(core: State<'_, Core>) -> Answer<BackupDto> {
+    Ok(core.backup_now(&skyla_app::session::system_now())?)
+}
+
+/// Restores the newest backup into a scratch folder and checks it.
+#[tauri::command]
+#[specta::specta]
+fn restore_drill(core: State<'_, Core>) -> Answer<DrillDto> {
+    Ok(core.restore_drill()?)
+}
+
 /// Every command, for the invoke handler and the TypeScript export.
 pub fn specta_builder<R: Runtime>() -> Builder<R> {
     Builder::<R>::new()
         .commands(collect_commands![
+            session_state,
+            create_entity,
+            confirm_recovery_key,
+            unlock,
+            recover,
+            open_demo,
+            backups,
+            backup_now,
+            restore_drill,
             app_info,
             entity,
             periods,
@@ -424,30 +581,36 @@ pub fn export_bindings(path: &std::path::Path) -> Result<(), specta_typescript::
     )
 }
 
-/// Starts the desktop application on the demo entity (the unlock flow
-/// arrives in WP-30).
+/// Starts the desktop application: the session gate first (set up or
+/// unlock the books, or explore the demo), then the core.
 ///
 /// # Panics
-/// If the core or the Tauri runtime fails to start, there is nothing to recover to.
+/// If the Tauri runtime fails to start, there is nothing to recover to.
 #[allow(clippy::expect_used)]
 pub fn run() {
     let builder = specta_builder::<tauri::Wry>();
-    let core = Core::demo().expect("the demo entity failed to open");
-    // Advisors run on the user's own, unmodified `claude` binary.
-    core.replace_provider(Box::new(skyla_advisor::ClaudeCodeCli::from_system()));
-    // The shim ships next to the app binary.
-    if let Some(dir) = std::env::current_exe()
-        .ok()
-        .and_then(|p| p.parent().map(Path::to_path_buf))
-    {
-        core.set_shim_path(dir.join(if cfg!(windows) {
-            "skyla-mcp.exe"
-        } else {
-            "skyla-mcp"
-        }));
-    }
     tauri::Builder::default()
-        .manage(core)
+        .setup(|app| {
+            let dir = app.path().app_data_dir()?.join("books");
+            let keystore: Box<dyn skyla_app::KeyStore> = if skyla_store::OsKeyStore::available() {
+                Box::new(skyla_store::OsKeyStore::default())
+            } else {
+                Box::new(skyla_store::MemoryKeyStore::default())
+            };
+            let handle = app.handle().clone();
+            let session = Session::new(
+                Gate::new(dir, keystore),
+                Box::new(move |core| {
+                    handle.manage(core);
+                }),
+            );
+            // A remembered key opens the books without asking.
+            if let Ok(Some(core)) = session.gate.unlock_remembered() {
+                session.adopt(core);
+            }
+            app.manage(session);
+            Ok(())
+        })
         .invoke_handler(builder.invoke_handler())
         .run(tauri::generate_context!())
         .expect("error while running the sky-la desktop shell");

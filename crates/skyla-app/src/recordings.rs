@@ -41,6 +41,8 @@ pub struct Recording {
 /// export) runs end to end without the webview computing anything.
 pub struct Scenario<'a> {
     core: &'a Core,
+    /// The session gate, for the first-run flow.
+    gate: &'a crate::session::Gate,
     name: &'static str,
     state: Option<String>,
     out: Vec<Recording>,
@@ -48,7 +50,9 @@ pub struct Scenario<'a> {
 
 impl Scenario<'_> {
     fn call(&mut self, command: &str, args: Value, leads_to: Option<String>) -> Value {
-        let (result, is_error) = match dispatch(self.core, command, &args) {
+        let (result, is_error) = match dispatch_session(self.gate, command, &args)
+            .unwrap_or_else(|| dispatch(self.core, command, &args))
+        {
             Ok(value) => (value, false),
             Err(failure) => (serde_json::to_value(failure).unwrap_or(Value::Null), true),
         };
@@ -146,6 +150,53 @@ pub fn scenarios() -> Vec<(&'static str, Script)> {
             );
             s.read("egress_register", json!({}));
             s.read("egress_payload", json!({ "id": "run-2026-10-07-04" }));
+        }),
+        // First run: set up books, confirm the recovery key, unlock with the
+        // passphrase (a wrong one first), then recover with the recovery key.
+        ("first-run", |s| {
+            s.read(
+                "create_entity",
+                json!({ "setup": first_run_setup(), "passphrase": "short" }),
+            );
+            let shown = s.write(
+                "create_entity",
+                json!({ "setup": first_run_setup(), "passphrase": FIRST_RUN_PASSPHRASE }),
+                "created",
+            );
+            let key = shown["key"].as_str().unwrap_or_default().to_owned();
+            let last = key.rsplit('-').next().unwrap_or_default().to_owned();
+            s.read("confirm_recovery_key", json!({ "lastGroup": "AAAA" }));
+            s.write(
+                "confirm_recovery_key",
+                json!({ "lastGroup": last }),
+                "confirmed",
+            );
+            s.read(
+                "unlock",
+                json!({ "passphrase": "not the passphrase", "remember": false }),
+            );
+            s.write(
+                "unlock",
+                json!({ "passphrase": FIRST_RUN_PASSPHRASE, "remember": false }),
+                "unlocked",
+            );
+            let fresh = s.write(
+                "recover",
+                json!({ "recoveryKey": key, "newPassphrase": "a brand new passphrase here" }),
+                "recovered",
+            );
+            let last = fresh["key"]
+                .as_str()
+                .unwrap_or_default()
+                .rsplit('-')
+                .next()
+                .unwrap_or_default()
+                .to_owned();
+            s.write(
+                "confirm_recovery_key",
+                json!({ "lastGroup": last }),
+                "recovery-confirmed",
+            );
         }),
         // The user stops the tax advisor from running at all.
         ("egress-policy", |s| {
@@ -304,6 +355,8 @@ pub fn canonical_requests() -> Vec<(&'static str, Value)> {
         ("income_tax_scenarios", json!({ "projection": null })),
         ("obligations", json!({ "year": 2026 })),
         ("advisor_status", json!({})),
+        ("session_state", json!({})),
+        ("backups", json!({})),
         ("financial_findings", json!({})),
         (
             "explain",
@@ -477,6 +530,8 @@ pub fn dispatch(core: &Core, command: &str, args: &Value) -> Result<Value, IpcFa
             };
             to_value(core.income_tax_scenarios(projection.as_ref()))
         }
+        "session_state" => to_value(Ok(core.session_state())),
+        "backups" => to_value(core.backups()),
         "advisor_status" => to_value(Ok(core.advisor_status())),
         "financial_findings" => to_value(core.financial_findings()),
         "explain" => {
@@ -538,16 +593,73 @@ pub fn record_all(core: &Core, fresh: impl Fn() -> Core) -> Vec<Recording> {
     let mut out = record(core);
     for (name, run) in scenarios() {
         let core = fresh();
+        // A reproducible gate in its own folder, as the Tauri test builds it.
+        let dir =
+            std::env::temp_dir().join(format!("skyla-recording-{}-{name}", std::process::id()));
+        let _ = std::fs::remove_dir_all(&dir);
+        let gate = crate::session::Gate::reproducible(dir.clone());
         let mut s = Scenario {
             core: &core,
+            gate: &gate,
             name,
             state: None,
             out: Vec::new(),
         };
         run(&mut s);
         out.extend(s.out);
+        let _ = std::fs::remove_dir_all(&dir);
     }
     out
+}
+
+/// Session commands (setup, unlock, recovery) on the gate; `None` for the
+/// rest, which the core answers.
+pub fn dispatch_session(
+    gate: &crate::session::Gate,
+    command: &str,
+    args: &Value,
+) -> Option<Result<Value, IpcFailure>> {
+    let text = |k: &str| {
+        args.get(k)
+            .and_then(Value::as_str)
+            .unwrap_or_default()
+            .to_owned()
+    };
+    let failure = |e: crate::CoreError| IpcFailure::from(e);
+    let open = |c: Core| crate::dto::SessionStateDto {
+        state: "open".into(),
+        entity: Some(c.entity().display_name),
+        remembered: false,
+    };
+    let result = match command {
+        "create_entity" => {
+            let setup: crate::dto::EntitySetupDto =
+                match serde_json::from_value(args["setup"].clone()) {
+                    Ok(s) => s,
+                    Err(e) => {
+                        return Some(Err(failure(crate::CoreError::BadRequest(e.to_string()))));
+                    }
+                };
+            gate.create(&setup, &text("passphrase"))
+                .map(|(_, k)| serde_json::to_value(k).unwrap_or(Value::Null))
+        }
+        "confirm_recovery_key" => gate
+            .confirm_recovery_key(&text("lastGroup"))
+            .map(Value::Bool),
+        "unlock" => gate
+            .unlock(
+                &text("passphrase"),
+                args.get("remember")
+                    .and_then(Value::as_bool)
+                    .unwrap_or(false),
+            )
+            .map(|c| serde_json::to_value(open(c)).unwrap_or(Value::Null)),
+        "recover" => gate
+            .recover(&text("recoveryKey"), &text("newPassphrase"))
+            .map(|(_, k)| serde_json::to_value(k).unwrap_or(Value::Null)),
+        _ => return None,
+    };
+    Some(result.map_err(failure))
 }
 
 /// Records every canonical request.
@@ -594,4 +706,23 @@ fn mistyped_projection() -> Value {
 /// Account 518 for Q3 2026, the demo's "explain this".
 fn explain_518() -> Value {
     json!({ "kind": "account", "account": "518", "from": "2026-07-01", "to": "2026-09-30", "entry": null })
+}
+
+/// The first-run scenario's passphrase, typed in the e2e test.
+pub const FIRST_RUN_PASSPHRASE: &str = "a long passphrase for the books";
+
+/// The first-run form as the e2e test fills it.
+pub fn first_run_setup() -> Value {
+    json!({
+        "displayName": "Eva Malá",
+        "ico": "27415830",
+        "dic": "CZ8001011234",
+        "address": "Dlouhá 1, 110 00 Praha 1",
+        "vatPeriod": "monthly",
+        "registration": "Zapsána v živnostenském rejstříku",
+        "iban": "CZ6508000000192000145399",
+        "bankName": "ČSOB",
+        "email": null,
+        "flatRateGroup": "liberal",
+    })
 }

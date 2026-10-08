@@ -6,6 +6,24 @@ import { invoke as __TAURI_INVOKE } from "@tauri-apps/api/core";
 
 /** Commands */
 export const commands = {
+	/**  Whether books are open, and if not, whether to set up or unlock. */
+	sessionState: () => __TAURI_INVOKE<SessionStateDto>("session_state"),
+	/**  Creates new books protected by `passphrase`; returns the recovery key to show once. */
+	createEntity: (setup: EntitySetupDto, passphrase: string) => typedError<RecoveryKeyDto, IpcFailure>(__TAURI_INVOKE("create_entity", { setup, passphrase })),
+	/**  Checks the user saved the recovery key, by its last group. */
+	confirmRecoveryKey: (lastGroup: string) => typedError<boolean, IpcFailure>(__TAURI_INVOKE("confirm_recovery_key", { lastGroup })),
+	/**  Unlocks with the passphrase; `remember` keeps the key in the OS keychain. */
+	unlock: (passphrase: string, remember: boolean) => typedError<SessionStateDto, IpcFailure>(__TAURI_INVOKE("unlock", { passphrase, remember })),
+	/**  Opens the books with the recovery key and a new passphrase; returns the new recovery key. */
+	recover: (recoveryKey: string, newPassphrase: string) => typedError<RecoveryKeyDto, IpcFailure>(__TAURI_INVOKE("recover", { recoveryKey, newPassphrase })),
+	/**  Opens the demo books instead. */
+	openDemo: () => typedError<SessionStateDto, IpcFailure>(__TAURI_INVOKE("open_demo")),
+	/**  The backups there are, and the policy. */
+	backups: () => typedError<BackupsDto, IpcFailure>(__TAURI_INVOKE("backups")),
+	/**  Backs up now. */
+	backupNow: () => typedError<BackupDto, IpcFailure>(__TAURI_INVOKE("backup_now")),
+	/**  Restores the newest backup into a scratch folder and checks it. */
+	restoreDrill: () => typedError<DrillDto, IpcFailure>(__TAURI_INVOKE("restore_drill")),
 	/**  Build information. */
 	appInfo: () => __TAURI_INVOKE<AppInfo>("app_info"),
 	/**  The open entity. */
@@ -148,6 +166,32 @@ export type AppInfo = {
 	name: string,
 	/**  Core version. */
 	version: string,
+};
+
+/**  One backup. */
+export type BackupDto = {
+	/**  The file. */
+	file: string,
+	/**  When (UTC). */
+	createdAt: string,
+	/**  Size. */
+	bytes: number,
+	/**  The journal's chain head it anchors. */
+	chainHead: string | null,
+};
+
+/**  The backups and the policy. */
+export type BackupsDto = {
+	/**  The demo keeps its books in memory and has none. */
+	demo: boolean,
+	/**  Where they go. */
+	folder: string | null,
+	/**  Every this many days. */
+	everyDays: number,
+	/**  How many are kept. */
+	keep: number,
+	/**  Newest first. */
+	backups: BackupDto[],
 };
 
 /**  Balance sheet. */
@@ -403,6 +447,22 @@ export type DocumentXmlDto = {
 	xml: string,
 };
 
+/**  What the restore drill found. */
+export type DrillDto = {
+	/**  The backup checked. */
+	file: string,
+	/**  Everything checked out. */
+	passed: boolean,
+	/**  The file is the one its manifest describes. */
+	fileMatches: boolean,
+	/**  It opened with the key. */
+	opens: boolean,
+	/**  Its content matches the manifest. */
+	contentMatches: boolean,
+	/**  Its chain head matches the manifest. */
+	chainMatches: boolean | null,
+};
+
 /**  A reminder that is due, drafted for the user to send. */
 export type DunningNoticeDto = {
 	/**  The invoice. */
@@ -507,6 +567,30 @@ export type EntityDto = {
 	asOf: string,
 	/**  Bank account label, masked. */
 	bankName: string,
+};
+
+/**  The first-run form: who the books are for. */
+export type EntitySetupDto = {
+	/**  The name on invoices (an OSVČ's own name, or a trade name). */
+	displayName: string,
+	/**  IČO (may be empty while registering). */
+	ico: string,
+	/**  DIČ, for VAT payers. */
+	dic: string | null,
+	/**  The address printed on invoices. */
+	address: string,
+	/**  `monthly`, `quarterly` or `none`. */
+	vatPeriod: string,
+	/**  The trade-register line printed on invoices. */
+	registration: string,
+	/**  The business account's IBAN. */
+	iban: string | null,
+	/**  The bank's name, for the status line. */
+	bankName: string,
+	/**  An email for invoices. */
+	email: string | null,
+	/**  `craft`, `trade` or `liberal`, when known. */
+	flatRateGroup: string | null,
 };
 
 /**  What to explain: an account over a period, or one entry. */
@@ -988,6 +1072,14 @@ export type ProposedLineDto = {
 	vatCode: string | null,
 };
 
+/**  A recovery key to show once and have confirmed. */
+export type RecoveryKeyDto = {
+	/**  In groups of four, e.g. `ABCD-EFGH-…`. */
+	key: string,
+	/**  How many groups. */
+	groups: number,
+};
+
 /**  A recurring invoice template. */
 export type RecurringTemplateDto = {
 	/**  Row id. */
@@ -1070,6 +1162,16 @@ export type ScoreContributionDto = {
 	reason: string,
 	/**  Signed weight as written, e.g. `+.40`. */
 	weight: string,
+};
+
+/**  Whether there are books to unlock. */
+export type SessionStateDto = {
+	/**  `needs_setup`, `locked`, `open` or `demo`. */
+	state: string,
+	/**  Whose books, when known. */
+	entity: string | null,
+	/**  The OS keychain holds the key, so unlocking needn't ask. */
+	remembered: boolean,
 };
 
 /**  What a report read; see `skyla_ledger::Snapshot`. */

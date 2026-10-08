@@ -330,6 +330,73 @@ test("explain this cites the entries behind a figure", async ({ page }) => {
   await axeClean(page);
 });
 
+test("first run: set up encrypted books, confirm the recovery key, unlock, and recover", async ({
+  page,
+}) => {
+  await page.goto("/#/setup");
+  const who = page.getByRole("form", { name: "Who the books are for" });
+  await who.getByLabel("Name").fill("Eva Malá");
+  await who.getByLabel("IČO").fill("27415830");
+  await who.getByLabel("DIČ").fill("CZ8001011234");
+  await who.getByLabel("Address").fill("Dlouhá 1, 110 00 Praha 1");
+  await who.getByRole("button", { name: /Flat-rate group/ }).click();
+  await page.getByRole("option", { name: "Other self-employment (40 %)" }).click();
+  await who.getByLabel("Trade register line").fill("Zapsána v živnostenském rejstříku");
+  await who.getByLabel("Business account IBAN").fill("CZ6508000000192000145399");
+  await who.getByLabel("Bank").fill("ČSOB");
+  await axeClean(page);
+  await who.getByRole("button", { name: "Next" }).click();
+
+  const pass = page.getByRole("form", { name: "Passphrase" });
+  await pass.getByLabel("Passphrase").fill("short");
+  await pass.getByLabel("The same again").fill("short");
+  await pass.getByRole("button", { name: "Create the books" }).click();
+  await expect(pass.getByRole("alert")).toContainText("at least 10 characters");
+  await pass.getByLabel("Passphrase").fill("a long passphrase for the books");
+  await pass.getByLabel("The same again").fill("a long passphrase for the books");
+  await pass.getByRole("button", { name: "Create the books" }).click();
+
+  const key = (await page.getByTestId("recovery-key").textContent()) ?? "";
+  expect(key.split("-")).toHaveLength(13);
+  await axeClean(page);
+  await page.getByRole("button", { name: "I've saved it" }).click();
+  const confirm = page.getByRole("form", { name: "Confirm the recovery key" });
+  await confirm.getByLabel(/Type the last group/).fill("AAAA");
+  await confirm.getByRole("button", { name: "Confirm" }).click();
+  await expect(confirm.getByRole("alert")).toContainText("isn't the last group");
+  await confirm.getByLabel(/Type the last group/).fill(key.split("-").at(-1) ?? "");
+  await confirm.getByRole("button", { name: "Confirm" }).click();
+  await expect(page.getByRole("region", { name: "Your books are ready" })).toContainText(
+    "Eva Malá",
+  );
+
+  await page.goto("/#/unlock");
+  const unlock = page.getByRole("form", { name: "Unlock" });
+  await unlock.getByLabel("Passphrase").fill("not the passphrase");
+  await unlock.getByRole("button", { name: "Unlock" }).click();
+  await expect(unlock.getByRole("alert")).toContainText("doesn't open these books");
+  await axeClean(page);
+  await unlock.getByLabel("Passphrase").fill("a long passphrase for the books");
+  await unlock.getByRole("button", { name: "Unlock" }).click();
+  await expect(page).toHaveURL(/#\/overview/);
+
+  await page.goto("/#/recover");
+  const recover = page.getByRole("form", { name: "Recover" });
+  await recover.getByLabel("Recovery key").fill(key);
+  await recover.getByLabel("New passphrase").fill("a brand new passphrase here");
+  await recover.getByLabel("The same again").fill("a brand new passphrase here");
+  await recover.getByRole("button", { name: "Recover" }).click();
+  const fresh = (await page.getByTestId("recovery-key").textContent()) ?? "";
+  expect(fresh).not.toBe(key);
+  await page.getByRole("button", { name: "I've saved it" }).click();
+  await page
+    .getByRole("form", { name: "Confirm the recovery key" })
+    .getByLabel(/Type the last group/)
+    .fill(fresh.split("-").at(-1) ?? "");
+  await page.getByRole("button", { name: "Confirm" }).click();
+  await expect(page).toHaveURL(/#\/overview/);
+});
+
 test("an invoice exports as a PDF the core rendered, with the QR Platba code", async ({ page }) => {
   await page.goto("/#/invoices/2026-102");
   const inspector = page.getByRole("complementary", { name: "Invoice 2026-102" });

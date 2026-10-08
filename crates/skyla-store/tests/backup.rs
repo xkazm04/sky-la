@@ -110,7 +110,7 @@ fn the_restore_drill_passes_for_a_good_backup_and_names_what_is_wrong() {
         store_head(&store),
     )
     .unwrap();
-    let report = backup::drill(&good, &key, MIGRATIONS, &scratch, head).unwrap();
+    let report = backup::drill(&good, &key, &scratch, head).unwrap();
     assert!(report.passed(), "{report:?}");
     assert_eq!(report.chain_matches, Some(true));
     assert_eq!(
@@ -120,21 +120,12 @@ fn the_restore_drill_passes_for_a_good_backup_and_names_what_is_wrong() {
     );
 
     // The wrong key doesn't open it.
-    assert!(
-        backup::drill(
-            &good,
-            &DataKey::generate().unwrap(),
-            MIGRATIONS,
-            &scratch,
-            head
-        )
-        .is_err()
-    );
+    assert!(backup::drill(&good, &DataKey::generate().unwrap(), &scratch, head).is_err());
 
     // A manifest whose chain head isn't the one inside: someone rewrote the books.
     let mut forged = good.clone();
     forged.manifest.chain_head = Some("2:something else".into());
-    let r = backup::drill(&forged, &key, MIGRATIONS, &scratch, head).unwrap();
+    let r = backup::drill(&forged, &key, &scratch, head).unwrap();
     assert_eq!(r.chain_matches, Some(false));
     assert!(!r.passed());
 
@@ -149,6 +140,6 @@ fn the_restore_drill_passes_for_a_good_backup_and_names_what_is_wrong() {
     )
     .unwrap();
     std::fs::copy(&later.file, &good.file).unwrap();
-    let r = backup::drill(&good, &key, MIGRATIONS, &scratch, head).unwrap();
+    let r = backup::drill(&good, &key, &scratch, head).unwrap();
     assert!(!r.file_matches && !r.passed());
 }

@@ -71,6 +71,11 @@ impl fmt::Debug for DataKey {
 pub struct RecoveryKey([u8; KEY_LEN]);
 
 impl RecoveryKey {
+    /// A recovery key from known bytes (reproducible recordings and tests).
+    pub fn from_bytes(bytes: [u8; KEY_LEN]) -> Self {
+        Self(bytes)
+    }
+
     /// A fresh random recovery key.
     pub fn generate() -> Result<Self, StoreError> {
         random_bytes().map(Self)
