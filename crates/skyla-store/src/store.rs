@@ -26,7 +26,34 @@ pub struct Store {
     reader: Mutex<Connection>,
 }
 
+/// Waits, once per process, until SQLCipher has finished initialising.
+///
+/// SQLCipher registers `sqlcipher_export` (which backups and exports use) as
+/// an auto-extension at the very end of its library initialisation, after
+/// SQLite has already marked itself initialised. A thread that opens its
+/// first connection in that window gets one without the function. Opening a
+/// probe here, and retrying until the function answers, closes the window
+/// for every connection this crate opens afterwards.
+fn sqlcipher_ready() {
+    static READY: std::sync::Once = std::sync::Once::new();
+    READY.call_once(|| {
+        for _ in 0..1000 {
+            let Ok(probe) = Connection::open_in_memory() else {
+                return;
+            };
+            match probe.query_row("SELECT sqlcipher_export('skyla_probe')", [], |_| Ok(())) {
+                Err(e) if e.to_string().contains("no such function") => {
+                    std::thread::sleep(std::time::Duration::from_millis(1));
+                }
+                // Any other answer (an unknown database) means it's registered.
+                _ => return,
+            }
+        }
+    });
+}
+
 fn open_connection(path: &Path, key: &DataKey, flags: OpenFlags) -> Result<Connection, StoreError> {
+    sqlcipher_ready();
     let conn = Connection::open_with_flags(path, flags)?;
     conn.execute_batch(&format!(
         "PRAGMA key = {};",
