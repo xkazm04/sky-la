@@ -92,7 +92,7 @@ h3 { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacin
 .row .what { font-weight: 600; }
 .row .detail { grid-column: 2 / 4; color: var(--ink-2); font-size: 14px; }
 
-.stats { display: grid; grid-template-columns: repeat(4, 1fr); background: var(--surface); border-radius: 14px; box-shadow: var(--shadow-panel); }
+.stats { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); background: var(--surface); border-radius: 14px; box-shadow: var(--shadow-panel); }
 .stat { padding: 18px 20px; }
 .stat:not(:nth-child(4n + 1)) { border-left: 1px solid var(--hairline); }
 .stat:nth-child(n + 5) { border-top: 1px solid var(--hairline); }
@@ -112,17 +112,17 @@ h3 { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacin
 table { width: 100%; border-collapse: collapse; }
 th, td { text-align: left; vertical-align: top; padding: 11px 16px; }
 th { font-size: 12px; font-weight: 600; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.04em; background: var(--panel); }
+td { font-size: 14px; }
 tr + tr td { border-top: 1px solid var(--hairline); }
 td:first-child { font-weight: 600; width: 34%; }
-td { font-size: 14px; }
 td .sub { color: var(--ink-2); }
 
 .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-ul.plain { list-style: none; margin: 0; padding: 0; }
-ul.plain li { padding: 11px 16px; font-size: 14px; }
-ul.plain li + li { border-top: 1px solid var(--hairline); }
-ul.plain li strong { display: block; font-size: 15px; margin-bottom: 2px; }
-ul.plain li span { color: var(--ink-2); }
+.plain { list-style: none; margin: 0; padding: 0; }
+.plain li { padding: 11px 16px; font-size: 14px; }
+.plain li + li { border-top: 1px solid var(--hairline); }
+.plain li strong { display: block; font-size: 15px; margin-bottom: 2px; }
+.plain li span { color: var(--ink-2); }
 
 .docs { display: grid; grid-template-columns: repeat(3, 1fr); }
 .docs a { padding: 12px 16px; display: block; }
@@ -161,16 +161,16 @@ footer { margin-top: 48px; color: var(--ink-3); font-size: 13px; }
   <p class="lede">The v1 implementation plan (work packets WP-00 – WP-34) is complete apart from two parts that wait on outside decisions. Fifteen improvement waves followed: they turned the remaining placeholders into real flows and made real books behave like the demo. Every packet passed <code>just ci</code> and was pushed with its STATUS entry.</p>
 </header>
 
-<div class="stats" role="list">
-  <div class="stat" role="listitem"><div class="n">33 / 35</div><div class="l">work packets done (2 partly)</div></div>
-  <div class="stat" role="listitem"><div class="n">15</div><div class="l">improvement waves</div></div>
-  <div class="stat" role="listitem"><div class="n">13</div><div class="l">engine crates, plus the Tauri shell</div></div>
-  <div class="stat" role="listitem"><div class="n">74</div><div class="l">typed IPC commands</div></div>
-  <div class="stat" role="listitem"><div class="n">305</div><div class="l">Rust tests, plus parser fuzzing</div></div>
-  <div class="stat" role="listitem"><div class="n">63</div><div class="l">Playwright runs with axe and pixel baselines</div></div>
-  <div class="stat" role="listitem"><div class="n">60</div><div class="l">hand-worked rule-pack golden cases</div></div>
-  <div class="stat" role="listitem"><div class="n">59</div><div class="l">commits on the branch</div></div>
-</div>
+<ul class="stats">
+  <li class="stat"><div class="n">33 / 35</div><div class="l">work packets done (2 partly)</div></li>
+  <li class="stat"><div class="n">15</div><div class="l">improvement waves</div></li>
+  <li class="stat"><div class="n">13</div><div class="l">engine crates, plus the Tauri shell</div></li>
+  <li class="stat"><div class="n">74</div><div class="l">typed IPC commands</div></li>
+  <li class="stat"><div class="n">305</div><div class="l">Rust tests, plus parser fuzzing</div></li>
+  <li class="stat"><div class="n">63</div><div class="l">Playwright runs with axe and pixel baselines</div></li>
+  <li class="stat"><div class="n">60</div><div class="l">hand-worked rule-pack golden cases</div></li>
+  <li class="stat"><div class="n">59</div><div class="l">commits on the branch</div></li>
+</ul>
 
 <section aria-labelledby="plan">
   <h2 id="plan">The v1 plan, milestone by milestone</h2>
