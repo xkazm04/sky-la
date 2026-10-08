@@ -58,15 +58,24 @@ export function Inspector({
 
 export interface InspectorSectionProps {
   title: string;
+  /** Trailing header content, e.g. a badge. */
+  accessory?: ReactNode;
   children: ReactNode;
   className?: string;
 }
 
 /** A titled group inside the inspector. */
-export function InspectorSection({ title, children, className }: InspectorSectionProps) {
+export function InspectorSection({ title, accessory, children, className }: InspectorSectionProps) {
   return (
     <section className={cx("mt-4 first:mt-0", className)}>
-      <h3 className="mb-1.5 font-semibold text-caption text-ink-secondary">{title}</h3>
+      {accessory ? (
+        <div className="mb-1.5 flex items-center justify-between gap-2">
+          <h3 className="font-semibold text-caption text-ink-secondary">{title}</h3>
+          {accessory}
+        </div>
+      ) : (
+        <h3 className="mb-1.5 font-semibold text-caption text-ink-secondary">{title}</h3>
+      )}
       {children}
     </section>
   );

@@ -910,6 +910,108 @@ pub struct PackUpdateDto {
     pub message: String,
 }
 
+/// The user's projection for the year, typed in the scenario form.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct TaxProjectionDto {
+    /// § 7 income, e.g. `1 571 000`.
+    pub income: String,
+    /// Actual tax-deductible expenses.
+    pub expenses: String,
+    /// `craft`, `trade` or `liberal`; empty when unknown.
+    pub flat_rate: Option<String>,
+    /// A planned purchase, for the timing lever (may be empty).
+    pub purchase_description: String,
+    /// Its price excluding claimable VAT (empty for none).
+    pub purchase_price: String,
+}
+
+/// The § 7 scenarios for the year.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct TaxScenariosDto {
+    /// The tax year.
+    pub year: String,
+    /// `books` (cash basis so far) or `projection`.
+    pub source: String,
+    /// First day covered.
+    pub from: String,
+    /// Last day covered.
+    pub to: String,
+    /// § 7 income.
+    pub income: MoneyDto,
+    /// Actual expenses.
+    pub actual_expenses: MoneyDto,
+    /// The flat-rate group, when known.
+    pub flat_rate: Option<String>,
+    /// The scenario the others are compared with.
+    pub baseline: String,
+    /// The scenario with the lowest tax and insurance.
+    pub lowest_total: String,
+    /// Every combination.
+    pub scenarios: Vec<TaxScenarioDto>,
+    /// Facts that would change the analysis.
+    pub questions: Vec<String>,
+    /// Levers that couldn't be evaluated, and why.
+    pub not_evaluated: Vec<String>,
+    /// What the computation assumed.
+    pub assumptions: Vec<String>,
+    /// Pack provenance.
+    pub pack: String,
+}
+
+/// One scenario's worksheet and its difference from the baseline.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct TaxScenarioDto {
+    /// Stable id.
+    pub id: String,
+    /// For people.
+    pub label: String,
+    /// Expenses claimed.
+    pub expenses: MoneyDto,
+    /// The flat rate, when used (`60`).
+    pub flat_rate_percent: Option<String>,
+    /// Its cap.
+    pub flat_rate_cap: Option<MoneyDto>,
+    /// The cap applied.
+    pub capped: bool,
+    /// Income minus expenses.
+    pub profit: MoneyDto,
+    /// Rounded tax base.
+    pub tax_base: MoneyDto,
+    /// Rate (`15`).
+    pub tax_rate_percent: String,
+    /// Tax before credits.
+    pub tax_before_credits: MoneyDto,
+    /// Taxpayer credit used.
+    pub taxpayer_credit: MoneyDto,
+    /// Income tax.
+    pub tax: MoneyDto,
+    /// Social insurance assessment base (also the pension base).
+    pub social_base: MoneyDto,
+    /// Its rate.
+    pub social_rate_percent: String,
+    /// Social insurance.
+    pub social: MoneyDto,
+    /// Health insurance assessment base.
+    pub health_base: MoneyDto,
+    /// Its rate.
+    pub health_rate_percent: String,
+    /// Health insurance.
+    pub health: MoneyDto,
+    /// Tax and insurance.
+    pub total: MoneyDto,
+    /// Tax against the baseline.
+    pub vs_baseline_tax: MoneyDto,
+    /// Both insurances against the baseline.
+    pub vs_baseline_insurance: MoneyDto,
+    /// Everything against the baseline.
+    pub vs_baseline_total: MoneyDto,
+    /// The pension assessment base against the baseline.
+    pub vs_baseline_pension_base: MoneyDto,
+}
+
 /// The kontrolní hlášení for a period.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]

@@ -4932,6 +4932,7 @@ dependencies = [
  "serde",
  "skyla-money",
  "skyla-rules",
+ "thiserror 2.0.21",
 ]
 
 [[package]]

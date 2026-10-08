@@ -20,7 +20,9 @@ currency = "CZK"
 summary = "VAT, income-tax basics, thresholds, deadlines and VAT-return row mapping for Czech freelancers (OSVČ) and micro-companies."
 omitted = [
   "income_tax.solidarity_threshold (36 × the 2026 average wage): needs the 2026 average-wage regulation",
-  "social and health insurance minimum advances for 2026: need the 2026 regulation",
+  "social and health insurance minimum assessment bases and advances for 2026: need the 2026 average wage",
+  "sickness insurance for OSVČ: rate and base not verified",
+  "depreciation groups and first-year rates (§ 30–31 ZDP): not yet in the pack",
   "paušální daň bands for 2026: need the 2026 amounts",
   "ČNB repo rate: reference data (imported or fetched), not statutory pack data",
 ]
@@ -34,6 +36,16 @@ url = "https://www.zakonyprolidi.cz/cs/2004-235"
 id = "zdp"
 name = "Zákon č. 586/1992 Sb., o daních z příjmů"
 url = "https://www.zakonyprolidi.cz/cs/1992-586"
+
+[[act]]
+id = "zos"
+name = "Zákon č. 589/1992 Sb., o pojistném na sociální zabezpečení a příspěvku na státní politiku zaměstnanosti"
+url = "https://www.zakonyprolidi.cz/cs/1992-589"
+
+[[act]]
+id = "zvzp"
+name = "Zákon č. 592/1992 Sb., o pojistném na veřejné zdravotní pojištění"
+url = "https://www.zakonyprolidi.cz/cs/1992-592"
 
 [[act]]
 id = "dr"
@@ -135,6 +147,22 @@ effective_from = "2021-01-01"
 cite = { act = "zdp", section = "§ 16 odst. 1 písm. a)" }
 
 [[value]]
+key = "income_tax.base.round_down_to"
+kind = "amount"
+value = "100.00"
+effective_from = "2021-01-01"
+cite = { act = "zdp", section = "§ 16" }
+note = "The tax base, after deductions, is rounded down to whole hundreds of crowns."
+
+[[value]]
+key = "tax.round_up_to"
+kind = "amount"
+value = "1.00"
+effective_from = "2011-01-01"
+cite = { act = "dr", section = "§ 146 odst. 1" }
+note = "Tax is rounded up to whole crowns."
+
+[[value]]
 key = "income_tax.credit.taxpayer"
 kind = "amount"
 value = "30840.00"
@@ -192,6 +220,54 @@ value = "80000.00"
 effective_from = "2021-01-01"
 cite = { act = "zdp", section = "§ 26 odst. 2 písm. a)" }
 note = "Tangible assets above this price, with a useful life over one year, are depreciated; cheaper ones are expensed."
+
+# ── Insurance (OSVČ, main activity) ────────────────────────────────────────
+
+[[value]]
+key = "insurance.social.share"
+kind = "percent"
+value = "50"
+effective_from = "2018-01-01"
+cite = { act = "zos", section = "§ 5b odst. 1" }
+note = "The annual assessment base is this share of the profit (income minus expenses claimed)."
+
+[[value]]
+key = "insurance.social.rate"
+kind = "percent"
+value = "29.2"
+effective_from = "2009-01-01"
+cite = { act = "zos", section = "§ 7 odst. 1 písm. b)" }
+note = "28 % pension insurance and 1.2 % state employment policy contribution. Sickness insurance is separate and not included."
+
+[[value]]
+key = "insurance.social.round_up_to"
+kind = "amount"
+value = "1.00"
+effective_from = "2009-01-01"
+cite = { act = "zos", section = "§ 5b odst. 1 a § 7 odst. 2" }
+note = "The assessment base and the insurance are rounded up to whole crowns."
+
+[[value]]
+key = "insurance.health.share"
+kind = "percent"
+value = "50"
+effective_from = "2008-01-01"
+cite = { act = "zvzp", section = "§ 3a odst. 2" }
+
+[[value]]
+key = "insurance.health.rate"
+kind = "percent"
+value = "13.5"
+effective_from = "1993-01-01"
+cite = { act = "zvzp", section = "§ 2 odst. 1" }
+
+[[value]]
+key = "insurance.health.round_up_to"
+kind = "amount"
+value = "1.00"
+effective_from = "2008-01-01"
+cite = { act = "zvzp", section = "§ 3a odst. 2 a § 2 odst. 1" }
+note = "The assessment base and the insurance are rounded up to whole crowns."
 
 # ── Late-payment interest ──────────────────────────────────────────────────
 

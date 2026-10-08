@@ -110,6 +110,13 @@ pub type Script = fn(&mut Scenario<'_>);
 /// Every scenario, each recorded on a fresh demo core.
 pub fn scenarios() -> Vec<(&'static str, Script)> {
     vec![
+        // The scenario form refuses what it can't read, with the reason.
+        ("tax-projection", |s| {
+            s.read(
+                "income_tax_scenarios",
+                json!({ "projection": mistyped_projection() }),
+            );
+        }),
         ("new-invoice", |s| {
             s.read("invoice_form", json!({}));
             // The editor sends what was typed; the core lists every problem.
@@ -244,6 +251,11 @@ pub fn canonical_requests() -> Vec<(&'static str, Value)> {
         ("dunning_queue", json!({ "asOf": "2026-10-07" })),
         ("recurring_templates", json!({})),
         ("reference_data", json!({})),
+        ("income_tax_scenarios", json!({ "projection": null })),
+        (
+            "income_tax_scenarios",
+            json!({ "projection": review_projection() }),
+        ),
     ];
     for (from, to) in [
         ("2026-07-01", "2026-07-31"),
@@ -393,6 +405,16 @@ pub fn dispatch(core: &Core, command: &str, args: &Value) -> Result<Value, IpcFa
             to_value(core.invoice_xml(id, arg(args, "format")?))
         }
         "vat_return" => to_value(core.vat_return(arg(args, "from")?, arg(args, "to")?)),
+        "income_tax_scenarios" => {
+            let projection: Option<crate::dto::TaxProjectionDto> = match args.get("projection") {
+                None | Some(Value::Null) => None,
+                Some(v) => Some(
+                    serde_json::from_value(v.clone())
+                        .map_err(|e| crate::CoreError::BadRequest(e.to_string()))?,
+                ),
+            };
+            to_value(core.income_tax_scenarios(projection.as_ref()))
+        }
         "control_statement" => {
             to_value(core.control_statement(arg(args, "from")?, arg(args, "to")?))
         }
@@ -449,4 +471,23 @@ pub fn record(core: &Core) -> Vec<Recording> {
             }
         })
         .collect()
+}
+
+/// The projection from the design review (1 571 000 income, 60 % flat
+/// rate), with a laptop to time.
+fn review_projection() -> Value {
+    json!({
+        "income": "1 571 000",
+        "expenses": "383 200",
+        "flatRate": "trade",
+        "purchaseDescription": "Laptop",
+        "purchasePrice": "60 000",
+    })
+}
+
+/// The same with dots in the income, which the core refuses.
+fn mistyped_projection() -> Value {
+    let mut p = review_projection();
+    p["income"] = json!("1.571.000");
+    p
 }

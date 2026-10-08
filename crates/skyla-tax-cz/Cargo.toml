@@ -16,3 +16,4 @@ workspace = true
 serde = { version = "1.0.229", features = ["derive"] }
 skyla-money = { version = "0.1.0", path = "../skyla-money" }
 skyla-rules = { version = "0.1.0", path = "../skyla-rules" }
+thiserror = "2.0.21"

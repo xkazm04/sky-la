@@ -396,6 +396,8 @@ pub(crate) struct DomainEntity {
     pub(crate) as_of: String,
     pub(crate) bank_account: String,
     pub(crate) bank_name: String,
+    /// The activity's flat-rate group (`craft`, `trade`, `liberal`).
+    pub(crate) flat_rate_group: Option<String>,
 }
 
 /// The supplier profile.

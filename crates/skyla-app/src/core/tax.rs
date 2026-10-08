@@ -2,15 +2,22 @@
 //! VAT in the period becomes a document, with the counterparty from the
 //! invoicing module (supplies) or the purchase records (received invoices),
 //! and section C is checked against the DPH return for the same period.
+//! The § 7 scenarios (WP-22) start from the books or the user's projection.
 
 use std::collections::HashMap;
 
-use skyla_ledger::list_posted;
+use skyla_ledger::{cash_basis, list_posted};
 use skyla_money::Money;
-use skyla_tax_cz::{KhDocument, KhItem, KhPart, KhSide, KhTotals, control_statement};
+use skyla_tax_cz::{
+    Expenses, FlatRate, KhDocument, KhItem, KhPart, KhSide, KhTotals, PlannedPurchase,
+    ScenarioFacts, Section7, control_statement, scenarios,
+};
 
 use super::{Core, money};
-use crate::dto::{ControlStatementDto, KhCRowDto, KhItemDto, KhTotalsDto};
+use crate::dto::{
+    ControlStatementDto, KhCRowDto, KhItemDto, KhTotalsDto, TaxProjectionDto, TaxScenarioDto,
+    TaxScenariosDto,
+};
 use crate::error::CoreError;
 
 const VAT_ACCOUNT: &str = "343";
@@ -214,6 +221,206 @@ impl Core {
             due_on: self
                 .pack
                 .deadline_after("vat.control_statement.due_days_after_period", to)?,
+            pack: self.pack.provenance(),
+        })
+    }
+}
+
+impl From<skyla_tax_cz::IncomeError> for CoreError {
+    fn from(e: skyla_tax_cz::IncomeError) -> Self {
+        match e {
+            skyla_tax_cz::IncomeError::Rules(r) => Self::Rules(r),
+            skyla_tax_cz::IncomeError::Money(m) => Self::Money(m),
+        }
+    }
+}
+
+fn flat_rate(name: &str) -> Option<FlatRate> {
+    match name {
+        "craft" => Some(FlatRate::Craft),
+        "trade" => Some(FlatRate::Trade),
+        "liberal" => Some(FlatRate::Liberal),
+        _ => None,
+    }
+}
+
+fn flat_rate_name(group: FlatRate) -> &'static str {
+    match group {
+        FlatRate::Craft => "craft",
+        FlatRate::Trade => "trade",
+        FlatRate::Liberal => "liberal",
+    }
+}
+
+fn percent_text(rate: skyla_money::Rate) -> String {
+    rate.normalize().to_string().replace('.', ",")
+}
+
+impl Core {
+    /// The § 7 scenarios: from the books so far this year, or from the
+    /// user's projection. Every figure is the engine's; the webview only
+    /// shows them.
+    pub fn income_tax_scenarios(
+        &self,
+        projection: Option<&TaxProjectionDto>,
+    ) -> Result<TaxScenariosDto, CoreError> {
+        let as_of = self.domain.entity.as_of.clone();
+        let year = as_of.get(..4).unwrap_or("2026").to_owned();
+        let on = format!("{year}-12-31");
+        let parse = |field: &str, text: &str| {
+            skyla_money::parse_amount_cs(text, self.currency).map_err(|_| {
+                CoreError::BadRequest(format!(
+                    "{field} {text:?} isn't an amount like 1 200 000,00"
+                ))
+            })
+        };
+        let (source, from, income, expenses, group, purchase) = match projection {
+            None => {
+                let cb = cash_basis(&self.db(), &format!("{year}-01-01"), &as_of)?;
+                let group = self
+                    .domain
+                    .entity
+                    .flat_rate_group
+                    .as_deref()
+                    .and_then(flat_rate);
+                (
+                    "books",
+                    format!("{year}-01-01"),
+                    cb.taxable_income,
+                    cb.deductible_expenses,
+                    group,
+                    None,
+                )
+            }
+            Some(p) => {
+                let income = parse("income", &p.income)?;
+                let expenses = parse("expenses", &p.expenses)?;
+                if income.is_negative() || expenses.is_negative() {
+                    return Err(CoreError::BadRequest(
+                        "income and expenses can't be negative".into(),
+                    ));
+                }
+                let group = match p.flat_rate.as_deref() {
+                    None | Some("") => None,
+                    Some(g) => Some(flat_rate(g).ok_or_else(|| {
+                        CoreError::BadRequest(format!("unknown flat-rate group {g:?}"))
+                    })?),
+                };
+                let purchase = if p.purchase_price.trim().is_empty() {
+                    None
+                } else {
+                    let price = parse("purchase price", &p.purchase_price)?;
+                    if price.minor() <= 0 {
+                        return Err(CoreError::BadRequest(
+                            "the purchase price must be above zero".into(),
+                        ));
+                    }
+                    let description = p.purchase_description.trim();
+                    Some(PlannedPurchase {
+                        description: if description.is_empty() {
+                            "The purchase".into()
+                        } else {
+                            description.to_owned()
+                        },
+                        price,
+                    })
+                };
+                (
+                    "projection",
+                    format!("{year}-01-01"),
+                    income,
+                    expenses,
+                    group,
+                    purchase,
+                )
+            }
+        };
+        let facts = ScenarioFacts {
+            section7: Section7 {
+                on: on.clone(),
+                income,
+                actual_expenses: expenses,
+            },
+            flat_rate: group,
+            planned_purchase: purchase.clone(),
+        };
+        let a = scenarios(&self.pack, &facts)?;
+        let mut out = Vec::new();
+        for (s, d) in a.scenarios.iter().zip(&a.differences) {
+            let w = &s.worksheet;
+            let mut label = match w.expenses_method {
+                Expenses::Actual => "Actual expenses".to_owned(),
+                Expenses::FlatRate(_) => format!(
+                    "Flat-rate expenses {} %",
+                    w.flat_rate_percent.map(percent_text).unwrap_or_default()
+                ),
+            };
+            if let (Some(p), Some((_, timing))) =
+                (&purchase, s.levers.iter().find(|(l, _)| l == "purchase"))
+            {
+                label.push_str(&format!(
+                    " · {} {}",
+                    p.description,
+                    if timing == "this_year" {
+                        "bought this year"
+                    } else {
+                        "bought next year"
+                    }
+                ));
+            }
+            out.push(TaxScenarioDto {
+                id: s.id.clone(),
+                label,
+                expenses: money(w.expenses)?,
+                flat_rate_percent: w.flat_rate_percent.map(percent_text),
+                flat_rate_cap: w.flat_rate_cap.map(money).transpose()?,
+                capped: w.capped,
+                profit: money(w.profit)?,
+                tax_base: money(w.tax_base)?,
+                tax_rate_percent: percent_text(w.tax_rate_percent),
+                tax_before_credits: money(w.tax_before_credits)?,
+                taxpayer_credit: money(w.taxpayer_credit)?,
+                tax: money(w.tax)?,
+                social_base: money(w.social.assessment_base)?,
+                social_rate_percent: percent_text(w.social.rate_percent),
+                social: money(w.social.amount)?,
+                health_base: money(w.health.assessment_base)?,
+                health_rate_percent: percent_text(w.health.rate_percent),
+                health: money(w.health.amount)?,
+                total: money(w.total)?,
+                vs_baseline_tax: money(d.tax)?,
+                vs_baseline_insurance: money(d.social.checked_add(d.health)?)?,
+                vs_baseline_total: money(d.total)?,
+                vs_baseline_pension_base: money(d.pension_base)?,
+            });
+        }
+        let mut assumptions = a
+            .scenarios
+            .first()
+            .map(|s| s.worksheet.assumptions.clone())
+            .unwrap_or_default();
+        if source == "books" {
+            assumptions.insert(
+                0,
+                format!(
+                    "From the books, {from} to {as_of} (cash basis), not a projection for the whole year."
+                ),
+            );
+        }
+        Ok(TaxScenariosDto {
+            year,
+            source: source.to_owned(),
+            from,
+            to: if source == "books" { as_of } else { on },
+            income: money(income)?,
+            actual_expenses: money(expenses)?,
+            flat_rate: group.map(|g| flat_rate_name(g).to_owned()),
+            baseline: a.baseline,
+            lowest_total: a.lowest_total,
+            scenarios: out,
+            questions: a.questions,
+            not_evaluated: a.not_evaluated,
+            assumptions,
             pack: self.pack.provenance(),
         })
     }

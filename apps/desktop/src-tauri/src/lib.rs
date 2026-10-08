@@ -7,7 +7,7 @@ use skyla_app::dto::{
     ControlStatementDto, DocumentPdfDto, DocumentXmlDto, DunningNoticeDto, EgressRunDto, EntityDto,
     IntegrityDto, InvoiceDraftDto, InvoiceDto, InvoiceFormDto, JournalEntryDto, PackUpdateDto,
     PeriodDto, ProfitAndLossDto, ProposalDto, RecurringTemplateDto, RefDataDto, RulePackDto,
-    TrialBalanceDto, VatReturnDto,
+    TaxProjectionDto, TaxScenariosDto, TrialBalanceDto, VatReturnDto,
 };
 use skyla_app::{Core, IpcFailure};
 use tauri::{Runtime, State};
@@ -126,6 +126,16 @@ fn control_statement(
     to: String,
 ) -> Answer<ControlStatementDto> {
     Ok(core.control_statement(&from, &to)?)
+}
+
+/// The § 7 scenarios, from the books or the user's projection.
+#[tauri::command]
+#[specta::specta]
+fn income_tax_scenarios(
+    core: State<'_, Core>,
+    projection: Option<TaxProjectionDto>,
+) -> Answer<TaxScenariosDto> {
+    Ok(core.income_tax_scenarios(projection.as_ref())?)
 }
 
 /// The rule pack in force, with citations.
@@ -294,6 +304,7 @@ pub fn specta_builder<R: Runtime>() -> Builder<R> {
             egress_register,
             vat_return,
             control_statement,
+            income_tax_scenarios,
             rule_pack,
             invoice_pdf,
             invoice_xml,

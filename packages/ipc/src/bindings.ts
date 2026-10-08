@@ -36,6 +36,19 @@ export const commands = {
 	vatReturn: (from: string, to: string) => typedError<VatReturnDto, IpcFailure>(__TAURI_INVOKE("vat_return", { from, to })),
 	/**  The kontrolní hlášení for a period, checked against the return. */
 	controlStatement: (from: string, to: string) => typedError<ControlStatementDto, IpcFailure>(__TAURI_INVOKE("control_statement", { from, to })),
+	/**  The § 7 scenarios, from the books or the user's projection. */
+	incomeTaxScenarios: (projection: {
+	/**  § 7 income, e.g. `1 571 000`. */
+	income: string,
+	/**  Actual tax-deductible expenses. */
+	expenses: string,
+	/**  `craft`, `trade` or `liberal`; empty when unknown. */
+	flatRate: string | null,
+	/**  A planned purchase, for the timing lever (may be empty). */
+	purchaseDescription: string,
+	/**  Its price excluding claimable VAT (empty for none). */
+	purchasePrice: string,
+} | null) => typedError<TaxScenariosDto, IpcFailure>(__TAURI_INVOKE("income_tax_scenarios", { projection })),
 	/**  The rule pack in force, with citations. */
 	rulePack: () => __TAURI_INVOKE<RulePackDto>("rule_pack"),
 	/**  A document rendered to PDF (`cs` or `en`), base64-encoded. */
@@ -917,6 +930,102 @@ export type StatementLineDto = {
 	nameEn: string,
 	/**  Amount as the statement reads. */
 	amount: MoneyDto,
+};
+
+/**  The user's projection for the year, typed in the scenario form. */
+export type TaxProjectionDto = {
+	/**  § 7 income, e.g. `1 571 000`. */
+	income: string,
+	/**  Actual tax-deductible expenses. */
+	expenses: string,
+	/**  `craft`, `trade` or `liberal`; empty when unknown. */
+	flatRate: string | null,
+	/**  A planned purchase, for the timing lever (may be empty). */
+	purchaseDescription: string,
+	/**  Its price excluding claimable VAT (empty for none). */
+	purchasePrice: string,
+};
+
+/**  One scenario's worksheet and its difference from the baseline. */
+export type TaxScenarioDto = {
+	/**  Stable id. */
+	id: string,
+	/**  For people. */
+	label: string,
+	/**  Expenses claimed. */
+	expenses: MoneyDto,
+	/**  The flat rate, when used (`60`). */
+	flatRatePercent: string | null,
+	/**  Its cap. */
+	flatRateCap: MoneyDto | null,
+	/**  The cap applied. */
+	capped: boolean,
+	/**  Income minus expenses. */
+	profit: MoneyDto,
+	/**  Rounded tax base. */
+	taxBase: MoneyDto,
+	/**  Rate (`15`). */
+	taxRatePercent: string,
+	/**  Tax before credits. */
+	taxBeforeCredits: MoneyDto,
+	/**  Taxpayer credit used. */
+	taxpayerCredit: MoneyDto,
+	/**  Income tax. */
+	tax: MoneyDto,
+	/**  Social insurance assessment base (also the pension base). */
+	socialBase: MoneyDto,
+	/**  Its rate. */
+	socialRatePercent: string,
+	/**  Social insurance. */
+	social: MoneyDto,
+	/**  Health insurance assessment base. */
+	healthBase: MoneyDto,
+	/**  Its rate. */
+	healthRatePercent: string,
+	/**  Health insurance. */
+	health: MoneyDto,
+	/**  Tax and insurance. */
+	total: MoneyDto,
+	/**  Tax against the baseline. */
+	vsBaselineTax: MoneyDto,
+	/**  Both insurances against the baseline. */
+	vsBaselineInsurance: MoneyDto,
+	/**  Everything against the baseline. */
+	vsBaselineTotal: MoneyDto,
+	/**  The pension assessment base against the baseline. */
+	vsBaselinePensionBase: MoneyDto,
+};
+
+/**  The § 7 scenarios for the year. */
+export type TaxScenariosDto = {
+	/**  The tax year. */
+	year: string,
+	/**  `books` (cash basis so far) or `projection`. */
+	source: string,
+	/**  First day covered. */
+	from: string,
+	/**  Last day covered. */
+	to: string,
+	/**  § 7 income. */
+	income: MoneyDto,
+	/**  Actual expenses. */
+	actualExpenses: MoneyDto,
+	/**  The flat-rate group, when known. */
+	flatRate: string | null,
+	/**  The scenario the others are compared with. */
+	baseline: string,
+	/**  The scenario with the lowest tax and insurance. */
+	lowestTotal: string,
+	/**  Every combination. */
+	scenarios: TaxScenarioDto[],
+	/**  Facts that would change the analysis. */
+	questions: string[],
+	/**  Levers that couldn't be evaluated, and why. */
+	notEvaluated: string[],
+	/**  What the computation assumed. */
+	assumptions: string[],
+	/**  Pack provenance. */
+	pack: string,
 };
 
 /**  Trial balance. */

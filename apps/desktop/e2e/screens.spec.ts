@@ -203,6 +203,34 @@ test("the September kontrolní hlášení itemises above the pack's threshold an
   await axeClean(page);
 });
 
+test("the scenario engine compares actual and flat-rate expenses, side effects included", async ({
+  page,
+}) => {
+  await page.goto("/#/taxes/scenarios");
+  const inspector = page.getByRole("complementary", { name: "Actual or flat-rate expenses" });
+  await expect(inspector.getByTestId("scenario-source")).toContainText("From the books, 1 Jan");
+  const form = inspector.getByRole("form", { name: "Projection" });
+  await form.getByLabel("Income (§ 7)").fill("1 571 000");
+  await form.getByLabel("Actual expenses").fill("383 200");
+  await form.getByLabel("Planned purchase").fill("Laptop");
+  await form.getByLabel("Its price excluding VAT").fill("60 000");
+  await form.getByRole("button", { name: "Compare" }).click();
+  await expect(inspector.getByTestId("scenario-source")).toContainText("Your projection for 2026");
+  const flat = inspector
+    .locator("section", {
+      has: page.getByRole("heading", { name: "Flat-rate expenses 60 % · Laptop bought this year" }),
+    })
+    .last();
+  await expect(flat).toContainText("942 600,00 Kč");
+  await expect(flat).toContainText("197 584,00 Kč");
+  await expect(flat).toContainText("Lowest total");
+  await expect(inspector).toContainText("Paušální daň");
+  await axeClean(page);
+  await form.getByLabel("Income (§ 7)").fill("1.571.000");
+  await form.getByRole("button", { name: "Compare" }).click();
+  await expect(form.getByRole("alert")).toContainText("isn't an amount");
+});
+
 test("an invoice exports as a PDF the core rendered, with the QR Platba code", async ({ page }) => {
   await page.goto("/#/invoices/2026-102");
   const inspector = page.getByRole("complementary", { name: "Invoice 2026-102" });

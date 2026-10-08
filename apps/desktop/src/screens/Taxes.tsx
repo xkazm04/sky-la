@@ -23,6 +23,7 @@ import { day, money } from "../format";
 import { navigate } from "../router";
 import { InspectorPane } from "../shell/Shell";
 import { Loaded, Reasons, TwoLine } from "./common";
+import { TaxScenariosPanel, useBooksScenarios } from "./TaxScenarios";
 
 interface TaxRow {
   id: string;
@@ -34,6 +35,7 @@ interface TaxRow {
   about: string[];
   vat?: VatReturnDto;
   kh?: ControlStatementDto;
+  scenarios?: boolean;
 }
 
 const columns: TableColumn<TaxRow>[] = [
@@ -176,6 +178,7 @@ export function TaxesScreen({ item }: { item: string | null }) {
   const returns = useQuery("vat:2026-07..09", () =>
     Promise.all(MONTHS.map((m) => unwrap(commands.vatReturn(m.from, m.to)))),
   );
+  const scenarios = useBooksScenarios();
   const statements = useQuery("kh:2026-07..09", () =>
     Promise.all(MONTHS.map((m) => unwrap(commands.controlStatement(m.from, m.to)))),
   );
@@ -277,6 +280,26 @@ export function TaxesScreen({ item }: { item: string | null }) {
             about: ["Expenses recognised when they were paid, excluding claimable VAT."],
           },
           {
+            id: "scenarios",
+            title: "Actual or flat-rate expenses",
+            detail: "Scenarios computed by the engine · type a projection to compare",
+            value:
+              scenarios.state === "ready"
+                ? money(
+                    scenarios.data.scenarios.find((x) => x.id === scenarios.data.lowestTotal)
+                      ?.total,
+                  )
+                : "—",
+            figure: "Lowest tax and insurance so far",
+            status: { tone: "accent", label: "Scenario" },
+            about: [
+              "The § 7 worksheet for each way of claiming expenses: income tax, social and health insurance from the same profit.",
+              "Rates, caps, roundings and the asset threshold come from the rule pack.",
+              "The flat-rate choice is an election on the annual return, not something to post.",
+            ],
+            scenarios: true,
+          },
+          {
             id: "non-deductible",
             title: "Non-deductible expenses",
             detail: "Kept out of the tax base automatically",
@@ -350,6 +373,7 @@ export function TaxesScreen({ item }: { item: string | null }) {
                     </>
                   )}
                   {selected.kh && <ControlStatement kh={selected.kh} />}
+                  {selected.scenarios && <TaxScenariosPanel />}
                   <InspectorSection title="How it's worked out">
                     <Reasons reasons={selected.about} />
                   </InspectorSection>
