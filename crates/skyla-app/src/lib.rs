@@ -13,5 +13,7 @@ mod error;
 pub mod recordings;
 
 pub use crate::core::Core;
+pub use crate::core::toolhost::{ToolCallLog, ToolRun};
+pub use crate::core::tools::{ToolError, ToolKind, ToolSpec, tool_specs};
 pub use error::{CoreError, IpcFailure};
 pub use skyla_rules::Pack;

@@ -13,3 +13,11 @@ publish = false
 workspace = true
 
 [dependencies]
+serde_json = "1.0.151"
+
+[[bin]]
+name = "skyla-mcp"
+path = "src/main.rs"
+
+[dev-dependencies]
+tempfile = "3.27.0"

@@ -4789,6 +4789,7 @@ dependencies = [
  "skyla-bank",
  "skyla-invoicing",
  "skyla-ledger",
+ "skyla-mcp",
  "skyla-money",
  "skyla-render",
  "skyla-rules",
@@ -4867,6 +4868,10 @@ dependencies = [
 [[package]]
 name = "skyla-mcp"
 version = "0.1.0"
+dependencies = [
+ "serde_json",
+ "tempfile",
+]
 
 [[package]]
 name = "skyla-money"

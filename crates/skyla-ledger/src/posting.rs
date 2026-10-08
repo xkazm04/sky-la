@@ -325,6 +325,21 @@ pub fn create_draft(conn: &Connection, entry: &NewEntry) -> Result<i64, LedgerEr
     insert_draft(conn, entry, None, None)
 }
 
+/// Checks that `entry` would post, with every rule [`post_entry`] and the
+/// database apply, and leaves nothing behind: the draft and the posting are
+/// always rolled back. For proposals (an advisor's or a rule's), which a
+/// person approves before anything is stored.
+pub fn check_entry(conn: &Connection, entry: &NewEntry) -> Result<(), LedgerError> {
+    conn.execute_batch("SAVEPOINT ledger_check")?;
+    let result =
+        create_draft(conn, entry).and_then(|id| post_entry(conn, id, Some("check")).map(|_| ()));
+    // Whatever happened, undo it; keep the check's own error if the undo fails too.
+    let undone = conn.execute_batch("ROLLBACK TO ledger_check; RELEASE ledger_check");
+    result?;
+    undone?;
+    Ok(())
+}
+
 /// [`create_draft`] with a given uid instead of a fresh UUID v7. For
 /// replaying or importing books whose entry identities are known, and for
 /// reproducible demos: the uid is part of the hash chain.

@@ -611,3 +611,45 @@ fn drafts_can_be_deleted() {
         .unwrap();
     assert_eq!(lines, 0);
 }
+
+#[test]
+fn a_check_validates_like_posting_and_leaves_nothing_behind() {
+    let conn = ledger();
+    let count = |sql: &str| -> i64 { conn.query_row(sql, [], |r| r.get(0)).expect("count") };
+    let before = (
+        count("SELECT count(*) FROM journal_entry"),
+        count("SELECT count(*) FROM posting"),
+    );
+    let good = entry(
+        "2026-09-30",
+        SourceKind::Advisor,
+        vec![debit("221", 8_470_000), credit("311", 8_470_000)],
+    );
+    skyla_ledger::check_entry(&conn, &good).expect("would post");
+    let unbalanced = entry(
+        "2026-09-30",
+        SourceKind::Advisor,
+        vec![debit("221", 100), credit("311", 99)],
+    );
+    assert!(skyla_ledger::check_entry(&conn, &unbalanced).is_err());
+    let closed = entry(
+        "2025-06-30",
+        SourceKind::Advisor,
+        vec![debit("221", 100), credit("311", 100)],
+    );
+    assert!(skyla_ledger::check_entry(&conn, &closed).is_err());
+    let unknown = entry(
+        "2026-09-30",
+        SourceKind::Advisor,
+        vec![debit("999", 100), credit("311", 100)],
+    );
+    assert!(skyla_ledger::check_entry(&conn, &unknown).is_err());
+    assert_eq!(
+        (
+            count("SELECT count(*) FROM journal_entry"),
+            count("SELECT count(*) FROM posting")
+        ),
+        before,
+        "checks store nothing"
+    );
+}

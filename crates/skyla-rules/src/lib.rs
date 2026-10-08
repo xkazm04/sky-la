@@ -137,7 +137,8 @@ pub enum Kind {
 }
 
 impl Kind {
-    fn name(self) -> &'static str {
+    /// The kind's name in the pack, e.g. `percent`.
+    pub fn name(self) -> &'static str {
         match self {
             Self::Percent => "percent",
             Self::Amount => "amount",

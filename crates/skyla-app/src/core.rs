@@ -24,6 +24,8 @@ mod advisor;
 mod bank;
 pub mod refdata;
 mod tax;
+pub mod toolhost;
+pub mod tools;
 
 /// The application core: one open entity and its ledger.
 pub struct Core {
@@ -42,6 +44,8 @@ pub struct Core {
     bank: Mutex<bank::BankState>,
     /// The model provider advisors run on.
     provider: Mutex<Box<dyn skyla_advisor::LlmProvider>>,
+    /// Proposals advisors filed through their tools (never posted).
+    advisor_inbox: Mutex<Vec<ProposalDto>>,
 }
 
 fn money(m: Money) -> Result<MoneyDto, CoreError> {
@@ -145,6 +149,7 @@ impl Core {
                     version: "demo".into(),
                 },
             ))),
+            advisor_inbox: Mutex::new(Vec::new()),
         };
         // The demo's first October statement, imported but not yet booked.
         core.import_bytes(
@@ -936,6 +941,10 @@ impl Core {
                 entry: None,
                 reasons: l.held_because.iter().cloned().collect(),
             });
+        }
+        // What advisors filed through their tools, waiting for review.
+        if let Ok(inbox) = self.advisor_inbox.lock() {
+            items.extend(inbox.iter().cloned());
         }
         Ok(items)
     }

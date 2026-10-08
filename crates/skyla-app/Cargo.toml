@@ -13,7 +13,7 @@ publish = false
 workspace = true
 
 [dependencies]
-uuid = { version = "1.27.0", features = ["v5"] }
+uuid = { version = "1.27.0", features = ["v4", "v5"] }
 base64 = "0.22.1"
 skyla-bank = { version = "0.1.0", path = "../skyla-bank" }
 ureq = "3.4.2"
@@ -30,3 +30,6 @@ skyla-rules = { version = "0.1.0", path = "../skyla-rules" }
 # Pinned: specta 2 is a release candidate (STATUS backlog).
 specta = { version = "=2.0.0-rc.25", features = ["derive"] }
 thiserror = "2.0.21"
+
+[dev-dependencies]
+skyla-mcp = { version = "0.1.0", path = "../skyla-mcp" }

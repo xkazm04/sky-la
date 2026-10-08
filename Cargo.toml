@@ -54,6 +54,8 @@ unwrap_used = "warn"
 # tables for our own crates only, so test binaries and the target dir stay small.
 [profile.dev]
 debug = "line-tables-only"
+# Incremental caches grew past 9 GB in cloud sessions with a fixed disk.
+incremental = false
 
 [profile.dev.package."*"]
 debug = false
