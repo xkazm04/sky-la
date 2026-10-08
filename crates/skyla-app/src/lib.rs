@@ -10,6 +10,7 @@ mod core;
 pub mod demo;
 pub mod dto;
 mod error;
+pub mod evals;
 pub mod recordings;
 
 pub use crate::core::Core;

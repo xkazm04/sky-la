@@ -52,6 +52,12 @@ check-desktop:
     cargo test -p skyla-desktop --locked
 
 # Performance acceptance (release build): WP-07 trial balance over 100 000 entries < 200 ms.
+# On demand only: the advisor eval set through your own Claude Code CLI
+# (uses your plan's usage; never part of `ci`). Writes target/evals/.
+eval-live *args:
+    cargo build -p skyla-mcp -p skyla-app --bin skyla-eval
+    ./target/debug/skyla-eval --live {{args}}
+
 bench:
     cargo test -p skyla-ledger --release --locked --test projections -- --ignored --nocapture
 

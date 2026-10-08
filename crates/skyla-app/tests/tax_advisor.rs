@@ -10,6 +10,7 @@ use skyla_advisor::Fake;
 use skyla_app::Core;
 use skyla_app::demo::{TAX_BOOKS_TRANSCRIPT, TAX_REVIEW_TRANSCRIPT};
 use skyla_app::dto::{TaxProjectionDto, TaxScenariosDto};
+use skyla_app::evals::TAX_CASES as CASES;
 
 fn review() -> TaxProjectionDto {
     TaxProjectionDto {
@@ -120,292 +121,6 @@ fn an_unknown_recommendation_or_a_blocked_task_never_shows() {
 
 // ── The eval set ───────────────────────────────────────────────────────────
 
-struct Case {
-    name: &'static str,
-    income: &'static str,
-    expenses: &'static str,
-    group: Option<&'static str>,
-    purchase: Option<(&'static str, &'static str)>,
-    /// What the engine must put lowest (checked independently of the answer).
-    lowest: &'static str,
-    /// The engine must ask for facts.
-    asks: bool,
-    /// The engine must say a lever couldn't be evaluated beyond paušální daň.
-    unevaluated_purchase: bool,
-}
-
-const fn case(
-    name: &'static str,
-    income: &'static str,
-    expenses: &'static str,
-    group: Option<&'static str>,
-    purchase: Option<(&'static str, &'static str)>,
-    lowest: &'static str,
-) -> Case {
-    Case {
-        name,
-        income,
-        expenses,
-        group,
-        purchase,
-        lowest,
-        asks: group.is_none(),
-        unevaluated_purchase: false,
-    }
-}
-
-/// Thirty Czech situations: trades, crafts and liberal professions, low and
-/// high costs, the caps, a loss, purchases below and above the asset
-/// threshold, and an unknown flat-rate group.
-const CASES: &[Case] = &[
-    case(
-        "web designer, low costs",
-        "1 571 000",
-        "383 200",
-        Some("trade"),
-        None,
-        "flat_rate.trade",
-    ),
-    case(
-        "web designer, high costs",
-        "1 571 000",
-        "1 100 000",
-        Some("trade"),
-        None,
-        "actual",
-    ),
-    case(
-        "translator, small income",
-        "320 000",
-        "40 000",
-        Some("liberal"),
-        None,
-        "flat_rate.liberal",
-    ),
-    case(
-        "translator, costs at 40 %",
-        "600 000",
-        "240 000",
-        Some("liberal"),
-        None,
-        "actual",
-    ),
-    case(
-        "joiner, low costs",
-        "900 000",
-        "200 000",
-        Some("craft"),
-        None,
-        "flat_rate.craft",
-    ),
-    case(
-        "joiner, high costs",
-        "900 000",
-        "850 000",
-        Some("craft"),
-        None,
-        "actual",
-    ),
-    case(
-        "plumber at the craft cap",
-        "2 400 000",
-        "500 000",
-        Some("craft"),
-        None,
-        "flat_rate.craft",
-    ),
-    case(
-        "consultant above the trade cap",
-        "2 500 000",
-        "300 000",
-        Some("trade"),
-        None,
-        "flat_rate.trade",
-    ),
-    case(
-        "consultant, actual beats capped flat",
-        "3 000 000",
-        "1 500 000",
-        Some("trade"),
-        None,
-        "actual",
-    ),
-    case(
-        "architect above the liberal cap",
-        "2 400 000",
-        "200 000",
-        Some("liberal"),
-        None,
-        "flat_rate.liberal",
-    ),
-    case(
-        "loss year",
-        "200 000",
-        "320 000",
-        Some("trade"),
-        None,
-        "actual",
-    ),
-    case(
-        "break-even",
-        "400 000",
-        "400 000",
-        Some("trade"),
-        None,
-        "actual",
-    ),
-    case(
-        "tiny side income",
-        "60 000",
-        "5 000",
-        Some("trade"),
-        None,
-        "flat_rate.trade",
-    ),
-    case(
-        "credit absorbs the tax",
-        "250 000",
-        "20 000",
-        Some("trade"),
-        None,
-        "flat_rate.trade",
-    ),
-    case(
-        "photographer",
-        "780 000",
-        "310 000",
-        Some("trade"),
-        None,
-        "flat_rate.trade",
-    ),
-    case(
-        "programmer",
-        "1 980 000",
-        "150 000",
-        Some("trade"),
-        None,
-        "flat_rate.trade",
-    ),
-    case(
-        "baker",
-        "1 200 000",
-        "1 050 000",
-        Some("craft"),
-        None,
-        "actual",
-    ),
-    case(
-        "hairdresser",
-        "640 000",
-        "180 000",
-        Some("craft"),
-        None,
-        "flat_rate.craft",
-    ),
-    case(
-        "tax adviser",
-        "1 100 000",
-        "120 000",
-        Some("liberal"),
-        None,
-        "flat_rate.liberal",
-    ),
-    case(
-        "doctor with a practice",
-        "2 000 000",
-        "900 000",
-        Some("liberal"),
-        None,
-        "actual",
-    ),
-    case(
-        "unknown group, low costs",
-        "1 000 000",
-        "100 000",
-        None,
-        None,
-        "actual",
-    ),
-    case(
-        "unknown group, high costs",
-        "1 000 000",
-        "700 000",
-        None,
-        None,
-        "actual",
-    ),
-    case(
-        "laptop under the threshold, flat",
-        "1 571 000",
-        "383 200",
-        Some("trade"),
-        Some(("Laptop", "60 000")),
-        "flat_rate.trade+purchase.this_year",
-    ),
-    case(
-        "laptop under the threshold, actual",
-        "1 571 000",
-        "1 100 000",
-        Some("trade"),
-        Some(("Laptop", "60 000")),
-        "actual+purchase.this_year",
-    ),
-    case(
-        "printer at exactly the threshold",
-        "900 000",
-        "500 000",
-        Some("trade"),
-        Some(("Printer", "80 000")),
-        "actual+purchase.this_year",
-    ),
-    Case {
-        unevaluated_purchase: true,
-        ..case(
-            "car above the threshold",
-            "1 571 000",
-            "383 200",
-            Some("trade"),
-            Some(("Car", "450 000")),
-            "flat_rate.trade",
-        )
-    },
-    Case {
-        unevaluated_purchase: true,
-        ..case(
-            "machine above the threshold, craft",
-            "1 800 000",
-            "600 000",
-            Some("craft"),
-            Some(("CNC machine", "250 000")),
-            "flat_rate.craft",
-        )
-    },
-    case(
-        "tools for a joiner",
-        "900 000",
-        "700 000",
-        Some("craft"),
-        Some(("Tools", "40 000")),
-        "actual+purchase.this_year",
-    ),
-    case(
-        "decimals in the projection",
-        "1 234 567,89",
-        "345 678,90",
-        Some("trade"),
-        None,
-        "flat_rate.trade",
-    ),
-    case(
-        "no costs at all",
-        "500 000",
-        "0",
-        Some("liberal"),
-        None,
-        "flat_rate.liberal",
-    ),
-];
-
 /// What a careful model would write for a case: every figure quoted from
 /// the scenarios exactly as the tool returned them.
 fn scripted_answer(t: &TaxScenariosDto) -> Value {
@@ -448,13 +163,7 @@ fn the_eval_set_passes_on_the_fake_provider() {
     assert!(CASES.len() >= 30);
     let core = Core::demo().unwrap();
     for c in CASES {
-        let projection = TaxProjectionDto {
-            income: c.income.into(),
-            expenses: c.expenses.into(),
-            flat_rate: c.group.map(Into::into),
-            purchase_description: c.purchase.map_or(String::new(), |p| p.0.into()),
-            purchase_price: c.purchase.map_or(String::new(), |p| p.1.into()),
-        };
+        let projection = c.projection();
         let engine = core.income_tax_scenarios(Some(&projection)).unwrap();
         // The engine's own verdict, independent of any answer.
         assert_eq!(engine.lowest_total, c.lowest, "{}: lowest", c.name);
@@ -507,4 +216,23 @@ fn the_eval_set_passes_on_the_fake_provider() {
             c.name
         );
     }
+}
+
+#[test]
+fn the_live_harness_judges_and_costs_each_case() {
+    use skyla_app::evals::run_tax;
+    // The demo's recorded answer is for the review's projection (with a laptop),
+    // so on the first case (no laptop) it names a scenario that doesn't exist.
+    let core = Core::demo().unwrap();
+    let report = run_tax(&core, "fake", Some(1)).unwrap();
+    assert_eq!(report.cases.len(), 1);
+    let c = &report.cases[0];
+    assert!(!c.passed && c.status == "rejected", "{c:?}");
+    assert!(
+        c.reasons[0].contains("isn't one of the engine's scenarios"),
+        "{:?}",
+        c.reasons
+    );
+    // The provider's estimate from the transcript is summed.
+    assert!(report.cost_estimate_usd > 0.0);
 }
