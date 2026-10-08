@@ -257,6 +257,20 @@ fn issue_invoice(core: Books, id: i64, issue_date: String) -> Answer<InvoiceDto>
     Ok(core.issue_invoice(id, &issue_date)?)
 }
 
+/// A draft as the editor shows it.
+#[tauri::command]
+#[specta::specta]
+fn invoice_draft(core: Books, id: i64) -> Answer<InvoiceDraftDto> {
+    Ok(core.invoice_draft(id)?)
+}
+
+/// Saves changes to a draft, checked like a new one.
+#[tauri::command]
+#[specta::specta]
+fn update_invoice_draft(core: Books, id: i64, draft: InvoiceDraftDto) -> Answer<InvoiceDto> {
+    Ok(core.update_invoice_draft(id, &draft)?)
+}
+
 /// Deletes a draft.
 #[tauri::command]
 #[specta::specta]
@@ -761,6 +775,8 @@ pub fn specta_builder<R: Runtime>() -> Builder<R> {
             create_invoice_draft,
             issue_invoice,
             delete_invoice_draft,
+            invoice_draft,
+            update_invoice_draft,
             import_bank_statement,
             preview_invoice_import,
             commit_invoice_import,

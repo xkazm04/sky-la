@@ -2161,6 +2161,28 @@
     "isError": false
   },
   {
+    "command": "invoice_draft",
+    "args": {
+      "id": 8
+    },
+    "result": {
+      "client": "Acme Analytics a.s.",
+      "dueDays": 14,
+      "lines": [
+        {
+          "description": "Dashboard phase 3 · fixed fee",
+          "quantity": "1",
+          "unit": "pc",
+          "unitPrice": "80 000,00",
+          "vatCode": "OUT21"
+        }
+      ],
+      "newClient": null,
+      "note": ""
+    },
+    "isError": false
+  },
+  {
     "command": "dunning_queue",
     "args": {
       "asOf": "2026-10-07"
@@ -20888,6 +20910,685 @@
     "isError": false,
     "scenario": "bank-undo",
     "state": "bank-undo/undone"
+  },
+  {
+    "command": "invoice_draft",
+    "args": {
+      "id": 8
+    },
+    "result": {
+      "client": "Acme Analytics a.s.",
+      "dueDays": 14,
+      "lines": [
+        {
+          "description": "Dashboard phase 3 · fixed fee",
+          "quantity": "1",
+          "unit": "pc",
+          "unitPrice": "80 000,00",
+          "vatCode": "OUT21"
+        }
+      ],
+      "newClient": null,
+      "note": ""
+    },
+    "isError": false,
+    "scenario": "draft-edit"
+  },
+  {
+    "command": "update_invoice_draft",
+    "args": {
+      "draft": {
+        "client": "Acme Analytics a.s.",
+        "dueDays": 14,
+        "lines": [
+          {
+            "description": "Dashboard phase 3 · fixed fee",
+            "quantity": "1",
+            "unit": "pc",
+            "unitPrice": "85 000,00",
+            "vatCode": "OUT21"
+          }
+        ],
+        "newClient": null,
+        "note": "Včetně konzultace po telefonu."
+      },
+      "id": 8
+    },
+    "result": {
+      "base": {
+        "currency": "CZK",
+        "minor": 8500000
+      },
+      "client": "Acme Analytics a.s.",
+      "credited": {
+        "currency": "CZK",
+        "minor": 0
+      },
+      "daysOverdue": null,
+      "dueOn": "2026-10-21",
+      "entryId": null,
+      "gross": {
+        "currency": "CZK",
+        "minor": 10285000
+      },
+      "id": 8,
+      "issuedOn": null,
+      "lines": [
+        {
+          "base": {
+            "currency": "CZK",
+            "minor": 8500000
+          },
+          "description": "Dashboard phase 3 · fixed fee",
+          "quantity": "1",
+          "unit": "pc",
+          "unitPrice": {
+            "currency": "CZK",
+            "minor": 8500000
+          },
+          "vat": {
+            "currency": "CZK",
+            "minor": 1785000
+          },
+          "vatCode": "OUT21",
+          "vatRatePercent": "21"
+        }
+      ],
+      "number": null,
+      "open": {
+        "currency": "CZK",
+        "minor": 10285000
+      },
+      "pack": null,
+      "paid": {
+        "currency": "CZK",
+        "minor": 0
+      },
+      "paidOn": null,
+      "scheduledFor": null,
+      "status": "draft",
+      "vat": {
+        "currency": "CZK",
+        "minor": 1785000
+      }
+    },
+    "isError": false,
+    "scenario": "draft-edit",
+    "leadsTo": "draft-edit/edited"
+  },
+  {
+    "command": "invoices",
+    "args": {},
+    "result": [
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 14000000
+        },
+        "client": "Northwind Traders s.r.o.",
+        "credited": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "daysOverdue": null,
+        "dueOn": "2026-11-15",
+        "entryId": null,
+        "gross": {
+          "currency": "CZK",
+          "minor": 16940000
+        },
+        "id": 9,
+        "issuedOn": null,
+        "lines": [
+          {
+            "base": {
+              "currency": "CZK",
+              "minor": 14000000
+            },
+            "description": "Product design · October",
+            "quantity": "112",
+            "unit": "h",
+            "unitPrice": {
+              "currency": "CZK",
+              "minor": 125000
+            },
+            "vat": {
+              "currency": "CZK",
+              "minor": 2940000
+            },
+            "vatCode": "OUT21",
+            "vatRatePercent": "21"
+          }
+        ],
+        "number": null,
+        "open": {
+          "currency": "CZK",
+          "minor": 16940000
+        },
+        "pack": null,
+        "paid": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "paidOn": null,
+        "scheduledFor": "2026-11-01",
+        "status": "scheduled",
+        "vat": {
+          "currency": "CZK",
+          "minor": 2940000
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 8500000
+        },
+        "client": "Acme Analytics a.s.",
+        "credited": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "daysOverdue": null,
+        "dueOn": "2026-10-21",
+        "entryId": null,
+        "gross": {
+          "currency": "CZK",
+          "minor": 10285000
+        },
+        "id": 8,
+        "issuedOn": null,
+        "lines": [
+          {
+            "base": {
+              "currency": "CZK",
+              "minor": 8500000
+            },
+            "description": "Dashboard phase 3 · fixed fee",
+            "quantity": "1",
+            "unit": "pc",
+            "unitPrice": {
+              "currency": "CZK",
+              "minor": 8500000
+            },
+            "vat": {
+              "currency": "CZK",
+              "minor": 1785000
+            },
+            "vatCode": "OUT21",
+            "vatRatePercent": "21"
+          }
+        ],
+        "number": null,
+        "open": {
+          "currency": "CZK",
+          "minor": 10285000
+        },
+        "pack": null,
+        "paid": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "paidOn": null,
+        "scheduledFor": null,
+        "status": "draft",
+        "vat": {
+          "currency": "CZK",
+          "minor": 1785000
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 7000000
+        },
+        "client": "Northwind Traders s.r.o.",
+        "credited": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "daysOverdue": null,
+        "dueOn": "2026-09-29",
+        "entryId": 28,
+        "gross": {
+          "currency": "CZK",
+          "minor": 8470000
+        },
+        "id": 7,
+        "issuedOn": "2026-09-15",
+        "lines": [
+          {
+            "base": {
+              "currency": "CZK",
+              "minor": 7000000
+            },
+            "description": "Product design · September",
+            "quantity": "56",
+            "unit": "h",
+            "unitPrice": {
+              "currency": "CZK",
+              "minor": 125000
+            },
+            "vat": {
+              "currency": "CZK",
+              "minor": 1470000
+            },
+            "vatCode": "OUT21",
+            "vatRatePercent": "21"
+          }
+        ],
+        "number": "2026-114",
+        "open": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "pack": "cz-2026@2026.1",
+        "paid": {
+          "currency": "CZK",
+          "minor": 8470000
+        },
+        "paidOn": "2026-09-29",
+        "scheduledFor": null,
+        "status": "paid",
+        "vat": {
+          "currency": "CZK",
+          "minor": 1470000
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 8520000
+        },
+        "client": "Studio Brno s.r.o.",
+        "credited": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "daysOverdue": 13,
+        "dueOn": "2026-09-24",
+        "entryId": 27,
+        "gross": {
+          "currency": "CZK",
+          "minor": 10309200
+        },
+        "id": 6,
+        "issuedOn": "2026-08-25",
+        "lines": [
+          {
+            "base": {
+              "currency": "CZK",
+              "minor": 8520000
+            },
+            "description": "Website design",
+            "quantity": "71",
+            "unit": "h",
+            "unitPrice": {
+              "currency": "CZK",
+              "minor": 120000
+            },
+            "vat": {
+              "currency": "CZK",
+              "minor": 1789200
+            },
+            "vatCode": "OUT21",
+            "vatRatePercent": "21"
+          }
+        ],
+        "number": "2026-102",
+        "open": {
+          "currency": "CZK",
+          "minor": 5309200
+        },
+        "pack": "cz-2026@2026.1",
+        "paid": {
+          "currency": "CZK",
+          "minor": 5000000
+        },
+        "paidOn": null,
+        "scheduledFor": null,
+        "status": "overdue",
+        "vat": {
+          "currency": "CZK",
+          "minor": 1789200
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 16000000
+        },
+        "client": "Acme Analytics a.s.",
+        "credited": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "daysOverdue": null,
+        "dueOn": "2026-08-25",
+        "entryId": 26,
+        "gross": {
+          "currency": "CZK",
+          "minor": 19360000
+        },
+        "id": 5,
+        "issuedOn": "2026-08-11",
+        "lines": [
+          {
+            "base": {
+              "currency": "CZK",
+              "minor": 16000000
+            },
+            "description": "Dashboard phase 2 · fixed fee",
+            "quantity": "1",
+            "unit": "pc",
+            "unitPrice": {
+              "currency": "CZK",
+              "minor": 16000000
+            },
+            "vat": {
+              "currency": "CZK",
+              "minor": 3360000
+            },
+            "vatCode": "OUT21",
+            "vatRatePercent": "21"
+          }
+        ],
+        "number": "2026-097",
+        "open": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "pack": "cz-2026@2026.1",
+        "paid": {
+          "currency": "CZK",
+          "minor": 19360000
+        },
+        "paidOn": "2026-09-08",
+        "scheduledFor": null,
+        "status": "paid",
+        "vat": {
+          "currency": "CZK",
+          "minor": 3360000
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 14000000
+        },
+        "client": "Northwind Traders s.r.o.",
+        "credited": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "daysOverdue": null,
+        "dueOn": "2026-07-28",
+        "entryId": 25,
+        "gross": {
+          "currency": "CZK",
+          "minor": 16940000
+        },
+        "id": 4,
+        "issuedOn": "2026-07-14",
+        "lines": [
+          {
+            "base": {
+              "currency": "CZK",
+              "minor": 14000000
+            },
+            "description": "Product design · June and July",
+            "quantity": "112",
+            "unit": "h",
+            "unitPrice": {
+              "currency": "CZK",
+              "minor": 125000
+            },
+            "vat": {
+              "currency": "CZK",
+              "minor": 2940000
+            },
+            "vatCode": "OUT21",
+            "vatRatePercent": "21"
+          }
+        ],
+        "number": "2026-089",
+        "open": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "pack": "cz-2026@2026.1",
+        "paid": {
+          "currency": "CZK",
+          "minor": 16940000
+        },
+        "paidOn": "2026-08-04",
+        "scheduledFor": null,
+        "status": "paid",
+        "vat": {
+          "currency": "CZK",
+          "minor": 2940000
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 12100000
+        },
+        "client": "Studio Brno s.r.o.",
+        "credited": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "daysOverdue": null,
+        "dueOn": "2026-06-29",
+        "entryId": 4,
+        "gross": {
+          "currency": "CZK",
+          "minor": 14641000
+        },
+        "id": 3,
+        "issuedOn": "2026-06-15",
+        "lines": [
+          {
+            "base": {
+              "currency": "CZK",
+              "minor": 9500000
+            },
+            "description": "Brand refresh",
+            "quantity": "1",
+            "unit": "pc",
+            "unitPrice": {
+              "currency": "CZK",
+              "minor": 9500000
+            },
+            "vat": {
+              "currency": "CZK",
+              "minor": 1995000
+            },
+            "vatCode": "OUT21",
+            "vatRatePercent": "21"
+          },
+          {
+            "base": {
+              "currency": "CZK",
+              "minor": 2600000
+            },
+            "description": "Illustration set",
+            "quantity": "26",
+            "unit": "pc",
+            "unitPrice": {
+              "currency": "CZK",
+              "minor": 100000
+            },
+            "vat": {
+              "currency": "CZK",
+              "minor": 546000
+            },
+            "vatCode": "OUT21",
+            "vatRatePercent": "21"
+          }
+        ],
+        "number": "2026-073",
+        "open": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "pack": "cz-2026@2026.1",
+        "paid": {
+          "currency": "CZK",
+          "minor": 14641000
+        },
+        "paidOn": "2026-07-06",
+        "scheduledFor": null,
+        "status": "paid",
+        "vat": {
+          "currency": "CZK",
+          "minor": 2541000
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 15000000
+        },
+        "client": "Acme Analytics a.s.",
+        "credited": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "daysOverdue": null,
+        "dueOn": "2026-05-26",
+        "entryId": 3,
+        "gross": {
+          "currency": "CZK",
+          "minor": 18150000
+        },
+        "id": 2,
+        "issuedOn": "2026-05-12",
+        "lines": [
+          {
+            "base": {
+              "currency": "CZK",
+              "minor": 15000000
+            },
+            "description": "Analytics dashboard design · fixed fee",
+            "quantity": "1",
+            "unit": "pc",
+            "unitPrice": {
+              "currency": "CZK",
+              "minor": 15000000
+            },
+            "vat": {
+              "currency": "CZK",
+              "minor": 3150000
+            },
+            "vatCode": "OUT21",
+            "vatRatePercent": "21"
+          }
+        ],
+        "number": "2026-058",
+        "open": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "pack": "cz-2026@2026.1",
+        "paid": {
+          "currency": "CZK",
+          "minor": 18150000
+        },
+        "paidOn": "2026-06-02",
+        "scheduledFor": null,
+        "status": "paid",
+        "vat": {
+          "currency": "CZK",
+          "minor": 3150000
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 12000000
+        },
+        "client": "Northwind Traders s.r.o.",
+        "credited": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "daysOverdue": null,
+        "dueOn": "2026-04-24",
+        "entryId": 2,
+        "gross": {
+          "currency": "CZK",
+          "minor": 14520000
+        },
+        "id": 1,
+        "issuedOn": "2026-04-10",
+        "lines": [
+          {
+            "base": {
+              "currency": "CZK",
+              "minor": 12000000
+            },
+            "description": "Product design · April",
+            "quantity": "96",
+            "unit": "h",
+            "unitPrice": {
+              "currency": "CZK",
+              "minor": 125000
+            },
+            "vat": {
+              "currency": "CZK",
+              "minor": 2520000
+            },
+            "vatCode": "OUT21",
+            "vatRatePercent": "21"
+          }
+        ],
+        "number": "2026-041",
+        "open": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "pack": "cz-2026@2026.1",
+        "paid": {
+          "currency": "CZK",
+          "minor": 14520000
+        },
+        "paidOn": "2026-04-28",
+        "scheduledFor": null,
+        "status": "paid",
+        "vat": {
+          "currency": "CZK",
+          "minor": 2520000
+        }
+      }
+    ],
+    "isError": false,
+    "scenario": "draft-edit",
+    "state": "draft-edit/edited"
+  },
+  {
+    "command": "invoice_draft",
+    "args": {
+      "id": 8
+    },
+    "result": {
+      "client": "Acme Analytics a.s.",
+      "dueDays": 14,
+      "lines": [
+        {
+          "description": "Dashboard phase 3 · fixed fee",
+          "quantity": "1",
+          "unit": "pc",
+          "unitPrice": "85 000,00",
+          "vatCode": "OUT21"
+        }
+      ],
+      "newClient": null,
+      "note": "Včetně konzultace po telefonu."
+    },
+    "isError": false,
+    "scenario": "draft-edit",
+    "state": "draft-edit/edited"
   },
   {
     "command": "dismiss_proposal",

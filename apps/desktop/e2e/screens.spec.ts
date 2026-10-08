@@ -914,3 +914,22 @@ test("one certain line is accepted, and its booking undone by a reversal", async
   await expect(page.getByRole("status")).toContainText("is reversed");
   await expect(pixelfarm.getByRole("button", { name: "Accept", exact: true })).toBeVisible();
 });
+
+test("a draft is edited before it's issued, and checked again", async ({ page }) => {
+  await page.goto("/#/invoices/draft-8");
+  await settle(page);
+  const inspector = page.getByRole("complementary", { name: "Draft invoice" });
+  await inspector.getByRole("button", { name: "Edit", exact: true }).click();
+  await expect(page).toHaveURL(/#\/invoices\/edit-8$/);
+  const form = page.getByRole("form", { name: "Edit draft" });
+  await expect(form.getByLabel("Line 1 description")).toHaveValue("Dashboard phase 3 · fixed fee");
+  await expect(form.getByLabel("Line 1 unit price")).toHaveValue("80 000,00");
+  await expect(form.getByRole("button", { name: /Repeat/ })).toBeHidden();
+  await form.getByLabel("Line 1 unit price").fill("85 000,00");
+  await form.getByLabel("Note on the invoice").fill("Včetně konzultace po telefonu.");
+  await axeClean(page);
+  await page.screenshot({ path: "test-results/screens/invoice-edit-draft.png" });
+  await page.getByRole("button", { name: "Save changes" }).click();
+  await expect(page).toHaveURL(/#\/invoices\/draft-8$/);
+  await expect(inspector).toContainText("102 850,00");
+});

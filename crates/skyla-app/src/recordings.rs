@@ -361,6 +361,19 @@ pub fn scenarios() -> Vec<(&'static str, Script)> {
                 json!({ "from": "2026-10-01", "to": "2026-10-31" }),
             );
         }),
+        // The demo's draft for Acme, edited: the agreed fee and a note.
+        ("draft-edit", |s| {
+            let mut draft = s.read("invoice_draft", json!({ "id": 8 }));
+            draft["note"] = json!("Včetně konzultace po telefonu.");
+            draft["lines"][0]["unitPrice"] = json!("85 000,00");
+            s.write(
+                "update_invoice_draft",
+                json!({ "id": 8, "draft": draft }),
+                "edited",
+            );
+            s.read("invoices", json!({}));
+            s.read("invoice_draft", json!({ "id": 8 }));
+        }),
         // Dismissing a finding that's been read.
         ("inbox-dismiss", |s| {
             s.write(
@@ -492,6 +505,8 @@ pub fn canonical_requests() -> Vec<(&'static str, Value)> {
         ("invoice_xml", json!({ "id": 6, "format": "isdoc" })),
         ("invoice_xml", json!({ "id": 6, "format": "ubl" })),
         ("invoice_xml", json!({ "id": 6, "format": "cii" })),
+        // The demo's draft, as the editor opens it.
+        ("invoice_draft", json!({ "id": 8 })),
         ("dunning_queue", json!({ "asOf": "2026-10-07" })),
         ("recurring_templates", json!({})),
         ("reference_data", json!({})),
@@ -596,6 +611,18 @@ pub fn dispatch(core: &Core, command: &str, args: &Value) -> Result<Value, IpcFa
             to_value(core.issue_invoice(id, arg(args, "issueDate")?))
         }
         "delete_invoice_draft" => to_value(core.delete_invoice_draft(id_arg(args)?)),
+        "invoice_draft" => to_value(core.invoice_draft(id_arg(args)?)),
+        "update_invoice_draft" => {
+            let draft = args
+                .get("draft")
+                .cloned()
+                .and_then(|d| serde_json::from_value::<crate::dto::InvoiceDraftDto>(d).ok())
+                .ok_or_else(|| IpcFailure {
+                    code: "bad_request".into(),
+                    message: "missing or malformed argument draft".into(),
+                })?;
+            to_value(core.update_invoice_draft(id_arg(args)?, &draft))
+        }
         "import_bank_statement" => to_value(
             core.import_bank_statement(arg(args, "fileName")?, arg(args, "contentBase64")?),
         ),

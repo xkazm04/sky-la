@@ -1,6 +1,7 @@
 import {
   type ClientDto,
   commands,
+  type InvoiceDraftDto,
   type InvoiceDraftLineDto,
   type InvoiceFormDto,
   unwrap,
@@ -59,17 +60,43 @@ export function InvoiceEditor() {
   return <Loaded query={form}>{(f) => <Editor form={f} />}</Loaded>;
 }
 
-function Editor({ form }: { form: InvoiceFormDto }) {
+/** The editor on a saved draft, to change it before it's issued. */
+export function DraftEditor({ id }: { id: number }) {
+  const form = useQuery("invoice_form", () => unwrap(commands.invoiceForm()));
+  const draft = useQuery(`invoice_draft:${id}`, () => unwrap(commands.invoiceDraft(id)));
+  return (
+    <Loaded query={form}>
+      {(f) => (
+        <Loaded query={draft}>{(d) => <Editor form={f} editing={{ id, draft: d }} />}</Loaded>
+      )}
+    </Loaded>
+  );
+}
+
+function Editor({
+  form,
+  editing,
+}: {
+  form: InvoiceFormDto;
+  editing?: { id: number; draft: InvoiceDraftDto };
+}) {
   const defaultVat = form.vatCodes[0]?.code ?? "";
+  const initial = editing?.draft;
   const [client, setClient] = useState<string | null>(
-    form.clients.length === 0 ? NEW_CLIENT : null,
+    initial ? initial.client : form.clients.length === 0 ? NEW_CLIENT : null,
   );
   const [newClient, setNewClient] = useState<ClientDto>(BLANK_CLIENT);
   const isNew = client === NEW_CLIENT;
   const newField = (k: keyof ClientDto) => (v: string) => setNewClient((c) => ({ ...c, [k]: v }));
-  const [dueDays, setDueDays] = useState(String(form.dueDays.includes(14) ? 14 : form.dueDays[0]));
-  const [note, setNote] = useState("");
-  const [lines, setLines] = useState<LineDraft[]>(() => [emptyLine(defaultVat)]);
+  const [dueDays, setDueDays] = useState(
+    String(initial?.dueDays ?? (form.dueDays.includes(14) ? 14 : form.dueDays[0])),
+  );
+  const [note, setNote] = useState(initial?.note ?? "");
+  const [lines, setLines] = useState<LineDraft[]>(() =>
+    initial && initial.lines.length > 0
+      ? initial.lines.map((l) => ({ ...l, key: nextKey++ }))
+      : [emptyLine(defaultVat)],
+  );
   const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<string[]>([]);
   const [repeat, setRepeat] = useState<string>("never");
@@ -92,6 +119,12 @@ function Editor({ form }: { form: InvoiceFormDto }) {
       lines: lines.map(({ key: _key, ...line }) => line),
     };
     try {
+      if (editing) {
+        await unwrap(commands.updateInvoiceDraft(editing.id, draft));
+        invalidateAll();
+        navigate("invoices", `draft-${editing.id}`, true);
+        return;
+      }
       if (repeat !== "never") {
         await unwrap(
           commands.createRecurring({
@@ -131,23 +164,28 @@ function Editor({ form }: { form: InvoiceFormDto }) {
   return (
     <>
       <Toolbar
-        title="New invoice"
+        title={editing ? "Edit draft" : "New invoice"}
         subtitle={
-          repeat === "never"
-            ? `Draft · issued as ${form.nextNumber} or later`
-            : `Recurring template · ${REPEAT.find((r) => r.id === repeat)?.label.toLowerCase()}, from ${day(start, true)}`
+          editing
+            ? `Draft · checked again when saved · issued as ${form.nextNumber} or later`
+            : repeat === "never"
+              ? `Draft · issued as ${form.nextNumber} or later`
+              : `Recurring template · ${REPEAT.find((r) => r.id === repeat)?.label.toLowerCase()}, from ${day(start, true)}`
         }
       >
-        <Button variant="plain" onPress={() => navigate("invoices", null)}>
+        <Button
+          variant="plain"
+          onPress={() => navigate("invoices", editing ? `draft-${editing.id}` : null)}
+        >
           Cancel
         </Button>
         <Button variant="primary" onPress={() => void save()} isDisabled={saving}>
-          {repeat === "never" ? "Save draft" : "Save template"}
+          {editing ? "Save changes" : repeat === "never" ? "Save draft" : "Save template"}
         </Button>
       </Toolbar>
       <ContentGroup>
         <form
-          aria-label="New invoice"
+          aria-label={editing ? "Edit draft" : "New invoice"}
           aria-describedby={errors.length > 0 ? errorsId : undefined}
           className="flex flex-col gap-5 p-5"
           onSubmit={(e) => {
@@ -305,7 +343,7 @@ function Editor({ form }: { form: InvoiceFormDto }) {
           </fieldset>
 
           <TextField label="Note on the invoice" multiline value={note} onChange={setNote} />
-          <div className="grid grid-cols-3 gap-4">
+          <div className={editing ? "hidden" : "grid grid-cols-3 gap-4"}>
             <Select label="Repeat" options={REPEAT} value={repeat} onChange={setRepeat} />
             {repeat !== "never" && (
               <>
@@ -338,7 +376,11 @@ function Editor({ form }: { form: InvoiceFormDto }) {
         </form>
       </ContentGroup>
       <InspectorPane>
-        <Inspector label="New invoice" title="New invoice" subtitle="Draft">
+        <Inspector
+          label={editing ? "Draft being edited" : "New invoice"}
+          title={editing ? editing.draft.client : "New invoice"}
+          subtitle="Draft"
+        >
           <InspectorSection title="When you issue it">
             <FactList
               facts={[

@@ -711,6 +711,65 @@ impl Core {
         self.invoice(id)
     }
 
+    /// A draft as the editor shows it, to change before it's issued.
+    pub fn invoice_draft(&self, id: i64) -> Result<InvoiceDraftDto, CoreError> {
+        let doc = skyla_invoicing::get(&self.db(), &self.pack, id)?;
+        if doc.issued {
+            return Err(CoreError::BadRequest(format!(
+                "invoice {} is issued; correct it with a credit note",
+                doc.number.unwrap_or_default()
+            )));
+        }
+        let form = self.invoice_form()?;
+        // The terms the due date was set with, else the closest offered.
+        let days = match (
+            doc.due_date.as_deref().and_then(skyla_rules::date::parse),
+            skyla_rules::date::parse(&form.today),
+        ) {
+            (Some(due), Some(today)) => due - today,
+            _ => 14,
+        };
+        let due_days = form
+            .due_days
+            .iter()
+            .copied()
+            .min_by_key(|d| (i64::from(*d) - days).abs())
+            .unwrap_or(14);
+        Ok(InvoiceDraftDto {
+            client: doc.customer.name,
+            new_client: None,
+            due_days,
+            note: doc.note,
+            lines: doc
+                .lines
+                .into_iter()
+                .map(|l| InvoiceDraftLineDto {
+                    description: l.input.description,
+                    quantity: l.input.quantity.replace('.', ","),
+                    unit: l.input.unit,
+                    // Typed with ordinary spaces, as the editor's fields are.
+                    unit_price: skyla_money::format_amount_cs(
+                        l.input.unit_price_minor,
+                        self.currency,
+                    )
+                    .replace('\u{a0}', " "),
+                    vat_code: l.input.vat_code,
+                })
+                .collect(),
+        })
+    }
+
+    /// Saves changes to a draft, checked exactly like a new one.
+    pub fn update_invoice_draft(
+        &self,
+        id: i64,
+        draft: &InvoiceDraftDto,
+    ) -> Result<InvoiceDto, CoreError> {
+        let input = self.draft_input(draft)?;
+        skyla_invoicing::update_draft(&self.db(), id, &input)?;
+        self.invoice(id)
+    }
+
     /// What the editor typed, checked and parsed into a draft; every
     /// problem listed at once.
     fn draft_input(

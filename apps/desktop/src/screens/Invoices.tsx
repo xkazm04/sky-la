@@ -24,7 +24,7 @@ import { day, money } from "../format";
 import { navigate } from "../router";
 import { InspectorPane } from "../shell/Shell";
 import { EmptyInspector, Loaded } from "./common";
-import { InvoiceEditor } from "./InvoiceEditor";
+import { DraftEditor, InvoiceEditor } from "./InvoiceEditor";
 import { InvoiceImport, type PendingImport } from "./InvoiceImport";
 
 type Filter = "all" | "open" | "paid";
@@ -249,6 +249,13 @@ function DraftActions({ invoice }: { invoice: InvoiceDto }) {
   const ready = form.state === "ready" ? form.data : null;
   return (
     <>
+      <Button
+        variant="plain"
+        isDisabled={busy}
+        onPress={() => navigate("invoices", `edit-${invoice.id}`)}
+      >
+        Edit
+      </Button>
       <Popup
         label="Delete draft"
         placement="top end"
@@ -397,6 +404,8 @@ function RecurringPopup() {
 
 export function InvoicesScreen({ item }: { item: string | null }) {
   if (item === "new") return <InvoiceEditor />;
+  const editing = item?.match(/^edit-(\d+)$/);
+  if (editing) return <DraftEditor id={Number(editing[1])} />;
   return <InvoiceList item={item} />;
 }
 

@@ -120,6 +120,10 @@ export const commands = {
 	issueInvoice: (id: number, issueDate: string) => typedError<InvoiceDto, IpcFailure>(__TAURI_INVOKE("issue_invoice", { id, issueDate })),
 	/**  Deletes a draft. */
 	deleteInvoiceDraft: (id: number) => typedError<null, IpcFailure>(__TAURI_INVOKE("delete_invoice_draft", { id })),
+	/**  A draft as the editor shows it. */
+	invoiceDraft: (id: number) => typedError<InvoiceDraftDto, IpcFailure>(__TAURI_INVOKE("invoice_draft", { id })),
+	/**  Saves changes to a draft, checked like a new one. */
+	updateInvoiceDraft: (id: number, draft: InvoiceDraftDto) => typedError<InvoiceDto, IpcFailure>(__TAURI_INVOKE("update_invoice_draft", { id, draft })),
 	/**  Imports a statement file (base64): tied out and deduplicated first. */
 	importBankStatement: (fileName: string, contentBase64: string) => typedError<BankStatementDto, IpcFailure>(__TAURI_INVOKE("import_bank_statement", { fileName, contentBase64 })),
 	/**  What importing invoices from Pohoda or Fakturoid would do; changes nothing. */
