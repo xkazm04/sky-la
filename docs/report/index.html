@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>sky-la build report</title>
+<meta name="description" content="What was built across the v1 plan (WP-00 – WP-34) and improvement waves 1–15, the invariants that hold, and what's open.">
+<style>
+:root {
+  color-scheme: light dark;
+  --backdrop: #e8e9ee;
+  --surface: #ffffff;
+  --panel: #f4f4f7;
+  --ink: #1d1d1f;
+  --ink-2: #5f5f64;
+  --ink-3: #727277;
+  --hairline: #e4e4e8;
+  --accent: #0a6ae0;
+  --accent-ink: #0a5bc2;
+  --accent-tint: rgba(10, 116, 240, 0.12);
+  --positive-ink: #1c6b34;
+  --positive-tint: #e4f4e8;
+  --warning-ink: #8a4f00;
+  --warning-tint: #ffefd6;
+  --negative-ink: #a1260f;
+  --negative-tint: #fce7e2;
+  --neutral-tint: #f0f0f3;
+  --shadow-group: 0 0 0 0.5px rgba(0, 0, 0, 0.07), 0 1px 3px rgba(20, 24, 40, 0.05);
+  --shadow-panel: 0 0 0 0.5px rgba(0, 0, 0, 0.08), 0 12px 36px rgba(20, 24, 40, 0.08);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --backdrop: #121316;
+    --surface: #1e1f23;
+    --panel: #26272b;
+    --ink: #f2f2f4;
+    --ink-2: #a9a9b0;
+    --ink-3: #9a9aa1;
+    --hairline: #34353a;
+    --accent: #3d8bfd;
+    --accent-ink: #77acff;
+    --accent-tint: rgba(61, 139, 253, 0.18);
+    --positive-ink: #7fd497;
+    --positive-tint: rgba(48, 160, 84, 0.18);
+    --warning-ink: #f3b766;
+    --warning-tint: rgba(230, 140, 20, 0.18);
+    --negative-ink: #ff9a85;
+    --negative-tint: rgba(220, 70, 40, 0.2);
+    --neutral-tint: #2c2d32;
+    --shadow-group: 0 0 0 0.5px rgba(255, 255, 255, 0.08);
+    --shadow-panel: 0 0 0 0.5px rgba(255, 255, 255, 0.1);
+  }
+}
+:root[data-theme="dark"] {
+  --backdrop: #121316; --surface: #1e1f23; --panel: #26272b; --ink: #f2f2f4; --ink-2: #a9a9b0;
+  --ink-3: #9a9aa1; --hairline: #34353a; --accent: #3d8bfd; --accent-ink: #77acff;
+  --accent-tint: rgba(61, 139, 253, 0.18); --positive-ink: #7fd497; --positive-tint: rgba(48, 160, 84, 0.18);
+  --warning-ink: #f3b766; --warning-tint: rgba(230, 140, 20, 0.18); --negative-ink: #ff9a85;
+  --negative-tint: rgba(220, 70, 40, 0.2); --neutral-tint: #2c2d32;
+  --shadow-group: 0 0 0 0.5px rgba(255, 255, 255, 0.08); --shadow-panel: 0 0 0 0.5px rgba(255, 255, 255, 0.1);
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--backdrop);
+  color: var(--ink);
+  font: 15px/1.5 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Geist", "Segoe UI", system-ui, sans-serif;
+  font-feature-settings: "tnum" 1;
+}
+a { color: var(--accent-ink); text-decoration: none; }
+a:hover { text-decoration: underline; }
+code { font: 0.88em/1.3 ui-monospace, "SF Mono", Menlo, Consolas, monospace; background: var(--neutral-tint); padding: 0.05em 0.35em; border-radius: 5px; }
+
+.page { max-width: 1040px; margin: 0 auto; padding: 40px 24px 64px; }
+header.top { margin-bottom: 28px; }
+.eyebrow { font-size: 13px; font-weight: 600; color: var(--ink-2); letter-spacing: 0.01em; }
+h1 { font-size: 34px; line-height: 1.15; font-weight: 700; letter-spacing: -0.02em; margin: 6px 0 10px; }
+.lede { font-size: 17px; color: var(--ink-2); max-width: 68ch; margin: 0; }
+
+section { margin-top: 40px; }
+h2 { font-size: 22px; font-weight: 700; letter-spacing: -0.01em; margin: 0 0 6px; }
+.section-note { color: var(--ink-2); margin: 0 0 14px; max-width: 72ch; }
+h3 { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-2); margin: 22px 8px 8px; }
+
+/* One grouped surface, divided by hairlines (no bordered card grids). */
+.group { background: var(--surface); border-radius: 14px; box-shadow: var(--shadow-group); overflow: hidden; }
+.row { display: grid; grid-template-columns: 7.5rem 1fr auto; gap: 4px 16px; padding: 12px 16px; align-items: baseline; }
+.row + .row { border-top: 1px solid var(--hairline); }
+.row .id { font-weight: 600; color: var(--ink-2); font-size: 14px; }
+.row .what { font-weight: 600; }
+.row .detail { grid-column: 2 / 4; color: var(--ink-2); font-size: 14px; }
+
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); background: var(--surface); border-radius: 14px; box-shadow: var(--shadow-panel); }
+.stat { padding: 18px 20px; }
+.stat:not(:nth-child(4n + 1)) { border-left: 1px solid var(--hairline); }
+.stat:nth-child(n + 5) { border-top: 1px solid var(--hairline); }
+.stat .n { font-size: 30px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; }
+.stat .l { color: var(--ink-2); font-size: 13px; margin-top: 4px; }
+
+.badge { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.done { color: var(--positive-ink); background: var(--positive-tint); }
+.partly { color: var(--warning-ink); background: var(--warning-tint); }
+.blocked { color: var(--negative-ink); background: var(--negative-tint); }
+.info { color: var(--accent-ink); background: var(--accent-tint); }
+
+.milestone-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin: 22px 8px 8px; }
+.milestone-head h3 { margin: 0; }
+.milestone-head span { font-size: 13px; color: var(--ink-3); }
+
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; vertical-align: top; padding: 11px 16px; }
+th { font-size: 12px; font-weight: 600; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.04em; background: var(--panel); }
+tr + tr td { border-top: 1px solid var(--hairline); }
+td:first-child { font-weight: 600; width: 34%; }
+td { font-size: 14px; }
+td .sub { color: var(--ink-2); }
+
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+ul.plain { list-style: none; margin: 0; padding: 0; }
+ul.plain li { padding: 11px 16px; font-size: 14px; }
+ul.plain li + li { border-top: 1px solid var(--hairline); }
+ul.plain li strong { display: block; font-size: 15px; margin-bottom: 2px; }
+ul.plain li span { color: var(--ink-2); }
+
+.docs { display: grid; grid-template-columns: repeat(3, 1fr); }
+.docs a { padding: 12px 16px; display: block; }
+.docs a span { display: block; color: var(--ink-2); font-size: 13px; }
+.docs a:hover { background: var(--panel); text-decoration: none; }
+.docs a:not(:nth-child(3n + 1)) { border-left: 1px solid var(--hairline); }
+.docs a:nth-child(n + 4) { border-top: 1px solid var(--hairline); }
+
+footer { margin-top: 48px; color: var(--ink-3); font-size: 13px; }
+
+@media (max-width: 760px) {
+  .page { padding: 24px 16px 48px; }
+  h1 { font-size: 28px; }
+  .stats { grid-template-columns: 1fr 1fr; }
+  .stat:not(:nth-child(4n + 1)) { border-left: 0; }
+  .stat:nth-child(even) { border-left: 1px solid var(--hairline); }
+  .stat:nth-child(n + 3) { border-top: 1px solid var(--hairline); }
+  .row { grid-template-columns: 1fr auto; }
+  .row .id { grid-column: 1 / 3; }
+  .row .detail { grid-column: 1 / 3; }
+  .cols { grid-template-columns: 1fr; }
+  .docs { grid-template-columns: 1fr; }
+  .docs a:not(:nth-child(3n + 1)) { border-left: 0; }
+  .docs a + a { border-top: 1px solid var(--hairline); }
+  td:first-child { width: auto; }
+  th, td { padding: 10px 12px; }
+}
+</style>
+</head>
+<body>
+<main class="page">
+
+<header class="top">
+  <div class="eyebrow">sky-la · build report · 8 October 2026</div>
+  <h1>Local-first, encrypted accounting for Czech freelancers, built end to end</h1>
+  <p class="lede">The v1 implementation plan (work packets WP-00 – WP-34) is complete apart from two parts that wait on outside decisions. Fifteen improvement waves followed: they turned the remaining placeholders into real flows and made real books behave like the demo. Every packet passed <code>just ci</code> and was pushed with its STATUS entry.</p>
+</header>
+
+<div class="stats" role="list">
+  <div class="stat" role="listitem"><div class="n">33 / 35</div><div class="l">work packets done (2 partly)</div></div>
+  <div class="stat" role="listitem"><div class="n">15</div><div class="l">improvement waves</div></div>
+  <div class="stat" role="listitem"><div class="n">13</div><div class="l">engine crates, plus the Tauri shell</div></div>
+  <div class="stat" role="listitem"><div class="n">74</div><div class="l">typed IPC commands</div></div>
+  <div class="stat" role="listitem"><div class="n">305</div><div class="l">Rust tests, plus parser fuzzing</div></div>
+  <div class="stat" role="listitem"><div class="n">63</div><div class="l">Playwright runs with axe and pixel baselines</div></div>
+  <div class="stat" role="listitem"><div class="n">60</div><div class="l">hand-worked rule-pack golden cases</div></div>
+  <div class="stat" role="listitem"><div class="n">59</div><div class="l">commits on the branch</div></div>
+</div>
+
+<section aria-labelledby="plan">
+  <h2 id="plan">The v1 plan, milestone by milestone</h2>
+  <p class="section-note">Each work packet has its acceptance commands in <code>docs/plan/IMPLEMENTATION_PLAN.md</code> and its evidence in <code>docs/plan/STATUS.md</code>.</p>
+
+  <div class="milestone-head"><h3>M0 · Foundation</h3><span>WP-00 – WP-03</span></div>
+  <div class="group">
+    <div class="row"><span class="id">WP-00</span><span class="what">Scaffold, CI, cloud readiness</span><span class="badge done">Done</span><span class="detail">Cargo and pnpm workspaces, Biome, <code>justfile</code>, CI on Linux, macOS and Windows, the licence-boundary check and the session hook.</span></div>
+    <div class="row"><span class="id">WP-01</span><span class="what">Claude Code CLI spike</span><span class="badge done">Done</span><span class="detail">The hardened launch profile: canary-tested isolation, stdin closed (p50 about 1.35 s), a scrubbed environment and the stream-json parser. 10 of 11 checks pass; C6 needs a desktop.</span></div>
+    <div class="row"><span class="id">WP-02</span><span class="what">skyla-money</span><span class="badge done">Done</span><span class="detail">Integer minor units, explicit rounding modes, exact allocation, VAT where base + VAT = gross, and strict Czech parsing.</span></div>
+    <div class="row"><span class="id">WP-03</span><span class="what">skyla-store and keys</span><span class="badge done">Done</span><span class="detail">SQLCipher with a single writer, migrations, and a vault that wraps the data key under Argon2id and a recovery key.</span></div>
+  </div>
+
+  <div class="milestone-head"><h3>M1 · Ledger kernel</h3><span>WP-04 – WP-07</span></div>
+  <div class="group">
+    <div class="row"><span class="id">WP-04</span><span class="what">Accounts, Czech chart, categories</span><span class="badge done">Done</span><span class="detail">The chart as data with a validator; triggers guard its structure.</span></div>
+    <div class="row"><span class="id">WP-05</span><span class="what">Posting engine and invariants</span><span class="badge done">Done</span><span class="detail">Balanced entries, entries frozen once posted, open periods, active leaf accounts and human approval, each enforced in Rust and again in SQL triggers.</span></div>
+    <div class="row"><span class="id">WP-06</span><span class="what">Periods, reversals, close, hash chain</span><span class="badge done">Done</span><span class="detail">The open → closing → closed lifecycle, mirror reversals, and a SHA-256 chain that names the first tampered entry.</span></div>
+    <div class="row"><span class="id">WP-07</span><span class="what">Projections</span><span class="badge done">Done</span><span class="detail">Trial balance, P&amp;L, balance sheet, cash basis and the VAT ledger. The golden journal matches the design canvas to the cent; a trial balance over 100 000 entries takes about 0.1 s.</span></div>
+  </div>
+
+  <div class="milestone-head"><h3>M2 · Shell and design system</h3><span>WP-08 – WP-10</span></div>
+  <div class="group">
+    <div class="row"><span class="id">WP-08</span><span class="what">Direction A tokens and primitives</span><span class="badge done">Done</span><span class="detail">Light and dark tokens and React Aria primitives, axe-clean (WCAG 2.2 AA), with a gallery route.</span></div>
+    <div class="row"><span class="id">WP-09</span><span class="what">Typed IPC and fixtures</span><span class="badge done">Done</span><span class="detail">tauri-specta bindings and a mock transport that replays the real core's recordings, checked identical over real Tauri IPC.</span></div>
+    <div class="row"><span class="id">WP-10</span><span class="what">Navigable app</span><span class="badge done">Done</span><span class="detail">Every screen in both appearances, with deep links, keyboard navigation and pixel baselines.</span></div>
+  </div>
+
+  <div class="milestone-head"><h3>M3 · Invoicing</h3><span>WP-11 – WP-16</span></div>
+  <div class="group">
+    <div class="row"><span class="id">WP-11</span><span class="what">Documents and lifecycle</span><span class="badge done">Done</span><span class="detail">Gapless series, issuing posted in the same transaction, frozen issued documents, credit notes, advances.</span></div>
+    <div class="row"><span class="id">WP-12</span><span class="what">Typst PDFs and QR Platba</span><span class="badge done">Done</span><span class="detail">Czech and English PDFs, byte-identical across runs, with SPAYD validated against the specification's examples.</span></div>
+    <div class="row"><span class="id">WP-13</span><span class="what">ISDOC 6.0.2</span><span class="badge done">Done</span><span class="detail">Four document types, each valid against the official XSD.</span></div>
+    <div class="row"><span class="id">WP-14</span><span class="what">UBL 2.1 (Peppol) and CII</span><span class="badge done">Done</span><span class="detail">Zero errors and zero warnings against the XSDs, the EN 16931 Schematron and the Peppol BIS 3 Schematron.</span></div>
+    <div class="row"><span class="id">WP-15</span><span class="what">Recurring, dunning, late interest</span><span class="badge done">Done</span><span class="detail">A simulated year with every date derived by hand, and statutory interest from the ČNB repo rate.</span></div>
+    <div class="row"><span class="id">WP-16</span><span class="what">Invoicing UI</span><span class="badge done">Done</span><span class="detail">Create → issue → export on the recorded core; the core's problems show on the fields.</span></div>
+  </div>
+
+  <div class="milestone-head"><h3>M4 · Bank</h3><span>WP-17 – WP-19</span></div>
+  <div class="group">
+    <div class="row"><span class="id">WP-17</span><span class="what">Statement parsers</span><span class="badge done">Done</span><span class="detail">camt.053, MT940, ABO/GPC and CSV profiles; about 9.3 M fuzz runs, which found and fixed one class of crash.</span></div>
+    <div class="row"><span class="id">WP-18</span><span class="what">Tie-out, rules, explainable matcher</span><span class="badge done">Done</span><span class="detail">Scores are sums of named signals. On the simulated year, 85.8 % of lines are accepted automatically and none wrongly.</span></div>
+    <div class="row"><span class="id">WP-19</span><span class="what">Reconciliation workbench</span><span class="badge done">Done</span><span class="detail">Import → accept the certain lines → split one → create a rule, against the real ledger.</span></div>
+  </div>
+
+  <div class="milestone-head"><h3>M5 · Tax CZ</h3><span>WP-20 – WP-23</span></div>
+  <div class="group">
+    <div class="row"><span class="id">WP-20</span><span class="what">Rule pack cz-2026, signed updates, ČNB data</span><span class="badge done">Done</span><span class="detail">Every value cited. Updates are verified with minisign. Reference data is opt-in, and the app works with fetching off.</span></div>
+    <div class="row"><span class="id">WP-21</span><span class="what">DPH, kontrolní hlášení, souhrnné hlášení, EPO XML</span><span class="badge partly">Partly</span><span class="detail">The DPH return and KH come from the books, with KH section C checked against the return. Open: the souhrnné hlášení and the EPO XML writers (the schemas couldn't be reached).</span></div>
+    <div class="row"><span class="id">WP-22</span><span class="what">§ 7 worksheet and scenario engine</span><span class="badge done">Done</span><span class="detail">The review's worked example reproduces exactly: 197 584 vs 400 926 Kč of tax and insurance.</span></div>
+    <div class="row"><span class="id">WP-23</span><span class="what">Obligations calendar</span><span class="badge done">Done</span><span class="detail">Deadlines from the pack, shifted past weekends and holidays (Christmas, 1 May and 8 May tested).</span></div>
+  </div>
+
+  <div class="milestone-head"><h3>M6 · Advisors</h3><span>WP-24 – WP-29</span></div>
+  <div class="group">
+    <div class="row"><span class="id">WP-24</span><span class="what">Provider, CLI and Fake drivers</span><span class="badge done">Done</span><span class="detail">Contract tests through both drivers; every ending (not installed, signed out, rate-limited, interrupted) has a state and UI copy.</span></div>
+    <div class="row"><span class="id">WP-25</span><span class="what">MCP shim and tool surface</span><span class="badge done">Done</span><span class="detail">Read, compute and propose tools. Calling every one leaves the books unchanged, and each run gets a per-run token on a loopback port.</span></div>
+    <div class="row"><span class="id">WP-26</span><span class="what">Egress gate and register</span><span class="badge done">Done</span><span class="detail">Property tests find no IBAN, account, personal ID or card number in any payload. The register is append-only and hash-chained.</span></div>
+    <div class="row"><span class="id">WP-27</span><span class="what">Tax advisor and numeric grounding</span><span class="badge done">Done</span><span class="detail">An answer with one figure off by a crown is rejected and never shown. 30 eval cases pass.</span></div>
+    <div class="row"><span class="id">WP-28</span><span class="what">Financial detectors and "explain this"</span><span class="badge done">Done</span><span class="detail">The canvas's 42 % subcontracting finding reproduces from the books; explanations may cite only entries behind the figure.</span></div>
+    <div class="row"><span class="id">WP-29</span><span class="what">API driver and live eval harness</span><span class="badge partly">Partly</span><span class="detail"><code>just eval-live</code> is ready (on request only). The API driver is blocked by the network invariant.</span></div>
+  </div>
+
+  <div class="milestone-head"><h3>M7 · Hardening and release</h3><span>WP-30 – WP-34</span></div>
+  <div class="group">
+    <div class="row"><span class="id">WP-30</span><span class="what">Real books, backups, recovery, keychain</span><span class="badge done">Done</span><span class="detail">First-run setup, unlock and recovery; backups with manifests that anchor the chain head; a restore drill in CI.</span></div>
+    <div class="row"><span class="id">WP-31</span><span class="what">Import from Pohoda and Fakturoid; full export</span><span class="badge done">Done</span><span class="detail">A preview with a reason per document, then posting through the kernel; a reproducible zip with a hash manifest.</span></div>
+    <div class="row"><span class="id">WP-32</span><span class="what">Security review</span><span class="badge done">Done</span><span class="detail">One threat-model test per threat, a security audit in <code>just ci</code>, re-authentication before export, a navigation guard and pinned CI actions.</span></div>
+    <div class="row"><span class="id">WP-33</span><span class="what">Packaging and the opt-in update check</span><span class="badge done">Done</span><span class="detail">Bundles for each platform, an SBOM, signed checksums and the update manifest; the update check never downloads.</span></div>
+    <div class="row"><span class="id">WP-34</span><span class="what">User guide and contributor kit</span><span class="badge done">Done</span><span class="detail"><code>docs/user/</code>, the rule-pack template, golden cases and <code>skyla-pack check</code>.</span></div>
+  </div>
+</section>
+
+<section aria-labelledby="waves">
+  <h2 id="waves">Improvement waves 1–15</h2>
+  <p class="section-note">After the plan, each wave took one gap that a user of real books would hit: a placeholder, a demo-only shortcut or a backlog item. Each was fixed end to end in the core, the IPC, the UI and the tests.</p>
+  <div class="group">
+    <table>
+      <thead><tr><th scope="col">Wave</th><th scope="col">What changed</th></tr></thead>
+      <tbody>
+        <tr><td>1 · New customers from the editor</td><td>"New customer…" is checked by the core like every other field. The e2e suite now fails on any page or console error, which caught two real defects.</td></tr>
+        <tr><td>2 · Real books keep their workbench</td><td>Bank state, policies, reference data, switches and pack updates persist in the encrypted file. This also fixed CSV import, which had no profile.</td></tr>
+        <tr><td>3 · Purchases</td><td>Received invoices are recorded and checked (DIČ, period, duplicates, VAT) and itemised in the KH. This also fixed pseudonyms in real books.</td></tr>
+        <tr><td>4 · The books' own periods</td><td><code>reporting_periods()</code> replaces the screens' hard-coded demo dates.</td></tr>
+        <tr><td>5 · Deadlines from the calendar</td><td>Inbox and Overview deadlines come from the obligations calendar, with a return and its KH as one item.</td></tr>
+        <tr><td>6 · Auto-lock</td><td>The session drops the books, key and connection after 15 minutes idle or on <strong>Lock now</strong>.</td></tr>
+        <tr><td>7 · Business details</td><td>The profile can be corrected; issued invoices keep their snapshot.</td></tr>
+        <tr><td>8 · A month in real books</td><td>An end-to-end regression test, from invoice to export and reopen.</td></tr>
+        <tr><td>9 · Smaller desktop bundle</td><td>The mock transport and source maps are left out: 1.7 MB → 676 kB.</td></tr>
+        <tr><td>10 · Recurring invoices</td><td>Templates from the editor; real books run them idempotently at open.</td></tr>
+        <tr><td>11 · Inbox approvals post</td><td>"Approve and post" and "Approve N certain" go through the kernel and book their bank lines.</td></tr>
+        <tr><td>12 · Dismiss advice</td><td>Advisor account suggestions become postings to approve; the inbox persists.</td></tr>
+        <tr><td>13 · Accept one line, undo a booking</td><td>An undo is a reversal entry; settled invoices reopen.</td></tr>
+        <tr><td>14 · Edit drafts</td><td>The editor reopens a draft prefilled, and changes are checked like a new draft.</td></tr>
+        <tr><td>15 · Payment reminders</td><td>Overdue invoices show the drafted reminder, with Copy text and Mark as sent; the app sends no email.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section aria-labelledby="invariants">
+  <h2 id="invariants">The invariants, and what holds them</h2>
+  <p class="section-note">Each rule from <code>CLAUDE.md</code> is enforced by code and guarded by a test, not left to convention.</p>
+  <div class="group">
+    <table>
+      <thead><tr><th scope="col">Invariant</th><th scope="col">Enforced by</th></tr></thead>
+      <tbody>
+        <tr><td>Money is integer minor units</td><td><code>skyla-money</code>; clippy denies <code>float_arithmetic</code> in money and ledger crates</td></tr>
+        <tr><td>Posted entries are immutable</td><td>Rust checks and SQL triggers; corrections, undo and reminders all use reversals or new records</td></tr>
+        <tr><td>Every entry balances, in an open period, on leaf accounts</td><td>Kernel invariants I1, I3 and I4, in Rust and triggers; property tests</td></tr>
+        <tr><td>The LLM never writes to the ledger</td><td>Tools are read, compute and propose only; a test calls all of them and finds the books unchanged; posting needs the user's approval in the inbox</td></tr>
+        <tr><td>Tax arithmetic lives in Rust; advisor figures are grounded</td><td><code>skyla-tax-cz</code> and the engine; the grounding validator rejects any ungrounded figure</td></tr>
+        <tr><td>Statutory values come from cited rule packs</td><td><code>skyla-rules</code> validation and 60 golden cases with full coverage</td></tr>
+        <tr><td>No network except three opt-in paths</td><td><code>scripts/check_security.py</code> pins every socket, HTTP call and spawn; reference data and update checks are off by default</td></tr>
+        <tr><td>IBANs and personal IDs are never sent</td><td>The egress gate covers prompts and tool results; 512-case property tests; every run is in the register</td></tr>
+        <tr><td>Apache-2.0 kernel never depends on AGPL crates</td><td>The licence-boundary check in <code>just ci</code>, and cargo-deny</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section aria-labelledby="open">
+  <h2 id="open">What's open</h2>
+  <div class="cols">
+    <div>
+      <h3>Decisions for the maintainer</h3>
+      <div class="group">
+        <ul class="plain">
+          <li><strong><span class="badge blocked">Blocking</span> API-key driver vs the network invariant</strong><span>D-005 adds an API driver, but the invariant allows no fourth network path. Amend the invariant (opt-in, key in the keychain) or drop the driver from v1.</span></li>
+          <li><strong><span class="badge partly">Review</span> Social-insurance share</strong><span>The pack has 50 %; the law has set 55 % since 2024. It's recorded as an open golden case; the fix touches the worked example and transcripts.</span></li>
+          <li><strong><span class="badge info">To do</span> Signing keys</strong><span>Create the release and rule-pack minisign keys and the CI secrets. Until then update checks and pack updates are refused, and releases are unsigned.</span></li>
+        </ul>
+      </div>
+    </div>
+    <div>
+      <h3>Next work (from the backlog)</h3>
+      <div class="group">
+        <ul class="plain">
+          <li><strong>Souhrnné hlášení and EPO XML</strong><span>Needs an EU-supply VAT code first, and the official schemas.</span></li>
+          <li><strong>Real anonymised bank samples</strong><span>One per format from each major Czech bank; then re-measure the matcher.</span></li>
+          <li><strong>Invoicing gaps</strong><span>Reminder holds, tax point and buyer reference, refunds, multi-currency, native save dialog.</span></li>
+          <li><strong>Desktop-only checks</strong><span>CLI check C6, lock on sleep, the isolation pattern, the first tagged release.</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="docs">
+  <h2 id="docs">Module documentation</h2>
+  <p class="section-note">High-level pages in <code>docs/features/</code> describe each module as it stands now.</p>
+  <nav class="group docs" aria-label="Module documentation">
+    <a href="../features/ledger.md">Ledger kernel<span>Money, posting, invariants, chain, reports</span></a>
+    <a href="../features/storage-and-security.md">Storage and sessions<span>Encryption, backups, unlock, auto-lock</span></a>
+    <a href="../features/rule-packs.md">Rule packs<span>Cited data, calendar, golden cases</span></a>
+    <a href="../features/invoicing.md">Invoicing<span>Drafts, PDFs, e-invoices, recurring, reminders</span></a>
+    <a href="../features/purchases.md">Purchases<span>Received invoices and VAT deduction</span></a>
+    <a href="../features/bank.md">Bank<span>Parsers, matcher, workbench</span></a>
+    <a href="../features/taxes.md">Taxes<span>DPH, KH, § 7, scenarios, deadlines</span></a>
+    <a href="../features/inbox.md">Inbox<span>Proposals, approvals, dismissals</span></a>
+    <a href="../features/advisors.md">Advisors<span>CLI driver, MCP, egress, grounding</span></a>
+    <a href="../features/import-export.md">Import and export<span>Pohoda, Fakturoid, the full zip</span></a>
+    <a href="../features/desktop-app.md">Desktop app and UI<span>Shell, IPC, design system, e2e</span></a>
+    <a href="../features/release.md">Release and updates<span>Packaging, signing, update check</span></a>
+  </nav>
+</section>
+
+<footer>
+  Sources: <code>docs/plan/STATUS.md</code>, <code>docs/plan/IMPLEMENTATION_PLAN.md</code> and the git history of <code>claude/sky-la-accounting-design-khgxva</code>. Figures counted on 8 October 2026.
+</footer>
+
+</main>
+</body>
+</html>
