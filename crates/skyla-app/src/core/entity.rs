@@ -19,6 +19,7 @@ const CZ_CHART: &str = include_str!("../../../../rules/cz/chart.toml");
 /// What a real entity needs beyond the books: where they live and the key.
 pub(crate) struct RealEntity {
     pub(crate) key: DataKey,
+    pub(crate) books: PathBuf,
     pub(crate) backups: PathBuf,
     pub(crate) policy: BackupPolicy,
 }
@@ -50,6 +51,32 @@ fn check(setup: &EntitySetupDto) -> Result<(), CoreError> {
     } else {
         Err(CoreError::BadRequest(problems.join("; ")))
     }
+}
+
+fn profile_json(setup: &EntitySetupDto, as_of: &str) -> serde_json::Value {
+    json!({
+        "entity": {
+            "displayName": setup.display_name.trim(),
+            "legalForm": "OSVČ",
+            "vatPeriod": setup.vat_period,
+            "functionalCurrency": "CZK",
+            "asOf": as_of,
+            "bankAccount": "221",
+            "bankName": setup.bank_name.trim(),
+            "flatRateGroup": setup.flat_rate_group,
+        },
+        "supplier": {
+            "name": setup.display_name.trim(),
+            "ico": Some(setup.ico.trim()).filter(|s| !s.is_empty()),
+            "dic": setup.dic.as_deref().map(str::trim).filter(|s| !s.is_empty()),
+            "address": setup.address.trim(),
+            "iban": setup.iban.as_deref().map(str::trim).filter(|s| !s.is_empty()),
+            "bic": null,
+            "email": setup.email.as_deref().map(str::trim).filter(|s| !s.is_empty()),
+            "vatPayer": setup.vat_period != "none",
+            "registration": setup.registration.trim(),
+        },
+    })
 }
 
 fn year_of(day: &str) -> &str {
@@ -130,29 +157,7 @@ impl Core {
         skyla_ledger::seed_chart(&conn, &skyla_ledger::ChartSpec::from_toml(CZ_CHART)?)?;
         skyla_ledger::set_functional_currency(&conn, skyla_money::Currency::CZK)?;
         ensure_year_open(&conn, today)?;
-        let profile = json!({
-            "entity": {
-                "displayName": setup.display_name.trim(),
-                "legalForm": "OSVČ",
-                "vatPeriod": setup.vat_period,
-                "functionalCurrency": "CZK",
-                "asOf": today,
-                "bankAccount": "221",
-                "bankName": setup.bank_name.trim(),
-                "flatRateGroup": setup.flat_rate_group,
-            },
-            "supplier": {
-                "name": setup.display_name.trim(),
-                "ico": Some(setup.ico.trim()).filter(|s| !s.is_empty()),
-                "dic": setup.dic.as_deref().map(str::trim).filter(|s| !s.is_empty()),
-                "address": setup.address.trim(),
-                "iban": setup.iban.as_deref().map(str::trim).filter(|s| !s.is_empty()),
-                "bic": null,
-                "email": setup.email.as_deref().map(str::trim).filter(|s| !s.is_empty()),
-                "vatPayer": setup.vat_period != "none",
-                "registration": setup.registration.trim(),
-            },
-        });
+        let profile = profile_json(setup, today);
         conn.execute_batch(
             "CREATE TABLE app_profile (id INTEGER PRIMARY KEY CHECK (id = 1), json TEXT NOT NULL) STRICT;",
         )
@@ -178,6 +183,7 @@ impl Core {
             scheduled,
             Some(RealEntity {
                 key: key.clone(),
+                books: db_path.to_path_buf(),
                 backups,
                 policy: BackupPolicy::default(),
             }),
@@ -225,6 +231,7 @@ impl Core {
             std::collections::HashMap::new(),
             Some(RealEntity {
                 key: key.clone(),
+                books: db_path.to_path_buf(),
                 backups,
                 policy: BackupPolicy::default(),
             }),
@@ -232,6 +239,87 @@ impl Core {
         )?;
         core.restore_state()?;
         Ok(core)
+    }
+
+    /// The business details as set up, for Settings to edit.
+    pub fn profile(&self) -> EntitySetupDto {
+        let (e, s) = (&self.domain.entity, &self.domain.supplier);
+        EntitySetupDto {
+            display_name: e.display_name.clone(),
+            ico: s.ico.clone().unwrap_or_default(),
+            dic: s.dic.clone(),
+            address: s.address.clone(),
+            vat_period: e.vat_period.clone(),
+            registration: s.registration.clone(),
+            iban: s.iban.clone(),
+            bank_name: e.bank_name.clone(),
+            email: s.email.clone(),
+            flat_rate_group: e.flat_rate_group.clone(),
+        }
+    }
+
+    /// Changes the business details of real books: checked like the setup
+    /// form, kept in the books, and printed on invoices issued from now on
+    /// (issued ones keep what they were issued with). The VAT status isn't
+    /// changed here: it follows the registration and changes the returns.
+    /// Takes effect when the books are reopened ([`Core::reopen`]).
+    pub fn update_profile(&self, setup: &EntitySetupDto) -> Result<(), CoreError> {
+        if self.is_demo() {
+            return Err(CoreError::BadRequest(
+                "the demo's business details are fixed".into(),
+            ));
+        }
+        check(setup)?;
+        if setup.vat_period != self.domain.entity.vat_period {
+            return Err(CoreError::BadRequest(
+                "the VAT status follows your registration and changes how the returns are kept; it can't be changed here".into(),
+            ));
+        }
+        let profile = profile_json(setup, &self.domain.entity.as_of);
+        let supplier: crate::demo::DomainSupplier =
+            serde_json::from_value(profile["supplier"].clone())
+                .map_err(|e| CoreError::BadRequest(e.to_string()))?;
+        let db = self.db();
+        db.execute_batch("SAVEPOINT profile")
+            .map_err(skyla_ledger::LedgerError::from)?;
+        let result = (|| -> Result<(), CoreError> {
+            db.execute(
+                "UPDATE app_profile SET json = json_set(json, '$.entity', json(?1), '$.supplier', json(?2)) WHERE id = 1",
+                [profile["entity"].to_string(), profile["supplier"].to_string()],
+            )
+            .map_err(skyla_ledger::LedgerError::from)?;
+            skyla_invoicing::set_supplier(
+                &db,
+                &skyla_invoicing::Supplier {
+                    name: supplier.name,
+                    ico: supplier.ico,
+                    dic: supplier.dic,
+                    address: supplier.address,
+                    iban: supplier.iban,
+                    bic: supplier.bic,
+                    email: supplier.email,
+                    vat_payer: supplier.vat_payer,
+                    registration: supplier.registration,
+                },
+            )?;
+            Ok(())
+        })();
+        match result {
+            Ok(()) => db
+                .execute_batch("RELEASE profile")
+                .map_err(|e| CoreError::Ledger(skyla_ledger::LedgerError::from(e))),
+            Err(e) => {
+                let _ = db.execute_batch("ROLLBACK TO profile; RELEASE profile");
+                Err(e)
+            }
+        }
+    }
+
+    /// The same books opened afresh, with what's stored now (after
+    /// [`Core::update_profile`]).
+    pub fn reopen(&self) -> Result<Self, CoreError> {
+        let real = self.real()?;
+        Self::open_entity(&real.books, &real.key, &self.domain.entity.as_of)
     }
 
     /// The demo, rather than real books.

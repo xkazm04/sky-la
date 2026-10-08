@@ -3,6 +3,7 @@ import {
   type CoreKind,
   commands,
   type EgressPolicyDto,
+  type EntitySetupDto,
   type RefDataDto,
   type RulePackDto,
   type UpdateStatusDto,
@@ -48,12 +49,14 @@ interface Setting {
   backups?: BackupsDto | undefined;
   exportable?: boolean;
   lockable?: boolean;
+  profile?: EntitySetupDto | undefined;
   updates?: UpdateStatusDto | undefined;
 }
 
 /** Which section of the list each setting sits in. */
 const GROUP: Record<string, string> = {
   appearance: "general",
+  business: "general",
   encryption: "security",
   backups: "security",
   recovery: "security",
@@ -89,6 +92,8 @@ export function SettingsScreen({ item, core }: { item: string | null; core: Core
   const badge = connectionBadge(status.state === "ready" ? status.data : undefined);
   const policies = useQuery("egress_policies", () => commands.egressPolicies());
   const pol = policies.state === "ready" ? policies.data : undefined;
+  const profile = useQuery("profile", () => commands.profile());
+  const pr = profile.state === "ready" ? profile.data : undefined;
   const updates = useQuery("update_status", () => commands.updateStatus());
   const up = updates.state === "ready" ? updates.data : undefined;
   const backupList = useQuery("backups", () => unwrap(commands.backups()));
@@ -112,6 +117,17 @@ export function SettingsScreen({ item, core }: { item: string | null; core: Core
         />
       ),
       about: ["Dark is a first-class appearance with its own greys and elevation."],
+    },
+    {
+      id: "business",
+      title: "Business details",
+      detail: "As printed on your invoices",
+      value: <span className="text-ink-secondary">{pr?.displayName ?? ""}</span>,
+      about: [
+        "Your name, IČO, DIČ, address and bank details, as invoices show them. Changes apply to invoices issued from now on; issued ones keep what they were issued with.",
+        "The VAT status follows your registration and decides how the returns are kept, so it isn't changed here.",
+      ],
+      profile: pr,
     },
     {
       id: "encryption",
@@ -321,6 +337,9 @@ export function SettingsScreen({ item, core }: { item: string | null; core: Core
               </div>
             )}
             {selected.updates && <UpdateCheck status={selected.updates} />}
+            {selected.profile && (
+              <BusinessDetails initial={selected.profile} demo={bk?.demo ?? true} />
+            )}
             {selected.pack && (
               <>
                 <InspectorSection title={`Values in force · ${selected.pack.values.length}`}>
@@ -358,6 +377,109 @@ export function SettingsScreen({ item, core }: { item: string | null; core: Core
         </InspectorPane>
       )}
     </>
+  );
+}
+
+const VAT_LABELS: Record<string, string> = {
+  monthly: "VAT payer, monthly",
+  quarterly: "VAT payer, quarterly",
+  none: "Not a VAT payer",
+};
+
+/** The business details, checked and kept by the core. */
+function BusinessDetails({ initial, demo }: { initial: EntitySetupDto; demo: boolean }) {
+  const [form, setForm] = useState(initial);
+  const [result, setResult] = useState<{ ok: boolean; lines: string[] } | null>(null);
+  const [busy, setBusy] = useState(false);
+  const field = (k: keyof EntitySetupDto) => (v: string) => setForm((f) => ({ ...f, [k]: v }));
+  const save = async () => {
+    setBusy(true);
+    setResult(null);
+    try {
+      await unwrap(commands.updateProfile(form));
+      invalidateAll();
+      setResult({ ok: true, lines: ["Saved. Invoices issued from now on show these details."] });
+    } catch (e) {
+      setResult({ ok: false, lines: problems(e) });
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <InspectorSection title={demo ? "The demo's details (fixed)" : "Edit"}>
+      <form
+        aria-label="Business details"
+        className="grid grid-cols-2 gap-3"
+        onSubmit={(e) => {
+          e.preventDefault();
+          void save();
+        }}
+      >
+        <TextField
+          className="col-span-2"
+          label="Name"
+          value={form.displayName}
+          onChange={field("displayName")}
+          isDisabled={demo}
+        />
+        <TextField label="IČO" value={form.ico} onChange={field("ico")} isDisabled={demo} />
+        <TextField label="DIČ" value={form.dic ?? ""} onChange={field("dic")} isDisabled={demo} />
+        <TextField
+          className="col-span-2"
+          label="Address"
+          multiline
+          value={form.address}
+          onChange={field("address")}
+          isDisabled={demo}
+        />
+        <TextField
+          className="col-span-2"
+          label="Trade register line"
+          value={form.registration}
+          onChange={field("registration")}
+          isDisabled={demo}
+        />
+        <TextField
+          label="Business account IBAN"
+          value={form.iban ?? ""}
+          onChange={field("iban")}
+          isDisabled={demo}
+        />
+        <TextField
+          label="Bank"
+          value={form.bankName}
+          onChange={field("bankName")}
+          isDisabled={demo}
+        />
+        <TextField
+          className="col-span-2"
+          label="Email on invoices"
+          value={form.email ?? ""}
+          onChange={field("email")}
+          isDisabled={demo}
+        />
+        <p className="col-span-2 text-footnote text-ink-secondary">
+          VAT: {VAT_LABELS[form.vatPeriod] ?? form.vatPeriod}
+        </p>
+        {!demo && (
+          <div className="col-span-2 flex justify-end">
+            <Button variant="primary" type="submit" isDisabled={busy}>
+              Save details
+            </Button>
+          </div>
+        )}
+      </form>
+      {result && (
+        <div
+          role={result.ok ? "status" : "alert"}
+          className={`mt-2 text-footnote ${result.ok ? "text-ink-secondary" : "text-negative-ink"}`}
+        >
+          {result.lines.map((l) => (
+            <p key={l}>{l}</p>
+          ))}
+        </div>
+      )}
+    </InspectorSection>
   );
 }
 

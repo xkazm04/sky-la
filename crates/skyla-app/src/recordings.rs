@@ -411,6 +411,7 @@ pub fn canonical_requests() -> Vec<(&'static str, Value)> {
         ("egress_register", json!({})),
         ("export_books", json!({ "passphrase": null })),
         ("update_status", json!({})),
+        ("profile", json!({})),
         ("reporting_periods", json!({})),
         ("purchase_form", json!({})),
         ("purchases", json!({})),
@@ -541,6 +542,7 @@ pub fn dispatch(core: &Core, command: &str, args: &Value) -> Result<Value, IpcFa
         ),
         "export_books" => to_value(core.export_books()),
         "reporting_periods" => to_value(core.reporting_periods()),
+        "profile" => to_value(Ok(core.profile())),
         "purchase_form" => to_value(core.purchase_form()),
         "purchases" => to_value(core.purchases()),
         "record_purchase" => {

@@ -137,6 +137,10 @@ export const commands = {
 	purchaseForm: () => typedError<PurchaseFormDto, IpcFailure>(__TAURI_INVOKE("purchase_form")),
 	/**  The periods the screens report on, as of the books' date. */
 	reportingPeriods: () => typedError<ReportingPeriodsDto, IpcFailure>(__TAURI_INVOKE("reporting_periods")),
+	/**  The business details as set up. */
+	profile: () => __TAURI_INVOKE<EntitySetupDto>("profile"),
+	/**  Corrects the business details: checked, kept, and in use at once. */
+	updateProfile: (setup: EntitySetupDto) => typedError<EntityDto, IpcFailure>(__TAURI_INVOKE("update_profile", { setup })),
 	/**  Every received invoice, with what's paid. */
 	purchases: () => typedError<PurchaseDto[], IpcFailure>(__TAURI_INVOKE("purchases")),
 	/**  Records a received invoice: checked, posted, the supplier kept. */

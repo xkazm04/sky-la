@@ -815,3 +815,18 @@ test("a received invoice is recorded, with every problem listed first", async ({
   await expect(inspector).toContainText("15 488,00");
   await expect(inspector).toContainText("CZ26965313");
 });
+
+// Improvement wave 7: business details are editable for real books; the
+// demo shows its own, fixed.
+test("business details show in Settings, fixed for the demo", async ({ page }) => {
+  await page.goto("/#/settings/business");
+  await settle(page);
+  const inspector = page.getByRole("complementary", { name: "Business details" });
+  await expect(inspector).toContainText("The demo's details (fixed)");
+  await expect(inspector.getByLabel("Name")).toHaveValue("Jan Novák");
+  await expect(inspector.getByLabel("Name")).toBeDisabled();
+  await expect(inspector).toContainText("VAT: VAT payer, monthly");
+  await expect(inspector.getByRole("button", { name: "Save details" })).toHaveCount(0);
+  await page.screenshot({ path: "test-results/screens/settings-business.png" });
+  await axeClean(page);
+});

@@ -252,6 +252,7 @@ export function SetupScreen() {
         <TextField
           className="col-span-2"
           label="Address"
+          multiline
           value={setup.address}
           onChange={field("address")}
         />

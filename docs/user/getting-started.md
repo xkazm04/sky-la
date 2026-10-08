@@ -19,7 +19,7 @@ On first start, sky-la offers to set up your books. **Explore the demo instead**
 
 ## Creating your books
 
-1. **Who the books are for:** your name as printed on invoices, IČO, DIČ (required if you're a VAT payer), address, VAT status (monthly, quarterly, or not a payer), your flat-rate expense group, the trade-register line, and your business account.
+1. **Who the books are for:** your name as printed on invoices, IČO, DIČ (required if you're a VAT payer), address, VAT status (monthly, quarterly, or not a payer), your flat-rate expense group, the trade-register line, and your business account. You can correct these later in **Settings → Business details**, except the VAT status, which follows your registration.
 2. **A passphrase:** at least 10 characters. A few unrelated words work well. It encrypts your books on this computer. Nobody can reset it, including the project.
 3. **The recovery key:** shown **once**. Write it down or print it and keep it away from this computer. sky-la then asks for its last group to make sure you saved it.
 

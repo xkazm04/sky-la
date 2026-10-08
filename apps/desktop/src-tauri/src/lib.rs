@@ -304,6 +304,28 @@ fn reporting_periods(core: Books) -> Answer<ReportingPeriodsDto> {
     Ok(core.reporting_periods()?)
 }
 
+/// The business details as set up.
+#[tauri::command]
+#[specta::specta]
+fn profile(core: Books) -> EntitySetupDto {
+    core.profile()
+}
+
+/// Corrects the business details: checked, kept, and in use at once.
+#[tauri::command]
+#[specta::specta]
+fn update_profile(
+    session: State<'_, Session>,
+    core: Books,
+    setup: EntitySetupDto,
+) -> Answer<EntityDto> {
+    core.update_profile(&setup)?;
+    let fresh = core.reopen()?;
+    let entity = fresh.entity();
+    session.replace(fresh);
+    Ok(entity)
+}
+
 /// What the purchase editor offers.
 #[tauri::command]
 #[specta::specta]
@@ -506,9 +528,9 @@ impl Session {
         Ok(self.gate.state())
     }
 
-    /// Gets freshly opened books ready (the CLI driver, the shim, a backup
-    /// if one is due) and holds them, unless books are open already.
-    pub fn adopt(&self, core: Core) -> SessionStateDto {
+    /// Gets freshly opened books ready: the CLI driver, the shim beside the
+    /// app, a backup if one is due.
+    fn prepare(&self, core: &Core) {
         core.replace_provider(Box::new(skyla_advisor::ClaudeCodeCli::from_system()));
         if let Some(dir) = std::env::current_exe()
             .ok()
@@ -524,6 +546,20 @@ impl Session {
             // A failed backup mustn't keep the books closed; Settings shows the state.
             let _ = core.backup_if_due(&self.gate.now());
         }
+    }
+
+    /// Swaps in the same books reopened (after their details changed).
+    pub fn replace(&self, core: Core) {
+        self.prepare(&core);
+        if let Ok(mut b) = self.books.write() {
+            *b = Some(std::sync::Arc::new(core));
+        }
+    }
+
+    /// Gets freshly opened books ready and holds them, unless books are
+    /// open already.
+    pub fn adopt(&self, core: Core) -> SessionStateDto {
+        self.prepare(&core);
         // Only one set of books is open at a time; the first stays.
         if let Ok(mut b) = self.books.write() {
             if let Some(open) = b.as_ref() {
@@ -687,6 +723,8 @@ pub fn specta_builder<R: Runtime>() -> Builder<R> {
             update_status,
             purchase_form,
             reporting_periods,
+            profile,
+            update_profile,
             purchases,
             record_purchase,
             set_update_check,
