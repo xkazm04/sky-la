@@ -5,8 +5,9 @@
 use skyla_app::dto::{
     AppInfo, BalanceSheetDto, BankAllocationDto, BankRuleInputDto, BankStatementDto, CashBasisDto,
     DocumentPdfDto, DocumentXmlDto, DunningNoticeDto, EgressRunDto, EntityDto, IntegrityDto,
-    InvoiceDraftDto, InvoiceDto, InvoiceFormDto, JournalEntryDto, PeriodDto, ProfitAndLossDto,
-    ProposalDto, RecurringTemplateDto, RulePackDto, TrialBalanceDto, VatReturnDto,
+    InvoiceDraftDto, InvoiceDto, InvoiceFormDto, JournalEntryDto, PackUpdateDto, PeriodDto,
+    ProfitAndLossDto, ProposalDto, RecurringTemplateDto, RefDataDto, RulePackDto, TrialBalanceDto,
+    VatReturnDto,
 };
 use skyla_app::{Core, IpcFailure};
 use tauri::{Runtime, State};
@@ -219,6 +220,50 @@ fn create_bank_rule(
     Ok(core.create_bank_rule(&line, &rule)?)
 }
 
+/// Reference data loaded, where it came from, and whether fetching is on.
+#[tauri::command]
+#[specta::specta]
+fn reference_data(core: State<'_, Core>) -> Answer<RefDataDto> {
+    Ok(core.reference_data()?)
+}
+
+/// Imports a ČNB rates file (`cnb_fx`) or a repo-rate history (`cnb_repo`).
+#[tauri::command]
+#[specta::specta]
+fn import_reference_data(
+    core: State<'_, Core>,
+    kind: String,
+    file_name: String,
+    text: String,
+) -> Answer<RefDataDto> {
+    Ok(core.import_reference_data(&kind, &file_name, &text)?)
+}
+
+/// Turns fetching from the ČNB on or off (off by default).
+#[tauri::command]
+#[specta::specta]
+fn set_reference_fetch(core: State<'_, Core>, enabled: bool) -> Answer<RefDataDto> {
+    Ok(core.set_reference_fetch(enabled)?)
+}
+
+/// Fetches the ČNB's rates for a day, only when fetching is on.
+#[tauri::command]
+#[specta::specta]
+fn fetch_cnb_rates(core: State<'_, Core>, date: String) -> Answer<RefDataDto> {
+    Ok(core.fetch_cnb_rates(&date)?)
+}
+
+/// Checks a signed rule-pack update.
+#[tauri::command]
+#[specta::specta]
+fn install_pack_update(
+    core: State<'_, Core>,
+    pack_toml: String,
+    signature: String,
+) -> Answer<PackUpdateDto> {
+    Ok(core.install_pack_update(&pack_toml, &signature)?)
+}
+
 /// Every command, for the invoke handler and the TypeScript export.
 pub fn specta_builder<R: Runtime>() -> Builder<R> {
     Builder::<R>::new()
@@ -250,6 +295,11 @@ pub fn specta_builder<R: Runtime>() -> Builder<R> {
             accept_certain_bank_lines,
             book_bank_line,
             create_bank_rule,
+            reference_data,
+            import_reference_data,
+            set_reference_fetch,
+            fetch_cnb_rates,
+            install_pack_update,
         ])
         // Money crosses as integer minor units; `MoneyDto` refuses anything
         // beyond 2^53 - 1, so a JavaScript number holds every value exactly.

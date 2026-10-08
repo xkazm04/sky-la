@@ -1596,6 +1596,22 @@
     "isError": false
   },
   {
+    "command": "reference_data",
+    "args": {},
+    "result": {
+      "euro": null,
+      "fetchEnabled": false,
+      "fetchHost": "www.cnb.cz",
+      "fxDays": 0,
+      "pendingPack": null,
+      "repoChanges": 0,
+      "repoNow": null,
+      "sources": [],
+      "trustedKeys": 0
+    },
+    "isError": false
+  },
+  {
     "command": "vat_return",
     "args": {
       "from": "2026-07-01",
@@ -15860,6 +15876,223 @@
     "isError": false,
     "scenario": "bank-workbench",
     "state": "bank-workbench/ruled"
+  },
+  {
+    "command": "import_reference_data",
+    "args": {
+      "fileName": "demo-cnb-daily-2026-10-07.txt",
+      "kind": "cnb_fx",
+      "text": "07.10.2026 #194\nzemě|měna|množství|kód|kurz\nAustrálie|dolar|1|AUD|15,632\nEMU|euro|1|EUR|25,140\nJaponsko|jen|100|JPY|15,987\nPolsko|zlotý|1|PLN|5,872\nŠvýcarsko|frank|1|CHF|26,402\nUSA|dolar|1|USD|21,455\nVelká Británie|libra|1|GBP|28,931\n"
+    },
+    "result": {
+      "euro": "EUR 25,14 Kč on 2026-10-07 (ČNB #194)",
+      "fetchEnabled": false,
+      "fetchHost": "www.cnb.cz",
+      "fxDays": 1,
+      "pendingPack": null,
+      "repoChanges": 0,
+      "repoNow": null,
+      "sources": [
+        {
+          "kind": "cnb_fx",
+          "on": "2026-10-07",
+          "origin": "imported demo-cnb-daily-2026-10-07.txt",
+          "summary": "7 rates for 2026-10-07"
+        }
+      ],
+      "trustedKeys": 0
+    },
+    "isError": false,
+    "scenario": "reference-data",
+    "leadsTo": "reference-data/rates"
+  },
+  {
+    "command": "reference_data",
+    "args": {},
+    "result": {
+      "euro": "EUR 25,14 Kč on 2026-10-07 (ČNB #194)",
+      "fetchEnabled": false,
+      "fetchHost": "www.cnb.cz",
+      "fxDays": 1,
+      "pendingPack": null,
+      "repoChanges": 0,
+      "repoNow": null,
+      "sources": [
+        {
+          "kind": "cnb_fx",
+          "on": "2026-10-07",
+          "origin": "imported demo-cnb-daily-2026-10-07.txt",
+          "summary": "7 rates for 2026-10-07"
+        }
+      ],
+      "trustedKeys": 0
+    },
+    "isError": false,
+    "scenario": "reference-data",
+    "state": "reference-data/rates"
+  },
+  {
+    "command": "import_reference_data",
+    "args": {
+      "fileName": "demo-cnb-repo-history.csv",
+      "kind": "cnb_repo",
+      "text": "# Demo data in the shape of a repo-rate history export. Not the ČNB's official series.\nplatnost od;2T repo sazba (%)\n2024-12-20;4,00\n2025-05-02;3,50\n"
+    },
+    "result": {
+      "euro": "EUR 25,14 Kč on 2026-10-07 (ČNB #194)",
+      "fetchEnabled": false,
+      "fetchHost": "www.cnb.cz",
+      "fxDays": 1,
+      "pendingPack": null,
+      "repoChanges": 2,
+      "repoNow": "3,5 % since 2025-05-02",
+      "sources": [
+        {
+          "kind": "cnb_fx",
+          "on": "2026-10-07",
+          "origin": "imported demo-cnb-daily-2026-10-07.txt",
+          "summary": "7 rates for 2026-10-07"
+        },
+        {
+          "kind": "cnb_repo",
+          "on": "2026-10-07",
+          "origin": "imported demo-cnb-repo-history.csv",
+          "summary": "2 changes, 2024-12-20 to 2025-05-02"
+        }
+      ],
+      "trustedKeys": 0
+    },
+    "isError": false,
+    "scenario": "reference-data",
+    "state": "reference-data/rates",
+    "leadsTo": "reference-data/repo"
+  },
+  {
+    "command": "reference_data",
+    "args": {},
+    "result": {
+      "euro": "EUR 25,14 Kč on 2026-10-07 (ČNB #194)",
+      "fetchEnabled": false,
+      "fetchHost": "www.cnb.cz",
+      "fxDays": 1,
+      "pendingPack": null,
+      "repoChanges": 2,
+      "repoNow": "3,5 % since 2025-05-02",
+      "sources": [
+        {
+          "kind": "cnb_fx",
+          "on": "2026-10-07",
+          "origin": "imported demo-cnb-daily-2026-10-07.txt",
+          "summary": "7 rates for 2026-10-07"
+        },
+        {
+          "kind": "cnb_repo",
+          "on": "2026-10-07",
+          "origin": "imported demo-cnb-repo-history.csv",
+          "summary": "2 changes, 2024-12-20 to 2025-05-02"
+        }
+      ],
+      "trustedKeys": 0
+    },
+    "isError": false,
+    "scenario": "reference-data",
+    "state": "reference-data/repo"
+  },
+  {
+    "command": "dunning_queue",
+    "args": {
+      "asOf": "2026-10-07"
+    },
+    "result": [
+      {
+        "bodyCs": "Dobrý den,\n\nrádi bychom připomněli fakturu 2026-102 se splatností 24. 9. 2026, kterou u nás zatím nevidíme uhrazenou v plné výši. Zbývá uhradit 53 092,00 Kč na účet CZ2703000000000123454412, variabilní symbol 2026102.\n\nPokud jste již platili, považujte prosím tuto zprávu za bezpředmětnou.\n\nS pozdravem\nJan Novák",
+        "bodyEn": "Hello,\n\nthis is a friendly reminder that invoice 2026-102, due on 24 September 2026, hasn't been paid in full yet. CZK 53,092.00 remains to be paid to account CZ2703000000000123454412, variable symbol 2026102.\n\nIf you have already paid, please disregard this message.\n\nKind regards\nJan Novák",
+        "customer": "Studio Brno s.r.o.",
+        "daysOverdue": 13,
+        "documentId": 6,
+        "dueOn": "2026-09-24",
+        "interest": null,
+        "interestProblem": null,
+        "number": "2026-102",
+        "open": {
+          "currency": "CZK",
+          "minor": 5309200
+        },
+        "scheduledOn": "2026-09-29",
+        "step": 1,
+        "subjectCs": "Připomínka: faktura 2026-102 je po splatnosti",
+        "subjectEn": "Reminder: invoice 2026-102 is overdue",
+        "tone": "friendly"
+      }
+    ],
+    "isError": false,
+    "scenario": "reference-data",
+    "state": "reference-data/repo"
+  },
+  {
+    "command": "set_reference_fetch",
+    "args": {
+      "enabled": true
+    },
+    "result": {
+      "euro": "EUR 25,14 Kč on 2026-10-07 (ČNB #194)",
+      "fetchEnabled": true,
+      "fetchHost": "www.cnb.cz",
+      "fxDays": 1,
+      "pendingPack": null,
+      "repoChanges": 2,
+      "repoNow": "3,5 % since 2025-05-02",
+      "sources": [
+        {
+          "kind": "cnb_fx",
+          "on": "2026-10-07",
+          "origin": "imported demo-cnb-daily-2026-10-07.txt",
+          "summary": "7 rates for 2026-10-07"
+        },
+        {
+          "kind": "cnb_repo",
+          "on": "2026-10-07",
+          "origin": "imported demo-cnb-repo-history.csv",
+          "summary": "2 changes, 2024-12-20 to 2025-05-02"
+        }
+      ],
+      "trustedKeys": 0
+    },
+    "isError": false,
+    "scenario": "reference-data",
+    "state": "reference-data/repo",
+    "leadsTo": "reference-data/fetching"
+  },
+  {
+    "command": "reference_data",
+    "args": {},
+    "result": {
+      "euro": "EUR 25,14 Kč on 2026-10-07 (ČNB #194)",
+      "fetchEnabled": true,
+      "fetchHost": "www.cnb.cz",
+      "fxDays": 1,
+      "pendingPack": null,
+      "repoChanges": 2,
+      "repoNow": "3,5 % since 2025-05-02",
+      "sources": [
+        {
+          "kind": "cnb_fx",
+          "on": "2026-10-07",
+          "origin": "imported demo-cnb-daily-2026-10-07.txt",
+          "summary": "7 rates for 2026-10-07"
+        },
+        {
+          "kind": "cnb_repo",
+          "on": "2026-10-07",
+          "origin": "imported demo-cnb-repo-history.csv",
+          "summary": "2 changes, 2024-12-20 to 2025-05-02"
+        }
+      ],
+      "trustedKeys": 0
+    },
+    "isError": false,
+    "scenario": "reference-data",
+    "state": "reference-data/fetching"
   },
   {
     "command": "create_invoice_draft",

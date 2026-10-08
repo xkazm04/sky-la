@@ -60,6 +60,16 @@ export const commands = {
 	bookBankLine: (line: string, allocations: BankAllocationDto[]) => typedError<BankStatementDto, IpcFailure>(__TAURI_INVOKE("book_bank_line", { line, allocations })),
 	/**  Makes a rule from a line and books the line by it. */
 	createBankRule: (line: string, rule: BankRuleInputDto) => typedError<BankStatementDto, IpcFailure>(__TAURI_INVOKE("create_bank_rule", { line, rule })),
+	/**  Reference data loaded, where it came from, and whether fetching is on. */
+	referenceData: () => typedError<RefDataDto, IpcFailure>(__TAURI_INVOKE("reference_data")),
+	/**  Imports a ČNB rates file (`cnb_fx`) or a repo-rate history (`cnb_repo`). */
+	importReferenceData: (kind: string, fileName: string, text: string) => typedError<RefDataDto, IpcFailure>(__TAURI_INVOKE("import_reference_data", { kind, fileName, text })),
+	/**  Turns fetching from the ČNB on or off (off by default). */
+	setReferenceFetch: (enabled: boolean) => typedError<RefDataDto, IpcFailure>(__TAURI_INVOKE("set_reference_fetch", { enabled })),
+	/**  Fetches the ČNB's rates for a day, only when fetching is on. */
+	fetchCnbRates: (date: string) => typedError<RefDataDto, IpcFailure>(__TAURI_INVOKE("fetch_cnb_rates", { date })),
+	/**  Checks a signed rule-pack update. */
+	installPackUpdate: (packToml: string, signature: string) => typedError<PackUpdateDto, IpcFailure>(__TAURI_INVOKE("install_pack_update", { packToml, signature })),
 };
 
 /* Types */
@@ -599,6 +609,16 @@ export type MoneyDto = {
 	currency: string,
 };
 
+/**  A verified pack update. */
+export type PackUpdateDto = {
+	/**  The pack in use. */
+	inUse: string,
+	/**  The verified update. */
+	installed: string,
+	/**  For people. */
+	message: string,
+};
+
 /**  One statutory value with its source. */
 export type PackValueDto = {
 	/**  Dotted key. */
@@ -735,6 +755,40 @@ export type RecurringTemplateDto = {
 	active: boolean,
 	/**  Each invoice's total, with VAT, at today's pack rates. */
 	gross: MoneyDto,
+};
+
+/**  Reference data and where it came from. */
+export type RefDataDto = {
+	/**  Whether the user allows fetching from the ČNB. */
+	fetchEnabled: boolean,
+	/**  The only host fetches go to. */
+	fetchHost: string,
+	/**  Days of exchange rates loaded. */
+	fxDays: number,
+	/**  Today's euro rate, when loaded. */
+	euro: string | null,
+	/**  Repo-rate changes loaded. */
+	repoChanges: number,
+	/**  The repo rate in force today, when loaded. */
+	repoNow: string | null,
+	/**  Every import or fetch, oldest first. */
+	sources: RefSourceDto[],
+	/**  Keys trusted to sign pack updates. */
+	trustedKeys: number,
+	/**  A verified pack update waiting for the next opening. */
+	pendingPack: string | null,
+};
+
+/**  One import or fetch. */
+export type RefSourceDto = {
+	/**  `cnb_fx` or `cnb_repo`. */
+	kind: string,
+	/**  `imported <file>` or `fetched <url>`. */
+	origin: string,
+	/**  What it brought. */
+	summary: string,
+	/**  When. */
+	on: string,
 };
 
 /**  The rule pack in force. */

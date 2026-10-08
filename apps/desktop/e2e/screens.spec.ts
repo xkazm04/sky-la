@@ -408,3 +408,35 @@ test("a statement is imported, matched, split and turned into a rule", async ({ 
   await page.screenshot({ path: "test-results/screens/bank-workbench-after.png" });
   await expect(page.getByTestId("status-line")).toContainText("chain verified");
 });
+
+// WP-20 acceptance (the UI half): reference data is off by default, comes
+// in by hand, and says where it came from.
+test("reference data is imported by hand and fetching stays off until turned on", async ({
+  page,
+}) => {
+  await page.goto("/#/settings/reference-data");
+  await settle(page);
+  const inspector = page.getByRole("complementary", { name: "Public reference data" });
+  const toggle = inspector.getByRole("checkbox", { name: /Fetch the ČNB's published rates/ });
+  await expect(toggle).not.toBeChecked();
+  await expect(inspector).toContainText("none yet: updates can't be installed");
+
+  await inspector
+    .getByLabel("ČNB rates file")
+    .setInputFiles("../../packages/fixtures/data/refdata/demo-cnb-daily-2026-10-07.txt");
+  await expect(inspector.getByRole("status")).toContainText(
+    "Imported demo-cnb-daily-2026-10-07.txt",
+  );
+  await expect(inspector).toContainText("EUR 25,14 Kč on 2026-10-07 (ČNB #194)");
+  await inspector
+    .getByLabel("Repo-rate history file")
+    .setInputFiles("../../packages/fixtures/data/refdata/demo-cnb-repo-history.csv");
+  await expect(inspector).toContainText("3,5 % since 2025-05-02");
+  await expect(inspector).toContainText("imported demo-cnb-repo-history.csv");
+
+  await inspector.getByText("Fetch the ČNB's published rates").click();
+  await expect(toggle).toBeChecked();
+  await expect(page.getByRole("row", { name: /Public reference data/ })).toContainText(
+    "On · www.cnb.cz",
+  );
+});

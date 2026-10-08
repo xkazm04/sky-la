@@ -1,10 +1,13 @@
-import { type CoreKind, commands, type RulePackDto } from "@skyla/ipc";
+import { type CoreKind, commands, type RefDataDto, type RulePackDto, unwrap } from "@skyla/ipc";
 import {
   type Appearance,
   applyAppearance,
   Badge,
+  Button,
+  Checkbox,
   ContentGroup,
   DataTable,
+  FactList,
   Inspector,
   InspectorSection,
   SegmentedControl,
@@ -13,9 +16,9 @@ import {
   type TableColumn,
   Toolbar,
 } from "@skyla/ui";
-import { Monitor, Moon, Sun } from "lucide-react";
-import { type ReactNode, useEffect, useState } from "react";
-import { useQuery } from "../data";
+import { FileUp, Monitor, Moon, Sun } from "lucide-react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
+import { invalidateAll, problems, useQuery } from "../data";
 import { navigate } from "../router";
 import { InspectorPane } from "../shell/Shell";
 import { Reasons, TwoLine } from "./common";
@@ -27,6 +30,7 @@ interface Setting {
   value: ReactNode;
   about: string[];
   pack?: RulePackDto | undefined;
+  refdata?: RefDataDto | undefined;
 }
 
 const columns: TableColumn<Setting>[] = [
@@ -48,6 +52,8 @@ export function SettingsScreen({ item, core }: { item: string | null; core: Core
   }, [appearance]);
   const info = useQuery("app_info", () => commands.appInfo());
   const pack = useQuery("rule_pack", () => commands.rulePack());
+  const refdata = useQuery("reference_data", () => unwrap(commands.referenceData()));
+  const ref = refdata.state === "ready" ? refdata.data : undefined;
 
   const settings: Setting[] = [
     {
@@ -101,11 +107,17 @@ export function SettingsScreen({ item, core }: { item: string | null; core: Core
       id: "reference-data",
       title: "Public reference data",
       detail: "ČNB exchange rates and signed rule-pack updates",
-      value: <Badge tone="neutral">Off · opt-in</Badge>,
+      value: ref?.fetchEnabled ? (
+        <Badge tone="info">{`On · ${ref.fetchHost}`}</Badge>
+      ) : (
+        <Badge tone="neutral">Off · opt-in</Badge>
+      ),
       about: [
-        "Off by default. When on, sky-la fetches only signed public data; manual import is always available.",
+        "Off by default. When on, sky-la asks only the ČNB for its published rates; importing the files by hand always works.",
+        "Exchange rates value foreign payments; the repo-rate history sets statutory late interest.",
         "There is no telemetry.",
       ],
+      refdata: ref,
     },
     {
       id: "rule-pack",
@@ -168,6 +180,7 @@ export function SettingsScreen({ item, core }: { item: string | null; core: Core
             <InspectorSection title="About this setting">
               <Reasons reasons={selected.about} />
             </InspectorSection>
+            {selected.refdata && <ReferenceData data={selected.refdata} />}
             {selected.pack && (
               <>
                 <InspectorSection title={`Values in force · ${selected.pack.values.length}`}>
@@ -203,6 +216,113 @@ export function SettingsScreen({ item, core }: { item: string | null; core: Core
             )}
           </Inspector>
         </InspectorPane>
+      )}
+    </>
+  );
+}
+
+/** Reference data: the fetch switch, imports by hand, and where each set came from. */
+function ReferenceData({ data }: { data: RefDataDto }) {
+  const [result, setResult] = useState<{ ok: boolean; lines: string[] } | null>(null);
+  const fx = useRef<HTMLInputElement>(null);
+  const repo = useRef<HTMLInputElement>(null);
+  const run = async (write: () => Promise<string>) => {
+    setResult(null);
+    try {
+      const text = await write();
+      invalidateAll();
+      setResult({ ok: true, lines: [text] });
+    } catch (e) {
+      setResult({ ok: false, lines: problems(e) });
+    }
+  };
+  const importFile = (kind: "cnb_fx" | "cnb_repo", file: File) =>
+    void run(async () => {
+      const text = await file.text();
+      await unwrap(commands.importReferenceData(kind, file.name, text));
+      return `Imported ${file.name}.`;
+    });
+  const picker = (kind: "cnb_fx" | "cnb_repo", label: string, input: typeof fx) => (
+    <input
+      ref={input}
+      type="file"
+      accept=".txt,.csv"
+      aria-label={label}
+      className="hidden"
+      onChange={(e) => {
+        const f = e.target.files?.[0];
+        if (f) importFile(kind, f);
+        e.target.value = "";
+      }}
+    />
+  );
+  return (
+    <>
+      <InspectorSection title="Fetching">
+        <Checkbox
+          isSelected={data.fetchEnabled}
+          onChange={(enabled) =>
+            void run(async () => {
+              await unwrap(commands.setReferenceFetch(enabled));
+              return enabled
+                ? `Fetching is on; sky-la may ask ${data.fetchHost} for its published rates.`
+                : "Fetching is off.";
+            })
+          }
+        >
+          Fetch the ČNB's published rates from {data.fetchHost}
+        </Checkbox>
+      </InspectorSection>
+      <InspectorSection title="Loaded">
+        <FactList
+          facts={[
+            { label: "Exchange rates", value: data.euro ?? "none yet" },
+            {
+              label: "Repo rate",
+              value:
+                data.repoNow ?? (data.repoChanges > 0 ? `${data.repoChanges} changes` : "none yet"),
+            },
+            {
+              label: "Pack signing keys",
+              value:
+                data.trustedKeys > 0
+                  ? `${data.trustedKeys} trusted`
+                  : "none yet: updates can't be installed",
+            },
+          ]}
+        />
+        <div className="mt-2 flex flex-wrap gap-2">
+          {picker("cnb_fx", "ČNB rates file", fx)}
+          {picker("cnb_repo", "Repo-rate history file", repo)}
+          <Button icon={FileUp} onPress={() => fx.current?.click()}>
+            Import ČNB rates…
+          </Button>
+          <Button icon={FileUp} onPress={() => repo.current?.click()}>
+            Import repo history…
+          </Button>
+        </div>
+        {result && (
+          <div
+            role={result.ok ? "status" : "alert"}
+            className={`mt-2 text-footnote ${result.ok ? "text-ink-secondary" : "text-negative-ink"}`}
+          >
+            {result.lines.map((l) => (
+              <p key={l}>{l}</p>
+            ))}
+          </div>
+        )}
+      </InspectorSection>
+      {data.sources.length > 0 && (
+        <InspectorSection title={`Where it came from · ${data.sources.length}`}>
+          <ul className="space-y-1 text-footnote">
+            {data.sources.map((s) => (
+              <li key={`${s.kind}-${s.origin}-${s.summary}`}>
+                <span className="font-medium text-ink">{s.summary}</span>
+                <span className="block text-ink-secondary">{s.origin}</span>
+              </li>
+            ))}
+          </ul>
+        </InspectorSection>
       )}
     </>
   );

@@ -13,7 +13,11 @@ publish = false
 workspace = true
 
 [dependencies]
+minisign-verify = "0.3.0"
 serde = { version = "1.0.229", features = ["derive"] }
 skyla-money = { version = "0.1.0", path = "../skyla-money" }
 thiserror = "2.0.21"
 toml = "1.1.6"
+
+[dev-dependencies]
+minisign = "0.10.0"

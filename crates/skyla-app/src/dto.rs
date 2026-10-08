@@ -860,6 +860,56 @@ pub struct InvoiceDraftLineDto {
     pub vat_code: String,
 }
 
+/// Reference data and where it came from.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct RefDataDto {
+    /// Whether the user allows fetching from the ČNB.
+    pub fetch_enabled: bool,
+    /// The only host fetches go to.
+    pub fetch_host: String,
+    /// Days of exchange rates loaded.
+    pub fx_days: u32,
+    /// Today's euro rate, when loaded.
+    pub euro: Option<String>,
+    /// Repo-rate changes loaded.
+    pub repo_changes: u32,
+    /// The repo rate in force today, when loaded.
+    pub repo_now: Option<String>,
+    /// Every import or fetch, oldest first.
+    pub sources: Vec<RefSourceDto>,
+    /// Keys trusted to sign pack updates.
+    pub trusted_keys: u32,
+    /// A verified pack update waiting for the next opening.
+    pub pending_pack: Option<String>,
+}
+
+/// One import or fetch.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct RefSourceDto {
+    /// `cnb_fx` or `cnb_repo`.
+    pub kind: String,
+    /// `imported <file>` or `fetched <url>`.
+    pub origin: String,
+    /// What it brought.
+    pub summary: String,
+    /// When.
+    pub on: String,
+}
+
+/// A verified pack update.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct PackUpdateDto {
+    /// The pack in use.
+    pub in_use: String,
+    /// The verified update.
+    pub installed: String,
+    /// For people.
+    pub message: String,
+}
+
 /// The rule pack in force.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]

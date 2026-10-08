@@ -84,6 +84,13 @@ impl Scenario<'_> {
 pub const SECOND_STATEMENT: &str =
     include_str!("../../../packages/fixtures/data/statements/csob-2026-10-07.xml");
 
+/// The demo's ČNB rates file, imported in the reference-data scenario.
+pub const DEMO_CNB_DAILY: &str =
+    include_str!("../../../packages/fixtures/data/refdata/demo-cnb-daily-2026-10-07.txt");
+/// The demo's repo-rate history.
+pub const DEMO_CNB_REPO: &str =
+    include_str!("../../../packages/fixtures/data/refdata/demo-cnb-repo-history.csv");
+
 /// The editor's scripted invoice: typed in the e2e test exactly like this.
 pub fn scripted_draft() -> Value {
     json!({
@@ -173,6 +180,27 @@ pub fn scenarios() -> Vec<(&'static str, Script)> {
             s.read("proposals", json!({}));
             s.read("integrity", json!({}));
         }),
+        ("reference-data", |s| {
+            s.write(
+                "import_reference_data",
+                json!({ "kind": "cnb_fx", "fileName": "demo-cnb-daily-2026-10-07.txt", "text": DEMO_CNB_DAILY }),
+                "rates",
+            );
+            s.read("reference_data", json!({}));
+            s.write(
+                "import_reference_data",
+                json!({ "kind": "cnb_repo", "fileName": "demo-cnb-repo-history.csv", "text": DEMO_CNB_REPO }),
+                "repo",
+            );
+            s.read("reference_data", json!({}));
+            s.read("dunning_queue", json!({ "asOf": "2026-10-07" }));
+            s.write(
+                "set_reference_fetch",
+                json!({ "enabled": true }),
+                "fetching",
+            );
+            s.read("reference_data", json!({}));
+        }),
         ("discard-draft", |s| {
             let mut draft = scripted_draft();
             draft["client"] = json!("Acme Analytics a.s.");
@@ -215,6 +243,7 @@ pub fn canonical_requests() -> Vec<(&'static str, Value)> {
         ("invoice_xml", json!({ "id": 6, "format": "cii" })),
         ("dunning_queue", json!({ "asOf": "2026-10-07" })),
         ("recurring_templates", json!({})),
+        ("reference_data", json!({})),
     ];
     for (from, to) in [
         ("2026-07-01", "2026-07-31"),
@@ -300,6 +329,25 @@ pub fn dispatch(core: &Core, command: &str, args: &Value) -> Result<Value, IpcFa
             core.import_bank_statement(arg(args, "fileName")?, arg(args, "contentBase64")?),
         ),
         "accept_certain_bank_lines" => to_value(core.accept_certain_bank_lines()),
+        "reference_data" => to_value(core.reference_data()),
+        "import_reference_data" => to_value(core.import_reference_data(
+            arg(args, "kind")?,
+            arg(args, "fileName")?,
+            arg(args, "text")?,
+        )),
+        "set_reference_fetch" => {
+            let enabled = args
+                .get("enabled")
+                .and_then(Value::as_bool)
+                .ok_or_else(|| IpcFailure {
+                    code: "bad_request".into(),
+                    message: "missing argument enabled".into(),
+                })?;
+            to_value(core.set_reference_fetch(enabled))
+        }
+        "install_pack_update" => {
+            to_value(core.install_pack_update(arg(args, "packToml")?, arg(args, "signature")?))
+        }
         "book_bank_line" => {
             let allocations: Vec<crate::dto::BankAllocationDto> = args
                 .get("allocations")

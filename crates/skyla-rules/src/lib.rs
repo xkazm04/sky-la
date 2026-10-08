@@ -9,6 +9,10 @@
 #![deny(clippy::float_arithmetic)]
 
 pub mod date;
+pub mod refdata;
+mod update;
+
+pub use update::{UpdateError, verify_pack_update};
 
 use std::collections::{BTreeMap, HashMap};
 

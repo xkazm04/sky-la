@@ -21,6 +21,7 @@ const VAT_ACCOUNTS: &[&str] = &["343"];
 const DEMO_POSTING_NAMESPACE: uuid::Uuid = uuid::uuid!("5d2b8f61-0c7e-5a93-b4d1-7e3f9a2c6b08");
 
 mod bank;
+pub mod refdata;
 
 /// The application core: one open entity and its ledger.
 pub struct Core {
@@ -31,9 +32,8 @@ pub struct Core {
     pack: Pack,
     /// Scheduled drafts' issue dates.
     scheduled: HashMap<i64, String>,
-    /// The ČNB repo rate history for late interest. Reference data: imported
-    /// or fetched on opt-in (WP-20); the demo has none, so it says so.
-    repo_rates: Vec<skyla_invoicing::RepoRate>,
+    /// Reference data (ČNB rates, repo history) and pack updates.
+    refdata: Mutex<refdata::RefData>,
     /// Drafts created in this session (the demo derives their ids from it).
     drafts_created: std::sync::atomic::AtomicU64,
     /// The bank workbench: imports, rules, bookings.
@@ -131,7 +131,7 @@ impl Core {
             currency,
             pack,
             scheduled,
-            repo_rates: Vec::new(),
+            refdata: Mutex::new(refdata::RefData::new(refdata::https_fetcher())),
             drafts_created: std::sync::atomic::AtomicU64::new(0),
             bank: Mutex::new(bank::BankState::default()),
         };
@@ -526,7 +526,7 @@ impl Core {
         let notices = skyla_invoicing::dunning::dunning_queue(
             &self.db(),
             &self.pack,
-            &self.repo_rates,
+            &self.repo_rates(),
             as_of,
         )?;
         notices
