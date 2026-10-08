@@ -3,6 +3,7 @@ import {
   commands,
   type KhItemDto,
   type KhTotalsDto,
+  type ObligationDto,
   unwrap,
   type VatReturnDto,
 } from "@skyla/ipc";
@@ -22,6 +23,7 @@ import { useQuery } from "../data";
 import { day, money } from "../format";
 import { navigate } from "../router";
 import { InspectorPane } from "../shell/Shell";
+import { ObligationsCalendar, useObligations } from "./Calendar";
 import { Loaded, Reasons, TwoLine } from "./common";
 import { TaxScenariosPanel, useBooksScenarios } from "./TaxScenarios";
 
@@ -36,6 +38,7 @@ interface TaxRow {
   vat?: VatReturnDto;
   kh?: ControlStatementDto;
   scenarios?: boolean;
+  calendar?: ObligationDto[];
 }
 
 const columns: TableColumn<TaxRow>[] = [
@@ -179,6 +182,7 @@ export function TaxesScreen({ item }: { item: string | null }) {
     Promise.all(MONTHS.map((m) => unwrap(commands.vatReturn(m.from, m.to)))),
   );
   const scenarios = useBooksScenarios();
+  const calendar = useObligations(2026);
   const statements = useQuery("kh:2026-07..09", () =>
     Promise.all(MONTHS.map((m) => unwrap(commands.controlStatement(m.from, m.to)))),
   );
@@ -199,6 +203,26 @@ export function TaxesScreen({ item }: { item: string | null }) {
                   about: p.reasons,
                 }))
             : [];
+        if (calendar.state === "ready") {
+          const left = calendar.data.filter((o) => o.status !== "past");
+          const next = left[0];
+          deadlines.push({
+            id: "calendar",
+            title: "Obligations calendar 2026",
+            detail: next
+              ? `${left.length} deadlines left · next: ${next.name}, ${day(next.due)}`
+              : "Nothing left this year",
+            value: `${calendar.data.length} deadlines`,
+            figure: "This year",
+            status: { tone: "neutral", label: "From the rule pack" },
+            about: [
+              "Every return and payment the rule pack lists for an OSVČ who pays VAT monthly, dated for 2026.",
+              "A deadline that falls on a weekend or public holiday moves to the next working day (daňový řád § 33 odst. 4).",
+              "Insurance overviews (přehledy) aren't listed yet: their deadline depends on when the tax return is filed.",
+            ],
+            calendar: calendar.data,
+          });
+        }
         const vat: TaxRow[] =
           returns.state === "ready"
             ? returns.data.map((v, i) => {
@@ -257,6 +281,10 @@ export function TaxesScreen({ item }: { item: string | null }) {
             : [];
         const total = (direction: string, treatment: string) =>
           c.totals.find((t) => t.direction === direction && t.taxTreatment === treatment)?.amount;
+        const baseline =
+          scenarios.state === "ready"
+            ? scenarios.data.scenarios.find((x) => x.id === scenarios.data.baseline)
+            : undefined;
         const income: TaxRow[] = [
           {
             id: "taxable-income",
@@ -299,6 +327,34 @@ export function TaxesScreen({ item }: { item: string | null }) {
             ],
             scenarios: true,
           },
+          ...(baseline
+            ? [
+                {
+                  id: "insurance-social",
+                  title: "Social insurance",
+                  detail: `${baseline.socialRatePercent} % of a ${money(baseline.socialBase)} assessment base · from the books so far`,
+                  value: money(baseline.social),
+                  figure: "Amount",
+                  status: { tone: "neutral", label: "From the engine" },
+                  about: [
+                    "Assessed on half the profit with actual expenses, from the same worksheet as the income tax.",
+                    "Minimum assessment bases and the advances already paid aren't applied: the pack doesn't hold the 2026 average wage, and advances are paid privately, outside the books.",
+                  ],
+                } satisfies TaxRow,
+                {
+                  id: "insurance-health",
+                  title: "Health insurance",
+                  detail: `${baseline.healthRatePercent} % of a ${money(baseline.healthBase)} assessment base · from the books so far`,
+                  value: money(baseline.health),
+                  figure: "Amount",
+                  status: { tone: "neutral", label: "From the engine" },
+                  about: [
+                    "Assessed on half the profit with actual expenses.",
+                    "The minimum assessment base isn't applied: the pack doesn't hold the 2026 average wage.",
+                  ],
+                } satisfies TaxRow,
+              ]
+            : []),
           {
             id: "non-deductible",
             title: "Non-deductible expenses",
@@ -374,6 +430,7 @@ export function TaxesScreen({ item }: { item: string | null }) {
                   )}
                   {selected.kh && <ControlStatement kh={selected.kh} />}
                   {selected.scenarios && <TaxScenariosPanel />}
+                  {selected.calendar && <ObligationsCalendar obligations={selected.calendar} />}
                   <InspectorSection title="How it's worked out">
                     <Reasons reasons={selected.about} />
                   </InspectorSection>

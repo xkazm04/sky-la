@@ -910,6 +910,30 @@ pub struct PackUpdateDto {
     pub message: String,
 }
 
+/// One deadline in the obligations calendar.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct ObligationDto {
+    /// The pack's obligation id.
+    pub obligation: String,
+    /// For people.
+    pub name: String,
+    /// `file`, `pay` or `file_and_pay`.
+    pub action: String,
+    /// `2026-09`, `2026-Q3` or `2025`.
+    pub period: String,
+    /// The date the rule gives.
+    pub nominal: String,
+    /// The deadline, after any shift.
+    pub due: String,
+    /// It moved past a weekend or holiday.
+    pub shifted: bool,
+    /// Act and provision.
+    pub citation: String,
+    /// `past`, `next` or `upcoming`, against the as-of date.
+    pub status: String,
+}
+
 /// The user's projection for the year, typed in the scenario form.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]

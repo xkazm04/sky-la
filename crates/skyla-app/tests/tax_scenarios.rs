@@ -66,3 +66,27 @@ fn a_bad_projection_is_refused_with_the_reason() {
     p.flat_rate = Some("lawyer".into());
     assert!(core.income_tax_scenarios(Some(&p)).is_err());
 }
+
+#[test]
+fn the_calendar_marks_the_next_deadline_from_the_as_of_date() {
+    let core = Core::demo().unwrap();
+    let all = core.obligations(2026).unwrap();
+    // As of 7 October: the health advance for September was due on the 8th.
+    let next: Vec<_> = all.iter().filter(|o| o.status == "next").collect();
+    assert_eq!(next.len(), 1);
+    assert_eq!(
+        (next[0].obligation.as_str(), next[0].due.as_str()),
+        ("insurance.health.advance", "2026-10-08")
+    );
+    let vat = all
+        .iter()
+        .find(|o| o.obligation == "vat.return.monthly" && o.period == "2026-09")
+        .unwrap();
+    assert!(vat.shifted && vat.due == "2026-10-26" && vat.status == "upcoming");
+    assert!(vat.citation.starts_with("Zákon č. 235/2004 Sb."));
+    assert!(
+        all.iter()
+            .filter(|o| o.due.as_str() < "2026-10-07")
+            .all(|o| o.status == "past")
+    );
+}

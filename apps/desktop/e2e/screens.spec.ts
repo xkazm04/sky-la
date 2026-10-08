@@ -231,6 +231,22 @@ test("the scenario engine compares actual and flat-rate expenses, side effects i
   await expect(form.getByRole("alert")).toContainText("isn't an amount");
 });
 
+test("the obligations calendar comes from the pack and moves deadlines past holidays", async ({
+  page,
+}) => {
+  await page.goto("/#/taxes/calendar");
+  const inspector = page.getByRole("complementary", { name: "Obligations calendar 2026" });
+  const may = inspector.getByRole("list", { name: "Deadlines in May" });
+  await expect(may).toContainText("Income tax return (DPFO), filed electronically");
+  await expect(may).toContainText("moved from 1 May");
+  const october = inspector.getByRole("list", { name: "Deadlines in October" });
+  await expect(october.getByRole("listitem").filter({ hasText: "Next" })).toContainText(
+    "Health insurance advance",
+  );
+  await expect(october).toContainText("moved from 25 Oct");
+  await axeClean(page);
+});
+
 test("an invoice exports as a PDF the core rendered, with the QR Platba code", async ({ page }) => {
   await page.goto("/#/invoices/2026-102");
   const inspector = page.getByRole("complementary", { name: "Invoice 2026-102" });

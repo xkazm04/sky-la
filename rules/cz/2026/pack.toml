@@ -23,6 +23,8 @@ omitted = [
   "social and health insurance minimum assessment bases and advances for 2026: need the 2026 average wage",
   "sickness insurance for OSVČ: rate and base not verified",
   "depreciation groups and first-year rates (§ 30–31 ZDP): not yet in the pack",
+  "insurance overviews (přehledy) for ČSSZ and the health insurer: their deadline depends on when the tax return was filed",
+  "souhrnné hlášení: needs an EU-supply VAT code first",
   "paušální daň bands for 2026: need the 2026 amounts",
   "ČNB repo rate: reference data (imported or fetched), not statutory pack data",
 ]
@@ -296,6 +298,69 @@ value = "true"
 effective_from = "2011-01-01"
 cite = { act = "dr", section = "§ 33 odst. 4" }
 note = "A deadline ending on a Saturday, Sunday or public holiday moves to the next working day."
+
+# ── Obligations (the calendar) ─────────────────────────────────────────────
+# `applies_to` names entity facts: `osvc` (self-employed person),
+# `vat_monthly` / `vat_quarterly` (VAT payer by tax period). Deadlines move
+# to the next working day by `deadline.shift_to_next_working_day`.
+
+[[obligation]]
+id = "vat.return.monthly"
+name = "DPH return and payment"
+action = "file_and_pay"
+applies_to = ["vat_monthly"]
+frequency = "monthly"
+due = { days_after_period = "vat.return.due_days_after_period" }
+cite = { act = "zdph", section = "§ 101 odst. 1" }
+
+[[obligation]]
+id = "vat.control_statement.monthly"
+name = "Kontrolní hlášení"
+action = "file"
+applies_to = ["vat_monthly"]
+frequency = "monthly"
+due = { days_after_period = "vat.control_statement.due_days_after_period" }
+cite = { act = "zdph", section = "§ 101e odst. 1" }
+
+[[obligation]]
+id = "income_tax.return.paper"
+name = "Income tax return (DPFO), on paper"
+action = "file_and_pay"
+applies_to = ["osvc"]
+frequency = "yearly"
+due = { month_offset = 4, day = 1 }
+cite = { act = "dr", section = "§ 136 odst. 1; běh lhůty § 33 odst. 2" }
+note = "Three months after the year ends: 1 April."
+
+[[obligation]]
+id = "income_tax.return.electronic"
+name = "Income tax return (DPFO), filed electronically"
+action = "file_and_pay"
+applies_to = ["osvc"]
+frequency = "yearly"
+due = { month_offset = 5, day = 1 }
+cite = { act = "dr", section = "§ 136 odst. 2 písm. c)" }
+note = "One month later when filed electronically (or by a tax adviser, three months later still)."
+
+[[obligation]]
+id = "insurance.social.advance"
+name = "Social insurance advance"
+action = "pay"
+applies_to = ["osvc"]
+frequency = "monthly"
+due = { month_offset = 1, day = 20 }
+cite = { act = "zos", section = "§ 14a odst. 2" }
+note = "The advance for a month is due by the 20th of the next month."
+
+[[obligation]]
+id = "insurance.health.advance"
+name = "Health insurance advance"
+action = "pay"
+applies_to = ["osvc"]
+frequency = "monthly"
+due = { month_offset = 1, day = 8 }
+cite = { act = "zvzp", section = "§ 7 odst. 1 písm. b)" }
+note = "The advance for a month is due by the 8th of the next month."
 
 # ── VAT codes and the return's rows ────────────────────────────────────────
 # A posting's vat_code names one of these. `rows` map its base and tax onto

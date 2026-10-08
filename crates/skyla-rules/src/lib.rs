@@ -8,10 +8,12 @@
 
 #![deny(clippy::float_arithmetic)]
 
+mod calendar;
 pub mod date;
 pub mod refdata;
 mod update;
 
+pub use calendar::{Deadline, Due, Frequency, Obligation};
 pub use update::{UpdateError, verify_pack_update};
 
 use std::collections::{BTreeMap, HashMap};
@@ -254,6 +256,8 @@ struct PackFile {
     vat_codes: Vec<VatCode>,
     #[serde(rename = "holiday", default)]
     holidays: Vec<Holiday>,
+    #[serde(rename = "obligation", default)]
+    obligations: Vec<Obligation>,
 }
 
 /// A validated rule pack.
@@ -268,6 +272,8 @@ pub struct Pack {
     pub vat_codes: Vec<VatCode>,
     /// Public holidays.
     pub holidays: Vec<Holiday>,
+    /// Recurring returns and payments, for the calendar.
+    pub obligations: Vec<Obligation>,
 }
 
 fn is_date(s: &str) -> bool {
@@ -456,6 +462,17 @@ impl Pack {
             }
         }
 
+        let mut ids = std::collections::HashSet::new();
+        for o in &file.obligations {
+            check_cite(&format!("obligation {}", o.id), &o.cite, &mut problems);
+            if !ids.insert(o.id.clone()) {
+                problems.push(format!("obligation {}: duplicate", o.id));
+            }
+            problems.extend(calendar::check(o, |key| {
+                values.get(key).and_then(|l| l.first()).map(|v| v.kind)
+            }));
+        }
+
         if !problems.is_empty() {
             return Err(RulesError::Invalid(problems));
         }
@@ -465,6 +482,7 @@ impl Pack {
             values,
             vat_codes: file.vat_codes,
             holidays: file.holidays,
+            obligations: file.obligations,
         })
     }
 

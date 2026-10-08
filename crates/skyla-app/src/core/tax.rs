@@ -15,8 +15,8 @@ use skyla_tax_cz::{
 
 use super::{Core, money};
 use crate::dto::{
-    ControlStatementDto, KhCRowDto, KhItemDto, KhTotalsDto, TaxProjectionDto, TaxScenarioDto,
-    TaxScenariosDto,
+    ControlStatementDto, KhCRowDto, KhItemDto, KhTotalsDto, ObligationDto, TaxProjectionDto,
+    TaxScenarioDto, TaxScenariosDto,
 };
 use crate::error::CoreError;
 
@@ -423,5 +423,63 @@ impl Core {
             assumptions,
             pack: self.pack.provenance(),
         })
+    }
+}
+
+impl Core {
+    /// The entity facts the pack's obligations are keyed by.
+    fn obligation_facts(&self) -> Vec<&'static str> {
+        let e = &self.domain.entity;
+        let mut facts = Vec::new();
+        if e.legal_form == "OSVČ" {
+            facts.push("osvc");
+        }
+        match e.vat_period.as_str() {
+            "monthly" => facts.push("vat_monthly"),
+            "quarterly" => facts.push("vat_quarterly"),
+            _ => {}
+        }
+        facts
+    }
+
+    /// Every deadline of `year` from the pack, with where each comes from.
+    pub fn obligations(&self, year: i32) -> Result<Vec<ObligationDto>, CoreError> {
+        let as_of = &self.domain.entity.as_of;
+        let deadlines = self
+            .pack
+            .calendar(i64::from(year), &self.obligation_facts())?;
+        let next = deadlines
+            .iter()
+            .map(|d| d.due.as_str())
+            .find(|due| *due >= as_of.as_str())
+            .map(str::to_owned);
+        Ok(deadlines
+            .into_iter()
+            .map(|d| {
+                let act = self
+                    .pack
+                    .acts
+                    .get(&d.cite.act)
+                    .map_or(d.cite.act.clone(), |a| a.name.clone());
+                let status = if d.due.as_str() < as_of.as_str() {
+                    "past"
+                } else if Some(&d.due) == next.as_ref() {
+                    "next"
+                } else {
+                    "upcoming"
+                };
+                ObligationDto {
+                    shifted: d.nominal != d.due,
+                    obligation: d.obligation,
+                    name: d.name,
+                    action: d.action,
+                    period: d.period,
+                    nominal: d.nominal,
+                    due: d.due,
+                    citation: format!("{act}, {}", d.cite.section),
+                    status: status.to_owned(),
+                }
+            })
+            .collect())
     }
 }

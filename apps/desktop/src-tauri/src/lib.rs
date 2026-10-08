@@ -5,9 +5,9 @@
 use skyla_app::dto::{
     AppInfo, BalanceSheetDto, BankAllocationDto, BankRuleInputDto, BankStatementDto, CashBasisDto,
     ControlStatementDto, DocumentPdfDto, DocumentXmlDto, DunningNoticeDto, EgressRunDto, EntityDto,
-    IntegrityDto, InvoiceDraftDto, InvoiceDto, InvoiceFormDto, JournalEntryDto, PackUpdateDto,
-    PeriodDto, ProfitAndLossDto, ProposalDto, RecurringTemplateDto, RefDataDto, RulePackDto,
-    TaxProjectionDto, TaxScenariosDto, TrialBalanceDto, VatReturnDto,
+    IntegrityDto, InvoiceDraftDto, InvoiceDto, InvoiceFormDto, JournalEntryDto, ObligationDto,
+    PackUpdateDto, PeriodDto, ProfitAndLossDto, ProposalDto, RecurringTemplateDto, RefDataDto,
+    RulePackDto, TaxProjectionDto, TaxScenariosDto, TrialBalanceDto, VatReturnDto,
 };
 use skyla_app::{Core, IpcFailure};
 use tauri::{Runtime, State};
@@ -136,6 +136,13 @@ fn income_tax_scenarios(
     projection: Option<TaxProjectionDto>,
 ) -> Answer<TaxScenariosDto> {
     Ok(core.income_tax_scenarios(projection.as_ref())?)
+}
+
+/// The obligations calendar for a year, from the pack.
+#[tauri::command]
+#[specta::specta]
+fn obligations(core: State<'_, Core>, year: i32) -> Answer<Vec<ObligationDto>> {
+    Ok(core.obligations(year)?)
 }
 
 /// The rule pack in force, with citations.
@@ -305,6 +312,7 @@ pub fn specta_builder<R: Runtime>() -> Builder<R> {
             vat_return,
             control_statement,
             income_tax_scenarios,
+            obligations,
             rule_pack,
             invoice_pdf,
             invoice_xml,

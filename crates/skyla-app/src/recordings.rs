@@ -252,6 +252,7 @@ pub fn canonical_requests() -> Vec<(&'static str, Value)> {
         ("recurring_templates", json!({})),
         ("reference_data", json!({})),
         ("income_tax_scenarios", json!({ "projection": null })),
+        ("obligations", json!({ "year": 2026 })),
         (
             "income_tax_scenarios",
             json!({ "projection": review_projection() }),
@@ -414,6 +415,17 @@ pub fn dispatch(core: &Core, command: &str, args: &Value) -> Result<Value, IpcFa
                 ),
             };
             to_value(core.income_tax_scenarios(projection.as_ref()))
+        }
+        "obligations" => {
+            let year = args
+                .get("year")
+                .and_then(Value::as_i64)
+                .and_then(|y| i32::try_from(y).ok())
+                .ok_or_else(|| IpcFailure {
+                    code: "bad_request".into(),
+                    message: "year must be a number".into(),
+                })?;
+            to_value(core.obligations(year))
         }
         "control_statement" => {
             to_value(core.control_statement(arg(args, "from")?, arg(args, "to")?))

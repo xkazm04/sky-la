@@ -49,6 +49,8 @@ export const commands = {
 	/**  Its price excluding claimable VAT (empty for none). */
 	purchasePrice: string,
 } | null) => typedError<TaxScenariosDto, IpcFailure>(__TAURI_INVOKE("income_tax_scenarios", { projection })),
+	/**  The obligations calendar for a year, from the pack. */
+	obligations: (year: number) => typedError<ObligationDto[], IpcFailure>(__TAURI_INVOKE("obligations", { year })),
 	/**  The rule pack in force, with citations. */
 	rulePack: () => __TAURI_INVOKE<RulePackDto>("rule_pack"),
 	/**  A document rendered to PDF (`cs` or `en`), base64-encoded. */
@@ -702,6 +704,28 @@ export type MoneyDto = {
 	minor: number,
 	/**  ISO 4217 code. */
 	currency: string,
+};
+
+/**  One deadline in the obligations calendar. */
+export type ObligationDto = {
+	/**  The pack's obligation id. */
+	obligation: string,
+	/**  For people. */
+	name: string,
+	/**  `file`, `pay` or `file_and_pay`. */
+	action: string,
+	/**  `2026-09`, `2026-Q3` or `2025`. */
+	period: string,
+	/**  The date the rule gives. */
+	nominal: string,
+	/**  The deadline, after any shift. */
+	due: string,
+	/**  It moved past a weekend or holiday. */
+	shifted: boolean,
+	/**  Act and provision. */
+	citation: string,
+	/**  `past`, `next` or `upcoming`, against the as-of date. */
+	status: string,
 };
 
 /**  A verified pack update. */
