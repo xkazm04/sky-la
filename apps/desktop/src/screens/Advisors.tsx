@@ -8,12 +8,14 @@ import {
   Inspector,
   InspectorSection,
   type TableColumn,
+  type Tone,
   Toolbar,
 } from "@skyla/ui";
-import { useQuery } from "../data";
+import { invalidateAll, useQuery } from "../data";
 import { moment } from "../format";
 import { navigate } from "../router";
 import { InspectorPane } from "../shell/Shell";
+import { AdvisorConnection, connectionBadge } from "./AdvisorConnection";
 import { Loaded, Reasons, TwoLine } from "./common";
 
 interface Advisor {
@@ -52,7 +54,7 @@ const ADVISORS: Advisor[] = [
   },
 ];
 
-const columns: TableColumn<Advisor>[] = [
+const columns = (status: { tone: Tone; label: string }): TableColumn<Advisor>[] => [
   {
     id: "name",
     title: "Advisor",
@@ -63,13 +65,15 @@ const columns: TableColumn<Advisor>[] = [
     id: "status",
     title: "Status",
     width: "12rem",
-    cell: () => <Badge tone="neutral">Demo · not connected</Badge>,
+    cell: () => <Badge tone={status.tone}>{status.label}</Badge>,
   },
 ];
 
 /** Advisors: what each one can read and propose, and what it sent. */
 export function AdvisorsScreen({ item }: { item: string | null }) {
   const runs = useQuery("egress_register", () => commands.egressRegister());
+  const status = useQuery("advisor_status", () => commands.advisorStatus());
+  const connection = status.state === "ready" ? status.data : undefined;
   const proposals = useQuery("proposals", () => unwrap(commands.proposals()));
   const selected = ADVISORS.find((a) => a.id === item) ?? ADVISORS[0];
   return (
@@ -83,14 +87,15 @@ export function AdvisorsScreen({ item }: { item: string | null }) {
       <ContentGroup>
         <DataTable
           label="Advisors"
-          columns={columns}
+          columns={columns(connectionBadge(connection))}
           sections={[
             { id: "advisors", title: "Uses your Claude Code installation", rows: ADVISORS },
           ]}
           selectedId={selected?.id ?? null}
           onSelect={(id) => navigate("advisors", id, true)}
         />
-        <div className="px-5 py-4 text-footnote text-ink-secondary">
+        {connection && <AdvisorConnection status={connection} onCheckAgain={invalidateAll} />}
+        <div className="px-5 pb-4 text-footnote text-ink-secondary">
           sky-la runs the <code className="font-sans">claude</code> command you installed, signed in
           from your terminal with <span className="font-medium text-ink">claude auth login</span>.
           It never sees your Claude credentials, and every prompt and tool result passes the egress

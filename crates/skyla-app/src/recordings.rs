@@ -253,6 +253,7 @@ pub fn canonical_requests() -> Vec<(&'static str, Value)> {
         ("reference_data", json!({})),
         ("income_tax_scenarios", json!({ "projection": null })),
         ("obligations", json!({ "year": 2026 })),
+        ("advisor_status", json!({})),
         (
             "income_tax_scenarios",
             json!({ "projection": review_projection() }),
@@ -416,6 +417,7 @@ pub fn dispatch(core: &Core, command: &str, args: &Value) -> Result<Value, IpcFa
             };
             to_value(core.income_tax_scenarios(projection.as_ref()))
         }
+        "advisor_status" => to_value(Ok(core.advisor_status())),
         "obligations" => {
             let year = args
                 .get("year")

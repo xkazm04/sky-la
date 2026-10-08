@@ -20,6 +20,7 @@ const VAT_ACCOUNTS: &[&str] = &["343"];
 /// The namespace of the demo's draft and posting ids (UUID v5).
 const DEMO_POSTING_NAMESPACE: uuid::Uuid = uuid::uuid!("5d2b8f61-0c7e-5a93-b4d1-7e3f9a2c6b08");
 
+mod advisor;
 mod bank;
 pub mod refdata;
 mod tax;
@@ -39,6 +40,8 @@ pub struct Core {
     drafts_created: std::sync::atomic::AtomicU64,
     /// The bank workbench: imports, rules, bookings.
     bank: Mutex<bank::BankState>,
+    /// The model provider advisors run on.
+    provider: Mutex<Box<dyn skyla_advisor::LlmProvider>>,
 }
 
 fn money(m: Money) -> Result<MoneyDto, CoreError> {
@@ -135,6 +138,13 @@ impl Core {
             refdata: Mutex::new(refdata::RefData::new(refdata::https_fetcher())),
             drafts_created: std::sync::atomic::AtomicU64::new(0),
             bank: Mutex::new(bank::BankState::default()),
+            // The demo answers from recorded runs; the desktop shell swaps in
+            // the user's own Claude Code CLI.
+            provider: Mutex::new(Box::new(skyla_advisor::Fake::new().available(
+                skyla_advisor::Availability::Ready {
+                    version: "demo".into(),
+                },
+            ))),
         };
         // The demo's first October statement, imported but not yet booked.
         core.import_bytes(

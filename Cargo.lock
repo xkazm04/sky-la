@@ -4773,6 +4773,7 @@ version = "0.1.0"
 dependencies = [
  "serde",
  "serde_json",
+ "tempfile",
  "thiserror 2.0.21",
 ]
 
@@ -4784,6 +4785,7 @@ dependencies = [
  "rusqlite",
  "serde",
  "serde_json",
+ "skyla-advisor",
  "skyla-bank",
  "skyla-invoicing",
  "skyla-ledger",
@@ -4817,6 +4819,7 @@ version = "0.1.0"
 dependencies = [
  "serde",
  "serde_json",
+ "skyla-advisor",
  "skyla-app",
  "specta",
  "specta-typescript",

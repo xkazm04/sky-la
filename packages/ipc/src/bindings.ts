@@ -51,6 +51,8 @@ export const commands = {
 } | null) => typedError<TaxScenariosDto, IpcFailure>(__TAURI_INVOKE("income_tax_scenarios", { projection })),
 	/**  The obligations calendar for a year, from the pack. */
 	obligations: (year: number) => typedError<ObligationDto[], IpcFailure>(__TAURI_INVOKE("obligations", { year })),
+	/**  Whether advisors can run, and what to do if not. */
+	advisorStatus: () => __TAURI_INVOKE<AdvisorStatusDto>("advisor_status"),
 	/**  The rule pack in force, with citations. */
 	rulePack: () => __TAURI_INVOKE<RulePackDto>("rule_pack"),
 	/**  A document rendered to PDF (`cs` or `en`), base64-encoded. */
@@ -96,6 +98,22 @@ export type AccountChoiceDto = {
 	code: string,
 	/**  Name. */
 	name: string,
+};
+
+/**  Whether advisors can run, and what to do if not. */
+export type AdvisorStatusDto = {
+	/**  `claude-code-cli` or `fake`. */
+	provider: string,
+	/**  `ready`, `not_installed`, `not_signed_in` or `rate_limited`. */
+	state: string,
+	/**  What the provider reports about itself, when ready. */
+	version: string | null,
+	/**  Where the CLI was looked for, when it wasn't found. */
+	lookedIn: string[],
+	/**  When a usage limit resets (UTC, RFC 3339), if known. */
+	resetsAt: string | null,
+	/**  Runs replay recordings; no model is called. */
+	demo: boolean,
 };
 
 /**  Build information. */

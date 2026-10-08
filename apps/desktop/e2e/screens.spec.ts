@@ -247,6 +247,14 @@ test("the obligations calendar comes from the pack and moves deadlines past holi
   await axeClean(page);
 });
 
+test("the advisors say what they run on, from the core's provider status", async ({ page }) => {
+  await page.goto("/#/advisors/tax");
+  const connection = page.getByRole("region", { name: "Advisor connection" });
+  await expect(connection).toContainText("Demo · recorded runs");
+  await expect(connection).toContainText("no model is called");
+  await expect(page.getByRole("grid", { name: "Advisors" })).toContainText("Demo · recorded runs");
+});
+
 test("an invoice exports as a PDF the core rendered, with the QR Platba code", async ({ page }) => {
   await page.goto("/#/invoices/2026-102");
   const inspector = page.getByRole("complementary", { name: "Invoice 2026-102" });

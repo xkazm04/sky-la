@@ -90,3 +90,33 @@ fn the_calendar_marks_the_next_deadline_from_the_as_of_date() {
             .all(|o| o.status == "past")
     );
 }
+
+#[test]
+fn the_advisor_status_names_each_state() {
+    use skyla_advisor::{Availability, Fake};
+    let core = Core::demo().unwrap();
+    let s = core.advisor_status();
+    assert_eq!((s.state.as_str(), s.demo), ("ready", true));
+    for (availability, state) in [
+        (
+            Availability::NotInstalled {
+                looked_in: vec!["/usr/bin/claude".into()],
+            },
+            "not_installed",
+        ),
+        (Availability::NotSignedIn, "not_signed_in"),
+        (
+            Availability::RateLimited {
+                resets_at: Some("1791806400".into()),
+            },
+            "rate_limited",
+        ),
+    ] {
+        core.replace_provider(Box::new(Fake::new().available(availability)));
+        assert_eq!(core.advisor_status().state, state);
+    }
+    assert_eq!(
+        core.advisor_status().resets_at.as_deref(),
+        Some("2026-10-12T12:00:00Z")
+    );
+}

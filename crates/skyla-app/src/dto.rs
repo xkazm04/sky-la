@@ -910,6 +910,24 @@ pub struct PackUpdateDto {
     pub message: String,
 }
 
+/// Whether advisors can run, and what to do if not.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct AdvisorStatusDto {
+    /// `claude-code-cli` or `fake`.
+    pub provider: String,
+    /// `ready`, `not_installed`, `not_signed_in` or `rate_limited`.
+    pub state: String,
+    /// What the provider reports about itself, when ready.
+    pub version: Option<String>,
+    /// Where the CLI was looked for, when it wasn't found.
+    pub looked_in: Vec<String>,
+    /// When a usage limit resets (UTC, RFC 3339), if known.
+    pub resets_at: Option<String>,
+    /// Runs replay recordings; no model is called.
+    pub demo: bool,
+}
+
 /// One deadline in the obligations calendar.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]

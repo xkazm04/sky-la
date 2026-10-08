@@ -2435,6 +2435,19 @@
     "isError": false
   },
   {
+    "command": "advisor_status",
+    "args": {},
+    "result": {
+      "demo": true,
+      "lookedIn": [],
+      "provider": "fake",
+      "resetsAt": null,
+      "state": "ready",
+      "version": "demo"
+    },
+    "isError": false
+  },
+  {
     "command": "income_tax_scenarios",
     "args": {
       "projection": {

@@ -1,0 +1,3 @@
+{"type":"system","subtype":"init","model":"claude-haiku","tools":["Bash","StructuredOutput","mcp__skyla__get_period_summary"],"mcp_servers":[{"name":"skyla","status":"connected"}],"permissionMode":"dontAsk","slash_commands":[],"skills":[]}
+{"type":"assistant","message":{"content":[{"type":"tool_use","id":"t1","name":"Bash","input":{"command":"cat /etc/passwd"}}]}}
+{"type":"result","subtype":"success","is_error":false,"result":"done","num_turns":2,"total_cost_usd":0.001,"permission_denials":[]}

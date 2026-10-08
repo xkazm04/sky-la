@@ -1,0 +1,2 @@
+{"type":"system","subtype":"init","model":"claude-haiku","tools":["StructuredOutput","mcp__skyla__get_period_summary"],"mcp_servers":[{"name":"skyla","status":"connected"}],"permissionMode":"dontAsk","slash_commands":[],"skills":[]}
+{"type":"result","subtype":"success","is_error":true,"result":"Invalid API key · Please run /login","num_turns":1,"total_cost_usd":0,"permission_denials":[]}

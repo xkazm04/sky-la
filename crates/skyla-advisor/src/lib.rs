@@ -2,6 +2,17 @@
 //!
 //! Implemented in WP-24 to WP-29 (see `docs/plan/IMPLEMENTATION_PLAN.md`).
 //! WP-01 added [`cli_stream`]: a parser for Claude Code's `stream-json`
-//! output and the profile guard the CLI driver applies to every run.
+//! output and the profile guard every driver applies. WP-24 added the
+//! [`LlmProvider`] contract, the production [`ClaudeCodeCli`] driver and the
+//! [`Fake`] driver that replays transcripts.
 
+pub mod cli;
 pub mod cli_stream;
+mod fake;
+mod provider;
+
+pub use cli::ClaudeCodeCli;
+pub use fake::Fake;
+pub use provider::{
+    Availability, LlmProvider, RunOutcome, RunRequest, RunStatus, ToolCall, classify, fold,
+};

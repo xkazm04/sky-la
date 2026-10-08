@@ -3,11 +3,12 @@
 //! signatures and types to `packages/ipc/src/bindings.ts`.
 
 use skyla_app::dto::{
-    AppInfo, BalanceSheetDto, BankAllocationDto, BankRuleInputDto, BankStatementDto, CashBasisDto,
-    ControlStatementDto, DocumentPdfDto, DocumentXmlDto, DunningNoticeDto, EgressRunDto, EntityDto,
-    IntegrityDto, InvoiceDraftDto, InvoiceDto, InvoiceFormDto, JournalEntryDto, ObligationDto,
-    PackUpdateDto, PeriodDto, ProfitAndLossDto, ProposalDto, RecurringTemplateDto, RefDataDto,
-    RulePackDto, TaxProjectionDto, TaxScenariosDto, TrialBalanceDto, VatReturnDto,
+    AdvisorStatusDto, AppInfo, BalanceSheetDto, BankAllocationDto, BankRuleInputDto,
+    BankStatementDto, CashBasisDto, ControlStatementDto, DocumentPdfDto, DocumentXmlDto,
+    DunningNoticeDto, EgressRunDto, EntityDto, IntegrityDto, InvoiceDraftDto, InvoiceDto,
+    InvoiceFormDto, JournalEntryDto, ObligationDto, PackUpdateDto, PeriodDto, ProfitAndLossDto,
+    ProposalDto, RecurringTemplateDto, RefDataDto, RulePackDto, TaxProjectionDto, TaxScenariosDto,
+    TrialBalanceDto, VatReturnDto,
 };
 use skyla_app::{Core, IpcFailure};
 use tauri::{Runtime, State};
@@ -143,6 +144,13 @@ fn income_tax_scenarios(
 #[specta::specta]
 fn obligations(core: State<'_, Core>, year: i32) -> Answer<Vec<ObligationDto>> {
     Ok(core.obligations(year)?)
+}
+
+/// Whether advisors can run, and what to do if not.
+#[tauri::command]
+#[specta::specta]
+fn advisor_status(core: State<'_, Core>) -> AdvisorStatusDto {
+    core.advisor_status()
 }
 
 /// The rule pack in force, with citations.
@@ -313,6 +321,7 @@ pub fn specta_builder<R: Runtime>() -> Builder<R> {
             control_statement,
             income_tax_scenarios,
             obligations,
+            advisor_status,
             rule_pack,
             invoice_pdf,
             invoice_xml,
@@ -360,6 +369,8 @@ pub fn export_bindings(path: &std::path::Path) -> Result<(), specta_typescript::
 pub fn run() {
     let builder = specta_builder::<tauri::Wry>();
     let core = Core::demo().expect("the demo entity failed to open");
+    // Advisors run on the user's own, unmodified `claude` binary.
+    core.replace_provider(Box::new(skyla_advisor::ClaudeCodeCli::from_system()));
     tauri::Builder::default()
         .manage(core)
         .invoke_handler(builder.invoke_handler())
