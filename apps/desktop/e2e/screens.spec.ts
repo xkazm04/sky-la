@@ -31,6 +31,21 @@ const SCREENS = [
   { route: "settings", title: "Settings" },
 ] as const;
 
+// Every test runs clean: an error the page throws or logs (React's recovered
+// render errors included) fails it, even when the screen looks right.
+const pageErrors = new WeakMap<Page, string[]>();
+test.beforeEach(({ page }) => {
+  const errors: string[] = [];
+  pageErrors.set(page, errors);
+  page.on("pageerror", (e) => errors.push(e.message));
+  page.on("console", (m) => {
+    if (m.type() === "error") errors.push(m.text());
+  });
+});
+test.afterEach(({ page }) => {
+  expect(pageErrors.get(page) ?? [], "errors in the page").toEqual([]);
+});
+
 async function axeClean(page: Page) {
   const results = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
@@ -724,4 +739,43 @@ test("the update check is opt-in and needs a release key", async ({ page }) => {
   );
   await inspector.getByText("Allow checking github.com").click();
   await expect(toggle).not.toBeChecked();
+});
+
+// Real books start with no customers: a draft can add one, and the core
+// checks it like everything else (skyla_app::recordings, "new-customer").
+test("a draft adds a new customer, checked by the core", async ({ page }) => {
+  await page.goto("/#/invoices/new");
+  await settle(page);
+  const form = page.getByRole("form", { name: "New invoice" });
+  await form.getByRole("button", { name: /Customer/ }).click();
+  await page.getByRole("option", { name: /New customer/ }).click();
+  await form.getByLabel("Customer's legal name").fill("Northwind Traders s.r.o.");
+  await form.getByLabel("IČO").fill("12345678");
+  await form.getByLabel("DIČ").fill("12");
+  await form.getByLabel("Line 1 description").fill("UX audit");
+  await form.getByLabel("Line 1 quantity").fill("12");
+  await form.getByLabel("Line 1 unit price").fill("1 450,00");
+  await form.getByRole("button", { name: "Add line" }).click();
+  await form.getByLabel("Line 2 description").fill("Workshop");
+  await form.getByLabel("Line 2 unit", { exact: true }).fill("ks");
+  await form.getByLabel("Line 2 unit price").fill("8 000,00");
+  await form.getByLabel("Note on the invoice").fill("Děkuji za spolupráci.");
+  await page.getByRole("button", { name: "Save draft" }).click();
+  const alert = form.getByRole("alert");
+  await expect(alert).toContainText("already a customer");
+  await expect(alert).toContainText("IČO 12345678 isn't valid");
+  await expect(alert).toContainText("isn't a VAT number");
+  await expect(alert).toContainText("address");
+  await page.screenshot({ path: "test-results/screens/invoice-new-customer.png" });
+  await axeClean(page);
+
+  await form.getByLabel("Customer's legal name").fill("Lesní ateliér s.r.o.");
+  await form.getByLabel("IČO").fill("26965313");
+  await form.getByLabel("DIČ").fill("CZ26965313");
+  await form.getByLabel("Address, as printed on the invoice").fill("Jasmínová 12, 106 00 Praha 10");
+  await page.getByRole("button", { name: "Save draft" }).click();
+  await expect(page).toHaveURL(/#\/invoices\/draft-\d+$/);
+  await expect(page.getByRole("complementary", { name: "Draft invoice" })).toContainText(
+    "Lesní ateliér s.r.o.",
+  );
 });

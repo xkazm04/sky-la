@@ -63,6 +63,54 @@ pub struct Core {
     real: Option<entity::RealEntity>,
 }
 
+/// A new customer as typed, trimmed and checked; problems go to `problems`.
+fn new_customer(new: &ClientDto, known: &[ClientDto], problems: &mut Vec<String>) -> ClientDto {
+    let trimmed = |s: &Option<String>| {
+        s.as_deref()
+            .map(str::trim)
+            .filter(|s| !s.is_empty())
+            .map(str::to_owned)
+    };
+    let fresh = ClientDto {
+        name: new.name.trim().to_owned(),
+        ico: trimmed(&new.ico).map(|i| i.replace(' ', "")),
+        dic: trimmed(&new.dic).map(|d| d.replace(' ', "").to_uppercase()),
+        address: trimmed(&new.address),
+    };
+    if fresh.name.is_empty() {
+        problems.push("enter the new customer's name".into());
+    } else if known
+        .iter()
+        .any(|c| c.name.to_lowercase() == fresh.name.to_lowercase())
+    {
+        problems.push(format!(
+            "{} is already a customer: pick them from the list",
+            fresh.name
+        ));
+    }
+    if fresh.address.is_none() {
+        problems.push("enter the new customer's address, as printed on the invoice".into());
+    }
+    if let Some(ico) = &fresh.ico
+        && !skyla_invoicing::valid_ico(ico)
+    {
+        problems.push(format!("the new customer's IČO {ico} isn't valid"));
+    }
+    if let Some(dic) = &fresh.dic {
+        let (country, rest) = dic.split_at(dic.len().min(2));
+        if country.len() != 2
+            || !country.bytes().all(|b| b.is_ascii_uppercase())
+            || !(2..=12).contains(&rest.len())
+            || !rest.bytes().all(|b| b.is_ascii_alphanumeric())
+        {
+            problems.push(format!(
+                "the new customer's DIČ {dic} isn't a VAT number like CZ12345678"
+            ));
+        }
+    }
+    fresh
+}
+
 fn money(m: Money) -> Result<MoneyDto, CoreError> {
     MoneyDto::try_from(m)
 }
@@ -648,14 +696,25 @@ impl Core {
     pub fn create_invoice_draft(&self, draft: &InvoiceDraftDto) -> Result<InvoiceDto, CoreError> {
         let form = self.invoice_form()?;
         let mut problems = Vec::new();
-        let client = form.clients.iter().find(|c| c.name == draft.client);
-        if client.is_none() {
-            problems.push(if draft.client.is_empty() {
-                "pick a customer".to_owned()
-            } else {
-                format!("{:?} isn't a known customer", draft.client)
-            });
-        }
+        let client = match (
+            form.clients.iter().find(|c| c.name == draft.client),
+            &draft.new_client,
+        ) {
+            (Some(known), _) => Some(known.clone()),
+            (None, Some(new)) if draft.client.is_empty() => {
+                let before = problems.len();
+                let fresh = new_customer(new, &form.clients, &mut problems);
+                (problems.len() == before).then_some(fresh)
+            }
+            (None, _) => {
+                problems.push(if draft.client.is_empty() {
+                    "pick a customer".to_owned()
+                } else {
+                    format!("{:?} isn't a known customer", draft.client)
+                });
+                None
+            }
+        };
         if !form.due_days.contains(&draft.due_days) {
             problems.push(format!(
                 "payment terms of {} days aren't offered",
@@ -708,7 +767,7 @@ impl Core {
                 skyla_invoicing::InvoicingError::Invalid(problems),
             ));
         }
-        let client = client.cloned().unwrap_or_else(|| unreachable!());
+        let client = client.unwrap_or_else(|| unreachable!());
         let due = skyla_rules::date::parse(&form.today)
             .map(|d| skyla_rules::date::format(d + i64::from(draft.due_days)));
         let input = skyla_invoicing::DraftInput {

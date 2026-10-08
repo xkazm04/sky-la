@@ -834,8 +834,12 @@ pub struct VatCodeChoiceDto {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct InvoiceDraftDto {
-    /// A customer's legal name, as [`InvoiceFormDto::clients`] lists them.
+    /// A customer's legal name, as [`InvoiceFormDto::clients`] lists them;
+    /// empty for a new customer.
     pub client: String,
+    /// A customer not on any document yet, when `client` is empty. Saving
+    /// the draft adds them to the list.
+    pub new_client: Option<ClientDto>,
     /// Days from today to the due date.
     pub due_days: u16,
     /// Free text printed on the invoice.

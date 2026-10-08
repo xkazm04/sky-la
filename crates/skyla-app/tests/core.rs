@@ -203,3 +203,38 @@ fn rates_rounding_and_deadlines_come_from_the_rule_pack() {
     assert!(pack.values.iter().all(|v| v.url.starts_with("https://")));
     assert!(!pack.omitted.is_empty());
 }
+
+#[test]
+fn a_draft_can_add_a_new_customer_who_then_appears_in_the_list() {
+    let core = Core::demo().unwrap();
+    let mut draft: skyla_app::dto::InvoiceDraftDto =
+        serde_json::from_value(skyla_app::recordings::scripted_draft()).unwrap();
+    draft.client = String::new();
+    draft.new_client = Some(skyla_app::dto::ClientDto {
+        name: "Northwind Traders s.r.o.".into(),
+        ico: Some("12345678".into()),
+        dic: Some("12".into()),
+        address: None,
+    });
+    let refused = core.create_invoice_draft(&draft).unwrap_err().to_string();
+    for p in ["already a customer", "address", "IČO 12345678", "DIČ 12"] {
+        assert!(refused.contains(p), "{p}: {refused}");
+    }
+    draft.new_client = Some(skyla_app::dto::ClientDto {
+        name: " Lesní ateliér s.r.o. ".into(),
+        ico: Some("269 65 313".into()),
+        dic: Some("cz26965313".into()),
+        address: Some("Jasmínová 12, 106 00 Praha 10".into()),
+    });
+    let saved = core.create_invoice_draft(&draft).unwrap();
+    assert_eq!(saved.client, "Lesní ateliér s.r.o.");
+    let listed = core.invoice_form().unwrap().clients;
+    let added = listed
+        .iter()
+        .find(|c| c.name == "Lesní ateliér s.r.o.")
+        .unwrap();
+    assert_eq!(
+        (added.ico.as_deref(), added.dic.as_deref()),
+        (Some("26965313"), Some("CZ26965313"))
+    );
+}

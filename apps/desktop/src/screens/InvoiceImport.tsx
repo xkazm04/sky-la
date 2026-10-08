@@ -31,7 +31,7 @@ const STATUS: Record<string, { tone: Tone; label: string }> = {
 };
 
 const columns: ReadonlyArray<TableColumn<ImportDocumentDto>> = [
-  { id: "number", title: "Number", width: "8rem", cell: (d) => d.number },
+  { id: "number", title: "Number", width: "8rem", isRowHeader: true, cell: (d) => d.number },
   { id: "customer", title: "Customer", cell: (d) => d.customer },
   { id: "issued", title: "Issued", width: "5.5rem", cell: (d) => day(d.issueDate) },
   { id: "total", title: "Total", align: "end", width: "8.5rem", cell: (d) => money(d.total) },

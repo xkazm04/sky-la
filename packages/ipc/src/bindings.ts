@@ -754,8 +754,16 @@ export type InterestPeriodDto = {
 
 /**  A draft invoice as typed in the editor. The core parses and checks it. */
 export type InvoiceDraftDto = {
-	/**  A customer's legal name, as [`InvoiceFormDto::clients`] lists them. */
+	/**
+	 *  A customer's legal name, as [`InvoiceFormDto::clients`] lists them;
+	 *  empty for a new customer.
+	 */
 	client: string,
+	/**
+	 *  A customer not on any document yet, when `client` is empty. Saving
+	 *  the draft adds them to the list.
+	 */
+	newClient: ClientDto | null,
 	/**  Days from today to the due date. */
 	dueDays: number,
 	/**  Free text printed on the invoice. */

@@ -17,7 +17,8 @@ export interface TableColumn<T> {
   align?: "start" | "end";
   /** CSS width, e.g. `"8rem"` or `"30%"`. */
   width?: string;
-  /** The column that names the row for assistive technology (one per table). */
+  /** The column that names the row for assistive technology (one per table;
+   * the first column when none says so). */
   isRowHeader?: boolean;
   cell: (row: T) => ReactNode;
 }
@@ -85,11 +86,11 @@ export function DataTable<T extends object>({
       className={cx("w-full border-separate border-spacing-0 text-body outline-none", className)}
     >
       <TableHeader>
-        {columns.map((column) => (
+        {columns.map((column, i) => (
           <Column
             key={column.id}
             id={column.id}
-            isRowHeader={column.isRowHeader}
+            isRowHeader={column.isRowHeader ?? (i === 0 && !columns.some((c) => c.isRowHeader))}
             style={column.width ? { width: column.width } : undefined}
             className={cx(
               "sticky top-0 z-10 h-8 bg-surface px-3 font-medium text-footnote text-ink-secondary first:pl-5 last:pr-5",

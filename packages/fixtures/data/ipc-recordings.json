@@ -15881,6 +15881,845 @@
     "state": "update-check/off"
   },
   {
+    "command": "create_invoice_draft",
+    "args": {
+      "draft": {
+        "client": "",
+        "dueDays": 14,
+        "lines": [
+          {
+            "description": "UX audit",
+            "quantity": "12",
+            "unit": "h",
+            "unitPrice": "1 450,00",
+            "vatCode": "OUT21"
+          },
+          {
+            "description": "Workshop",
+            "quantity": "1",
+            "unit": "ks",
+            "unitPrice": "8 000,00",
+            "vatCode": "OUT21"
+          }
+        ],
+        "newClient": {
+          "address": "",
+          "dic": "12",
+          "ico": "12345678",
+          "name": "Northwind Traders s.r.o."
+        },
+        "note": "Děkuji za spolupráci."
+      }
+    },
+    "result": {
+      "code": "invoicing",
+      "message": "Northwind Traders s.r.o. is already a customer: pick them from the list; enter the new customer's address, as printed on the invoice; the new customer's IČO 12345678 isn't valid; the new customer's DIČ 12 isn't a VAT number like CZ12345678"
+    },
+    "isError": true,
+    "scenario": "new-customer"
+  },
+  {
+    "command": "create_invoice_draft",
+    "args": {
+      "draft": {
+        "client": "",
+        "dueDays": 14,
+        "lines": [
+          {
+            "description": "UX audit",
+            "quantity": "12",
+            "unit": "h",
+            "unitPrice": "1 450,00",
+            "vatCode": "OUT21"
+          },
+          {
+            "description": "Workshop",
+            "quantity": "1",
+            "unit": "ks",
+            "unitPrice": "8 000,00",
+            "vatCode": "OUT21"
+          }
+        ],
+        "newClient": {
+          "address": "Jasmínová 12, 106 00 Praha 10",
+          "dic": "CZ26965313",
+          "ico": "26965313",
+          "name": "Lesní ateliér s.r.o."
+        },
+        "note": "Děkuji za spolupráci."
+      }
+    },
+    "result": {
+      "base": {
+        "currency": "CZK",
+        "minor": 2540000
+      },
+      "client": "Lesní ateliér s.r.o.",
+      "credited": {
+        "currency": "CZK",
+        "minor": 0
+      },
+      "daysOverdue": null,
+      "dueOn": "2026-10-21",
+      "entryId": null,
+      "gross": {
+        "currency": "CZK",
+        "minor": 3073400
+      },
+      "id": 10,
+      "issuedOn": null,
+      "lines": [
+        {
+          "base": {
+            "currency": "CZK",
+            "minor": 1740000
+          },
+          "description": "UX audit",
+          "quantity": "12",
+          "unit": "h",
+          "unitPrice": {
+            "currency": "CZK",
+            "minor": 145000
+          },
+          "vat": {
+            "currency": "CZK",
+            "minor": 365400
+          },
+          "vatCode": "OUT21",
+          "vatRatePercent": "21"
+        },
+        {
+          "base": {
+            "currency": "CZK",
+            "minor": 800000
+          },
+          "description": "Workshop",
+          "quantity": "1",
+          "unit": "ks",
+          "unitPrice": {
+            "currency": "CZK",
+            "minor": 800000
+          },
+          "vat": {
+            "currency": "CZK",
+            "minor": 168000
+          },
+          "vatCode": "OUT21",
+          "vatRatePercent": "21"
+        }
+      ],
+      "number": null,
+      "open": {
+        "currency": "CZK",
+        "minor": 3073400
+      },
+      "pack": null,
+      "paid": {
+        "currency": "CZK",
+        "minor": 0
+      },
+      "paidOn": null,
+      "scheduledFor": null,
+      "status": "draft",
+      "vat": {
+        "currency": "CZK",
+        "minor": 533400
+      }
+    },
+    "isError": false,
+    "scenario": "new-customer",
+    "leadsTo": "new-customer/drafted"
+  },
+  {
+    "command": "invoices",
+    "args": {},
+    "result": [
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 2540000
+        },
+        "client": "Lesní ateliér s.r.o.",
+        "credited": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "daysOverdue": null,
+        "dueOn": "2026-10-21",
+        "entryId": null,
+        "gross": {
+          "currency": "CZK",
+          "minor": 3073400
+        },
+        "id": 10,
+        "issuedOn": null,
+        "lines": [
+          {
+            "base": {
+              "currency": "CZK",
+              "minor": 1740000
+            },
+            "description": "UX audit",
+            "quantity": "12",
+            "unit": "h",
+            "unitPrice": {
+              "currency": "CZK",
+              "minor": 145000
+            },
+            "vat": {
+              "currency": "CZK",
+              "minor": 365400
+            },
+            "vatCode": "OUT21",
+            "vatRatePercent": "21"
+          },
+          {
+            "base": {
+              "currency": "CZK",
+              "minor": 800000
+            },
+            "description": "Workshop",
+            "quantity": "1",
+            "unit": "ks",
+            "unitPrice": {
+              "currency": "CZK",
+              "minor": 800000
+            },
+            "vat": {
+              "currency": "CZK",
+              "minor": 168000
+            },
+            "vatCode": "OUT21",
+            "vatRatePercent": "21"
+          }
+        ],
+        "number": null,
+        "open": {
+          "currency": "CZK",
+          "minor": 3073400
+        },
+        "pack": null,
+        "paid": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "paidOn": null,
+        "scheduledFor": null,
+        "status": "draft",
+        "vat": {
+          "currency": "CZK",
+          "minor": 533400
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 14000000
+        },
+        "client": "Northwind Traders s.r.o.",
+        "credited": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "daysOverdue": null,
+        "dueOn": "2026-11-15",
+        "entryId": null,
+        "gross": {
+          "currency": "CZK",
+          "minor": 16940000
+        },
+        "id": 9,
+        "issuedOn": null,
+        "lines": [
+          {
+            "base": {
+              "currency": "CZK",
+              "minor": 14000000
+            },
+            "description": "Product design · October",
+            "quantity": "112",
+            "unit": "h",
+            "unitPrice": {
+              "currency": "CZK",
+              "minor": 125000
+            },
+            "vat": {
+              "currency": "CZK",
+              "minor": 2940000
+            },
+            "vatCode": "OUT21",
+            "vatRatePercent": "21"
+          }
+        ],
+        "number": null,
+        "open": {
+          "currency": "CZK",
+          "minor": 16940000
+        },
+        "pack": null,
+        "paid": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "paidOn": null,
+        "scheduledFor": "2026-11-01",
+        "status": "scheduled",
+        "vat": {
+          "currency": "CZK",
+          "minor": 2940000
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 8000000
+        },
+        "client": "Acme Analytics a.s.",
+        "credited": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "daysOverdue": null,
+        "dueOn": null,
+        "entryId": null,
+        "gross": {
+          "currency": "CZK",
+          "minor": 9680000
+        },
+        "id": 8,
+        "issuedOn": null,
+        "lines": [
+          {
+            "base": {
+              "currency": "CZK",
+              "minor": 8000000
+            },
+            "description": "Dashboard phase 3 · fixed fee",
+            "quantity": "1",
+            "unit": "pc",
+            "unitPrice": {
+              "currency": "CZK",
+              "minor": 8000000
+            },
+            "vat": {
+              "currency": "CZK",
+              "minor": 1680000
+            },
+            "vatCode": "OUT21",
+            "vatRatePercent": "21"
+          }
+        ],
+        "number": null,
+        "open": {
+          "currency": "CZK",
+          "minor": 9680000
+        },
+        "pack": null,
+        "paid": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "paidOn": null,
+        "scheduledFor": null,
+        "status": "draft",
+        "vat": {
+          "currency": "CZK",
+          "minor": 1680000
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 7000000
+        },
+        "client": "Northwind Traders s.r.o.",
+        "credited": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "daysOverdue": null,
+        "dueOn": "2026-09-29",
+        "entryId": 28,
+        "gross": {
+          "currency": "CZK",
+          "minor": 8470000
+        },
+        "id": 7,
+        "issuedOn": "2026-09-15",
+        "lines": [
+          {
+            "base": {
+              "currency": "CZK",
+              "minor": 7000000
+            },
+            "description": "Product design · September",
+            "quantity": "56",
+            "unit": "h",
+            "unitPrice": {
+              "currency": "CZK",
+              "minor": 125000
+            },
+            "vat": {
+              "currency": "CZK",
+              "minor": 1470000
+            },
+            "vatCode": "OUT21",
+            "vatRatePercent": "21"
+          }
+        ],
+        "number": "2026-114",
+        "open": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "pack": "cz-2026@2026.1",
+        "paid": {
+          "currency": "CZK",
+          "minor": 8470000
+        },
+        "paidOn": "2026-09-29",
+        "scheduledFor": null,
+        "status": "paid",
+        "vat": {
+          "currency": "CZK",
+          "minor": 1470000
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 8520000
+        },
+        "client": "Studio Brno s.r.o.",
+        "credited": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "daysOverdue": 13,
+        "dueOn": "2026-09-24",
+        "entryId": 27,
+        "gross": {
+          "currency": "CZK",
+          "minor": 10309200
+        },
+        "id": 6,
+        "issuedOn": "2026-08-25",
+        "lines": [
+          {
+            "base": {
+              "currency": "CZK",
+              "minor": 8520000
+            },
+            "description": "Website design",
+            "quantity": "71",
+            "unit": "h",
+            "unitPrice": {
+              "currency": "CZK",
+              "minor": 120000
+            },
+            "vat": {
+              "currency": "CZK",
+              "minor": 1789200
+            },
+            "vatCode": "OUT21",
+            "vatRatePercent": "21"
+          }
+        ],
+        "number": "2026-102",
+        "open": {
+          "currency": "CZK",
+          "minor": 5309200
+        },
+        "pack": "cz-2026@2026.1",
+        "paid": {
+          "currency": "CZK",
+          "minor": 5000000
+        },
+        "paidOn": null,
+        "scheduledFor": null,
+        "status": "overdue",
+        "vat": {
+          "currency": "CZK",
+          "minor": 1789200
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 16000000
+        },
+        "client": "Acme Analytics a.s.",
+        "credited": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "daysOverdue": null,
+        "dueOn": "2026-08-25",
+        "entryId": 26,
+        "gross": {
+          "currency": "CZK",
+          "minor": 19360000
+        },
+        "id": 5,
+        "issuedOn": "2026-08-11",
+        "lines": [
+          {
+            "base": {
+              "currency": "CZK",
+              "minor": 16000000
+            },
+            "description": "Dashboard phase 2 · fixed fee",
+            "quantity": "1",
+            "unit": "pc",
+            "unitPrice": {
+              "currency": "CZK",
+              "minor": 16000000
+            },
+            "vat": {
+              "currency": "CZK",
+              "minor": 3360000
+            },
+            "vatCode": "OUT21",
+            "vatRatePercent": "21"
+          }
+        ],
+        "number": "2026-097",
+        "open": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "pack": "cz-2026@2026.1",
+        "paid": {
+          "currency": "CZK",
+          "minor": 19360000
+        },
+        "paidOn": "2026-09-08",
+        "scheduledFor": null,
+        "status": "paid",
+        "vat": {
+          "currency": "CZK",
+          "minor": 3360000
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 14000000
+        },
+        "client": "Northwind Traders s.r.o.",
+        "credited": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "daysOverdue": null,
+        "dueOn": "2026-07-28",
+        "entryId": 25,
+        "gross": {
+          "currency": "CZK",
+          "minor": 16940000
+        },
+        "id": 4,
+        "issuedOn": "2026-07-14",
+        "lines": [
+          {
+            "base": {
+              "currency": "CZK",
+              "minor": 14000000
+            },
+            "description": "Product design · June and July",
+            "quantity": "112",
+            "unit": "h",
+            "unitPrice": {
+              "currency": "CZK",
+              "minor": 125000
+            },
+            "vat": {
+              "currency": "CZK",
+              "minor": 2940000
+            },
+            "vatCode": "OUT21",
+            "vatRatePercent": "21"
+          }
+        ],
+        "number": "2026-089",
+        "open": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "pack": "cz-2026@2026.1",
+        "paid": {
+          "currency": "CZK",
+          "minor": 16940000
+        },
+        "paidOn": "2026-08-04",
+        "scheduledFor": null,
+        "status": "paid",
+        "vat": {
+          "currency": "CZK",
+          "minor": 2940000
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 12100000
+        },
+        "client": "Studio Brno s.r.o.",
+        "credited": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "daysOverdue": null,
+        "dueOn": "2026-06-29",
+        "entryId": 4,
+        "gross": {
+          "currency": "CZK",
+          "minor": 14641000
+        },
+        "id": 3,
+        "issuedOn": "2026-06-15",
+        "lines": [
+          {
+            "base": {
+              "currency": "CZK",
+              "minor": 9500000
+            },
+            "description": "Brand refresh",
+            "quantity": "1",
+            "unit": "pc",
+            "unitPrice": {
+              "currency": "CZK",
+              "minor": 9500000
+            },
+            "vat": {
+              "currency": "CZK",
+              "minor": 1995000
+            },
+            "vatCode": "OUT21",
+            "vatRatePercent": "21"
+          },
+          {
+            "base": {
+              "currency": "CZK",
+              "minor": 2600000
+            },
+            "description": "Illustration set",
+            "quantity": "26",
+            "unit": "pc",
+            "unitPrice": {
+              "currency": "CZK",
+              "minor": 100000
+            },
+            "vat": {
+              "currency": "CZK",
+              "minor": 546000
+            },
+            "vatCode": "OUT21",
+            "vatRatePercent": "21"
+          }
+        ],
+        "number": "2026-073",
+        "open": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "pack": "cz-2026@2026.1",
+        "paid": {
+          "currency": "CZK",
+          "minor": 14641000
+        },
+        "paidOn": "2026-07-06",
+        "scheduledFor": null,
+        "status": "paid",
+        "vat": {
+          "currency": "CZK",
+          "minor": 2541000
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 15000000
+        },
+        "client": "Acme Analytics a.s.",
+        "credited": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "daysOverdue": null,
+        "dueOn": "2026-05-26",
+        "entryId": 3,
+        "gross": {
+          "currency": "CZK",
+          "minor": 18150000
+        },
+        "id": 2,
+        "issuedOn": "2026-05-12",
+        "lines": [
+          {
+            "base": {
+              "currency": "CZK",
+              "minor": 15000000
+            },
+            "description": "Analytics dashboard design · fixed fee",
+            "quantity": "1",
+            "unit": "pc",
+            "unitPrice": {
+              "currency": "CZK",
+              "minor": 15000000
+            },
+            "vat": {
+              "currency": "CZK",
+              "minor": 3150000
+            },
+            "vatCode": "OUT21",
+            "vatRatePercent": "21"
+          }
+        ],
+        "number": "2026-058",
+        "open": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "pack": "cz-2026@2026.1",
+        "paid": {
+          "currency": "CZK",
+          "minor": 18150000
+        },
+        "paidOn": "2026-06-02",
+        "scheduledFor": null,
+        "status": "paid",
+        "vat": {
+          "currency": "CZK",
+          "minor": 3150000
+        }
+      },
+      {
+        "base": {
+          "currency": "CZK",
+          "minor": 12000000
+        },
+        "client": "Northwind Traders s.r.o.",
+        "credited": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "daysOverdue": null,
+        "dueOn": "2026-04-24",
+        "entryId": 2,
+        "gross": {
+          "currency": "CZK",
+          "minor": 14520000
+        },
+        "id": 1,
+        "issuedOn": "2026-04-10",
+        "lines": [
+          {
+            "base": {
+              "currency": "CZK",
+              "minor": 12000000
+            },
+            "description": "Product design · April",
+            "quantity": "96",
+            "unit": "h",
+            "unitPrice": {
+              "currency": "CZK",
+              "minor": 125000
+            },
+            "vat": {
+              "currency": "CZK",
+              "minor": 2520000
+            },
+            "vatCode": "OUT21",
+            "vatRatePercent": "21"
+          }
+        ],
+        "number": "2026-041",
+        "open": {
+          "currency": "CZK",
+          "minor": 0
+        },
+        "pack": "cz-2026@2026.1",
+        "paid": {
+          "currency": "CZK",
+          "minor": 14520000
+        },
+        "paidOn": "2026-04-28",
+        "scheduledFor": null,
+        "status": "paid",
+        "vat": {
+          "currency": "CZK",
+          "minor": 2520000
+        }
+      }
+    ],
+    "isError": false,
+    "scenario": "new-customer",
+    "state": "new-customer/drafted"
+  },
+  {
+    "command": "invoice_form",
+    "args": {},
+    "result": {
+      "clients": [
+        {
+          "address": "Jungmannova 5\n110 00 Praha 1",
+          "dic": "CZ93617453",
+          "ico": "93617453",
+          "name": "Acme Analytics a.s."
+        },
+        {
+          "address": "Jasmínová 12, 106 00 Praha 10",
+          "dic": "CZ26965313",
+          "ico": "26965313",
+          "name": "Lesní ateliér s.r.o."
+        },
+        {
+          "address": "Vinohradská 1\n120 00 Praha 2",
+          "dic": "CZ91341272",
+          "ico": "91341272",
+          "name": "Northwind Traders s.r.o."
+        },
+        {
+          "address": "Masarykova 12\n602 00 Brno",
+          "dic": "CZ94722188",
+          "ico": "94722188",
+          "name": "Studio Brno s.r.o."
+        }
+      ],
+      "dueDays": [
+        7,
+        14,
+        21,
+        30
+      ],
+      "nextNumber": "2026-115",
+      "today": "2026-10-07",
+      "units": [
+        "h",
+        "ks",
+        "den",
+        "měs",
+        "km"
+      ],
+      "vatCodes": [
+        {
+          "code": "OUT21",
+          "name": "Domestic supply, standard rate",
+          "ratePercent": "21"
+        },
+        {
+          "code": "OUT12",
+          "name": "Domestic supply, reduced rate",
+          "ratePercent": "12"
+        }
+      ]
+    },
+    "isError": false,
+    "scenario": "new-customer",
+    "state": "new-customer/drafted"
+  },
+  {
     "command": "preview_invoice_import",
     "args": {
       "contentBase64": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPCEtLSBTeW50aGV0aWMgc2FtcGxlLCB3cml0dGVuIGJ5IGhhbmQgZm9yIHRlc3RzIGFuZCB0aGUgZGVtby4gTm90IGV4cG9ydGVkIGZyb20gYSByZWFsIFBvaG9kYSBpbnN0YWxsYXRpb24gYW5kIG5vdCBhbnlvbmUncyByZWFsIGRhdGEuIC0tPgo8ZGF0OmRhdGFQYWNrIHhtbG5zOmRhdD0iaHR0cDovL3d3dy5zdG9ybXdhcmUuY3ovc2NoZW1hL3ZlcnNpb25fMi9kYXRhLnhzZCIgeG1sbnM6aW52PSJodHRwOi8vd3d3LnN0b3Jtd2FyZS5jei9zY2hlbWEvdmVyc2lvbl8yL2ludm9pY2UueHNkIiB4bWxuczp0eXA9Imh0dHA6Ly93d3cuc3Rvcm13YXJlLmN6L3NjaGVtYS92ZXJzaW9uXzIvdHlwZS54c2QiIGlkPSJzeW50aGV0aWMiIGFwcGxpY2F0aW9uPSJzeW50aGV0aWMgc2FtcGxlIiB2ZXJzaW9uPSIyLjAiIG5vdGU9IlN5bnRoZXRpYyBzYW1wbGUiPgogIDxkYXQ6ZGF0YVBhY2tJdGVtIGlkPSIxIiB2ZXJzaW9uPSIyLjAiPgogICAgPGludjppbnZvaWNlIHZlcnNpb249IjIuMCI+CiAgICAgIDxpbnY6aW52b2ljZUhlYWRlcj4KICAgICAgICA8aW52Omludm9pY2VUeXBlPmlzc3VlZEludm9pY2U8L2ludjppbnZvaWNlVHlwZT4KICAgICAgICA8aW52Om51bWJlcj48dHlwOm51bWJlclJlcXVlc3RlZD4yMDI2LTAzODwvdHlwOm51bWJlclJlcXVlc3RlZD48L2ludjpudW1iZXI+CiAgICAgICAgPGludjpkYXRlPjIwMjYtMDMtMjc8L2ludjpkYXRlPgogICAgICAgIDxpbnY6ZGF0ZVRheD4yMDI2LTAzLTI3PC9pbnY6ZGF0ZVRheD4KICAgICAgICA8aW52OmRhdGVEdWU+MjAyNi0wNC0xMDwvaW52OmRhdGVEdWU+CiAgICAgICAgPGludjp0ZXh0PkFuYWzDvXphIGRhdCwgYsWZZXplbjwvaW52OnRleHQ+CiAgICAgICAgPGludjpwYXJ0bmVySWRlbnRpdHk+PHR5cDphZGRyZXNzPjx0eXA6Y29tcGFueT5BY21lIEFuYWx5dGljcyBhLnMuPC90eXA6Y29tcGFueT48dHlwOmNpdHk+UHJhaGEgMTwvdHlwOmNpdHk+PHR5cDpzdHJlZXQ+SnVuZ21hbm5vdmEgNTwvdHlwOnN0cmVldD48dHlwOnppcD4xMTAgMDA8L3R5cDp6aXA+PHR5cDppY28+OTM2MTc0NTM8L3R5cDppY28+PHR5cDpkaWM+Q1o5MzYxNzQ1MzwvdHlwOmRpYz48L3R5cDphZGRyZXNzPjwvaW52OnBhcnRuZXJJZGVudGl0eT4KICAgICAgPC9pbnY6aW52b2ljZUhlYWRlcj4KICAgICAgPGludjppbnZvaWNlU3VtbWFyeT48aW52OmhvbWVDdXJyZW5jeT48dHlwOnByaWNlTm9uZT4wPC90eXA6cHJpY2VOb25lPjx0eXA6cHJpY2VMb3c+MDwvdHlwOnByaWNlTG93Pjx0eXA6cHJpY2VMb3dWQVQ+MDwvdHlwOnByaWNlTG93VkFUPjx0eXA6cHJpY2VIaWdoPjI0MDAwPC90eXA6cHJpY2VIaWdoPjx0eXA6cHJpY2VIaWdoVkFUPjUwNDA8L3R5cDpwcmljZUhpZ2hWQVQ+PC9pbnY6aG9tZUN1cnJlbmN5PjwvaW52Omludm9pY2VTdW1tYXJ5PgogICAgPC9pbnY6aW52b2ljZT4KICA8L2RhdDpkYXRhUGFja0l0ZW0+CiAgPGRhdDpkYXRhUGFja0l0ZW0gaWQ9IjIiIHZlcnNpb249IjIuMCI+CiAgICA8aW52Omludm9pY2UgdmVyc2lvbj0iMi4wIj4KICAgICAgPGludjppbnZvaWNlSGVhZGVyPgogICAgICAgIDxpbnY6aW52b2ljZVR5cGU+aXNzdWVkSW52b2ljZTwvaW52Omludm9pY2VUeXBlPgogICAgICAgIDxpbnY6bnVtYmVyPjx0eXA6bnVtYmVyUmVxdWVzdGVkPjIwMjYtMDQxPC90eXA6bnVtYmVyUmVxdWVzdGVkPjwvaW52Om51bWJlcj4KICAgICAgICA8aW52OmRhdGU+MjAyNi0wNC0xMDwvaW52OmRhdGU+CiAgICAgICAgPGludjpkYXRlVGF4PjIwMjYtMDQtMTA8L2ludjpkYXRlVGF4PgogICAgICAgIDxpbnY6ZGF0ZUR1ZT4yMDI2LTA0LTI0PC9pbnY6ZGF0ZUR1ZT4KICAgICAgICA8aW52OnBhcnRuZXJJZGVudGl0eT48dHlwOmFkZHJlc3M+PHR5cDpjb21wYW55Pk5vcnRod2luZCBUcmFkZXJzIHMuci5vLjwvdHlwOmNvbXBhbnk+PHR5cDpjaXR5PlByYWhhIDI8L3R5cDpjaXR5Pjx0eXA6c3RyZWV0PlZpbm9ocmFkc2vDoSAxPC90eXA6c3RyZWV0Pjx0eXA6emlwPjEyMCAwMDwvdHlwOnppcD48dHlwOmljbz45MTM0MTI3MjwvdHlwOmljbz48dHlwOmRpYz5DWjkxMzQxMjcyPC90eXA6ZGljPjwvdHlwOmFkZHJlc3M+PC9pbnY6cGFydG5lcklkZW50aXR5PgogICAgICA8L2ludjppbnZvaWNlSGVhZGVyPgogICAgICA8aW52Omludm9pY2VTdW1tYXJ5PjxpbnY6aG9tZUN1cnJlbmN5Pjx0eXA6cHJpY2VOb25lPjA8L3R5cDpwcmljZU5vbmU+PHR5cDpwcmljZUxvdz4wPC90eXA6cHJpY2VMb3c+PHR5cDpwcmljZUxvd1ZBVD4wPC90eXA6cHJpY2VMb3dWQVQ+PHR5cDpwcmljZUhpZ2g+MTIwMDAwPC90eXA6cHJpY2VIaWdoPjx0eXA6cHJpY2VIaWdoVkFUPjI1MjAwPC90eXA6cHJpY2VIaWdoVkFUPjwvaW52OmhvbWVDdXJyZW5jeT48L2ludjppbnZvaWNlU3VtbWFyeT4KICAgIDwvaW52Omludm9pY2U+CiAgPC9kYXQ6ZGF0YVBhY2tJdGVtPgogIDxkYXQ6ZGF0YVBhY2tJdGVtIGlkPSIzIiB2ZXJzaW9uPSIyLjAiPgogICAgPGludjppbnZvaWNlIHZlcnNpb249IjIuMCI+CiAgICAgIDxpbnY6aW52b2ljZUhlYWRlcj4KICAgICAgICA8aW52Omludm9pY2VUeXBlPmlzc3VlZEludm9pY2U8L2ludjppbnZvaWNlVHlwZT4KICAgICAgICA8aW52Om51bWJlcj48dHlwOm51bWJlclJlcXVlc3RlZD4yMDI2LTA0NDwvdHlwOm51bWJlclJlcXVlc3RlZD48L2ludjpudW1iZXI+CiAgICAgICAgPGludjpkYXRlPjIwMjYtMDQtMjA8L2ludjpkYXRlPgogICAgICAgIDxpbnY6ZGF0ZVRheD4yMDI2LTA0LTIwPC9pbnY6ZGF0ZVRheD4KICAgICAgICA8aW52OmRhdGVEdWU+MjAyNi0wNS0wNDwvaW52OmRhdGVEdWU+CiAgICAgICAgPGludjp0ZXh0Pk7DoXZyaCB2aXp1w6FsbsOtIGlkZW50aXR5PC9pbnY6dGV4dD4KICAgICAgICA8aW52OnBhcnRuZXJJZGVudGl0eT48dHlwOmFkZHJlc3M+PHR5cDpjb21wYW55PlN0dWRpbyBCcm5vIHMuci5vLjwvdHlwOmNvbXBhbnk+PHR5cDpjaXR5PkJybm88L3R5cDpjaXR5Pjx0eXA6c3RyZWV0Pk1hc2FyeWtvdmEgMTI8L3R5cDpzdHJlZXQ+PHR5cDp6aXA+NjAyIDAwPC90eXA6emlwPjx0eXA6aWNvPjk0NzIyMTg4PC90eXA6aWNvPjx0eXA6ZGljPkNaOTQ3MjIxODg8L3R5cDpkaWM+PC90eXA6YWRkcmVzcz48L2ludjpwYXJ0bmVySWRlbnRpdHk+CiAgICAgIDwvaW52Omludm9pY2VIZWFkZXI+CiAgICAgIDxpbnY6aW52b2ljZVN1bW1hcnk+PGludjpob21lQ3VycmVuY3k+PHR5cDpwcmljZU5vbmU+MDwvdHlwOnByaWNlTm9uZT48dHlwOnByaWNlTG93PjA8L3R5cDpwcmljZUxvdz48dHlwOnByaWNlTG93VkFUPjA8L3R5cDpwcmljZUxvd1ZBVD48dHlwOnByaWNlSGlnaD4xODAwMDwvdHlwOnByaWNlSGlnaD48dHlwOnByaWNlSGlnaFZBVD4zNzgwPC90eXA6cHJpY2VIaWdoVkFUPjwvaW52OmhvbWVDdXJyZW5jeT48L2ludjppbnZvaWNlU3VtbWFyeT4KICAgIDwvaW52Omludm9pY2U+CiAgPC9kYXQ6ZGF0YVBhY2tJdGVtPgogIDxkYXQ6ZGF0YVBhY2tJdGVtIGlkPSI0IiB2ZXJzaW9uPSIyLjAiPgogICAgPGludjppbnZvaWNlIHZlcnNpb249IjIuMCI+CiAgICAgIDxpbnY6aW52b2ljZUhlYWRlcj4KICAgICAgICA8aW52Omludm9pY2VUeXBlPmlzc3VlZEludm9pY2U8L2ludjppbnZvaWNlVHlwZT4KICAgICAgICA8aW52Om51bWJlcj48dHlwOm51bWJlclJlcXVlc3RlZD4yMDI2LTA0NzwvdHlwOm51bWJlclJlcXVlc3RlZD48L2ludjpudW1iZXI+CiAgICAgICAgPGludjpkYXRlPjIwMjYtMDQtMjg8L2ludjpkYXRlPgogICAgICAgIDxpbnY6ZGF0ZVRheD4yMDI2LTA0LTI4PC9pbnY6ZGF0ZVRheD4KICAgICAgICA8aW52OmRhdGVEdWU+MjAyNi0wNS0xMjwvaW52OmRhdGVEdWU+CiAgICAgICAgPGludjp0ZXh0Pktvbnp1bHRhY2UgayBkYXRvdsOpbXUgbW9kZWx1PC9pbnY6dGV4dD4KICAgICAgICA8aW52OnBhcnRuZXJJZGVudGl0eT48dHlwOmFkZHJlc3M+PHR5cDpjb21wYW55Pk5vcnRod2luZCBUcmFkZXJzIHMuci5vLjwvdHlwOmNvbXBhbnk+PHR5cDpjaXR5PlByYWhhIDI8L3R5cDpjaXR5Pjx0eXA6c3RyZWV0PlZpbm9ocmFkc2vDoSAxPC90eXA6c3RyZWV0Pjx0eXA6emlwPjEyMCAwMDwvdHlwOnppcD48dHlwOmljbz45MTM0MTI3MjwvdHlwOmljbz48dHlwOmRpYz5DWjkxMzQxMjcyPC90eXA6ZGljPjwvdHlwOmFkZHJlc3M+PC9pbnY6cGFydG5lcklkZW50aXR5PgogICAgICA8L2ludjppbnZvaWNlSGVhZGVyPgogICAgICA8aW52Omludm9pY2VTdW1tYXJ5PjxpbnY6aG9tZUN1cnJlbmN5Pjx0eXA6cHJpY2VOb25lPjA8L3R5cDpwcmljZU5vbmU+PHR5cDpwcmljZUxvdz4wPC90eXA6cHJpY2VMb3c+PHR5cDpwcmljZUxvd1ZBVD4wPC90eXA6cHJpY2VMb3dWQVQ+PHR5cDpwcmljZUhpZ2g+OTYwMC4wMDwvdHlwOnByaWNlSGlnaD48dHlwOnByaWNlSGlnaFZBVD4yMDE2LjAwPC90eXA6cHJpY2VIaWdoVkFUPjwvaW52OmhvbWVDdXJyZW5jeT48L2ludjppbnZvaWNlU3VtbWFyeT4KICAgIDwvaW52Omludm9pY2U+CiAgPC9kYXQ6ZGF0YVBhY2tJdGVtPgogIDxkYXQ6ZGF0YVBhY2tJdGVtIGlkPSI1IiB2ZXJzaW9uPSIyLjAiPgogICAgPGludjppbnZvaWNlIHZlcnNpb249IjIuMCI+CiAgICAgIDxpbnY6aW52b2ljZUhlYWRlcj4KICAgICAgICA8aW52Omludm9pY2VUeXBlPmlzc3VlZEludm9pY2U8L2ludjppbnZvaWNlVHlwZT4KICAgICAgICA8aW52Om51bWJlcj48dHlwOm51bWJlclJlcXVlc3RlZD4yMDI2LTA0OTwvdHlwOm51bWJlclJlcXVlc3RlZD48L2ludjpudW1iZXI+CiAgICAgICAgPGludjpkYXRlPjIwMjYtMDUtMDY8L2ludjpkYXRlPgogICAgICAgIDxpbnY6ZGF0ZVRheD4yMDI2LTA1LTA2PC9pbnY6ZGF0ZVRheD4KICAgICAgICA8aW52OmRhdGVEdWU+MjAyNi0wNS0yMDwvaW52OmRhdGVEdWU+CiAgICAgICAgPGludjp0ZXh0PkRhc2hib2FyZCwgw7pwcmF2eTwvaW52OnRleHQ+CiAgICAgICAgPGludjpwYXJ0bmVySWRlbnRpdHk+PHR5cDphZGRyZXNzPjx0eXA6Y29tcGFueT5BY21lIEFuYWx5dGljcyBhLnMuPC90eXA6Y29tcGFueT48dHlwOmNpdHk+UHJhaGEgMTwvdHlwOmNpdHk+PHR5cDpzdHJlZXQ+SnVuZ21hbm5vdmEgNTwvdHlwOnN0cmVldD48dHlwOnppcD4xMTAgMDA8L3R5cDp6aXA+PHR5cDppY28+OTM2MTc0NTM8L3R5cDppY28+PHR5cDpkaWM+Q1o5MzYxNzQ1MzwvdHlwOmRpYz48L3R5cDphZGRyZXNzPjwvaW52OnBhcnRuZXJJZGVudGl0eT4KICAgICAgPC9pbnY6aW52b2ljZUhlYWRlcj4KICAgICAgPGludjppbnZvaWNlU3VtbWFyeT48aW52OmhvbWVDdXJyZW5jeT48dHlwOnByaWNlTm9uZT4wPC90eXA6cHJpY2VOb25lPjx0eXA6cHJpY2VMb3c+MDwvdHlwOnByaWNlTG93Pjx0eXA6cHJpY2VMb3dWQVQ+MDwvdHlwOnByaWNlTG93VkFUPjx0eXA6cHJpY2VIaWdoPjEwMDAwPC90eXA6cHJpY2VIaWdoPjx0eXA6cHJpY2VIaWdoVkFUPjIxMTA8L3R5cDpwcmljZUhpZ2hWQVQ+PC9pbnY6aG9tZUN1cnJlbmN5PjwvaW52Omludm9pY2VTdW1tYXJ5PgogICAgPC9pbnY6aW52b2ljZT4KICA8L2RhdDpkYXRhUGFja0l0ZW0+CiAgPGRhdDpkYXRhUGFja0l0ZW0gaWQ9IjYiIHZlcnNpb249IjIuMCI+CiAgICA8aW52Omludm9pY2UgdmVyc2lvbj0iMi4wIj4KICAgICAgPGludjppbnZvaWNlSGVhZGVyPgogICAgICAgIDxpbnY6aW52b2ljZVR5cGU+cmVjZWl2ZWRJbnZvaWNlPC9pbnY6aW52b2ljZVR5cGU+CiAgICAgICAgPGludjpudW1iZXI+PHR5cDpudW1iZXJSZXF1ZXN0ZWQ+UEYtMjAyNi0wMDEyPC90eXA6bnVtYmVyUmVxdWVzdGVkPjwvaW52Om51bWJlcj4KICAgICAgICA8aW52OmRhdGU+MjAyNi0wNS0wMjwvaW52OmRhdGU+CiAgICAgIDwvaW52Omludm9pY2VIZWFkZXI+CiAgICAgIDxpbnY6aW52b2ljZVN1bW1hcnk+PGludjpob21lQ3VycmVuY3k+PHR5cDpwcmljZU5vbmU+MDwvdHlwOnByaWNlTm9uZT48dHlwOnByaWNlTG93PjA8L3R5cDpwcmljZUxvdz48dHlwOnByaWNlTG93VkFUPjA8L3R5cDpwcmljZUxvd1ZBVD48dHlwOnByaWNlSGlnaD4xMDAwPC90eXA6cHJpY2VIaWdoPjx0eXA6cHJpY2VIaWdoVkFUPjIxMDwvdHlwOnByaWNlSGlnaFZBVD48L2ludjpob21lQ3VycmVuY3k+PC9pbnY6aW52b2ljZVN1bW1hcnk+CiAgICA8L2ludjppbnZvaWNlPgogIDwvZGF0OmRhdGFQYWNrSXRlbT4KPC9kYXQ6ZGF0YVBhY2s+Cg==",

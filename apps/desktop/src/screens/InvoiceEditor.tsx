@@ -1,4 +1,10 @@
-import { commands, type InvoiceDraftLineDto, type InvoiceFormDto, unwrap } from "@skyla/ipc";
+import {
+  type ClientDto,
+  commands,
+  type InvoiceDraftLineDto,
+  type InvoiceFormDto,
+  unwrap,
+} from "@skyla/ipc";
 import {
   Button,
   ContentGroup,
@@ -20,6 +26,10 @@ import { Loaded } from "./common";
 interface LineDraft extends InvoiceDraftLineDto {
   readonly key: number;
 }
+
+/** The customer list's last option: someone not invoiced before. */
+const NEW_CLIENT = "\u0000new";
+const BLANK_CLIENT: ClientDto = { name: "", ico: "", dic: "", address: "" };
 
 let nextKey = 1;
 const emptyLine = (vatCode: string): LineDraft => ({
@@ -43,7 +53,12 @@ export function InvoiceEditor() {
 
 function Editor({ form }: { form: InvoiceFormDto }) {
   const defaultVat = form.vatCodes[0]?.code ?? "";
-  const [client, setClient] = useState<string | null>(null);
+  const [client, setClient] = useState<string | null>(
+    form.clients.length === 0 ? NEW_CLIENT : null,
+  );
+  const [newClient, setNewClient] = useState<ClientDto>(BLANK_CLIENT);
+  const isNew = client === NEW_CLIENT;
+  const newField = (k: keyof ClientDto) => (v: string) => setNewClient((c) => ({ ...c, [k]: v }));
   const [dueDays, setDueDays] = useState(String(form.dueDays.includes(14) ? 14 : form.dueDays[0]));
   const [note, setNote] = useState("");
   const [lines, setLines] = useState<LineDraft[]>(() => [emptyLine(defaultVat)]);
@@ -60,7 +75,8 @@ function Editor({ form }: { form: InvoiceFormDto }) {
     try {
       const saved = await unwrap(
         commands.createInvoiceDraft({
-          client: client ?? "",
+          client: isNew ? "" : (client ?? ""),
+          newClient: isNew ? newClient : null,
           dueDays: Number(dueDays),
           note,
           lines: lines.map(({ key: _key, ...line }) => line),
@@ -123,13 +139,16 @@ function Editor({ form }: { form: InvoiceFormDto }) {
           <div className="grid grid-cols-[minmax(0,2fr)_minmax(0,1fr)] gap-4">
             <Select
               label="Customer"
-              options={form.clients.map((c) => ({
-                id: c.name,
-                label: c.name,
-                detail: [c.ico && `IČO ${c.ico}`, c.dic && `DIČ ${c.dic}`]
-                  .filter(Boolean)
-                  .join(" · "),
-              }))}
+              options={[
+                ...form.clients.map((c) => ({
+                  id: c.name,
+                  label: c.name,
+                  detail: [c.ico && `IČO ${c.ico}`, c.dic && `DIČ ${c.dic}`]
+                    .filter(Boolean)
+                    .join(" · "),
+                })),
+                { id: NEW_CLIENT, label: "New customer…", detail: "Not invoiced before" },
+              ]}
               value={client}
               onChange={setClient}
               placeholder="Choose a customer…"
@@ -142,6 +161,38 @@ function Editor({ form }: { form: InvoiceFormDto }) {
               onChange={setDueDays}
             />
           </div>
+
+          {isNew && (
+            <fieldset className="m-0 grid min-w-0 grid-cols-2 gap-4 border-0 p-0">
+              <legend className="sr-only">New customer</legend>
+              <TextField
+                className="col-span-2"
+                label="Customer's legal name"
+                value={newClient.name}
+                onChange={newField("name")}
+                isInvalid={problemFor(null, "name", "already a customer") !== undefined}
+              />
+              <TextField
+                label="IČO"
+                value={newClient.ico ?? ""}
+                onChange={newField("ico")}
+                isInvalid={problemFor(null, "IČO") !== undefined}
+              />
+              <TextField
+                label="DIČ"
+                value={newClient.dic ?? ""}
+                onChange={newField("dic")}
+                isInvalid={problemFor(null, "DIČ") !== undefined}
+              />
+              <TextField
+                className="col-span-2"
+                label="Address, as printed on the invoice"
+                value={newClient.address ?? ""}
+                onChange={newField("address")}
+                isInvalid={problemFor(null, "address") !== undefined}
+              />
+            </fieldset>
+          )}
 
           <fieldset className="m-0 min-w-0 border-0 p-0">
             <legend className="sr-only">Lines</legend>

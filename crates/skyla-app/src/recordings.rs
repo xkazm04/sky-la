@@ -256,6 +256,22 @@ pub fn scenarios() -> Vec<(&'static str, Script)> {
             s.write("set_update_check", json!({ "enabled": false }), "off");
             s.read("update_status", json!({}));
         }),
+        ("new-customer", |s| {
+            let mut draft = scripted_draft();
+            draft["client"] = json!("");
+            // The editor shows every problem with a new customer at once.
+            draft["newClient"] = json!({ "name": "Northwind Traders s.r.o.", "ico": "12345678", "dic": "12", "address": "" });
+            s.read("create_invoice_draft", json!({ "draft": draft.clone() }));
+            draft["newClient"] = json!({
+                "name": "Lesní ateliér s.r.o.",
+                "ico": "26965313",
+                "dic": "CZ26965313",
+                "address": "Jasmínová 12, 106 00 Praha 10"
+            });
+            s.write("create_invoice_draft", json!({ "draft": draft }), "drafted");
+            s.read("invoices", json!({}));
+            s.read("invoice_form", json!({}));
+        }),
         ("invoice-import", |s| {
             use base64::Engine as _;
             let file = json!({
