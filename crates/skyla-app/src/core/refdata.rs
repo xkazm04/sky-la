@@ -71,7 +71,7 @@ fn bad(message: impl Into<String>) -> CoreError {
 }
 
 impl Core {
-    fn refdata_state(&self) -> std::sync::MutexGuard<'_, RefData> {
+    pub(crate) fn refdata_state(&self) -> std::sync::MutexGuard<'_, RefData> {
         self.refdata
             .lock()
             .unwrap_or_else(std::sync::PoisonError::into_inner)
@@ -148,12 +148,14 @@ impl Core {
                 other => return Err(bad(format!("unknown reference data {other:?}"))),
             }
         }
+        self.persist_refdata()?;
         self.reference_data()
     }
 
     /// Turns fetching from the ČNB on or off. Off is the default.
     pub fn set_reference_fetch(&self, enabled: bool) -> Result<RefDataDto, CoreError> {
         self.refdata_state().fetch_enabled = enabled;
+        self.persist_refdata()?;
         self.reference_data()
     }
 
@@ -176,6 +178,7 @@ impl Core {
                 .map_err(|e| bad(format!("the ČNB's answer isn't a rates file: {e}")))?;
             self.add_fx(&mut state, parsed, format!("fetched {url}"));
         }
+        self.persist_refdata()?;
         self.reference_data()
     }
 
@@ -186,10 +189,25 @@ impl Core {
         pack_toml: &str,
         signature: &str,
     ) -> Result<PackUpdateDto, CoreError> {
-        let pack =
-            skyla_rules::verify_pack_update(pack_toml, signature, TRUSTED_PACK_KEYS, &self.pack)
-                .map_err(|e| bad(e.to_string()))?;
+        self.install_pack_update_trusting(pack_toml, signature, TRUSTED_PACK_KEYS)
+    }
+
+    /// [`Core::install_pack_update`] with the given keys (tests: the
+    /// shipped list is empty).
+    #[doc(hidden)]
+    pub fn install_pack_update_trusting(
+        &self,
+        pack_toml: &str,
+        signature: &str,
+        keys: &[&str],
+    ) -> Result<PackUpdateDto, CoreError> {
+        let pack = skyla_rules::verify_pack_update(pack_toml, signature, keys, &self.pack)
+            .map_err(|e| bad(e.to_string()))?;
         let provenance = pack.provenance();
+        self.persist_pack(&super::persist::SavedPack {
+            toml: pack_toml.to_owned(),
+            signature: signature.to_owned(),
+        })?;
         self.refdata_state().pending_pack = Some(pack_toml.to_owned());
         Ok(PackUpdateDto {
             in_use: self.pack.provenance(),

@@ -76,6 +76,7 @@ impl Core {
         domain: crate::demo::Domain,
         scheduled: std::collections::HashMap<i64, String>,
         real: Option<RealEntity>,
+        pack: skyla_rules::Pack,
     ) -> Result<Self, CoreError> {
         let currency = skyla_ledger::functional_currency(&conn)?;
         let accounts = skyla_ledger::list_accounts(&conn)?
@@ -92,7 +93,7 @@ impl Core {
             domain,
             accounts,
             currency,
-            pack: skyla_rules::Pack::cz_2026()?,
+            pack,
             scheduled,
             refdata: Mutex::new(refdata::RefData::new(refdata::https_fetcher())),
             updates: Mutex::new(update::UpdateState::new(update::release_fetcher())),
@@ -112,7 +113,7 @@ impl Core {
         domain: crate::demo::Domain,
         scheduled: std::collections::HashMap<i64, String>,
     ) -> Result<Self, CoreError> {
-        Self::assemble(conn, domain, scheduled, None)
+        Self::assemble(conn, domain, scheduled, None, skyla_rules::Pack::cz_2026()?)
     }
 
     /// Creates a new entity's books at `db_path`, encrypted with `key`.
@@ -166,6 +167,7 @@ impl Core {
         let scheduled = crate::demo::seed_invoicing(&conn, &pack, &domain)?;
         skyla_egress::register::apply_schema(&conn)
             .map_err(|e| CoreError::BadRequest(e.to_string()))?;
+        super::persist::apply_schema(&conn)?;
         let backups = db_path
             .parent()
             .map_or_else(|| PathBuf::from("Backups"), |d| d.join("Backups"));
@@ -178,13 +180,29 @@ impl Core {
                 backups,
                 policy: BackupPolicy::default(),
             }),
+            pack,
         )
     }
 
     /// Opens an entity's books at `db_path` with `key`; `today` is the date
     /// the books are seen on.
     pub fn open_entity(db_path: &Path, key: &DataKey, today: &str) -> Result<Self, CoreError> {
+        Self::open_entity_trusting(db_path, key, today, refdata::TRUSTED_PACK_KEYS)
+    }
+
+    /// [`Core::open_entity`], trusting `pack_keys` for a saved pack update
+    /// (tests: the shipped list is empty).
+    #[doc(hidden)]
+    pub fn open_entity_trusting(
+        db_path: &Path,
+        key: &DataKey,
+        today: &str,
+        pack_keys: &[&str],
+    ) -> Result<Self, CoreError> {
         let conn = skyla_store::open_keyed(db_path, key, false).map_err(store)?;
+        // Books from before saved state existed get the table now.
+        super::persist::apply_schema(&conn)?;
+        let pack = super::persist::pack_for(&conn, pack_keys)?;
         let json: Option<String> = conn
             .query_row("SELECT json FROM app_profile WHERE id = 1", [], |r| {
                 r.get(0)
@@ -200,7 +218,7 @@ impl Core {
         let backups = db_path
             .parent()
             .map_or_else(|| PathBuf::from("Backups"), |d| d.join("Backups"));
-        Self::assemble(
+        let core = Self::assemble(
             conn,
             domain,
             std::collections::HashMap::new(),
@@ -209,7 +227,10 @@ impl Core {
                 backups,
                 policy: BackupPolicy::default(),
             }),
-        )
+            pack,
+        )?;
+        core.restore_state()?;
+        Ok(core)
     }
 
     /// The demo, rather than real books.

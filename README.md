@@ -8,7 +8,7 @@
 
 - Double-entry books with integer money, immutable posted entries and a verified hash chain, in one SQLCipher-encrypted file
 - Invoices and credit notes: Czech PDF with QR Platba, ISDOC, UBL and CII
-- Bank statements (camt.053, MT940, ABO/GPC, CSV) with tie-out, deduplication and explained matches
+- Bank statements (camt.053, MT940, ABO/GPC, Fio CSV) with tie-out, deduplication and explained matches
 - The DPH return, the kontrolní hlášení, the § 7 income-tax worksheet with insurance scenarios, and an obligations calendar
 - Scheduled encrypted backups with a restore check; a full export in open formats; import from Pohoda and Fakturoid
 - Tax and financial advisors through your own Claude Code, which only propose, cite and calculate with the engine's figures

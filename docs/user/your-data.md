@@ -2,7 +2,7 @@
 
 ## Where it lives
 
-Your books are one SQLCipher-encrypted file in your user's application-data folder. A random data key encrypts it, and your passphrase (through Argon2id) and your recovery key each unlock that key. Nothing about your books leaves the computer, except what you send an advisor (see [Advisors](advisors.md)) and the files you export.
+Your books are one SQLCipher-encrypted file in your user's application-data folder. A random data key encrypts it, and your passphrase (through Argon2id) and your recovery key each unlock that key. The same file keeps your imported statements and bank rules, your advisor settings, reference data and the update switch, so they're there next time. Nothing about your books leaves the computer, except what you send an advisor (see [Advisors](advisors.md)) and the files you export.
 
 sky-la makes no network connections of its own, except for two opt-in checks that are off by default: **Public reference data** (ČNB exchange rates, from www.cnb.cz) and **Updates** (the project's release page on GitHub). Neither sends anything about you. There is no telemetry.
 

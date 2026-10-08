@@ -15,7 +15,7 @@ The status column shows what each invoice needs: overdue (with days), part-paid,
 
 ## Bank statements
 
-**Bank → Import…** reads a statement file: camt.053 XML, MT940, ABO/GPC, or CSV from the common Czech banks. sky-la checks that the statement's opening balance ties out to the previous statement (or to your books), and skips lines it has seen before.
+**Bank → Import…** reads a statement file: camt.053 XML, MT940 or ABO/GPC, which most Czech banks export, or Fio's CSV export. sky-la checks that the statement's opening balance ties out to the previous statement (or to your books), and skips lines it has seen before.
 
 Each line then gets a suggestion, with the reasons spelled out (variable symbol, amount, counterparty):
 

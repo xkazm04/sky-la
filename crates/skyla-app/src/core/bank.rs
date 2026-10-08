@@ -33,6 +33,7 @@ const INPUT_VAT: &str = "343";
 /// The namespace of bank postings' ids (UUID v5 of the line id).
 const BANK_NAMESPACE: uuid::Uuid = uuid::uuid!("8a3c1d7e-2b6f-5e94-a1c0-3d5f7b9e2c46");
 
+#[derive(serde::Serialize, serde::Deserialize)]
 pub(crate) struct Imported {
     seq: u32,
     file: String,
@@ -40,13 +41,14 @@ pub(crate) struct Imported {
     lines: Vec<Normalised>,
 }
 
+#[derive(serde::Serialize, serde::Deserialize)]
 pub(crate) struct Booked {
     entry_id: i64,
     label: String,
 }
 
 /// What the workbench holds between commands.
-#[derive(Default)]
+#[derive(Default, serde::Serialize, serde::Deserialize)]
 pub(crate) struct BankState {
     imports: Vec<Imported>,
     rules: Vec<Rule>,
@@ -70,7 +72,7 @@ impl Core {
         &self.domain.entity.bank_account
     }
 
-    fn bank_state(&self) -> std::sync::MutexGuard<'_, BankState> {
+    pub(crate) fn bank_state(&self) -> std::sync::MutexGuard<'_, BankState> {
         self.bank
             .lock()
             .unwrap_or_else(std::sync::PoisonError::into_inner)
@@ -88,11 +90,16 @@ impl Core {
             .decode(content_base64.trim())
             .map_err(|_| bad("the file isn't base64"))?;
         self.import_bytes(file_name, &bytes)?;
+        self.persist_bank()?;
         self.bank_statement()
     }
 
     pub(crate) fn import_bytes(&self, file_name: &str, bytes: &[u8]) -> Result<(), CoreError> {
-        let statements = skyla_bank::parse(bytes, None).map_err(|e| bad(e.to_string()))?;
+        // CSV needs a column profile; Fio's is the one built in.
+        let profile = (skyla_bank::detect(bytes) == skyla_bank::Format::Csv)
+            .then(skyla_bank::CsvProfile::fio);
+        let statements =
+            skyla_bank::parse(bytes, profile.as_ref()).map_err(|e| bad(e.to_string()))?;
         let mut state = self.bank_state();
         for statement in statements {
             let iban = statement.account.iban.clone().unwrap_or_default();
@@ -475,6 +482,7 @@ impl Core {
                 }
             }
         }
+        self.persist_bank()?;
         self.bank_statement()
     }
 
@@ -532,6 +540,7 @@ impl Core {
                 ));
             }
         }
+        self.persist_bank()?;
         self.bank_statement()
     }
 
@@ -588,6 +597,7 @@ impl Core {
                 format!("Rule: {}", rule.name),
             )?;
         }
+        self.persist_bank()?;
         self.bank_statement()
     }
 

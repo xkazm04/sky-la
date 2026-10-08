@@ -150,6 +150,8 @@ impl Core {
                 s.checked = false;
             }
         }
+        // Saving is best-effort: the switch still works for this session.
+        let _ = self.persist_updates();
         self.update_status()
     }
 

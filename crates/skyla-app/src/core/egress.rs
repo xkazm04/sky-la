@@ -323,6 +323,7 @@ impl Core {
         if let Ok(mut map) = self.egress_policies.lock() {
             map.insert(t.id, p);
         }
+        self.persist_policies()?;
         Ok(self.egress_policies())
     }
 
