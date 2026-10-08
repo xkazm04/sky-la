@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Synthetic sample, written by hand for tests and the demo. Not exported from a real Pohoda installation and not anyone's real data. -->
+<dat:dataPack xmlns:dat="http://www.stormware.cz/schema/version_2/data.xsd" xmlns:inv="http://www.stormware.cz/schema/version_2/invoice.xsd" xmlns:typ="http://www.stormware.cz/schema/version_2/type.xsd" id="synthetic" application="synthetic sample" version="2.0" note="Synthetic sample">
+  <dat:dataPackItem id="1" version="2.0">
+    <inv:invoice version="2.0">
+      <inv:invoiceHeader>
+        <inv:invoiceType>issuedInvoice</inv:invoiceType>
+        <inv:number><typ:numberRequested>2026-038</typ:numberRequested></inv:number>
+        <inv:date>2026-03-27</inv:date>
+        <inv:dateTax>2026-03-27</inv:dateTax>
+        <inv:dateDue>2026-04-10</inv:dateDue>
+        <inv:text>Analýza dat, březen</inv:text>
+        <inv:partnerIdentity><typ:address><typ:company>Acme Analytics a.s.</typ:company><typ:city>Praha 1</typ:city><typ:street>Jungmannova 5</typ:street><typ:zip>110 00</typ:zip><typ:ico>93617453</typ:ico><typ:dic>CZ93617453</typ:dic></typ:address></inv:partnerIdentity>
+      </inv:invoiceHeader>
+      <inv:invoiceSummary><inv:homeCurrency><typ:priceNone>0</typ:priceNone><typ:priceLow>0</typ:priceLow><typ:priceLowVAT>0</typ:priceLowVAT><typ:priceHigh>24000</typ:priceHigh><typ:priceHighVAT>5040</typ:priceHighVAT></inv:homeCurrency></inv:invoiceSummary>
+    </inv:invoice>
+  </dat:dataPackItem>
+  <dat:dataPackItem id="2" version="2.0">
+    <inv:invoice version="2.0">
+      <inv:invoiceHeader>
+        <inv:invoiceType>issuedInvoice</inv:invoiceType>
+        <inv:number><typ:numberRequested>2026-041</typ:numberRequested></inv:number>
+        <inv:date>2026-04-10</inv:date>
+        <inv:dateTax>2026-04-10</inv:dateTax>
+        <inv:dateDue>2026-04-24</inv:dateDue>
+        <inv:partnerIdentity><typ:address><typ:company>Northwind Traders s.r.o.</typ:company><typ:city>Praha 2</typ:city><typ:street>Vinohradská 1</typ:street><typ:zip>120 00</typ:zip><typ:ico>91341272</typ:ico><typ:dic>CZ91341272</typ:dic></typ:address></inv:partnerIdentity>
+      </inv:invoiceHeader>
+      <inv:invoiceSummary><inv:homeCurrency><typ:priceNone>0</typ:priceNone><typ:priceLow>0</typ:priceLow><typ:priceLowVAT>0</typ:priceLowVAT><typ:priceHigh>120000</typ:priceHigh><typ:priceHighVAT>25200</typ:priceHighVAT></inv:homeCurrency></inv:invoiceSummary>
+    </inv:invoice>
+  </dat:dataPackItem>
+  <dat:dataPackItem id="3" version="2.0">
+    <inv:invoice version="2.0">
+      <inv:invoiceHeader>
+        <inv:invoiceType>issuedInvoice</inv:invoiceType>
+        <inv:number><typ:numberRequested>2026-044</typ:numberRequested></inv:number>
+        <inv:date>2026-04-20</inv:date>
+        <inv:dateTax>2026-04-20</inv:dateTax>
+        <inv:dateDue>2026-05-04</inv:dateDue>
+        <inv:text>Návrh vizuální identity</inv:text>
+        <inv:partnerIdentity><typ:address><typ:company>Studio Brno s.r.o.</typ:company><typ:city>Brno</typ:city><typ:street>Masarykova 12</typ:street><typ:zip>602 00</typ:zip><typ:ico>94722188</typ:ico><typ:dic>CZ94722188</typ:dic></typ:address></inv:partnerIdentity>
+      </inv:invoiceHeader>
+      <inv:invoiceSummary><inv:homeCurrency><typ:priceNone>0</typ:priceNone><typ:priceLow>0</typ:priceLow><typ:priceLowVAT>0</typ:priceLowVAT><typ:priceHigh>18000</typ:priceHigh><typ:priceHighVAT>3780</typ:priceHighVAT></inv:homeCurrency></inv:invoiceSummary>
+    </inv:invoice>
+  </dat:dataPackItem>
+  <dat:dataPackItem id="4" version="2.0">
+    <inv:invoice version="2.0">
+      <inv:invoiceHeader>
+        <inv:invoiceType>issuedInvoice</inv:invoiceType>
+        <inv:number><typ:numberRequested>2026-047</typ:numberRequested></inv:number>
+        <inv:date>2026-04-28</inv:date>
+        <inv:dateTax>2026-04-28</inv:dateTax>
+        <inv:dateDue>2026-05-12</inv:dateDue>
+        <inv:text>Konzultace k datovému modelu</inv:text>
+        <inv:partnerIdentity><typ:address><typ:company>Northwind Traders s.r.o.</typ:company><typ:city>Praha 2</typ:city><typ:street>Vinohradská 1</typ:street><typ:zip>120 00</typ:zip><typ:ico>91341272</typ:ico><typ:dic>CZ91341272</typ:dic></typ:address></inv:partnerIdentity>
+      </inv:invoiceHeader>
+      <inv:invoiceSummary><inv:homeCurrency><typ:priceNone>0</typ:priceNone><typ:priceLow>0</typ:priceLow><typ:priceLowVAT>0</typ:priceLowVAT><typ:priceHigh>9600.00</typ:priceHigh><typ:priceHighVAT>2016.00</typ:priceHighVAT></inv:homeCurrency></inv:invoiceSummary>
+    </inv:invoice>
+  </dat:dataPackItem>
+  <dat:dataPackItem id="5" version="2.0">
+    <inv:invoice version="2.0">
+      <inv:invoiceHeader>
+        <inv:invoiceType>issuedInvoice</inv:invoiceType>
+        <inv:number><typ:numberRequested>2026-049</typ:numberRequested></inv:number>
+        <inv:date>2026-05-06</inv:date>
+        <inv:dateTax>2026-05-06</inv:dateTax>
+        <inv:dateDue>2026-05-20</inv:dateDue>
+        <inv:text>Dashboard, úpravy</inv:text>
+        <inv:partnerIdentity><typ:address><typ:company>Acme Analytics a.s.</typ:company><typ:city>Praha 1</typ:city><typ:street>Jungmannova 5</typ:street><typ:zip>110 00</typ:zip><typ:ico>93617453</typ:ico><typ:dic>CZ93617453</typ:dic></typ:address></inv:partnerIdentity>
+      </inv:invoiceHeader>
+      <inv:invoiceSummary><inv:homeCurrency><typ:priceNone>0</typ:priceNone><typ:priceLow>0</typ:priceLow><typ:priceLowVAT>0</typ:priceLowVAT><typ:priceHigh>10000</typ:priceHigh><typ:priceHighVAT>2110</typ:priceHighVAT></inv:homeCurrency></inv:invoiceSummary>
+    </inv:invoice>
+  </dat:dataPackItem>
+  <dat:dataPackItem id="6" version="2.0">
+    <inv:invoice version="2.0">
+      <inv:invoiceHeader>
+        <inv:invoiceType>receivedInvoice</inv:invoiceType>
+        <inv:number><typ:numberRequested>PF-2026-0012</typ:numberRequested></inv:number>
+        <inv:date>2026-05-02</inv:date>
+      </inv:invoiceHeader>
+      <inv:invoiceSummary><inv:homeCurrency><typ:priceNone>0</typ:priceNone><typ:priceLow>0</typ:priceLow><typ:priceLowVAT>0</typ:priceLowVAT><typ:priceHigh>1000</typ:priceHigh><typ:priceHighVAT>210</typ:priceHighVAT></inv:homeCurrency></inv:invoiceSummary>
+    </inv:invoice>
+  </dat:dataPackItem>
+</dat:dataPack>

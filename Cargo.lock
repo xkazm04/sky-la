@@ -5225,6 +5225,8 @@ name = "skyla-app"
 version = "0.1.0"
 dependencies = [
  "base64 0.22.1",
+ "crc32fast",
+ "flate2",
  "regex",
  "rusqlite",
  "serde",
@@ -5295,8 +5297,11 @@ dependencies = [
 name = "skyla-invoicing"
 version = "0.1.0"
 dependencies = [
+ "csv",
+ "encoding_rs",
  "insta",
  "proptest",
+ "roxmltree 0.21.1",
  "rusqlite",
  "serde",
  "serde_json",

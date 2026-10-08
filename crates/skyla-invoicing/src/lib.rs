@@ -23,6 +23,7 @@ mod documents;
 pub mod dunning;
 mod error;
 mod exchange;
+pub mod import;
 pub mod isdoc;
 pub mod late_interest;
 pub mod recurring;

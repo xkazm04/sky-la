@@ -23,3 +23,11 @@ function save(fileName: string, blob: Blob): void {
   // Give the browser a moment to start the download before revoking.
   setTimeout(() => URL.revokeObjectURL(url), 10_000);
 }
+
+/** A picked file's bytes as base64, for a core command. */
+export async function fileToBase64(file: File): Promise<string> {
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  let binary = "";
+  for (const b of bytes) binary += String.fromCharCode(b);
+  return btoa(binary);
+}

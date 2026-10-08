@@ -21,6 +21,8 @@ skyla-advisor = { version = "0.1.0", path = "../skyla-advisor" }
 skyla-egress = { version = "0.1.0", path = "../skyla-egress" }
 skyla-store = { version = "0.1.0", path = "../skyla-store" }
 skyla-tax-cz = { version = "0.1.0", path = "../skyla-tax-cz" }
+crc32fast = "1.5.2"
+flate2 = "1.1.10"
 regex = "1.13.1"
 rusqlite = { version = "0.40.2", features = ["bundled"] }
 serde = { version = "1.0.229", features = ["derive"] }

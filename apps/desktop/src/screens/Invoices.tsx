@@ -16,15 +16,16 @@ import {
   type Tone,
   Toolbar,
 } from "@skyla/ui";
-import { FileDown, Plus, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { FileDown, FileUp, Plus, Trash2 } from "lucide-react";
+import { useRef, useState } from "react";
 import { invalidateAll, problems, useQuery } from "../data";
-import { downloadBase64, downloadText } from "../download";
+import { downloadBase64, downloadText, fileToBase64 } from "../download";
 import { day, money } from "../format";
 import { navigate } from "../router";
 import { InspectorPane } from "../shell/Shell";
 import { EmptyInspector, Loaded } from "./common";
 import { InvoiceEditor } from "./InvoiceEditor";
+import { InvoiceImport, type PendingImport } from "./InvoiceImport";
 
 type Filter = "all" | "open" | "paid";
 
@@ -333,6 +334,30 @@ function InvoiceList({ item }: { item: string | null }) {
   const [filter, setFilter] = useState<Filter>("all");
   const invoices = useQuery("invoices", () => unwrap(commands.invoices()));
   const sheet = useQuery("bs:2026-10-07", () => unwrap(commands.balanceSheet("2026-10-07")));
+  const fileInput = useRef<HTMLInputElement>(null);
+  const [pending, setPending] = useState<PendingImport | null>(null);
+  const [notice, setNotice] = useState<{ ok: boolean; lines: string[] } | null>(null);
+  const pick = async (file: File) => {
+    setNotice(null);
+    try {
+      const contentBase64 = await fileToBase64(file);
+      const preview = await unwrap(commands.previewInvoiceImport(file.name, contentBase64));
+      setPending({ fileName: file.name, contentBase64, preview });
+    } catch (e) {
+      setNotice({ ok: false, lines: problems(e) });
+    }
+  };
+  if (pending) {
+    return (
+      <InvoiceImport
+        pending={pending}
+        onClose={(message) => {
+          setPending(null);
+          if (message) setNotice({ ok: true, lines: [message] });
+        }}
+      />
+    );
+  }
   return (
     <Loaded query={invoices}>
       {(all) => {
@@ -361,11 +386,36 @@ function InvoiceList({ item }: { item: string | null }) {
                 value={filter}
                 onChange={setFilter}
               />
+              <input
+                ref={fileInput}
+                type="file"
+                accept=".xml,.csv"
+                aria-label="Invoices exported from Pohoda or Fakturoid"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) void pick(f);
+                  e.target.value = "";
+                }}
+              />
+              <Button icon={FileUp} onPress={() => fileInput.current?.click()}>
+                Import…
+              </Button>
               <Button variant="primary" icon={Plus} onPress={() => navigate("invoices", "new")}>
                 New invoice
               </Button>
             </Toolbar>
             <ContentGroup>
+              {notice && (
+                <div
+                  role={notice.ok ? "status" : "alert"}
+                  className={`mb-2 px-2 text-footnote ${notice.ok ? "text-ink-secondary" : "text-negative-ink"}`}
+                >
+                  {notice.lines.map((l) => (
+                    <p key={l}>{l}</p>
+                  ))}
+                </div>
+              )}
               <DataTable
                 label="Invoices"
                 columns={columns}

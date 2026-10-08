@@ -88,6 +88,10 @@ impl Scenario<'_> {
 pub const SECOND_STATEMENT: &str =
     include_str!("../../../packages/fixtures/data/statements/csob-2026-10-07.xml");
 
+/// The synthetic Pohoda export the invoice-import e2e test reads.
+pub const POHODA_SAMPLE: &str =
+    include_str!("../../../packages/fixtures/data/imports/pohoda-faktury.xml");
+
 /// The demo's ČNB rates file, imported in the reference-data scenario.
 pub const DEMO_CNB_DAILY: &str =
     include_str!("../../../packages/fixtures/data/refdata/demo-cnb-daily-2026-10-07.txt");
@@ -245,6 +249,18 @@ pub fn scenarios() -> Vec<(&'static str, Script)> {
                 json!({ "id": issued["id"], "format": "isdoc" }),
             );
         }),
+        ("invoice-import", |s| {
+            use base64::Engine as _;
+            let file = json!({
+                "fileName": "pohoda-faktury.xml",
+                "contentBase64": base64::engine::general_purpose::STANDARD.encode(POHODA_SAMPLE.as_bytes()),
+            });
+            s.read("preview_invoice_import", file.clone());
+            s.write("commit_invoice_import", file, "imported");
+            s.read("invoices", json!({}));
+            s.read("integrity", json!({}));
+            s.read("balance_sheet", json!({ "asOf": "2026-10-07" }));
+        }),
         ("bank-workbench", |s| {
             use base64::Engine as _;
             let file =
@@ -338,6 +354,7 @@ pub fn canonical_requests() -> Vec<(&'static str, Value)> {
         ("bank_statement", json!({})),
         ("proposals", json!({})),
         ("egress_register", json!({})),
+        ("export_books", json!({})),
         ("egress_policies", json!({})),
         ("egress_payload", json!({ "id": "run-2026-10-04-01" })),
         ("egress_payload", json!({ "id": "run-2026-10-04-02" })),
@@ -457,6 +474,13 @@ pub fn dispatch(core: &Core, command: &str, args: &Value) -> Result<Value, IpcFa
             core.import_bank_statement(arg(args, "fileName")?, arg(args, "contentBase64")?),
         ),
         "accept_certain_bank_lines" => to_value(core.accept_certain_bank_lines()),
+        "preview_invoice_import" => to_value(
+            core.preview_invoice_import(arg(args, "fileName")?, arg(args, "contentBase64")?),
+        ),
+        "commit_invoice_import" => to_value(
+            core.commit_invoice_import(arg(args, "fileName")?, arg(args, "contentBase64")?),
+        ),
+        "export_books" => to_value(core.export_books()),
         "reference_data" => to_value(core.reference_data()),
         "import_reference_data" => to_value(core.import_reference_data(
             arg(args, "kind")?,

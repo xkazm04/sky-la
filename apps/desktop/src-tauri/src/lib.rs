@@ -12,7 +12,8 @@ use skyla_app::dto::{
     TrialBalanceDto, VatReturnDto,
 };
 use skyla_app::dto::{
-    BackupDto, BackupsDto, DrillDto, EntitySetupDto, RecoveryKeyDto, SessionStateDto,
+    BackupDto, BackupsDto, DrillDto, EntitySetupDto, ExportDto, ImportPreviewDto, RecoveryKeyDto,
+    SessionStateDto,
 };
 use skyla_app::session::Gate;
 use skyla_app::{Core, IpcFailure};
@@ -289,6 +290,35 @@ fn import_bank_statement(
     Ok(core.import_bank_statement(&file_name, &content_base64)?)
 }
 
+/// What importing invoices from Pohoda or Fakturoid would do; changes nothing.
+#[tauri::command]
+#[specta::specta]
+fn preview_invoice_import(
+    core: State<'_, Core>,
+    file_name: String,
+    content_base64: String,
+) -> Answer<ImportPreviewDto> {
+    Ok(core.preview_invoice_import(&file_name, &content_base64)?)
+}
+
+/// Posts the new invoices in a Pohoda or Fakturoid export.
+#[tauri::command]
+#[specta::specta]
+fn commit_invoice_import(
+    core: State<'_, Core>,
+    file_name: String,
+    content_base64: String,
+) -> Answer<ImportPreviewDto> {
+    Ok(core.commit_invoice_import(&file_name, &content_base64)?)
+}
+
+/// Everything in the books as one reproducible zip (base64).
+#[tauri::command]
+#[specta::specta]
+fn export_books(core: State<'_, Core>) -> Answer<ExportDto> {
+    Ok(core.export_books()?)
+}
+
 /// Accepts every line the matcher or a rule is certain about.
 #[tauri::command]
 #[specta::specta]
@@ -553,6 +583,9 @@ pub fn specta_builder<R: Runtime>() -> Builder<R> {
             issue_invoice,
             delete_invoice_draft,
             import_bank_statement,
+            preview_invoice_import,
+            commit_invoice_import,
+            export_books,
             accept_certain_bank_lines,
             book_bank_line,
             create_bank_rule,

@@ -25,6 +25,7 @@ import {
 import { CircleCheck, FileUp, Plus, Trash2 } from "lucide-react";
 import { useRef, useState } from "react";
 import { invalidateAll, problems, useQuery } from "../data";
+import { fileToBase64 } from "../download";
 import { day, money, signed } from "../format";
 import { navigate } from "../router";
 import { InspectorPane } from "../shell/Shell";
@@ -385,12 +386,6 @@ function LineInspector({
   );
 }
 
-function toBase64(bytes: Uint8Array): string {
-  let binary = "";
-  for (const b of bytes) binary += String.fromCharCode(b);
-  return btoa(binary);
-}
-
 /** Bank workbench (pattern D): import, tie-out, explained matches, splits and rules. */
 export function BankScreen({ item }: { item: string | null }) {
   const [filter, setFilter] = useState<Filter>("attention");
@@ -400,8 +395,7 @@ export function BankScreen({ item }: { item: string | null }) {
 
   const importFile = (file: File) =>
     void write.run(async () => {
-      const bytes = new Uint8Array(await file.arrayBuffer());
-      const s = await unwrap(commands.importBankStatement(file.name, toBase64(bytes)));
+      const s = await unwrap(commands.importBankStatement(file.name, await fileToBase64(file)));
       const last = s.imports.at(-1);
       return `Imported ${file.name}: ${last?.lines ?? 0} new lines; it ties out to ${money(s.closing)}.`;
     });

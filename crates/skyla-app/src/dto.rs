@@ -910,6 +910,64 @@ pub struct PackUpdateDto {
     pub message: String,
 }
 
+/// The full export, as one zip.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct ExportDto {
+    /// Suggested file name.
+    pub file_name: String,
+    /// Files inside.
+    pub files: u32,
+    /// Its size.
+    pub bytes: u32,
+    /// The zip, base64.
+    pub content_base64: String,
+}
+
+/// One document in an invoice import.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct ImportDocumentDto {
+    /// Where in the file (item or row).
+    pub position: u32,
+    /// Its number.
+    pub number: String,
+    /// `invoice` or `credit_note`.
+    pub kind: String,
+    /// Issued.
+    pub issue_date: String,
+    /// The customer's name.
+    pub customer: String,
+    /// Base.
+    pub base: MoneyDto,
+    /// VAT.
+    pub vat: MoneyDto,
+    /// Total.
+    pub total: MoneyDto,
+    /// `new`, `duplicate` or `problem`.
+    pub status: String,
+    /// Why it isn't new.
+    pub problems: Vec<String>,
+}
+
+/// What an invoice import holds, or did.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[serde(rename_all = "camelCase")]
+pub struct ImportPreviewDto {
+    /// File name.
+    pub file: String,
+    /// `Pohoda` or `Fakturoid`.
+    pub source: String,
+    /// Documents that would be posted.
+    pub new: u32,
+    /// Every document read.
+    pub documents: Vec<ImportDocumentDto>,
+    /// What in the file couldn't be read.
+    pub problems: Vec<String>,
+    /// After a commit: the numbers posted.
+    pub imported: Vec<String>,
+}
+
 /// Whether there are books to unlock.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "camelCase")]

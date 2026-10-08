@@ -117,6 +117,12 @@ export const commands = {
 	deleteInvoiceDraft: (id: number) => typedError<null, IpcFailure>(__TAURI_INVOKE("delete_invoice_draft", { id })),
 	/**  Imports a statement file (base64): tied out and deduplicated first. */
 	importBankStatement: (fileName: string, contentBase64: string) => typedError<BankStatementDto, IpcFailure>(__TAURI_INVOKE("import_bank_statement", { fileName, contentBase64 })),
+	/**  What importing invoices from Pohoda or Fakturoid would do; changes nothing. */
+	previewInvoiceImport: (fileName: string, contentBase64: string) => typedError<ImportPreviewDto, IpcFailure>(__TAURI_INVOKE("preview_invoice_import", { fileName, contentBase64 })),
+	/**  Posts the new invoices in a Pohoda or Fakturoid export. */
+	commitInvoiceImport: (fileName: string, contentBase64: string) => typedError<ImportPreviewDto, IpcFailure>(__TAURI_INVOKE("commit_invoice_import", { fileName, contentBase64 })),
+	/**  Everything in the books as one reproducible zip (base64). */
+	exportBooks: () => typedError<ExportDto, IpcFailure>(__TAURI_INVOKE("export_books")),
 	/**  Accepts every line the matcher or a rule is certain about. */
 	acceptCertainBankLines: () => typedError<BankStatementDto, IpcFailure>(__TAURI_INVOKE("accept_certain_bank_lines")),
 	/**  Books a line as the user chose: invoices, or account rows (a split). */
@@ -637,6 +643,18 @@ export type ExplanationDto = {
 	entries: ExplainedEntryDto[],
 };
 
+/**  The full export, as one zip. */
+export type ExportDto = {
+	/**  Suggested file name. */
+	fileName: string,
+	/**  Files inside. */
+	files: number,
+	/**  Its size. */
+	bytes: number,
+	/**  The zip, base64. */
+	contentBase64: string,
+};
+
 /**  A detector's finding, citing the entries it rests on. */
 export type FindingDto = {
 	/**  Stable id. */
@@ -655,6 +673,46 @@ export type FindingDto = {
 	percents: ([string, string])[],
 	/**  Journal entries it rests on. */
 	cites: number[],
+};
+
+/**  One document in an invoice import. */
+export type ImportDocumentDto = {
+	/**  Where in the file (item or row). */
+	position: number,
+	/**  Its number. */
+	number: string,
+	/**  `invoice` or `credit_note`. */
+	kind: string,
+	/**  Issued. */
+	issueDate: string,
+	/**  The customer's name. */
+	customer: string,
+	/**  Base. */
+	base: MoneyDto,
+	/**  VAT. */
+	vat: MoneyDto,
+	/**  Total. */
+	total: MoneyDto,
+	/**  `new`, `duplicate` or `problem`. */
+	status: string,
+	/**  Why it isn't new. */
+	problems: string[],
+};
+
+/**  What an invoice import holds, or did. */
+export type ImportPreviewDto = {
+	/**  File name. */
+	file: string,
+	/**  `Pohoda` or `Fakturoid`. */
+	source: string,
+	/**  Documents that would be posted. */
+	new: number,
+	/**  Every document read. */
+	documents: ImportDocumentDto[],
+	/**  What in the file couldn't be read. */
+	problems: string[],
+	/**  After a commit: the numbers posted. */
+	imported: string[],
 };
 
 /**  Journal integrity for the status line. */

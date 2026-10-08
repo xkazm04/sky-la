@@ -25,9 +25,10 @@ import {
   type TableColumn,
   Toolbar,
 } from "@skyla/ui";
-import { FileUp, Monitor, Moon, Sun } from "lucide-react";
+import { FileDown, FileUp, Monitor, Moon, Sun } from "lucide-react";
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import { invalidateAll, problems, useQuery } from "../data";
+import { downloadBase64 } from "../download";
 import { navigate } from "../router";
 import { InspectorPane } from "../shell/Shell";
 import { connectionBadge } from "./AdvisorConnection";
@@ -43,7 +44,20 @@ interface Setting {
   refdata?: RefDataDto | undefined;
   policies?: EgressPolicyDto[] | undefined;
   backups?: BackupsDto | undefined;
+  exportable?: boolean;
 }
+
+/** Which section of the list each setting sits in. */
+const GROUP: Record<string, string> = {
+  appearance: "general",
+  encryption: "security",
+  backups: "security",
+  recovery: "security",
+  advisors: "data",
+  "advisor-sharing": "data",
+  "reference-data": "data",
+  export: "data",
+};
 
 const columns: TableColumn<Setting>[] = [
   {
@@ -96,10 +110,15 @@ export function SettingsScreen({ item, core }: { item: string | null; core: Core
       id: "encryption",
       title: "Encryption",
       detail: "SQLCipher with a key in your OS keychain",
-      value: <Badge tone="warning">Demo · in memory</Badge>,
+      value:
+        bk && !bk.demo ? (
+          <Badge tone="positive">Encrypted on this computer</Badge>
+        ) : (
+          <Badge tone="warning">Demo · in memory</Badge>
+        ),
       about: [
-        "Real books live in an encrypted file. The demo entity is built in memory and never written to disk.",
-        "Encryption, the recovery key and auto-lock arrive with the unlock flow (WP-30).",
+        "Your books live in one encrypted file, opened with your passphrase or, if you chose, the key kept in your system keychain.",
+        "The demo is built in memory and never written to disk.",
       ],
     },
     {
@@ -126,9 +145,15 @@ export function SettingsScreen({ item, core }: { item: string | null; core: Core
       id: "recovery",
       title: "Recovery key",
       detail: "Printed once when you create your books",
-      value: <Badge tone="neutral">Not needed in the demo</Badge>,
+      value:
+        bk && !bk.demo ? (
+          <span className="text-ink-secondary">Shown once at setup</span>
+        ) : (
+          <Badge tone="neutral">Not needed in the demo</Badge>
+        ),
       about: [
         "The recovery key unlocks your books if you forget the passphrase. sky-la never stores it.",
+        "Using it sets a new passphrase and replaces the key with a new one, shown once.",
       ],
     },
     {
@@ -178,6 +203,18 @@ export function SettingsScreen({ item, core }: { item: string | null; core: Core
       refdata: ref,
     },
     {
+      id: "export",
+      title: "Export everything",
+      detail: "The journal, chart and documents in open formats",
+      value: <span className="text-ink-secondary">Zip · JSON, CSV, ISDOC, PDF</span>,
+      about: [
+        "Your books are yours: the export holds every posted entry with its hash-chain link, one CSV row per posting, the chart of accounts, and each issued document as ISDOC and PDF.",
+        "A manifest lists the chain head and a SHA-256 of every file, so anyone can check nothing was changed after export.",
+        "The same books always give the same file, byte for byte.",
+      ],
+      exportable: true,
+    },
+    {
       id: "rule-pack",
       title: "Rule pack",
       detail: "Statutory rates, thresholds and deadlines, each with its source",
@@ -212,6 +249,7 @@ export function SettingsScreen({ item, core }: { item: string | null; core: Core
     },
   ];
   const selected = settings.find((s) => s.id === item) ?? settings[0];
+  const inGroup = (group: string) => settings.filter((s) => (GROUP[s.id] ?? "about") === group);
   return (
     <>
       <Toolbar
@@ -223,10 +261,10 @@ export function SettingsScreen({ item, core }: { item: string | null; core: Core
           label="Settings"
           columns={columns}
           sections={[
-            { id: "general", title: "General", rows: settings.slice(0, 1) },
-            { id: "security", title: "Security", rows: settings.slice(1, 4) },
-            { id: "advisors", title: "Advisors and data", rows: settings.slice(4, 8) },
-            { id: "about", title: "About", rows: settings.slice(8) },
+            { id: "general", title: "General", rows: inGroup("general") },
+            { id: "security", title: "Security", rows: inGroup("security") },
+            { id: "advisors", title: "Advisors and data", rows: inGroup("data") },
+            { id: "about", title: "About", rows: inGroup("about") },
           ]}
           selectedId={selected?.id ?? null}
           onSelect={(id) => navigate("settings", id, true)}
@@ -241,6 +279,7 @@ export function SettingsScreen({ item, core }: { item: string | null; core: Core
             {selected.refdata && <ReferenceData data={selected.refdata} />}
             {selected.policies && <AdvisorSharing policies={selected.policies} />}
             {selected.backups && <Backups data={selected.backups} />}
+            {selected.exportable && <ExportBooks />}
             {selected.pack && (
               <>
                 <InspectorSection title={`Values in force · ${selected.pack.values.length}`}>
@@ -276,6 +315,44 @@ export function SettingsScreen({ item, core }: { item: string | null; core: Core
             )}
           </Inspector>
         </InspectorPane>
+      )}
+    </>
+  );
+}
+
+/** The full export, saved as a zip. */
+function ExportBooks() {
+  const [result, setResult] = useState<{ ok: boolean; text: string } | null>(null);
+  const [busy, setBusy] = useState(false);
+  const run = async () => {
+    setBusy(true);
+    try {
+      const e = await unwrap(commands.exportBooks());
+      downloadBase64(e.fileName, e.contentBase64, "application/zip");
+      setResult({
+        ok: true,
+        text: `Saved ${e.fileName}: ${e.files} files, ${Math.round(e.bytes / 1024)} kB.`,
+      });
+    } catch (err) {
+      setResult({ ok: false, text: problems(err).join(" ") });
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <>
+      <div className="mt-3 flex gap-2">
+        <Button icon={FileDown} isDisabled={busy} onPress={() => void run()}>
+          Export…
+        </Button>
+      </div>
+      {result && (
+        <p
+          role={result.ok ? "status" : "alert"}
+          className={`mt-2 text-footnote ${result.ok ? "text-ink-secondary" : "text-negative-ink"}`}
+        >
+          {result.text}
+        </p>
       )}
     </>
   );

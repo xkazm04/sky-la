@@ -654,3 +654,53 @@ test("reference data is imported by hand and fetching stays off until turned on"
     "On · www.cnb.cz",
   );
 });
+
+// WP-31 acceptance (import): a Pohoda export is previewed (new, already
+// here, won't import, each with its reason) and only the new invoices are
+// posted, on the recorded core (skyla_app::recordings, "invoice-import").
+test("invoices exported from Pohoda are previewed, then the new ones imported", async ({
+  page,
+}) => {
+  await page.goto("/#/invoices");
+  await settle(page);
+  await page
+    .getByLabel("Invoices exported from Pohoda or Fakturoid")
+    .setInputFiles("../../packages/fixtures/data/imports/pohoda-faktury.xml");
+  const table = page.getByRole("grid", { name: "Invoices in the file" });
+  await expect(page.getByRole("heading", { name: "Import from Pohoda" })).toBeVisible();
+  await expect(table).toContainText("Will be imported");
+  await expect(table.getByRole("row", { name: /2026-044/ })).toContainText("New");
+  await expect(table.getByRole("row", { name: /2026-041/ })).toContainText("Already here");
+  await expect(page.getByRole("status")).toContainText("Skipped: item 6 is a received document");
+  await table.getByRole("row", { name: /2026-049/ }).click();
+  const inspector = page.getByRole("complementary", { name: "Imported invoice" });
+  await expect(inspector).toContainText("VAT doesn't match the rate on its tax point");
+  await page.screenshot({ path: "test-results/screens/invoice-import-preview.png" });
+  await axeClean(page);
+
+  await page.getByRole("button", { name: "Import 2 invoices" }).click();
+  await expect(page.getByRole("status")).toContainText(
+    "Imported 2 invoices from Pohoda: 2026-044, 2026-047.",
+  );
+  await expect(page.getByRole("grid", { name: "Invoices" })).toContainText("2026-044");
+});
+
+// WP-31 acceptance (export): Settings saves the whole books as one zip.
+test("the books are exported as one zip", async ({ page }) => {
+  await page.goto("/#/settings/export");
+  await settle(page);
+  const inspector = page.getByRole("complementary", { name: "Export everything" });
+  const downloaded = page.waitForEvent("download");
+  await inspector.getByRole("button", { name: "Export…" }).click();
+  const file = await downloaded;
+  expect(file.suggestedFilename()).toBe("sky-la-export-Jan_Novak-2026-10-07.zip");
+  const { readFileSync } = await import("node:fs");
+  expect(
+    readFileSync(await file.path())
+      .subarray(0, 4)
+      .toString("hex"),
+  ).toBe("504b0304");
+  await expect(inspector.getByRole("status")).toContainText(
+    "Saved sky-la-export-Jan_Novak-2026-10-07.zip",
+  );
+});
